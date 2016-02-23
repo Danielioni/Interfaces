@@ -53,10 +53,12 @@
     <Compile Include="inputMethod.cs" />
     <Compile Include="InputStucture.cs" />
     <Compile Include="jsonParser.cs" />
+    <Compile Include="localAPI.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="taggedParser.cs" />
     <Compile Include="Port.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="webAPI.cs" />
     <Compile Include="xmlParser.cs" />
   </ItemGroup>
   <ItemGroup>
