@@ -50,7 +50,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\motInboundLib.csproj">
+    <ProjectReference Include="..\motClassLibrary\motInboundLib.csproj">
       <Project>{e6380e69-7e57-42a2-9d15-cfba019b2ccd}</Project>
       <Name>motInboundLib</Name>
     </ProjectReference>
