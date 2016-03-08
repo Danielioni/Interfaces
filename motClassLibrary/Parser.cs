@@ -56,6 +56,11 @@ namespace motInboundLib
                     return;
                 }
 
+                if(inputStream.Contains('\xEE'))
+                {
+                    d = new delimitedParser(inputStream);
+                }
+
                 throw new Exception("[MOT Parser] Unidentified file type");
             }
             catch(Exception e)
@@ -78,7 +83,7 @@ namespace motInboundLib
                     j = new jsonParser(inputStream);
                     break;
 
-                case InputStucture.__itDelimted:
+                case InputStucture.__inputDelimted:
                     d = new delimitedParser(inputStream);
                     break;
 

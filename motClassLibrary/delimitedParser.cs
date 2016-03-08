@@ -4,13 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/// <summary>
+/// Supports the default delimited format for the gateway.  Delimited with \`xEE`
+/// </summary>
 namespace motInboundLib
 {
     class delimitedParser : Parser
     {
         public delimitedParser(string inboundData)
         {
-            // Turn it into a tagged structure and write it
+            // It would make sense to vaalidate the checksum here
+            Write(inboundData, inboundData.Length);
         }
     }
 }
