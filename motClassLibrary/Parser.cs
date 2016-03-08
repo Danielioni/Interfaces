@@ -78,7 +78,7 @@ namespace motInboundLib
                     j = new jsonParser(inputStream);
                     break;
 
-                case InputStucture.__itDelimted:
+                case InputStucture.__inputDelimted:
                     d = new delimitedParser(inputStream);
                     break;
 

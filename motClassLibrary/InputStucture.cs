@@ -7,7 +7,7 @@ namespace motInboundLib
 {
     public enum InputStucture
     {
-        __itDelimted = 0,
+        __inputDelimted = 0,
         __inputTagged,
         __inputXML,
         __inputJSON,
