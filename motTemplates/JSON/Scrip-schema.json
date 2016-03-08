@@ -1,0 +1,156 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://json-schema.medicineontime.com",
+  "type": "object",
+  "properties": {
+    "Table": {
+      "id": "http://json-schema.medicineontime.com/Type",
+      "type": "string"
+    },
+    "Action": {
+      "id": "http://json-schema.medicineontime.com/Action",
+      "type": "string"
+    },
+    "RxSys_RxNum": {
+      "id": "http://json-schema.medicineontime.com/RxSys_RxNum",
+      "type": "number",
+       "maximum": 99999999999999.00
+    },
+    "RxSys_PatID": {
+      "id": "http://json-schema.medicineontime.com/RxSys_PatID",
+      "type": "string",
+      "maxLength": 10
+    },
+    "RxSys_DocID": {
+      "id": "http://json-schema.medicineontime.com/RxSys_DocID",
+      "type": "string",
+      "maxLength": 10
+    },
+    "RxSys_DrugID": {
+      "id": "http://json-schema.medicineontime.com/RxSys_DrugID",
+      "type": "string",
+        "maxLength": 11
+    },
+    "Sig": {
+      "id": "http://json-schema.medicineontime.com/Sig",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "RxStartDate": {
+      "id": "http://json-schema.medicineontime.com/RxStartDate",
+      "type": "string",
+      "maxLength": 10
+    },
+    "RxStopDate": {
+      "id": "http://json-schema.medicineontime.com/RxStopDate",
+      "type": "string",
+      "maxLength": 10
+    },
+    "DiscontinueDate": {
+      "id": "http://json-schema.medicineontime.com/DiscontinueDate",
+      "type": "string",
+      "maxLength": 10
+    },
+    "DoseScheduleName": {
+      "id": "http://json-schema.medicineontime.com/DoseScheduleName",
+      "type": "string",
+      "maxLength": 10
+    },
+    "Comments": {
+      "id": "http://json-schema.medicineontime.com/Comments",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "Refills": {
+      "id": "http://json-schema.medicineontime.com/Refills",
+      "type": "number",
+      "maximum": 254
+    },
+    "RxSys_NewRxNum": {
+      "id": "http://json-schema.medicineontime.com/RxSys_NewRxNum",
+      "type": "number"
+    },
+    "Isolate": {
+      "id": "http://json-schema.medicineontime.com/Isolate",
+      "type": "number",
+      "maximum": 1
+    },
+    "RxType": {
+      "id": "http://json-schema.medicineontime.com/RxType",
+      "type": "number",
+      "maximum": 21
+    },
+    "MDOMStart": {
+      "id": "http://json-schema.medicineontime.com/MDOMStart",
+      "type": "number",
+      "maximum": 31
+    },
+    "MDOMEnd": {
+      "id": "http://json-schema.medicineontime.com/MDOMEnd",
+      "type": "number",
+      "maximum": 31
+    },
+    "QtyPerDose": {
+      "id": "http://json-schema.medicineontime.com/QtyPerDose",
+      "type": "number",
+      "maximum": 999.99
+    },
+    "QtyDispensed": {
+      "id": "http://json-schema.medicineontime.com/QtyDispensed",
+      "type": "number",
+      "maximum": 99999.99
+    },
+    "Status": {
+      "id": "http://json-schema.medicineontime.com/Status",
+      "type": "number",
+      "maximum": 100
+    },
+    "DoW": {
+      "id": "http://json-schema.medicineontime.com/DoW",
+      "type": "string",
+      "maxLength": 7,
+      "description": "String representing days of the week, always 7 chars. X represents a day the drug will be put in a bubble on a card. Sunday = position 1 (Required for RxType 5)"
+    },
+    "SpecialDoses": {
+      "id": "http://json-schema.medicineontime.com/SpecialDoses",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "DoseTimesQtys": {
+      "id": "http://json-schema.medicineontime.com/DoseTimesQtys",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "ChartOnly": {
+      "id": "http://json-schema.medicineontime.com/ChartOnly",
+      "type": "string",
+      "maxLength": 1
+    },
+    "AnchorDate": {
+      "id": "http://json-schema.medicineontime.com/AnchorDate",
+      "type": "string",
+      "maxLength": 10
+    }
+  },
+  "required": [
+    "Type",
+    "Action",
+    "RxSys_RxNum",
+    "RxSys_PatID",
+    "RxSys_DocID",
+    "RxSys_DrugID",
+    "Sig",
+    "RxStartDate",
+    "RxStopDate",
+    "DiscontinueDate",
+    "Refills",
+    "RxType",
+    "QtyPerDose",
+    "QtyDispensed",
+    "Status",
+    "DoW",
+    "DoseTimesQtys",
+    "ChartOnly",
+    "AnchorDate"
+  ]             
+}

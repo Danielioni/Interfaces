@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Record xmlns="http://fred.medicineontime.com/mot-records/store.xsd">
+  <Table required="true">Store</Table>
+  <Action required="true"></Action> <!-- Add/Change/Delete -->
+  <RxSys_StoreID required="true" size="10"></RxSys_StoreID>
+  <StoreName required="true" size="60"></StoreName>
+  <Address1 size="40"></Address1>
+  <Address2 size="40"></Address2>
+  <City size="30"></City> <!--  -->
+  <State size="2"></State> <!--  -->
+  <Zip required="true" size="9"></Zip> <!--  -->
+  <Phone required="true" size="10"></Phone> <!-- -->
+  <Fax size="10"></Fax>
+  <DEANum required="true" size="10"></DEANum> <!-- DEA Number -->
+</Record>

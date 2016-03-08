@@ -1,0 +1,23 @@
+﻿{
+  "Table": "Drug",
+  "Action" : "",
+  "RxSys_DrugD" : "",
+  "LblCode" :  "",
+  "ProdCode" :  "",
+  "TradeName" : "",
+  "Strength" : "",
+  "Unit" :  "",
+  "RxOTC" :  "",
+  "DoseForm" : "",
+  "Route" :  "",
+  "DrugSchedule": 0,
+  "VisualDescription" : "",
+  "DrugName" : "",
+  "ShortName" : "",
+  "NDCNum" : "",
+  "SizeFactor" :  0,
+  "Template" : "",
+  "DefaultIsolate" : "",
+  "ConsultMsg" : "",
+  "GenericFor" : ""
+}

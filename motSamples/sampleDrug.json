@@ -1,0 +1,23 @@
+﻿{
+  "Table": "Drug",
+  "Action": "Add",
+  "RxSys_DrugD": "0000123491",
+  "LblCode": "00000",
+  "ProdCode": "0000",
+  "TradeName": "Tylenol",
+  "Strength": "500",
+  "Unit": "mg",
+  "RxOTC": "O",
+  "DoseForm": "Tablet",
+  "Route": "Oral",
+  "DrugSchedule": 2,
+  "VisualDescription": "White/Oval",
+  "DrugName": "Robert",
+  "ShortName": "Bob",
+  "NDCNum": "0000123491",
+  "SizeFactor": 2,
+  "Template": "B",
+  "DefaultIsolate": "0",
+  "ConsultMsg": "Some Text",
+  "GenericFor": "Some More Text"
+}

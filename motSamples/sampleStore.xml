@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Record xmlns="http://fred.medicineontime.com/mot-records">
+  <Table>Store</Table>
+  <Action>Add</Action> <!-- Add/Change/Delete -->
+  <RxSys_StoreID required="true" size="10">60000</RxSys_StoreID>
+  <StoreName required="true" size="60">CVRite</StoreName>
+  <Address1 size="40">33 Adjunct Place</Address1>
+  <Address2 size="40"></Address2>
+  <City size="30">Skokie</City> <!--  -->
+  <State size="2">OK</State> <!--  -->
+  <Zip required="true" size="9">08678</Zip> <!--  -->
+  <Phone required="true" size="10">6129841211</Phone> <!-- -->
+  <Fax size="10">6129841212</Fax>
+  <DEANum required="true" size="10">ABC1234</DEANum> <!-- DEA Number -->
+</Record>

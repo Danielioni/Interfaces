@@ -1,0 +1,20 @@
+<Record>
+  <table>Prescriber</table>
+  <action>Add</action>
+  <RxSys_DocID>01234</RxSys_DocID>
+  <LastName>Johnson</LastName>
+  <FirstName>James</FirstName>
+  <MiddleInitial>J</MiddleInitial>
+  <Address1>23 Main St.</Address1>
+  <Address2>Suite 987</Address2>
+  <City>Boston</City>
+  <State>MA</State>
+  <Zip>02199</Zip>
+  <Phone>6172669123</Phone>
+  <Comments>Formatted using MOT tagging ...</Comments>
+  <DEA_ID>9876543210</DEA_ID>
+  <TPID>02134</TPID>
+  <Speciality>6</Speciality>
+  <Fax></Fax>
+  <PagerInfo></PagerInfo>
+</Record>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Record xmlns="http://fred.medicineontime.com/mot-records">
+  <Table>Prescriber</Table>
+  <Action>Add</Action>
+  <RxSys_DocID required="true" size="10">9786</RxSys_DocID>
+  <LastName  required="true" size="30">Stingman III</LastName>
+  <FirstName required="true" size="20">Bob</FirstName>
+  <MiddleInitial size="2">J</MiddleInitial>
+  <Address1 required="true" size="40">500 N. West Shore Blvd.</Address1>
+  <Address2 size="40">Suite 620</Address2>
+  <City required="true" size="30">Tampa</City>
+  <State required="true" size="2">FL</State>
+  <Zip required="true" size="9">33610</Zip>
+  <Phone required="true" size="10">8007228824</Phone>
+  <Comments size="32767">Formatted as XML ...</Comments>
+  <DEA_ID required="true" size="10">32145</DEA_ID>
+  <TPID size="10">6239</TPID>
+  <Speciality maxvalue="18">6</Speciality>
+  <Fax required="true" size="10">6032645678</Fax>
+  <PagerInfo size="40">What's a Pager?</PagerInfo>
+</Record>

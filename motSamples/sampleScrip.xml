@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Record xmlns="http://fred.medicineontime.com/mot-records">
+  <Table required ="true">Rx</Table>
+  <Action required ="true">Add</Action>
+  <RxSys_RxNum required ="true" maxvalue="99999999999999">199</RxSys_RxNum>
+  <RxSys_PatID required ="true" size="10">9876A</RxSys_PatID>
+  <RxSys_DocID required ="true" size="10">40000</RxSys_DocID>
+  <RxSys_DrugID required="true" size="11">B1234</RxSys_DrugID>
+  <Sig required="true" size="32767">MySignature</Sig>
+  <RxStartDate size="10"></RxStartDate>
+  <RxStopDate size="10"></RxStopDate>
+  <DiscontinueDate required="true" size="10">2017-01-01</DiscontinueDate>
+  <DoseScheduleName size="10"></DoseScheduleName>
+  <Comments size="32767"></Comments>
+  <Refills required="true" maxvalue="254">4</Refills>
+  <RxSys_NewRxNum maxvalue ="99999999999999">299</RxSys_NewRxNum>
+  <Isolate maxvalue="1">0</Isolate>
+  <RxType required="true" maxvalue="21">7</RxType>
+  <MDOMStart maxvalue ="31">20</MDOMStart>
+  <MDOMEnd maxvalue="31">25</MDOMEnd>
+  <QtyPerDose required="true" maxvalue="999.99">1.00</QtyPerDose>
+  <QtyDispensed required="true" maxvalue="99999.99">9786.00</QtyDispensed>
+  <Status required="true" maxvalue="100">1</Status>
+  <DoW required="true" size="7">Sunday</DoW>
+  <SpecialDoses size="32767"></SpecialDoses>
+  <DoseTimesQtys required="true" size="32767">Yes</DoseTimesQtys>
+  <ChartOnly required="true" size="1">1</ChartOnly>
+  <AnchorDate required="true" size="10">2016-02-09</AnchorDate>
+</Record>
+
+<!--
+    RxType List
+      
+    Value   Type             Isolate  Comments
+                              Values
+                    
+    0    Daily                0/1     
+   18    Alternating          0/1    MDOMStart: reprsents nof alternating days. If not
+                                     sent, defaults to 1 for new an remains unchanged on current scrips
+    5    Day of Week          0/1    DoW, see description above
+    7    Day of Month         0/1    MDOMStart and MDOMEnd, see above
+    8    Monthly Titrating    1
+    9    Weekly Titrating
+    2    PRN                  1     QtyPerDose
+   13    Sequential
+   20    Monthly TCustom
+   21    Weekly TCustom
+             
+-->
+
+<!--  Definitions
+
+      Titrate: Continuously measure and adjust the balance of (a physiological function or drug dosage).
+
+-->

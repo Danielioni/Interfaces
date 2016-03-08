@@ -1,0 +1,20 @@
+﻿{
+    "Table" : "Prescriber",
+    "Action": "Add",
+    "RxSys_DocID" : "01983",
+    "LastName" : "Josephson",
+    "FirstName": "Joseph",
+    "MiddleInitial": "J",
+    "Address1": "123456 Main St.",
+    "Address2": "Suite 7890",
+    "City": "Jonesville",
+    "State": "WY",
+    "Zip" : "01342-0987",
+    "Phone": "3079234567",
+    "Comments" : "Formatted as JSON ...",
+    "DEA_ID": "987643",
+    "TPID": "10",
+    "Speciality": "4",
+    "Fax": "6032451234",
+    "PagerInfo": "N/A"
+}

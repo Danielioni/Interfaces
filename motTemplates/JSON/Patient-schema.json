@@ -1,0 +1,242 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://jsonschema.net",
+  "type": "object",
+  "properties": {
+    "Table": {
+      "id": "http://json-schema.medicineontime.com/Type",
+      "type": "string",
+      "default": "Patient"
+    },
+    "Action": {
+      "id": "http://json-schema.medicineontime.com/Action",
+      "type": "string",
+      "default": "Add",
+      "description": "Add/Change/Delete"
+    },
+    "RxSys_PatID": {
+      "id": "http://json-schema.medicineontime.com/RxSys_PatID",
+      "type": "string",
+      "maxLength": 10
+    },
+    "LastName": {
+      "id": "http://json-schema.medicineontime.com/LastName",
+      "type": "string",
+      "maxLength": 30
+    },
+    "FirstName": {
+      "id": "http://json-schema.medicineontime.com/FirstName",
+      "type": "string",
+      "maxLength": 25
+    },
+    "MiddleInitial": {
+      "id": "http://json-schema.medicineontime.com/MiddleInitial",
+      "type": "string",
+      "maxLength": 2
+    },
+    "Address1": {
+      "id": "http://json-schema.medicineontime.com/Address1",
+      "type": "string",
+      "maxLength": 40
+    },
+    "Address2": {
+      "id": "http://json-schema.medicineontime.com/Address2",
+      "type": "string",
+      "maxLength": 40
+    },
+    "City": {
+      "id": "http://json-schema.medicineontime.com/City",
+      "type": "string",
+      "maxLength": 30
+    },
+    "State": {
+      "id": "http://json-schema.medicineontime.com/State",
+      "type": "string",
+      "maxLength": 2
+    },
+    "Zip": {
+      "id": "http://json-schema.medicineontime.com/Zip",
+      "type": "string",
+      "maxLength": 9
+    },
+    "Phone1": {
+      "id": "http://json-schema.medicineontime.com/Phone1",
+      "type": "string",
+      "maxLength": 10
+    },
+    "Phone2": {
+      "id": "http://json-schema.medicineontime.com/Phone2",
+      "type": "string",
+      "maxLength": 10
+    },
+    "WorkPhone": {
+      "id": "http://json-schema.medicineontime.com/WorkPhone",
+      "type": "string",
+      "maxLength": 10
+    },
+    "RxSys_LocID": {
+      "id": "http://json-schema.medicineontime.com/RxSys_LocID",
+      "type": "string",
+      "maxLength": 10
+    },
+    "Room": {
+      "id": "http://json-schema.medicineontime.com/Room",
+      "type": "string",
+      "maxLength": 10
+    },
+    "Comments": {
+      "id": "http://json-schema.medicineontime.com/Comments",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "CycleDate": {
+      "id": "http://json-schema.medicineontime.com/CycleDate",
+      "type": "string",
+      "maxLength": 10
+    },
+    "CycleDays": {
+      "id": "http://json-schema.medicineontime.com/CycleDays",
+      "type": "string",
+      "maxLength": 2
+    },
+    "CycleType": {
+      "id": "http://json-schema.medicineontime.com/CycleType",
+      "type": "string",
+      "maxLength": 1
+    },
+    "Status": {
+      "id": "http://json-schema.medicineontime.com/Status",
+      "type": "string",
+      "maxLength": 1
+    },
+    "RxSys_LastDoc": {
+      "id": "http://json-schema.medicineontime.com/RxSys_LastDoc",
+      "type": "string",
+      "maxLength": 10
+    },
+    "RxSys_PrimaryDoc": {
+      "id": "http://json-schema.medicineontime.com/RxSys_PrimaryDoc",
+      "type": "string",
+      "maxLength": 10
+    },
+    "RxSys_AltDoc": {
+      "id": "http://json-schema.medicineontime.com/RxSys_AltDoc",
+      "type": "string",
+      "maxLength": 10
+    },
+    "SSN": {
+      "id": "http://json-schema.medicineontime.com/SSN",
+      "type": "string",
+      "maxLength": 9
+    },
+    "Allergies": {
+      "id": "http://json-schema.medicineontime.com/Allergies",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "Diet": {
+      "id": "http://json-schema.medicineontime.com/Diet",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "DxNotes": {
+      "id": "http://json-schema.medicineontime.com/DxNotes",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "TreatmentNotes": {
+      "id": "http://json-schema.medicineontime.com/TreatmentNotes",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "DOB": {
+      "id": "http://json-schema.medicineontime.com/DOB",
+      "type": "string",
+      "maxLength": 10
+    },
+    "Height": {
+      "id": "http://json-schema.medicineontime.com/Height",
+      "type": "string",
+      "maxLength": 5
+    },
+    "Weight": {
+      "id": "http://json-schema.medicineontime.com/Weight",
+      "type": "string",
+      "maxLength": 5
+    },
+    "ResponsibleName": {
+      "id": "http://json-schema.medicineontime.com/ResponsibleName",
+      "type": "string",
+      "maxLength": 32767
+    },
+    "InsName": {
+      "id": "http://json-schema.medicineontime.com/InsName",
+      "type": "string",
+      "maxLength": 80
+    },
+    "InsPNo": {
+      "id": "http://json-schema.medicineontime.com/InsPNo",
+      "type": "string",
+      "maxLength": 20
+    },
+    "AltInsName": {
+      "id": "http://json-schema.medicineontime.com/AltInsName",
+      "type": "string",
+      "maxLength": 80
+    },
+    "AltInsPNo": {
+      "id": "http://json-schema.medicineontime.com/AltInsPNo",
+      "type": "string",
+      "maxLength": 20
+    },
+    "MCareNum": {
+      "id": "http://json-schema.medicineontime.com/MCareNum",
+      "type": "string",
+      "maxLength": 20
+    },
+    "MCaidNum": {
+      "id": "http://json-schema.medicineontime.com/MCaidNum",
+      "type": "string",
+      "maxLength": 20
+    },
+    "AdmitDate": {
+      "id": "http://json-schema.medicineontime.com/AdmitDate",
+      "type": "string",
+      "maxLength": 10
+    },
+    "ChartOnly": {
+      "id": "http://json-schema.medicineontime.com/ChartOnly",
+      "type": "string",
+      "maxLength": 1
+    },
+    "Gender": {
+      "id": "http://json-schema.medicineontime.com/Gender",
+      "type": "string",
+      "maxLength": 1
+    }
+  },
+  "required": [
+    "RxSys_PatID",
+    "LastName",
+    "FirstName",
+    "Address1",
+    "City",
+    "State",
+    "Zip",
+    "Phone1",
+    "RxSys_LocID",
+    "CycleDate",
+    "CycleDays",
+    "CycleType",
+    "Status",
+    "RxSys_PrimaryDoc",
+    "SSN",
+    "DOB",
+    "Height",
+    "Weight",
+    "ResponsibleName",
+    "InsName",
+    "InsPNo",
+    "Gender"
+  ]
+}

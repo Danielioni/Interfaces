@@ -1,0 +1,16 @@
+﻿{
+  "Table": "Location",
+  "Action": "" 
+  "RxSys_LocID": "",
+  "RxSys_StoreID": "",
+  "LocationName": "",
+  "Address1": "",
+  "Address2": "",
+  "City": "",
+  "State": "",
+  "Zip": "",
+  "Phone": "",
+  "Comments": "",
+  "CycleDays": "0",
+  "CycleType": "0"
+}

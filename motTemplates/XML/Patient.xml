@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Record xmlns="http://fred.medicineontime.com/mot-records/patient.xsd">
+  <Table required="true">Patient</Table>
+  <Action required="true"></Action>
+  <RxSys_PatID required="true" size="10"></RxSys_PatID>
+  <LastName required="true" size="30"></LastName>
+  <FirstName required="true" size="25"></FirstName>
+  <MiddleInitial size="2"></MiddleInitial>
+  <Address1 required="true" size="40"></Address1>
+  <Address2 required="true" size="40"></Address2>
+  <City required="true" size="30"></City>
+  <State required="true" size="2"></State>
+  <Zip required="true" size="9"></Zip>
+  <Phone1 required="true" size="10"></Phone1>
+  <Phone2 size="10"></Phone2>
+  <WorkPhone size="10"></WorkPhone>
+  <RxSys_LocID required="true" size="10"></RxSys_LocID>
+  <Room size="10"></Room>
+  <Comments size="32767"></Comments>
+  <CycleDate size="10"></CycleDate> <!-- CCYY-MM-DD, defaults to TODAY-->
+  <CycleDays maxvalue="35"></CycleDays> <!-- [0..35] - days on patients card  -->
+  <CycleType maxvalue="1"></CycleType> <!-- 0=monthly, 1=weekly -->
+  <Status size="1"></Status> <!-- 0=hold, 1=active -->
+  <RxSys_LastDoc size="10"></RxSys_LastDoc>
+  <RxSys_PrimaryDoc size="10"></RxSys_PrimaryDoc>
+  <RxSys_AltDoc size="10"></RxSys_AltDoc>
+  <SSN required="true" size="9"></SSN> <!-- no '-' e.g. 016791234-->
+  <Allergies required="true" size="32767"></Allergies>
+  <Diet required="true" size="32767"></Diet>
+  <DxNotes size="32767"></DxNotes>
+  <TreatmentNotes required="true" size="32767"></TreatmentNotes>
+  <DOB required="true" size="10"></DOB> <!-- CCYY-MM-DD -->
+  <Height maxvalue="2048"></Height>
+  <Weight maxvalue="2048"></Weight>
+  <ResponsibleName size="32767"></ResponsibleName>
+  <InsName size="80"></InsName>
+  <InsPNo size="20"></InsPNo> <!-- Policy Number -->
+  <AltInsName size="80"></AltInsName>
+  <AltInsPNo size="20"></AltInsPNo> <!-- Policy Number -->
+  <MCareNum size="20"></MCareNum>
+  <MCaidNum size="20"></MCaidNum>
+  <AdmitDate size="10"></AdmitDate> <!-- CCYY-MM-DD -->
+  <ChartOnly size="1"></ChartOnly> <!-- [0..1] 1=Charts Only for new scrips -->
+  <Gender size="1"></Gender>
+</Record>
+
+

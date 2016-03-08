@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Record xmlns="http://fred.medicineontime.com/mot-records/prescriber.xsd">
+  <Table>Prescriber</Table> 
+  <Action></Action> <!-- Add/Change/Delete -->
+  <RxSys_DocID required="true" size="10"></RxSys_DocID> <!--  -->
+  <LastName required="true" size="30"></LastName> <!--  -->
+  <FirstName required="true" size="20"></FirstName> <!-- -->
+  <MiddleInitial size="2"></MiddleInitial> <!-- -->
+  <Address1 required="true" size="40"></Address1> <!--  -->
+  <Address2 size="40"></Address2> <!--  -->
+  <City required="true" size="30"></City> <!--  -->
+  <State required="true" size="2"></State> <!--  -->
+  <Zip required="true" size="9"></Zip> <!--  -->
+  <Phone required="true" size="10"></Phone> <!-- -->
+  <Comments size="32767"></Comments> <!-- -->
+  <DEA_ID required="true" size="10"></DEA_ID> <!-- -->
+  <TPID size="10"></TPID> <!--  -->
+  <Speciality maxvalue="18"></Speciality> <!--  -->
+  <Fax required="true" size="10"></Fax> <!-- -->
+  <PagerInfo size="40"></PagerInfo> <!-- -->
+</Record>

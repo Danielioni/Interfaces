@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Record>
+  <table>Prescriber</table>
+  <action>Add</action>
+  <RxSys_DocID>9786</RxSys_DocID>
+  <LastName>Stingman</LastName>
+  <FirstName>Bob</FirstName>
+  <MiddleInitial>J</MiddleInitial>
+  <Address1>500 N. West Shore Blvd.</Address1>
+  <Address2>Suite 620</Address2>
+  <City>Tampa</City>
+  <State>FL</State>
+  <Zip>33609</Zip>
+  <Phone>8007228824</Phone>
+  <Comments>Formatted as XML ...</Comments>
+  <DEA_ID>32145</DEA_ID>
+  <TPID>6239</TPID>
+  <Speciality>6</Speciality>
+  <Fax></Fax>
+  <PagerInfo>What's a Pager?</PagerInfo>
+</Record>
