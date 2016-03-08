@@ -59,7 +59,7 @@
   <Class Name="motInboundLib.HttpWatcher">
     <Position X="3.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>HttpWatcher.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -77,8 +77,8 @@
       <FileName>webAPI.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Enum Name="motInboundLib.InputStucture" Collapsed="true">
-    <Position X="14.25" Y="0.75" Width="1.5" />
+  <Enum Name="motInboundLib.InputStucture">
+    <Position X="10.25" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AQgAAAAAAQQAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>InputStucture.cs</FileName>

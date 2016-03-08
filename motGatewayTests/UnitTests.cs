@@ -87,11 +87,36 @@ namespace motInboundLib
         {
         }
 
+        static void testDrugRecord()
+        {
+            try
+            {
+                motDrugRecord r = new motDrugRecord(Action.__Add);
+                r.setRxSys_DrugID("A1232425");
+                r.setLabelCode("1122334455667788");
+                r.setProductCode("12345098761");
+                r.setTradeName("Harry");
+            }
+            catch(System.Exception e)
+            {
+                Console.Write("testDrug Record Failure {0}", e.Message);
+            }
+
+        }
+
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         static void Run()
         {
+            // Testing
+            testDrugRecord();
+
+            // Works
             testXMLDoc();
             testJSONDoc();
+         
+
+
+
             fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO");
         }
 

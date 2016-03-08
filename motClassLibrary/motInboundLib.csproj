@@ -54,6 +54,7 @@
     <Compile Include="InputStucture.cs" />
     <Compile Include="jsonParser.cs" />
     <Compile Include="localAPI.cs" />
+    <Compile Include="motRecords.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="taggedParser.cs" />
     <Compile Include="Port.cs" />

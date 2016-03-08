@@ -13,4 +13,21 @@ namespace motInboundLib
         __inputJSON,
         __inputUndefined
     }
+
+    public enum Action
+    {
+        __Add = 0,
+        __Change,
+        __Delete
+    }
+
+    public enum RecordType
+    {
+        Prescriber = 0,
+        Prescription,
+        Drug,
+        Facility,
+        Store,
+        TimeQty
+    }
 }
