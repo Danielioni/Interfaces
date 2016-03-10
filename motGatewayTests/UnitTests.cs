@@ -35,7 +35,8 @@ namespace motInboundLib
 
             try
             {
-                Parser __test = new Parser(__xdoc, InputStucture.__inputXML);
+                Port p = new Port("192.168.0.140", "24042");
+                Parser __test = new Parser(p, __xdoc, InputStucture.__inputXML);
             }
             catch(Exception e)
             {
@@ -48,7 +49,7 @@ namespace motInboundLib
             string __jdoc = @"{
                                 ""Table"": ""Drug"",
                                 ""Action"": ""Add"",
-                                ""RxSys_DrugD"": ""0000123491"",
+                                ""RxSys_DrugID"": ""0000123491"",
                                 ""LblCode"": ""00000"",
                                 ""ProdCode"": ""0000"",
                                 ""TradeName"": ""Tylenol"",
@@ -71,7 +72,8 @@ namespace motInboundLib
 
             try
             {
-                Parser __test = new Parser(__jdoc, InputStucture.__inputJSON);
+                Port p = new Port("192.168.0.140", "24042");
+                Parser __test = new Parser(p, __jdoc, InputStucture.__inputJSON);
             }
             catch (Exception e)
             {
@@ -89,19 +91,41 @@ namespace motInboundLib
 
         static void testDrugRecord()
         {
+            motDrugRecord r;
+            Port p;
+
             try
             {
-                motDrugRecord r = new motDrugRecord(Action.__Add);
-                r.setRxSys_DrugID("A1232425");
-                r.setLabelCode("1122334455667788");
-                r.setProductCode("12345098761");
-                r.setTradeName("Harry");
+                p = new Port("192.168.0.140", "24042");
+                r = new motDrugRecord("Add");
+
+                r.setRxSys_DrugID("A125BVH");
+                r.setLabelCode("Test");
+                r.setProductCode("1234");
+                r.setTradeName("ALPHAFROG@ 12 MG Tablet");
+                r.setStrength("12");
+                r.setUnit("MG");
+                r.setRxOTC("R");
+                r.setDoseForm("Tablet");
+                r.setRoute("Oral");
+                r.setDrugSchedule("6");
+                r.setVisualDescription("RND/RED/TAB");
+                r.setDrugName("ALPHAFROG@ 12 MG");
+                r.setShortName("HAL 12MG");
+                r.setNDCNum("00023032701");
+                r.setSizeFactor("5");
+                r.setTemplate("C");
+                r.setDefaultIsolate("0");
+                r.setConsultMsg("Don't set your hair on fire");
+                r.setGenericFor("N/A");
+
+
+                r.Write(p);
             }
-            catch(System.Exception e)
+            catch(Exception e)
             {
                 Console.Write("testDrug Record Failure {0}", e.Message);
             }
-
         }
 
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
@@ -111,13 +135,10 @@ namespace motInboundLib
             testDrugRecord();
 
             // Works
-            testXMLDoc();
-            testJSONDoc();
+            //testXMLDoc();
+            //testJSONDoc();
          
-
-
-
-            fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO");
+            //fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO");
         }
 
         static void Main(string[] args)

@@ -16,18 +16,11 @@ namespace motInboundLib
         public TcpClient tcpSocket = null;
         NetworkStream dataStream;
 
-        string tcp_address { get; set; }
-        string tcp_port { get; set; }
+        public string tcp_address { get; set; }
+        public string tcp_port { get; set; }
 
         public Port()
         {
-            tcp_address = "127.0.0.1";
-            tcp_port = "24042";
-
-            if (!Open())
-            {
-                System.Environment.Exit(1);
-            }
         }
 
         public Port(string address, string port)
@@ -35,9 +28,18 @@ namespace motInboundLib
             tcp_address = address;
             tcp_port = port;
 
-            if (!Open())
+            try
             {
-                System.Environment.Exit(1);
+                Open();
+            }
+            catch (SocketException e)
+            {
+                throw new Exception(e.Message);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to open socket: " + address + "/" + port);
+                //System.Environment.Exit(1);
             }
         }
 
@@ -46,7 +48,7 @@ namespace motInboundLib
             Close();
         }
 
-        private bool Open()
+        public void Open()
         {
             try
             {
@@ -56,18 +58,16 @@ namespace motInboundLib
             catch (ArgumentNullException e)
             {
                 Console.WriteLine("Gateway ArgumentNullException: {0}", e);
-                return false;
+                throw new Exception("Invalid Argument");
             }
             catch (SocketException e)
             {
                 Console.WriteLine("Gateway SocketException: {0}", e);
-                return false;
+                throw;
             }
-
-            return true;
         }
 
-        private void Close()
+        public void Close()
         {
             if (tcpSocket != null)
             {
@@ -107,11 +107,19 @@ namespace motInboundLib
         {
             if (tcpSocket != null)
             {
-                Close();
-                return Open();
+                try
+                {
+                    Close();
+                    Open();
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return false;
+                }
             }
 
-            return false;
+            return true;
         }
     }
 }

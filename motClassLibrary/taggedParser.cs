@@ -18,7 +18,7 @@ namespace motInboundLib
         {
             try
             {
-                Write(inboundData, inboundData.Length);
+                p.Write(inboundData, inboundData.Length);
             }
             catch
             {

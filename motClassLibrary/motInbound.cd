@@ -1,38 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="motInboundLib.delimitedParser">
-    <Position X="5" Y="3.5" Width="1.5" />
+  <Class Name="motInboundLib.Parser">
+    <Position X="6" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>delimitedParser.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="motInboundLib.jsonParser">
-    <Position X="7.25" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>jsonParser.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="motInboundLib.Parser" Collapsed="true">
-    <Position X="6" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAEAAVAAAEAAAA=</HashCode>
+      <HashCode>AAAACAAAAAAAABAAAAAgAAAIAAAAAAAAAEAQAAEAAAA=</HashCode>
       <FileName>Parser.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="motInboundLib.Port" Collapsed="true">
-    <Position X="6" Y="0.75" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAgAAAJAAAAAAAAAAgAABAAAAAAAAACAGAAAI=</HashCode>
       <FileName>Port.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="motInboundLib.taggedParser">
-    <Position X="9.5" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
-      <FileName>taggedParser.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="motInboundLib.xmlParser">
@@ -80,7 +59,7 @@
   <Enum Name="motInboundLib.InputStucture">
     <Position X="10.25" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQgAAAAAAQQAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AQgAAAAAAAQAAAAAACAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
       <FileName>InputStucture.cs</FileName>
     </TypeIdentifier>
   </Enum>

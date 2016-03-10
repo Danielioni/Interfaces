@@ -47,20 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="delimitedParser.cs" />
     <Compile Include="fileSystemWatcher.cs" />
     <Compile Include="HttpWatcher.cs" />
     <Compile Include="inputMethod.cs" />
     <Compile Include="InputStucture.cs" />
-    <Compile Include="jsonParser.cs" />
     <Compile Include="localAPI.cs" />
     <Compile Include="motRecords.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="taggedParser.cs" />
     <Compile Include="Port.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="webAPI.cs" />
-    <Compile Include="xmlParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="motInbound.cd" />

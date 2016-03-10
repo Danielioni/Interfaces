@@ -15,6 +15,17 @@ namespace motInboundLib
 
         private void watchDirectory(string dirName)
         {
+            Port pt;
+            try
+            {
+                 pt = new Port("192.168.0.140", "24042");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+
             while (true)
             {
                 Thread.Sleep(1024);
@@ -30,8 +41,9 @@ namespace motInboundLib
                             continue;
                         try
                         {
+                            
                             sr = new StreamReader(__fileName);
-                            Parser p = new Parser(sr.ReadToEnd());
+                            Parser p = new Parser(pt, sr.ReadToEnd());
                             sr.Close();
                             File.Delete(__fileName);
                         }
