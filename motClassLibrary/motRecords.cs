@@ -492,7 +492,7 @@ namespace motInboundLib
         {
             try
             {
-                setField(__qualifiedTags, val.ToUpper(),, "State");
+                setField(__qualifiedTags, val.ToUpper(), "State");
             }
             catch (Exception e)
             {
@@ -1136,6 +1136,757 @@ namespace motInboundLib
                 }
 
                 setField(__qualifiedTags, val, "Gender");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Prescription Record - The actual Scrip
+    /// </summary>
+    class motPrescriptionRecord : motRecordBase
+    {
+        public List<Field> __qualifiedTags;
+
+        private void createRecord(string tableAction)
+        {
+            try
+            {
+                __qualifiedTags.Add(new Field("Table", "Rx", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));
+                __qualifiedTags.Add(new Field("RxSys_RxNum", "", 10, true, 'k'));
+                __qualifiedTags.Add(new Field("RxSys_PatID", "", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("RxSys_DocID", "", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("RxSys_DrugID", "", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("Sig", "", 32767, true, 'a'));
+                __qualifiedTags.Add(new Field("RxStartDate", "", 10, true, 'w'));
+                __qualifiedTags.Add(new Field("RxStopDate", "", 10, true, 'w'));
+                __qualifiedTags.Add(new Field("DiscontinueDate", "", 10, true, 'w'));
+                __qualifiedTags.Add(new Field("DoseScheduleName", "", 10, false, 'n'));
+                __qualifiedTags.Add(new Field("Comments", "", 32767, false, 'n'));
+                __qualifiedTags.Add(new Field("Refills", "", 4, true, 'a'));
+                __qualifiedTags.Add(new Field("RxSys_NewRxNum", "", 10, false, 'w'));
+                __qualifiedTags.Add(new Field("Isolate", "", 2, false, 'n'));
+                __qualifiedTags.Add(new Field("RxType", "", 0, true, 'w'));
+                __qualifiedTags.Add(new Field("MDOMStart", "", 2, false, 'n'));
+                __qualifiedTags.Add(new Field("MDOMEnd", "", 2, false, 'n'));
+                __qualifiedTags.Add(new Field("QtyPerDose", "", 6, true, 'w'));
+                __qualifiedTags.Add(new Field("QtyDispensed", "", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("Status", "", 2, true, 'w'));
+                __qualifiedTags.Add(new Field("DoW", "", 7, true, 'w'));
+                __qualifiedTags.Add(new Field("SpecialDoses", "", 32767, false, 'n'));
+                __qualifiedTags.Add(new Field("DoseTimeQtys", "", 32767, true, 'w'));
+                __qualifiedTags.Add(new Field("ChartOnly", "", 2, true, 'w'));
+                __qualifiedTags.Add(new Field("AnchorDate", "", 10, true, 'w'));
+                
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public motPrescriptionRecord()
+        {
+        }
+
+        public motPrescriptionRecord(string Action)
+        {
+            try
+            {
+                __qualifiedTags = new List<Field>();
+                createRecord(Action);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+                throw;
+            }
+        }
+
+        public void setRxSys_RxNum(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "RxSys_RxNum");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+
+        }
+        public void setRxSys_PatID(string val)
+        {
+
+            try
+            {
+                setField(__qualifiedTags, val, "RxSys_PatID");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+
+        }
+        public void setRxSys_DocID(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "RxSys_DrugID");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setSig(string val)
+        {
+            try
+            {
+                val.Remove('.');  // Middle Initial shouldn't have a '.'
+
+                setField(__qualifiedTags, val, "Sig");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setRxStartDate(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "RxStartDate");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setRxStopDate(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "RxStopDate");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setDiscontinueDate(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "DiscontinueDate");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setDoseScheduleName(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "DoseScheduleName");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setComments(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Comments");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setRefils(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Refills");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setMDOMStart(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "MDOMStart");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setMDOMStop(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "MDOMStop");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setQtyPerDoese(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "QtyPerDose");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setQtyDispensed(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "QtyDispensed");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setStatus(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Status");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setDoW(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "DoW");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setSpecialDoses(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "SpecialDoses");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setDoseTimesQtys(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "DoseTimesQtys");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setChartOnly(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "ChartOnly");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setAnchorDate(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "AnchorDate");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Location/Facility Record - Not to be confused with the Store record
+    /// </summary>
+    public class motLocationRecord : motRecordBase
+    {
+        public List<Field> __qualifiedTags;
+
+        private void createRecord(string tableAction)
+        {
+            try
+            {
+                __qualifiedTags.Add(new Field("Table", "Location", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));
+                __qualifiedTags.Add(new Field("RxSys_LocID", "", 11, true, 'k'));
+                __qualifiedTags.Add(new Field("RxSys_StoreID", "", 11, false, 'n'));
+                __qualifiedTags.Add(new Field("LocationName", "", 60, true, 'a'));
+                __qualifiedTags.Add(new Field("Address1", "", 40, true, 'w'));
+                __qualifiedTags.Add(new Field("Address2", "", 40, true, 'w'));
+                __qualifiedTags.Add(new Field("City", "", 30, true, 'w'));
+                __qualifiedTags.Add(new Field("State", "", 10, true, 'w'));
+                __qualifiedTags.Add(new Field("Zip", "", 9, true, 'w'));
+                __qualifiedTags.Add(new Field("Phone", "", 10, true, 'w'));
+                __qualifiedTags.Add(new Field("Comments", "", 32767, false, 'n'));
+                __qualifiedTags.Add(new Field("CycleDays", "", 2, false, 'n'));
+                __qualifiedTags.Add(new Field("CycleType", "", 2, false, 'n'));
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public motLocationRecord()
+        {
+        }
+
+        public motLocationRecord(string Action)
+        {
+            try
+            {
+                __qualifiedTags = new List<Field>();
+                createRecord(Action);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+                throw;
+            }
+        }
+
+        public void setRxSys_LocID(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "RxSys_LocID");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public void setRxSys_StoreID(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "RxSys_StoreID");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setLocationName(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "LocationName");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setAddress1(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Address1");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setAddress2(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Address2");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setCity(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "City");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setState(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val.ToUpper(), "State");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setPostalCode(string val)
+        {
+            try
+            {
+                val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+
+                setField(__qualifiedTags, val, "Zip");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setPhone(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Phone");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setComments(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Comments");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public void setCycleDays(string val)
+        {
+            try
+            {
+                if (Convert.ToInt32(val) > 35 || Convert.ToInt32(val) < 0)
+                {
+                    throw new Exception("CycleDays must be (0-35)");
+                }
+
+                setField(__qualifiedTags, val, "CycleDays");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setCycleType(string val)
+        {
+            try
+            {
+                // Actual error - it would be wrong to convert it to a default value
+                if (Convert.ToInt32(val) != 0 && Convert.ToInt32(val) != 1)
+                {
+                    throw new Exception("CycleType must be '0 - Monthly' or '1 - Weekly'");
+                }
+
+                setField(__qualifiedTags, val, "CycleType");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Store Record
+    /// </summary>
+    public class motStoreRecord : motRecordBase
+    {
+        public List<Field> __qualifiedTags;
+
+        private void createRecord(string tableAction)
+        {
+            try
+            {
+                __qualifiedTags.Add(new Field("Table", "Store", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));           
+                __qualifiedTags.Add(new Field("RxSys_StoreID", "", 10, true, 'k'));
+                __qualifiedTags.Add(new Field("StoreName", "", 60, true, 'a'));
+                __qualifiedTags.Add(new Field("Address1", "", 40, false, 'n'));
+                __qualifiedTags.Add(new Field("Address2", "", 40, false, 'n'));
+                __qualifiedTags.Add(new Field("City", "", 30, false, 'n'));
+                __qualifiedTags.Add(new Field("State", "", 2, false, 'n'));
+                __qualifiedTags.Add(new Field("Zip", "", 9, true, 'w'));
+                __qualifiedTags.Add(new Field("Phone", "", 10, true, 'w'));
+                __qualifiedTags.Add(new Field("Fax", "", 10, false, 'a'));
+                __qualifiedTags.Add(new Field("DEANum", "", 10, true, 'a'));
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public motStoreRecord()
+        {
+        }
+
+        public motStoreRecord(string Action)
+        {
+            try
+            {
+                __qualifiedTags = new List<Field>();
+                createRecord(Action);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+                throw;
+            }
+        }
+
+        public void setRxSys_StoreID(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "RxSys_StoreID");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public void setStoreName(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "StoreName");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+       
+        public void setAddress1(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Address1");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setAddress2(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Address2");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setCity(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "City");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setState(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val.ToUpper(), "State");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setPostalCode(string val)
+        {
+            try
+            {
+                val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+
+                setField(__qualifiedTags, val, "Zip");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setPhone(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Phone");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public void setFax(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "Fax");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public void setDEANum(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "DEANum");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+    }
+
+    /// <summary>
+    /// TimeQtys Record
+    /// </summary>
+    public class motTimeQtysRecord : motRecordBase
+    {
+        public List<Field> __qualifiedTags;
+
+        private void createRecord(string tableAction)
+        {
+            try
+            {
+                __qualifiedTags.Add(new Field("Table", "TimesQtys", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));
+                __qualifiedTags.Add(new Field("RxSys_LocID", "", 10, true, 'k'));
+                __qualifiedTags.Add(new Field("DoseScheduleName", "", 10, true, 'k'));
+                __qualifiedTags.Add(new Field("DoseTimeQtys", "", 192, true, 'a'));
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public motTimeQtysRecord()
+        {
+        }
+
+        public motTimeQtysRecord(string Action)
+        {
+            try
+            {
+                __qualifiedTags = new List<Field>();
+                createRecord(Action);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+                throw;
+            }
+        }
+
+        public void setRxSys_LocID(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "RxSys_LocID");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public void setDoseScheduleName(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "DoseScheduleName");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public void setDoseTimeQtys(List<string> tqlist)
+        {
+            string val = "";
+
+            try
+            {
+                foreach(string s in tqlist)
+                {
+                    val += s;
+                }
+
+                setField(__qualifiedTags, val, "DoseTimeQtys");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public void setDoseTimeQtys(string val)
+        {
+            try
+            {
+                setField(__qualifiedTags, val, "DoseTimeQtys");
             }
             catch (Exception e)
             {
