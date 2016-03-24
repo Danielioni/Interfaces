@@ -9,20 +9,48 @@ namespace motInboundLib
 {
     public class fileSystemWatcher : inputMethod
     {
+        Port pt;
+
         public void writeData()
         {
         }
 
-        private void watchDirectory(string dirName)
+        private void openPort(string address, string port)
         {
-            Port pt;
             try
             {
-                 pt = new Port("192.168.0.140", "24042");
+                pt = new Port(address, port);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
+        private void watchDirectory(string dirName, string address, string port)
+        {
+            try
+            {
+                openPort(address, port);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+
+            watchDirectory(dirName);
+        }
+
+        private void watchDirectory(string dirName)
+        {
+
+            try
+            {
+                openPort("127.0.0.1", "24042");
+            }
+            catch (Exception e)
+            {
                 throw;
             }
 

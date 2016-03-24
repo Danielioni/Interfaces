@@ -15,6 +15,7 @@ namespace motInboundLib
     {
         public TcpClient tcpSocket = null;
         NetworkStream dataStream;
+        bool __open = false;
 
         public string tcp_address { get; set; }
         public string tcp_port { get; set; }
@@ -25,12 +26,18 @@ namespace motInboundLib
 
         public Port(string address, string port)
         {
+            if(__open)
+            {
+                return;
+            }
+
             tcp_address = address;
             tcp_port = port;
 
             try
             {
                 Open();
+                __open = true;
             }
             catch (SocketException e)
             {
@@ -38,7 +45,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw new Exception("Failed to open socket: " + address + "/" + port);
+                throw new Exception("Failed to open socket: " + address + "/" + port + " " + e.Message);
                 //System.Environment.Exit(1);
             }
         }
@@ -71,6 +78,7 @@ namespace motInboundLib
         {
             if (tcpSocket != null)
             {
+                __open = false;
                 dataStream.Close();
                 tcpSocket.Close();
             }
