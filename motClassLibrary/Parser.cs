@@ -205,14 +205,7 @@ namespace motInboundLib
                     return;
                 }
 
-                if (inputStream.ToLower().Contains("<record>") && inputStream.ToLower().Contains("<table>"))
-                {
-                    // Pretty sure its a MOT tagged file
-                    parseTagged(inputStream);
-                    return;
-                }
-
-                throw new Exception("[MOT Parser] Unidentified file type");
+                parseTagged(inputStream); //Accept any input for testing purposes.
             }
             catch(Exception e)
             {

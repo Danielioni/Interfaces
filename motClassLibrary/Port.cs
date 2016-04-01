@@ -54,6 +54,7 @@ namespace motInboundLib
             {
                 tcpSocket = new TcpClient(tcp_address, Convert.ToInt32(tcp_port));
                 dataStream = tcpSocket.GetStream();
+                dataStream.ReadTimeout = 5000;
             }
             catch (ArgumentNullException e)
             {
@@ -87,7 +88,7 @@ namespace motInboundLib
             return false;
         }
 
-        public bool Read(ref string __buf)
+        public string Read()
         {
             if (tcpSocket != null)
             {
@@ -95,12 +96,10 @@ namespace motInboundLib
                 int __retval = 0;
 
                 __retval = dataStream.Read(__readbuf, 0, 256);
-                __buf = Encoding.UTF8.GetString(__readbuf);
-
-                return (__retval == 0);
+                return Encoding.ASCII.GetString(__readbuf, 0, __retval);
             }
 
-            return false;
+            return null;
         }
 
         public bool Reset()

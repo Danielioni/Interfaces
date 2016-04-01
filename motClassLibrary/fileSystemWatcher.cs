@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,12 @@ namespace motInboundLib
         {
         }
 
-        private void watchDirectory(string dirName)
+        private void watchDirectory(string dirName, string ip)
         {
             Port pt;
             try
             {
-                 pt = new Port("192.168.0.140", "24042");
+                 pt = new Port(ip, "24042");
             }
             catch(Exception e)
             {
@@ -43,13 +44,35 @@ namespace motInboundLib
                         {
                             
                             sr = new StreamReader(__fileName);
+                            Console.WriteLine($"Sending {__fileName}...");
                             Parser p = new Parser(pt, sr.ReadToEnd());
                             sr.Close();
                             File.Delete(__fileName);
+                            Console.WriteLine($"{__fileName} sent.");
+
+                            string result = pt.Read();
+                            if (string.IsNullOrEmpty(result))
+                            {
+                                Console.WriteLine("No result received.");
+                            }
+                            else if (result.All(b => b < 30))
+                            {
+                                var bytes = result.Select(c => Convert.ToInt32(c));
+                                Console.WriteLine($"Byte(s): {string.Join(",", bytes)}.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"String(s): {string.Join(Environment.NewLine, result.Split('\r'))}");
+                            }
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
+                            Console.WriteLine($"Error: {e.Message}.");
                             sr.Close();
+                            if (!File.Exists(__fileName))
+                            {
+                                continue;
+                            }
                             if (!File.Exists(__fileName + ".FAILED"))
                             {
                                 File.Move(__fileName, __fileName + ".FAILED");
@@ -66,17 +89,17 @@ namespace motInboundLib
 
         public fileSystemWatcher()
         {
-            watchDirectory(@".\");
+            watchDirectory(@".\", "192.168.0.140");
         }
 
-        public fileSystemWatcher(string dirName)
+        public fileSystemWatcher(string dirName, string ip)
         {
             if (!System.IO.Directory.Exists(dirName))
             {
                 System.IO.Directory.CreateDirectory(dirName);
             }
 
-            watchDirectory(dirName);
+            watchDirectory(dirName, ip);
         }
     }
 }
