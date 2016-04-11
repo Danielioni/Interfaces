@@ -69,7 +69,6 @@ namespace motInboundLib
                             continue;
                         try
                         {
-                            
                             sr = new StreamReader(__fileName);
                             Parser p = new Parser(pt, sr.ReadToEnd());
                             sr.Close();
@@ -94,7 +93,7 @@ namespace motInboundLib
 
         public fileSystemWatcher()
         {
-            watchDirectory(@".\");
+            watchDirectory(System.IO.Directory.GetCurrentDirectory());
         }
 
         public fileSystemWatcher(string dirName)
@@ -105,6 +104,16 @@ namespace motInboundLib
             }
 
             watchDirectory(dirName);
+        }
+
+        public fileSystemWatcher(string dirName, string address, string port)
+        {
+            if (!System.IO.Directory.Exists(dirName))
+            {
+                System.IO.Directory.CreateDirectory(dirName);
+            }
+
+            watchDirectory(dirName, address, port);
         }
     }
 }
