@@ -26,12 +26,33 @@ namespace motInboundLib
     /// </summary>
     public class motRecordBase
     {
+        protected string _tableAction;
+
+        public void checkDependencies(List<Field> __qualifiedTags)
+        {
+            //  There are rules for fields that are required in add/change/delete.  Test them here
+            for (int i = 0; i < __qualifiedTags.Count; i++)
+            {
+                // required== true, when == 'a', _table action == 'change'  -> Pass
+                // required== true, when == 'a', _table action == 'add', tagData == live data -> Pass
+                // required== true, when == 'a', _table action == 'add', tagData == empty -> Exception
+
+                if (__qualifiedTags[i].required && __qualifiedTags[i].when == this._tableAction[0])
+                {
+                    if(__qualifiedTags[i].tagData.Length == 0)
+                    {
+                        throw new Exception(__qualifiedTags[i].tagData + "empty but required for " + this._tableAction + " operation!");
+                    }
+                }
+            }
+        }
+
         public void setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
             Field f = __qualifiedTags.Find(x => x.tagName.Contains(__tag));
             if (__val.ToString().Length > f.maxLen)
             {
-                throw new Exception(__tag + "Field Overflow");
+                throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
             }
 
             f.tagData = __val;
@@ -43,6 +64,8 @@ namespace motInboundLib
 
             try
             {
+                checkDependencies(__qualifiedTags);
+
                 for (int i = 0; i < __qualifiedTags.Count; i++)
                 {
                     // Qualify field requirement
@@ -78,6 +101,8 @@ namespace motInboundLib
 
         private void createRecord(string tableAction)
         {
+            _tableAction = tableAction.ToLower();
+            
             try
             {
                 __qualifiedTags.Add(new Field("Table", "Drug", 10, true, 'a'));
@@ -278,7 +303,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('-');
+                if (val.Contains("-"))
+                {
+                    val.Remove('-');
+                }
 
                 setField(__qualifiedTags, val, "NDCNum");
             }
@@ -503,7 +531,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                if (val.Contains("-"))
+                {
+                    val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                }
 
                 setField(__qualifiedTags, val, "Zip");
             }
@@ -709,7 +740,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('.');  // Middle Initial shouldn't have a '.'
+                if (val.Contains("."))
+                {
+                    val.Remove('.');  // Middle Initial shouldn't have a '.'
+                }
 
                 setField(__qualifiedTags, val, "MiddleInitial");
             }
@@ -766,7 +800,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                if (val.Contains("-"))
+                {
+                    val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                }
 
                 setField(__qualifiedTags, val, "Zip");
             }
@@ -823,7 +860,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('.');  // Middle Initial shouldn't have a '.'
+                if (val.Contains("."))
+                {
+                    val.Remove('.');  // Middle Initial shouldn't have a '.'
+                }
 
                 setField(__qualifiedTags, val, "Room");
             }
@@ -941,7 +981,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('-');  // SSN shouldn't have a '-'
+                if (val.Contains("-"))
+                {
+                    val.Remove('-');  // SSN shouldn't have a '-'
+                }
 
                 setField(__qualifiedTags, val, "SSN");
             }
@@ -1247,7 +1290,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('.');  // Middle Initial shouldn't have a '.'
+                if (val.Contains("."))
+                {
+                    val.Remove('.');  // Middle Initial shouldn't have a '.'
+                }
 
                 setField(__qualifiedTags, val, "Sig");
             }
@@ -1566,7 +1612,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                if (val.Contains("-"))
+                {
+                    val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                }
 
                 setField(__qualifiedTags, val, "Zip");
             }
@@ -1753,7 +1802,10 @@ namespace motInboundLib
         {
             try
             {
-                val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                if (val.Contains("-"))
+                {
+                    val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                }
 
                 setField(__qualifiedTags, val, "Zip");
             }
