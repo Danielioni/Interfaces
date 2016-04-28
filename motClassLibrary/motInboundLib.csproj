@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="databaseInput.cs" />
     <Compile Include="fileSystemWatcher.cs" />
     <Compile Include="HttpWatcher.cs" />
     <Compile Include="inputMethod.cs" />

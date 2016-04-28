@@ -60,7 +60,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -104,7 +104,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -122,7 +122,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw;
+                throw e;
             }
         }
 
@@ -134,7 +134,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setLabelCode(string val)
@@ -145,7 +145,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setProductCode(string val)
@@ -156,7 +156,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setTradeName(string val)
@@ -167,7 +167,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setStrength(string val)
@@ -178,7 +178,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setUnit(string val)
@@ -189,7 +189,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRxOTC(string val)
@@ -200,7 +200,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDoseForm(string val)
@@ -211,7 +211,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRoute(string val)
@@ -222,7 +222,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDrugSchedule(string val)
@@ -238,7 +238,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setVisualDescription(string val)
@@ -249,7 +249,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDrugName(string val)
@@ -260,7 +260,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setShortName(string val)
@@ -271,7 +271,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setNDCNum(string val)
@@ -284,7 +284,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setSizeFactor(string val)
@@ -295,7 +295,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setTemplate(string val)
@@ -306,7 +306,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDefaultIsolate(string val)
@@ -317,7 +317,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setConsultMsg(string val)
@@ -328,7 +328,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setGenericFor(string val)
@@ -339,7 +339,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -351,7 +351,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
     }
@@ -389,7 +389,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -407,7 +407,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw;
+                throw e;
             }
         }
 
@@ -419,7 +419,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setLastName(string val)
@@ -430,7 +430,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setFirstName(string val)
@@ -441,7 +441,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setMiddleInitial(string val)
@@ -452,7 +452,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAddress1(string val)
@@ -463,7 +463,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAddress2(string val)
@@ -474,7 +474,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setCity(string val)
@@ -485,7 +485,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setState(string val)
@@ -496,7 +496,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPostalCode(string val)
@@ -509,7 +509,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPhone(string val)
@@ -520,7 +520,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setComments(string val)
@@ -531,7 +531,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDEA_ID(string val)
@@ -542,7 +542,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setTPID(string val)
@@ -553,7 +553,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setSpecialty(string val)
@@ -564,7 +564,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setFax(string val)
@@ -575,7 +575,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPagerInfo(string val)
@@ -586,7 +586,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
     }
@@ -647,7 +647,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -665,7 +665,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw;
+                throw e;
             }
         }
 
@@ -677,7 +677,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
 
         }
@@ -690,7 +690,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
 
         }
@@ -702,7 +702,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setMiddleInitial(string val)
@@ -715,7 +715,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAddress1(string val)
@@ -726,7 +726,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAddress2(string val)
@@ -737,7 +737,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setCity(string val)
@@ -748,7 +748,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setState(string val)
@@ -759,7 +759,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPostalCode(string val)
@@ -772,7 +772,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPhone1(string val)
@@ -783,7 +783,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPhone2(string val)
@@ -794,7 +794,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setWorkPhone(string val)
@@ -805,7 +805,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRxSys_LocID(string val)
@@ -816,7 +816,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRoom(string val)
@@ -829,7 +829,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setComments(string val)
@@ -840,7 +840,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setCycleDate(string val)
@@ -851,7 +851,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setCycleDays(string val)
@@ -867,7 +867,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setCycleType(string val)
@@ -884,7 +884,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setStatus(string val)
@@ -901,7 +901,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRxSys_LastDoc(string val)
@@ -912,7 +912,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRxSys_PrimaryDoc(string val)
@@ -923,7 +923,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRxSys_AltDoc(string val)
@@ -934,7 +934,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setSSN(string val)
@@ -947,7 +947,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAllergies(string val)
@@ -958,7 +958,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDiet(string val)
@@ -969,7 +969,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDxNotes(string val)
@@ -980,7 +980,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setTreatmentNotes(string val)
@@ -991,7 +991,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDOB(string val)
@@ -1002,7 +1002,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setHeight(string val)
@@ -1013,7 +1013,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setWeight(string val)
@@ -1024,7 +1024,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setResponisbleName(string val)
@@ -1035,7 +1035,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setInsName(string val)
@@ -1046,7 +1046,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setInsPNo(string val)
@@ -1057,7 +1057,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAltInsName(string val)
@@ -1068,7 +1068,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAltInsPNo(string val)
@@ -1079,7 +1079,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setMedicareNum(string val)
@@ -1090,7 +1090,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setMedicaidNum(string val)
@@ -1101,7 +1101,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAdmitDate(string val)
@@ -1112,7 +1112,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setChartOnly(string val)
@@ -1123,7 +1123,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setGender(string val)
@@ -1139,7 +1139,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
     }
@@ -1185,7 +1185,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1203,7 +1203,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw;
+                throw e;
             }
         }
 
@@ -1215,7 +1215,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
 
         }
@@ -1228,7 +1228,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
 
         }
@@ -1240,7 +1240,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setSig(string val)
@@ -1253,7 +1253,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRxStartDate(string val)
@@ -1264,7 +1264,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRxStopDate(string val)
@@ -1275,7 +1275,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDiscontinueDate(string val)
@@ -1286,7 +1286,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDoseScheduleName(string val)
@@ -1297,7 +1297,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setComments(string val)
@@ -1308,7 +1308,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setRefils(string val)
@@ -1319,7 +1319,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setMDOMStart(string val)
@@ -1330,7 +1330,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setMDOMStop(string val)
@@ -1341,7 +1341,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setQtyPerDoese(string val)
@@ -1352,7 +1352,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setQtyDispensed(string val)
@@ -1363,7 +1363,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setStatus(string val)
@@ -1374,7 +1374,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDoW(string val)
@@ -1385,7 +1385,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setSpecialDoses(string val)
@@ -1396,7 +1396,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setDoseTimesQtys(string val)
@@ -1407,7 +1407,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setChartOnly(string val)
@@ -1418,7 +1418,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAnchorDate(string val)
@@ -1429,7 +1429,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
     }
@@ -1462,7 +1462,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1480,7 +1480,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw;
+                throw e;
             }
         }
 
@@ -1492,7 +1492,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1504,7 +1504,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setLocationName(string val)
@@ -1515,7 +1515,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAddress1(string val)
@@ -1526,7 +1526,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAddress2(string val)
@@ -1537,7 +1537,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setCity(string val)
@@ -1548,7 +1548,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setState(string val)
@@ -1559,7 +1559,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPostalCode(string val)
@@ -1572,7 +1572,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPhone(string val)
@@ -1583,7 +1583,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setComments(string val)
@@ -1594,7 +1594,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1611,7 +1611,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setCycleType(string val)
@@ -1628,7 +1628,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
     }
@@ -1659,7 +1659,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1677,7 +1677,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw;
+                throw e;
             }
         }
 
@@ -1689,7 +1689,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1701,7 +1701,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
        
@@ -1713,7 +1713,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setAddress2(string val)
@@ -1724,7 +1724,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setCity(string val)
@@ -1735,7 +1735,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setState(string val)
@@ -1746,7 +1746,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPostalCode(string val)
@@ -1759,7 +1759,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setPhone(string val)
@@ -1770,7 +1770,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void setFax(string val)
@@ -1781,7 +1781,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1793,7 +1793,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
     }
@@ -1817,7 +1817,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1835,7 +1835,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw;
+                throw e;
             }
         }
 
@@ -1847,7 +1847,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1859,7 +1859,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1878,7 +1878,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
 
@@ -1890,7 +1890,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
         }
     }
