@@ -1,0 +1,60 @@
+FAILS:
+
+Header:				RA	- Ó
+(A) RxSys_PatID:	549223157 - Ó
+Reserved:			- Ó	
+(K) RxSys_RxNum:	445153 - Ó
+(A) RxSys_DocID:	1073502001 - Ó
+(A) Sig:			TAKE 1 TABLET ORALLY DAILY @ 4PM - Ó
+RxStartData:		2016-03-11 - Ó
+RxStopData:			2016-09-06 - Ó
+DoseScheduleName:	- Ó
+Comments:			- Ó
+(A) Refills:		5 	- Ó
+RxSys_NewRxNum:		- Ó
+Isolate:			- Ó
+MDoMStart:			- Ó
+MDoMEnd:			- Ó
+NDCNum:				00054022931	- Ó [Obsoleted by field 24]
+Reserved:			- Ó
+(A) QtyPerDose:		- Ó			[Required if RxType = 2]
+(A) QtyDispensed: 	30 	- Ó
+RxType:				0  	- Ó
+Status:				1	- Ó
+DoW:				- Ó
+SpecialDoses:		- Ó
+(A)DoseTimeQtys:	08001.00	- Ó
+(A)RxSys_DrugID:	00054022931	- Ó
+DiscontinueDate:	- Ó
+Checksum: 			3262856017
+
+
+SUCCEEDS:
+Header:				RA			- Ó
+(A) RxSys_PatID:	974			- Ó
+Reserved:			Ó
+(K) RxSys_RxNum:	445134		- Ó
+(A) RxSys_DocID:	1326039520	- Ó
+(A) Sig:			TAKE 1 TABLET ORALLY TWICE DAILY FOR 5 DAYS AS NEEDED NAUSEA & VOMITING -Ó
+RxStartData:		2016-02-29	- Ó
+RxStopData:			2016-03-09	- Ó
+DoseScheduleName:	Ó
+Comments:			Ó
+(A) Refills:		1Ó
+RxSys_NewRxNum:		Ó
+Isolate:			Ó
+MDoMStart:			Ó
+MDoMEnd:			Ó
+NDCNum:				62756013001	- Ó
+Reserved:			Ó
+(A) QtyPerDose:		Ó
+(A) QtyDispensed: 	10	- Ó
+RxType:				Ó
+Status:				1	- Ó
+DoW:				Ó
+SpecialDoses:		Ó
+(A)DoseTimeQtys:	09001.0021001.00	- Ó
+(A)RxSys_DrugID:	62756013001			- Ó
+DiscontinueDate:	Ó
+Checksum: 			940284236
+

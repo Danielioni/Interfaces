@@ -128,9 +128,25 @@ namespace motInboundLib
             }
         }
 
+        class cprPlus : databaseInputSource
+        {
+            public cprPlus(string __type, string DSN) : base(__type, DSN)
+            { }
+        }
+
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         static void Run()
         {
+            //Test Database Connection
+            try
+            {
+                cprPlus cp = new cprPlus("ODBC", "DSN=localhost;UID=mot;PWD=leningrad1");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Failed to open Database for input {0}", e.Message);
+            }
+
             // Testing
             testDrugRecord();
 

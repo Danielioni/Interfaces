@@ -1,0 +1,5 @@
+1 install postgreSQL
+2 create user as described on https://medicine-on-time.atlassian.net/wiki/display/MOTR/Working+with+DB
+3 run StartServer.cmd
+4 run StartClient.cmd
+5 use mot/mot login/password

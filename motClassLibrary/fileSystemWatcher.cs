@@ -24,7 +24,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                throw;
+                throw e;
             }
         }
 
@@ -36,7 +36,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
 
             watchDirectory(dirName);
@@ -51,7 +51,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                throw e;
             }
 
             while (true)

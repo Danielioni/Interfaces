@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Odbc;
+using System.Data.SqlClient;
 
 /// <summary>
 /// 
@@ -21,71 +23,48 @@ using System.Data.Odbc;
 
 namespace motInboundLib
 {
-    class databaseInput
+    class motSQLServer
     {
-        motDrugRecord getDrugRecord()
-        {
-            throw new NotImplementedException();
-            //return new motDrugRecord();
-        }
+        protected SqlConnection connection;
+        protected List<Field> __record;
 
-        motLocationRecord getLocationRecord()
+        public List<Field> executeQuery(string strQuery)
         {
-            throw new NotImplementedException();
-            //return new motLocationRecord();
-        }
+            
+            int __fieldNo = 0;
 
-        motPatientRecord getPatientRecord()
-        {
-            throw new NotImplementedException();
-            //return new motPatientRecord();
-        }
-
-        motPrescriptionRecord getPrescriptionRecord()
-        {
-            throw new NotImplementedException();
-            //return new motPrescriptionRecord();
-        }
-
-        motPrescriberRecord getPrescriberRecord()
-        {
-            throw new NotImplementedException();
-            //return new motPrescriberRecord();
-        }
-
-        motStoreRecord getStoreRecord()
-        {
-            throw new NotImplementedException();
-            //return new motStoreRecord();
-        }
-
-        motTimeQtysRecord getTimeQtyRecord()
-        {
-            throw new NotImplementedException();
-            //return new motTimeQtysRecord();
-        }
-
-        void connectToDB(string conectString)
-        {
-            throw new NotImplementedException();
-        }
-
-        void openDB()
-        {
-            string connectionString = "Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\\Samples\\Northwind.mdb"; //Mumble, default connection goes here ...
-
-            using (OdbcConnection connection = new OdbcConnection(connectionString))
+            try
             {
-                connection.Open();
+                __record.Clear();
+
+                SqlDataReader reader = null;
+                SqlCommand command = new SqlCommand(strQuery,  connection);
+                reader = command.ExecuteReader();
+
+                while( reader.Read() )
+                {
+                    __record.Add( new Field(reader.GetName(__fieldNo).ToString(),
+                                            reader.GetValue(__fieldNo).ToString(), 
+                                            0, 
+                                            false, 
+                                            'z'));
+
+                    __fieldNo++;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
 
-            throw new NotImplementedException();
+            return __record;
         }
 
-        void openDB(string DSN)
+        public motSQLServer(string DSN)
         {
-            try {
-                using (OdbcConnection connection = new OdbcConnection(DSN))
+            try
+            {
+                using (connection = new SqlConnection(DSN))
                 {
                     connection.Open();
                 }
@@ -94,33 +73,167 @@ namespace motInboundLib
             {
                 throw e;
             }
-
-            throw new NotImplementedException();
         }
 
-        void closeDB()
+        ~motSQLServer()
+        {
+            connection.Close();
+        }
+    }
+
+    class motODBCServer
+    {
+        protected OdbcConnection connection;
+        protected List<Field> __record;
+
+        public motODBCServer(string DSN)
+        {
+            try
+            {
+                using (connection = new OdbcConnection(DSN))
+                {
+                    connection.Open();
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public List<Field> executeQuery(string strQuery)
+        {
+            int __fieldNo = 0;
+
+            try
+            {
+                __record.Clear();
+
+                OdbcDataReader reader = null;
+                OdbcCommand command = new OdbcCommand(strQuery, connection);
+                reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    __record.Add(new Field(reader.GetName(__fieldNo).ToString(),
+                                            reader.GetValue(__fieldNo).ToString(),
+                                            0,
+                                            false,
+                                            'z'));
+
+                    __fieldNo++;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return __record;
+        }
+    }
+
+    class motDatabase
+    {
+        private bool isODBC;
+        private motSQLServer sqlServer;
+        private motODBCServer odbcServer;
+
+        public List<Field> executeQuery(string q)
+        {
+            try
+            {
+                if (isODBC)
+                {
+                    return odbcServer.executeQuery(q);
+                }
+                else
+                {
+                    return sqlServer.executeQuery(q);
+                }
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public motDatabase() { }
+
+        public motDatabase(string __connect, bool isSQLServer)
+        {
+            try
+            {
+                if (isSQLServer)
+                {
+                    sqlServer = new motSQLServer(__connect);
+                    isODBC = false;
+                    isSQLServer = true;
+                }
+                else
+                {
+                    odbcServer = new motODBCServer(__connect);
+                    isODBC = true;
+                    isSQLServer = false;
+                }
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+        }
+    }
+
+    public class databaseInputSource
+    {
+        motDatabase db;
+
+        public virtual motDrugRecord getDrugRecord()
         {
             throw new NotImplementedException();
         }
 
-        Object queryDB(string __query)
+        public virtual motLocationRecord getLocationRecord()
         {
             throw new NotImplementedException();
         }
 
-        // Catchall function for things that the database does.  Should return a motRecord object.  Not sure how to return something derefereneable,
-        // might need to be something like a motREcord base class or something.  Smart folks, step in here ...
-        Object waitForNewData()
+        public virtual motPatientRecord getPatientRecord()
         {
             throw new NotImplementedException();
-            //return false;
         }
 
-        databaseInput() { }
+        public virtual motPrescriptionRecord getPrescriptionRecord()
+        {
+            throw new NotImplementedException();
+        }
 
-        ~databaseInput() { }
+        public virtual motPrescriberRecord getPrescriberRecord()
+        {
+            throw new NotImplementedException();
+        }
 
+        public virtual motStoreRecord getStoreRecord()
+        {
+            throw new NotImplementedException();
+        }
+        public virtual motTimeQtysRecord getTimeQtyRecord()
+        {
+            throw new NotImplementedException();
+        }
 
- 
+        public databaseInputSource(string __type, string DSN)
+        {
+            if(__type.ToUpper() == "ODBC" )
+            {
+                db = new motDatabase(DSN, false);
+            }
+            else
+            {
+                db = new motDatabase(DSN, true);
+            }
+        }
+
+        ~databaseInputSource() { }
     }
 }

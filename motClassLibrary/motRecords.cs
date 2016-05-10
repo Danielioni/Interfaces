@@ -388,7 +388,7 @@ namespace motInboundLib
     /// Prescriber Record - Practitioners who are licensed to write scrips with field level processing rules where appropriate
     /// </summary>
 
-    class motPrescriberRecord : motRecordBase
+    public class motPrescriberRecord : motRecordBase
     {
         public List<Field> __qualifiedTags;
 
@@ -625,7 +625,7 @@ namespace motInboundLib
     /// <summary>
     /// Patient Record - The folks getting the meds with field level processing rules where appropriate
     /// </summary>
-    class motPatientRecord : motRecordBase
+    public class motPatientRecord : motRecordBase
     {
         public List<Field> __qualifiedTags;
 
@@ -1190,7 +1190,7 @@ namespace motInboundLib
     /// <summary>
     /// Prescription Record - The actual Scrip
     /// </summary>
-    class motPrescriptionRecord : motRecordBase
+    public class motPrescriptionRecord : motRecordBase
     {
         public List<Field> __qualifiedTags;
 

@@ -8,4 +8,8 @@ namespace motInboundLib
     public class localAPI : inputMethod
     {
     }
+
+    public interface addRecords
+    {
+    }
 }
