@@ -39,14 +39,13 @@ namespace motInboundLib
 
                 if (__qualifiedTags[i].required && __qualifiedTags[i].when == this._tableAction[0])
                 {
-                    if(__qualifiedTags[i].tagData.Length == 0)
+                    if (__qualifiedTags[i].tagData.Length == 0)
                     {
                         throw new Exception(__qualifiedTags[i].tagData + "empty but required for " + this._tableAction + " operation!");
                     }
                 }
             }
         }
-
         public void setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
             Field f = __qualifiedTags.Find(x => x.tagName.Contains(__tag));
@@ -57,7 +56,6 @@ namespace motInboundLib
 
             f.tagData = __val;
         }
-
         public void Write(Port p, List<Field> __qualifiedTags)
         {
             string __record = "<Record>";
@@ -86,7 +84,6 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public motRecordBase()
         {
         }
@@ -102,7 +99,7 @@ namespace motInboundLib
         private void createRecord(string tableAction)
         {
             _tableAction = tableAction.ToLower();
-            
+
             try
             {
                 __qualifiedTags.Add(new Field("Table", "Drug", 10, true, 'a'));
@@ -132,11 +129,9 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public motDrugRecord()
         {
         }
-
         public motDrugRecord(string Action)
         {
             try
@@ -150,7 +145,17 @@ namespace motInboundLib
                 throw e;
             }
         }
-
+        public void setField(string __fieldname, string __val)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_DrugID(string val)
         {
             try
@@ -254,7 +259,7 @@ namespace motInboundLib
         {
             try
             {
-                if(Convert.ToInt32(val) < 2 && Convert.ToInt32(val) > 7)
+                if (Convert.ToInt32(val) < 2 && Convert.ToInt32(val) > 7)
                 {
                     throw new Exception("Drug Schedule must be 2-7");
                 }
@@ -370,7 +375,6 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public void Write(Port p)
         {
             try
@@ -420,11 +424,9 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public motPrescriberRecord()
         {
         }
-
         public motPrescriberRecord(string Action)
         {
             try
@@ -438,7 +440,17 @@ namespace motInboundLib
                 throw e;
             }
         }
-
+        public void setField(string __fieldname, string __val)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_DocID(string val)
         {
             try
@@ -620,6 +632,17 @@ namespace motInboundLib
                 throw e;
             }
         }
+        public void Write(Port p)
+        {
+            try
+            {
+                Write(p, __qualifiedTags);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 
     /// <summary>
@@ -681,11 +704,9 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public motPatientRecord()
         {
         }
-
         public motPatientRecord(string Action)
         {
             try
@@ -699,7 +720,17 @@ namespace motInboundLib
                 throw e;
             }
         }
-
+        public void setField(string __fieldname, string __val)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_DocID(string val)
         {
             try
@@ -788,7 +819,7 @@ namespace motInboundLib
         public void setState(string val)
         {
             try
-            {   
+            {
                 setField(__qualifiedTags, val.ToUpper(), "State");
             }
             catch (Exception e)
@@ -898,7 +929,7 @@ namespace motInboundLib
         {
             try
             {
-                if(Convert.ToInt32(val) > 35 || Convert.ToInt32(val) < 0)
+                if (Convert.ToInt32(val) > 35 || Convert.ToInt32(val) < 0)
                 {
                     throw new Exception("CycleDays must be (0-35)");
                 }
@@ -932,7 +963,7 @@ namespace motInboundLib
             try
             {
                 // Actual error - it would be wrong to convert it to a default value
-                if(Convert.ToInt32(val) != 0 && Convert.ToInt32(val) != 1)
+                if (Convert.ToInt32(val) != 0 && Convert.ToInt32(val) != 1)
                 {
                     throw new Exception("Status must be '0 - Hold' or '1 - for Active'");
                 }
@@ -1173,12 +1204,23 @@ namespace motInboundLib
         {
             try
             {
-                if(val.ToUpper() != "F" && val.ToUpper() != "M")
+                if (val.ToUpper() != "F" && val.ToUpper() != "M")
                 {
                     throw new Exception("Gender  M or F'");
                 }
 
                 setField(__qualifiedTags, val, "Gender");
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        public void Write(Port p)
+        {
+            try
+            {
+                Write(p, __qualifiedTags);
             }
             catch (Exception e)
             {
@@ -1224,18 +1266,16 @@ namespace motInboundLib
                 __qualifiedTags.Add(new Field("DoseTimeQtys", "", 32767, true, 'w'));
                 __qualifiedTags.Add(new Field("ChartOnly", "", 2, true, 'w'));
                 __qualifiedTags.Add(new Field("AnchorDate", "", 10, true, 'w'));
-                
+
             }
             catch (Exception e)
             {
                 throw e;
             }
         }
-
         public motPrescriptionRecord()
         {
         }
-
         public motPrescriptionRecord(string Action)
         {
             try
@@ -1249,7 +1289,17 @@ namespace motInboundLib
                 throw e;
             }
         }
-
+        public void setField(string __fieldname, string __val)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_RxNum(string val)
         {
             try
@@ -1478,6 +1528,17 @@ namespace motInboundLib
                 throw e;
             }
         }
+        public void Write(Port p)
+        {
+            try
+            {
+                Write(p, __qualifiedTags);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 
     /// <summary>
@@ -1511,11 +1572,9 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public motLocationRecord()
         {
         }
-
         public motLocationRecord(string Action)
         {
             try
@@ -1529,7 +1588,17 @@ namespace motInboundLib
                 throw e;
             }
         }
-
+        public void setField(string __fieldname, string __val)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_LocID(string val)
         {
             try
@@ -1541,7 +1610,6 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public void setRxSys_StoreID(string val)
         {
             try
@@ -1646,7 +1714,6 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public void setCycleDays(string val)
         {
             try
@@ -1680,6 +1747,17 @@ namespace motInboundLib
                 throw e;
             }
         }
+        public void Write(Port p)
+        {
+            try
+            {
+                Write(p, __qualifiedTags);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 
     /// <summary>
@@ -1694,7 +1772,7 @@ namespace motInboundLib
             try
             {
                 __qualifiedTags.Add(new Field("Table", "Store", 10, true, 'a'));
-                __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));           
+                __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));
                 __qualifiedTags.Add(new Field("RxSys_StoreID", "", 10, true, 'k'));
                 __qualifiedTags.Add(new Field("StoreName", "", 60, true, 'a'));
                 __qualifiedTags.Add(new Field("Address1", "", 40, false, 'n'));
@@ -1711,11 +1789,9 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public motStoreRecord()
         {
         }
-
         public motStoreRecord(string Action)
         {
             try
@@ -1729,7 +1805,17 @@ namespace motInboundLib
                 throw e;
             }
         }
-
+        public void setField(string __fieldname, string __val)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_StoreID(string val)
         {
             try
@@ -1741,7 +1827,6 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public void setStoreName(string val)
         {
             try
@@ -1753,7 +1838,6 @@ namespace motInboundLib
                 throw e;
             }
         }
-       
         public void setAddress1(string val)
         {
             try
@@ -1836,12 +1920,22 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public void setDEANum(string val)
         {
             try
             {
                 setField(__qualifiedTags, val, "DEANum");
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        public void Write(Port p)
+        {
+            try
+            {
+                Write(p, __qualifiedTags);
             }
             catch (Exception e)
             {
@@ -1891,6 +1985,17 @@ namespace motInboundLib
             }
         }
 
+        public void setField(string __fieldname, string __val)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_LocID(string val)
         {
             try
@@ -1902,7 +2007,6 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public void setDoseScheduleName(string val)
         {
             try
@@ -1914,14 +2018,13 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public void setDoseTimeQtys(List<string> tqlist)
         {
             string val = "";
 
             try
             {
-                foreach(string s in tqlist)
+                foreach (string s in tqlist)
                 {
                     val += s;
                 }
@@ -1933,12 +2036,22 @@ namespace motInboundLib
                 throw e;
             }
         }
-
         public void setDoseTimeQtys(string val)
         {
             try
             {
                 setField(__qualifiedTags, val, "DoseTimeQtys");
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        public void Write(Port p)
+        {
+            try
+            {
+                Write(p, __qualifiedTags);
             }
             catch (Exception e)
             {

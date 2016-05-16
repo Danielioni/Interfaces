@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using Npgsql;
 using System.Data.Odbc;
 using System.Data.SqlClient;
 
@@ -23,19 +25,80 @@ using System.Data.SqlClient;
 
 namespace motInboundLib
 {
+    public enum dbType
+    {
+        NULLServer,
+        SQLServer,
+        NPGServer,
+        ODBCServer
+    };
+
+    class motPostgreSQLServer
+    {
+        protected NpgsqlConnection connection;
+        protected List<IDataRecord> __recordSet;
+
+        public List<IDataRecord> executeQuery(string strQuery)
+        {
+            try
+            {
+                __recordSet.Clear();
+
+                NpgsqlDataReader reader = null;
+                NpgsqlCommand command = new NpgsqlCommand(strQuery, connection);
+                reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    while (reader.Read())
+                    {
+                        __recordSet.Add((IDataRecord)reader);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return (List<IDataRecord>) null;
+            }
+
+            return __recordSet;
+        }
+
+        public motPostgreSQLServer(string DSN)
+        {
+            try
+            {
+                using (connection = new NpgsqlConnection(DSN))
+                {
+                    connection.Open();
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        ~motPostgreSQLServer()
+        {
+            connection.Close();
+        }
+    }
+
     class motSQLServer
     {
-        protected SqlConnection connection;
-        protected List<Field> __record;
+        protected SqlConnection connection;    
+        protected List<IDataRecord> __recordSet;
 
-        public List<Field> executeQuery(string strQuery)
+        public List<IDataRecord> executeQuery(string strQuery)
         {
             
-            int __fieldNo = 0;
+            //int __fieldNo = 0;
 
             try
             {
-                __record.Clear();
+                __recordSet.Clear();
 
                 SqlDataReader reader = null;
                 SqlCommand command = new SqlCommand(strQuery,  connection);
@@ -43,21 +106,16 @@ namespace motInboundLib
 
                 while( reader.Read() )
                 {
-                    __record.Add( new Field(reader.GetName(__fieldNo).ToString(),
-                                            reader.GetValue(__fieldNo).ToString(), 
-                                            0, 
-                                            false, 
-                                            'z'));
-
-                    __fieldNo++;
+                    __recordSet.Add((IDataRecord)reader);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                return (List<IDataRecord>)null;
             }
 
-            return __record;
+            return __recordSet;
         }
 
         public motSQLServer(string DSN)
@@ -84,7 +142,7 @@ namespace motInboundLib
     class motODBCServer
     {
         protected OdbcConnection connection;
-        protected List<Field> __record;
+        protected List<IDataRecord> __recordSet;
 
         public motODBCServer(string DSN)
         {
@@ -101,13 +159,12 @@ namespace motInboundLib
             }
         }
 
-        public List<Field> executeQuery(string strQuery)
+        public List<IDataRecord> executeQuery(string strQuery)
         {
-            int __fieldNo = 0;
 
             try
             {
-                __record.Clear();
+                __recordSet.Clear();
 
                 OdbcDataReader reader = null;
                 OdbcCommand command = new OdbcCommand(strQuery, connection);
@@ -115,66 +172,81 @@ namespace motInboundLib
 
                 while (reader.Read())
                 {
-                    __record.Add(new Field(reader.GetName(__fieldNo).ToString(),
-                                            reader.GetValue(__fieldNo).ToString(),
-                                            0,
-                                            false,
-                                            'z'));
-
-                    __fieldNo++;
+                    while (reader.Read())
+                    {
+                        __recordSet.Add((IDataRecord)reader);
+                    }
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                return (List<IDataRecord>) null;
             }
 
-            return __record;
+            return __recordSet;
         }
     }
 
-    class motDatabase
+   public class motDatabase
     {
-        private bool isODBC;
+        private dbType __wereA = dbType.NULLServer;
         private motSQLServer sqlServer;
+        private motPostgreSQLServer npgServer;
         private motODBCServer odbcServer;
 
-        public List<Field> executeQuery(string q)
+        public List<IDataRecord> executeQuery(string q)
         {
             try
             {
-                if (isODBC)
+                switch(__wereA)
                 {
-                    return odbcServer.executeQuery(q);
-                }
-                else
-                {
-                    return sqlServer.executeQuery(q);
+                    case dbType.NPGServer:
+                        return npgServer.executeQuery(q);
+
+                    case dbType.ODBCServer:
+                        return odbcServer.executeQuery(q);
+
+                    case dbType.SQLServer:
+                        return sqlServer.executeQuery(q);
+
+                    default:
+                        break;
                 }
             }
             catch(Exception e)
             {
                 throw e;
             }
+
+            return (List<IDataRecord>)null;
         }
 
         public motDatabase() { }
 
-        public motDatabase(string __connect, bool isSQLServer)
+        public motDatabase(string __connect, dbType __dbtype)
         {
             try
             {
-                if (isSQLServer)
+                switch (__dbtype)
                 {
-                    sqlServer = new motSQLServer(__connect);
-                    isODBC = false;
-                    isSQLServer = true;
-                }
-                else
-                {
-                    odbcServer = new motODBCServer(__connect);
-                    isODBC = true;
-                    isSQLServer = false;
+                    case dbType.SQLServer:
+                        sqlServer = new motSQLServer(__connect);
+                        __wereA = dbType.SQLServer;
+                        break;
+                
+                    case dbType.ODBCServer:
+                        odbcServer = new motODBCServer(__connect);
+                        __wereA = dbType.ODBCServer;
+                        break;
+
+                    case dbType.NPGServer:
+                        npgServer = new motPostgreSQLServer(__connect);
+                        __wereA = dbType.NPGServer;
+                        break;
+
+                    default:
+                        break;
                 }
             }
             catch(Exception e)
@@ -186,7 +258,7 @@ namespace motInboundLib
 
     public class databaseInputSource
     {
-        motDatabase db;
+        protected motDatabase db;
 
         public virtual motDrugRecord getDrugRecord()
         {
@@ -222,16 +294,16 @@ namespace motInboundLib
             throw new NotImplementedException();
         }
 
-        public databaseInputSource(string __type, string DSN)
+        public databaseInputSource(dbType __type, string DSN)
         {
-            if(__type.ToUpper() == "ODBC" )
+            try
             {
-                db = new motDatabase(DSN, false);
+                db = new motDatabase(DSN, __type);
             }
-            else
+            catch(Exception e)
             {
-                db = new motDatabase(DSN, true);
-            }
+                throw new Exception("failed to create database object " + e.Message);
+            }  
         }
 
         ~databaseInputSource() { }

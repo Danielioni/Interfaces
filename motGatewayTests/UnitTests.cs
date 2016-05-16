@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Data;
 using System.Security.Permissions;
+using System.Collections.Generic;
 
 namespace motInboundLib
 {
@@ -96,10 +98,13 @@ namespace motInboundLib
 
             try
             {
-                p = new Port("192.168.0.140", "24042");
+                p = new Port("127.0.0.1", "24042");
                 r = new motDrugRecord("Add");
 
-                r.setRxSys_DrugID("A125BVH");
+                //r.setRxSys_DrugID("A125BVH");
+
+                r.setField("RxSys_DrugID", "ABDD14565");
+
                 r.setLabelCode("Test");
                 r.setProductCode("1234");
                 r.setTradeName("ALPHAFROG@ 12 MG Tablet");
@@ -121,6 +126,8 @@ namespace motInboundLib
 
 
                 r.Write(p);
+
+                
             }
             catch(Exception e)
             {
@@ -130,22 +137,61 @@ namespace motInboundLib
 
         class cprPlus : databaseInputSource
         {
-            public cprPlus(string __type, string DSN) : base(__type, DSN)
+           
+            public cprPlus(dbType __type, string DSN) : base(__type, DSN)
             { }
+
+            // Find all new Drug Records and add them to the system
+            public override motPrescriptionRecord getPrescriptionRecord()
+            {
+                try
+                {
+                    motPrescriberRecord __scrip = new motPrescriberRecord();
+                    List<Field> __stage = new List<Field>();
+                    Dictionary<string, string> __xTable = new Dictionary<string, string>();
+                    Port p = new Port("127.0.0.1", "24042");
+
+                    // Load the translaton table -- Database Column Name to Gateway Tag Name 
+                    __xTable.Add("Id", "Id");
+                    // ...
+
+                    List<IDataRecord> __recordSet = db.executeQuery("SELECT * from Rxes");
+
+                    foreach(IDataRecord __record in __recordSet)
+                    {
+                        for(int i = 0; i < __record.FieldCount; i++)
+                        {                            
+                            __scrip.setField(__xTable[__record.GetName(i).ToString()],  // Column
+                                                      __record.GetValue(i).ToString()); // Value
+                        }
+
+                        __scrip.Write(p);                    
+                    }
+                }
+                catch(Exception e)
+                {
+                    throw new Exception("Failed to get Drug Record " + e.Message);
+                }
+
+                return base.getPrescriptionRecord();
+            }
         }
 
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         static void Run()
         {
+            /*
             //Test Database Connection
             try
             {
-                cprPlus cp = new cprPlus("ODBC", "DSN=localhost;UID=mot;PWD=leningrad1");
+                cprPlus cpr = new cprPlus(dbType.NPGServer, "server=127.0.0.1;port=5432;userid=mot;password=mot!cool;database=Mot");
+                cpr.getDrugRecord();
             }
             catch(Exception e)
             {
                 Console.WriteLine("Failed to open Database for input {0}", e.Message);
             }
+            */
 
             // Testing
             testDrugRecord();
