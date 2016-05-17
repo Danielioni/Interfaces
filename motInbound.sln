@@ -1,13 +1,67 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "motGatewayTests", "motGatewayTests\motGatewayTests.csproj", "{9FDFE813-09AB-4D63-86CD-3A087711534F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "motInboundLib", "motClassLibrary\motInboundLib.csproj", "{E6380E69-7E57-42A2-9D15-CFBA019B2CCD}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "motApiInstaller", "motApiInstaller\motApiInstaller.vdproj", "{FBD5058F-596E-4796-95C0-E8F0C9A35EBE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples and Templates", "Samples and Templates", "{82CC8ABD-1DD7-4DD3-B000-3E76F552CB8B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{0B260832-0082-4E5A-B583-C0B14E20607D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{39B60310-AF0E-4ED4-AC51-2E17A661EECA}"
+	ProjectSection(SolutionItems) = preProject
+		motSamples\sampleDrug.json = motSamples\sampleDrug.json
+		motSamples\sampleDrug.xml = motSamples\sampleDrug.xml
+		motSamples\sampleLocation.xml = motSamples\sampleLocation.xml
+		motSamples\samplePatient.xml = motSamples\samplePatient.xml
+		motSamples\samplePrescriber.xml = motSamples\samplePrescriber.xml
+		motSamples\sampleScrip.xml = motSamples\sampleScrip.xml
+		motSamples\sampleStore.xml = motSamples\sampleStore.xml
+		motSamples\sampleTimQtys.xml = motSamples\sampleTimQtys.xml
+		motSamples\testPrescriber-BAD.xml = motSamples\testPrescriber-BAD.xml
+		motSamples\testPrescriber.xml = motSamples\testPrescriber.xml
+		motSamples\testPrescriber1-Loose.xml = motSamples\testPrescriber1-Loose.xml
+		motSamples\testPrescriber1-Strict.xml = motSamples\testPrescriber1-Strict.xml
+		motSamples\testPrescriber1.json = motSamples\testPrescriber1.json
+		motSamples\testPrescriber1.mot = motSamples\testPrescriber1.mot
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XML", "XML", "{0046A0D5-B92A-4339-AE95-AFA05E467F54}"
+	ProjectSection(SolutionItems) = preProject
+		motTemplates\XML\Drug.xml = motTemplates\XML\Drug.xml
+		motTemplates\XML\Drug.xsd = motTemplates\XML\Drug.xsd
+		motTemplates\XML\Location.xml = motTemplates\XML\Location.xml
+		motTemplates\XML\Location.xsd = motTemplates\XML\Location.xsd
+		motTemplates\XML\Patient.xml = motTemplates\XML\Patient.xml
+		motTemplates\XML\Patient.xsd = motTemplates\XML\Patient.xsd
+		motTemplates\XML\Prescriber.xml = motTemplates\XML\Prescriber.xml
+		motTemplates\XML\Prescriber.xsd = motTemplates\XML\Prescriber.xsd
+		motTemplates\XML\Scrip.xml = motTemplates\XML\Scrip.xml
+		motTemplates\XML\Scrip.xsd = motTemplates\XML\Scrip.xsd
+		motTemplates\XML\Store.xml = motTemplates\XML\Store.xml
+		motTemplates\XML\Store.xsd = motTemplates\XML\Store.xsd
+		motTemplates\XML\TimesQty.xsd = motTemplates\XML\TimesQty.xsd
+		motTemplates\XML\TimesQtys.xml = motTemplates\XML\TimesQtys.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JSON", "JSON", "{E43EE68D-318B-4D71-A40C-99DA5C2F9A2A}"
+	ProjectSection(SolutionItems) = preProject
+		motTemplates\JSON\Drug-schema.json = motTemplates\JSON\Drug-schema.json
+		motTemplates\JSON\Drug.json = motTemplates\JSON\Drug.json
+		motTemplates\JSON\Location-schema.json = motTemplates\JSON\Location-schema.json
+		motTemplates\JSON\Location.json = motTemplates\JSON\Location.json
+		motTemplates\JSON\Patient-schema.json = motTemplates\JSON\Patient-schema.json
+		motTemplates\JSON\Patient.json = motTemplates\JSON\Patient.json
+		motTemplates\JSON\prescriber-schema.json = motTemplates\JSON\prescriber-schema.json
+		motTemplates\JSON\Prescriber.json = motTemplates\JSON\Prescriber.json
+		motTemplates\JSON\Scrip-schema.json = motTemplates\JSON\Scrip-schema.json
+		motTemplates\JSON\Scrip.json = motTemplates\JSON\Scrip.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,5 +82,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0B260832-0082-4E5A-B583-C0B14E20607D} = {82CC8ABD-1DD7-4DD3-B000-3E76F552CB8B}
+		{39B60310-AF0E-4ED4-AC51-2E17A661EECA} = {82CC8ABD-1DD7-4DD3-B000-3E76F552CB8B}
+		{0046A0D5-B92A-4339-AE95-AFA05E467F54} = {0B260832-0082-4E5A-B583-C0B14E20607D}
+		{E43EE68D-318B-4D71-A40C-99DA5C2F9A2A} = {0B260832-0082-4E5A-B583-C0B14E20607D}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,121 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "JSON Schema Medicine-On-Time Drugs Table",
+
+  "type": "object",
+
+  "properties": {
+    "Table": {
+      "id": "http://json-schema.medicineontime.com/Type",
+      "type": "string",
+      "default": "Prescription"
+    },
+    "Action": {
+      "id": "http://json-schema.medicineontime.com/Action",
+      "type": "string",
+      "default": "Add",
+      "description": "Add/Change/Delete"
+    },
+    "RxSys_DocID": {
+      "id": "http://json-schema.medicineontime.com/RxSys_DocID",
+      "type": "string",
+      "maxLength": 10,
+      "description": ""
+    },
+    "LastName": {
+      "id": "http://json-schema.medicineontime.com/LastName",
+      "type": "string",
+      "maxLength": 30,
+      "description": ""
+    },
+    "FirstName": {
+      "id": "http://json-schema.medicineontime.com/FirstName",
+      "type": "string",
+      "maxLength": 20,
+      "description": ""
+    },
+    "MiddleInitial": {
+      "id": "http://json-schema.medicineontime.com/MiddleInitial",
+      "type": "string",
+      "maxLength": 2,
+      "description": ""
+    },
+    "Address1": {
+      "id": "http://json-schema.medicineontime.com/Address1",
+      "type": "string",
+      "maxLength": 40,
+      "description": ""
+    },
+    "Address2": {
+      "id": "http://json-schema.medicineontime.com/Address2",
+      "type": "string",
+      "maxLength": 40,
+      "description": ""
+    },
+    "City": {
+      "id": "http://json-schema.medicineontime.com/City",
+      "type": "string",
+      "maxLength": 30,
+      "description": ""
+    },
+    "State": {
+      "id": "http://json-schema.medicineontime.com/State",
+      "type": "string",
+      "maxLength": 2,
+      "description": ""
+    },
+    "Zip": {
+      "id": "http://json-schema.medicineontime.com/Zip",
+      "type": "string",
+      "maxLength": 9,
+      "description": ""
+    },
+    "Phone": {
+      "id": "http://json-schema.medicineontime.com/Phone",
+      "type": "string",
+      "maxLength": 10,
+      "description": ""
+    },
+    "Comments": {
+      "id": "http://json-schema.medicineontime.com/Comments",
+      "type": "string",
+      "maxLength": 32767,
+      "description": ""
+    },
+    "DEA_ID": {
+      "id": "http://json-schema.medicineontime.com/DEA_ID",
+      "type": "string",
+      "maxLength": 10,
+      "description": ""
+    },
+    "TPID": {
+      "id": "http://json-schema.medicineontime.com/TPID",
+      "type": "string",
+      "maxLength": 10,
+      "description": ""
+    },
+    "Speciality": {
+      "id": "http://json-schema.medicineontime.com/Speciality",
+      "type": "string",
+      "maxLength": 2,
+      "description": ""
+    },
+    "Fax": {
+      "id": "http://json-schema.medicineontime.com/Fax",
+      "type": "string",
+      "maxLength": 10,
+      "description": ""
+    },
+    "PagerInfo": {
+      "id": "http://json-schema.medicineontime.com/PagerInfo",
+      "type": "string",
+      "maxLength": 1,
+      "description": ""
+    }
+  },
+  "required": [
+    "Type",
+    "Action",
+    "RxSys_DrugID"
+  ]
+}

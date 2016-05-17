@@ -1,0 +1,93 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://json-schema.medicineontime.com",
+  "type": "object",
+  "properties": {
+    "Table": {
+      "id": "http://json-schema.medicineontime.com/Type",
+      "type": "string",
+      "default": "Location"
+    },
+    "Action": {
+      "id": "http://json-schema.medicineontime.com/Type",
+      "type": "string"
+    },
+    "RxSys_LocID": {
+      "id": "http://json-schema.medicineontime.com/RxSys_LocID",
+      "type": "string",
+        "maxLength": 10
+    },
+    "RxSys_StoreID": {
+      "id": "http://json-schema.medicineontime.com/RxSys_StoreID",
+      "type": "string",
+      "maxLength": 10
+    },
+    "LocationName": {
+      "id": "http://json-schema.medicineontime.com/LocationName",
+      "type": "string",
+      "maxLength": 60
+    },
+    "Address1": {
+      "id": "http://json-schema.medicineontime.com/Address1",
+      "type": "string",
+      "maxLength": 40
+    },
+    "Address2": {
+      "id": "http://json-schema.medicineontime.com/Address2",
+      "type": "string",
+      "maxLength": 40
+    },
+    "City": {
+      "id": "http://json-schema.medicineontime.com/City",
+      "type": "string",
+      "maxLength": 30
+    },
+    "State": {
+      "id": "http://json-schema.medicineontime.com/State",
+      "type": "string",
+      "maxLength": 2
+    },
+    "Zip": {
+      "id": "http://json-schema.medicineontime.com/Zip",
+      "type": "string",
+      "maxLength": 9
+    },
+    "Phone": {
+      "id": "http://json-schema.medicineontime.com/Phone",
+      "type": "string",
+      "maxLength": 10
+    },
+    "Comments": {
+      "id": "http://json-schema.medicineontime.com/Comments",
+      "type": "string"
+        "maxLength": 32767
+    },
+    "CycleDays": {
+      "id": "http://json-schema.medicineontime.com/CycleDays",
+      "type": "string",
+      "maxLength": 2,
+      "default": "0"
+    },
+    "CycleType": {
+      "id": "http://json-schema.medicineontime.com/CycleType",
+      "type": "string",
+      "maxLength": 1,
+      "default": "0"
+    }
+  },
+  "required": [
+    "Type",
+    "Action",
+    "RxSys_LocID",
+    "RxSys_StoreID",
+    "LocationName",
+    "Address1",
+    "Address2",
+    "City",
+    "State",
+    "Zip",
+    "Phone",
+    "CycleDays",
+    "CycleType"
+  ]
+}

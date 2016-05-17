@@ -1,0 +1,65 @@
+﻿<xs:schema id="TimesQtys" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://fred.medicineontime.com/mot-records/timesqtys.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Record">
+    <xs:annotation>
+      <xs:documentation>List of times HHMM00.00, 00.00 represents quantity for that time</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element default="TimesQtys" name="Table">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="required"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Action">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="required"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="RxSys_LocID">
+          <xs:annotation>
+            <xs:documentation>Add/Change/Delete</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="required"/>
+                <xs:attribute type="xs:byte" name="size"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DoseScheduleName">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="required"/>
+                <xs:attribute type="xs:byte" name="size"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DoseTimeQtys">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="required"/>
+                <xs:attribute type="xs:short" name="size"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

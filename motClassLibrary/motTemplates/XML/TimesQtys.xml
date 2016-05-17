@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Record xmlns="http://fred.medicineontime.com/mot-records/timesqtys.xsd">
+  <Table required ="true">TimeQtys</Table>
+  <Action required="true"></Action> <!-- Add/Change/Delete -->
+  <RxSys_LocID required="true" size="10"></RxSys_LocID> <!--  -->
+  <DoseScheduleName required="true" size="10"></DoseScheduleName>
+  <DoseTimeQtys required="true" size="192"></DoseTimeQtys> <!-- List of times HHMM00.00, 00.00 represents quantity for that time -->
+</Record> 

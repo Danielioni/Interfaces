@@ -1,0 +1,139 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "JSON Schema Medicine-On-Time Drug Table",
+
+  "type": "object",
+
+  "properties": {
+    "Table": {
+      "id": "http://json-schema.medicineontime.com/mot-records/Type",
+      "type": "string",
+      "default": "Drug"
+    },
+    "Action": {
+      "id": "http://json-schema.medicineontime.com/mot-records/Action",
+      "type": "string",
+      "default": "Add",
+      "description": "Add/Change/Delete Drug"
+    },
+    "RxSys_DrugID": {
+      "id": "http://json-schema.medicineontime.com/mot-records/RxSys_DrugID",
+      "type": "string",
+      "maxLength": 11,
+      "description": "RxSys_DrugID[11 bytes]: Unique identifier for the drug in the RxSystem"
+    },
+    "LblCode": {
+      "id": "http://json-schema.medicineontime.com/mot-records/LblCode",
+      "type": "string",
+      "maxLength": 6,
+      "description": "FDA Labeler Code"
+    },
+    "ProdCode": {
+      "id": "http://json-schema.medicineontime.com/mot-records/ProdCode",
+      "type": "string",
+      "maxLength": 4,
+      "description": "FDA Product Code"
+    },
+    "TradeName": {
+      "id": "http://json-schema.medicineontime.com/mot-records/TradeName",
+      "type": "string",
+      "maxLength": 100,
+      "description": "Trade name for the drug"
+    },
+    "Strength": {
+      "id": "http://json-schema.medicineontime.com/mot-records/Strength",
+      "type": "string",
+      "maxLength": 10,
+      "description": "Single dose strength value"
+    },
+    "Unit": {
+      "id": "http://json-schema.medicineontime.com/mot-records/Unit",
+      "type": "string",
+      "maxLength": 10,
+      "description": "Single dose strength units (mg, etc ..)"
+    },
+    "RxOTC": {
+      "id": "http://json-schema.medicineontime.com/mot-records/RxOTC",
+      "type": "string",
+      "maxLength": 1,
+      "description": " R or O with O meaning available over the counter"
+    },
+    "DoseForm": {
+      "id": "http://json-schema.medicineontime.com/mot-records/DoseForm",
+      "type": "string",
+      "maxLength": 11,
+      "description": "Tablet/Capsule/Inhaler/..."
+    },
+    "Route": {
+      "id": "http://json-schema.medicineontime.com/mot-records/Route",
+      "type": "string",
+      "maxLength": 9,
+      "description": "Oral/Nasel/IV/Injection/..."
+    },
+    "DrugSchedule": {
+      "id": "http://json-schema.medicineontime.com/mot-records/DrugSchedule",
+      "type": "number",
+      "maximum": 7,
+      "description": "FDA Drug Schedule (identifier)"
+    },
+    "VisualDescription": {
+      "id": "http://json-schema.medicineontime.com/mot-records/VisualDescription",
+      "type": "string",
+      "maxLength": 12,
+      "description": "Physical description"
+    },
+    "DrugName": {
+      "id": "http://json-schema.medicineontime.com/mot-records/mot-records/DrugName",
+      "type": "string",
+      "maxLength": 40,
+      "description": "Name for MOT Picklist, first 40 bytes of tradename used if left blank"
+    },
+    "ShortName": {
+      "id": "http://json-schema.medicineontime.com/mot-records/ShortName",
+      "type": "string",
+      "maxLength": 16,
+      "description": "Name that appears on MOT card labels, first 16 bytes of drugname used if left blank"
+    },
+    "NDCNum": {
+      "id": "http://json-schema.medicineontime.com/mot-records/NDCNum",
+      "type": "string",
+      "maxLength": 11,
+      "description": "Full NDC number withut the [-s]"
+    },
+    "SizeFactor": {
+      "id": "http://json-schema.medicineontime.com/mot-records/SizeFactor",
+      "type": "number",
+      "maximum": 99,
+      "description": "Size factor relating to how many will fit in an MOT bubble"
+    },
+    "Template": {
+      "id": "http://json-schema.medicineontime.com/mot-records/Template",
+      "type": "string",
+      "maxLength": 1,
+      "description": " BRAD/GAIL, Unclear on the description here, can you clarify?"
+    },
+    "DefaultIsolate": {
+      "id": "http://json-schema.medicineontime.com/mot-records/DefaultIsolate",
+      "type": "string",
+      "maxLength": 1,
+      "description": "Binary Isolate/Not in package"
+    },
+    "ConsultMsg": {
+      "id": "http://json-schema.medicineontime.com/mot-records/ConsultMsg",
+      "type": "string",
+      "maxLength": 45,
+      "description": "Short message, 'Don't drive over lightspeed', etc."
+    },
+    "GenericFor": {
+      "id": "http://json-schema.medicineontime.com/mot-records/GenericFor",
+      "type": "string",
+      "maxLength": 40,
+      "description": "Space to define sets of similar generic replacements"
+    }
+  },
+  "required": [
+    "Type",
+    "Action",
+    "RxSys_DrugID" 
+  ]
+}

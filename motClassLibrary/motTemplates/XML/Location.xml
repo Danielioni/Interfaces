@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Record xmlns="http://fred.medicineontime.com/mot-records/location.xsd">
+  <Table required="true">Location</Table>
+  <Action required="true"></Action> <!-- Add/Change/Delete -->
+  <RxSys_LocID required="true" size="10"></RxSys_LocID> <!--  -->
+  <RxSys_StoreID size="10"></RxSys_StoreID> <!--  -->
+  <LocationName required="true" size="60"></LocationName> <!-- -->
+  <Address1 required="true" size="40"></Address1> <!--  -->
+  <Address2 required="true" size="40"></Address2> <!--  -->
+  <City required="true" size="30"></City> <!--  -->
+  <State required="true" size="2"></State> <!--  -->
+  <Zip required="true" size="9"></Zip> <!--  -->
+  <Phone required="true" size="10"></Phone> <!-- -->
+  <Comments size="32767"></Comments> <!-- -->
+  <CycleDays maxvalue="35">0</CycleDays> <!-- n=[0..35], represensts number of days on the card. If n=0, the number of days is tied to the aniversery date and lenght of month (sets default for new patient creation) -->
+  <CycleType maxvalue="1">0</CycleType> <!-- n=[0..1], 0 = monthly, 1 - weekly (sets default for new patient creation)  -->
+</Record>
