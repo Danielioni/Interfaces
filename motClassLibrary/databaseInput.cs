@@ -82,7 +82,14 @@ namespace motInboundLib
 
         ~motPostgreSQLServer()
         {
-            connection.Close();
+            try
+            {
+                connection.Close();
+            }
+            catch(Exception e)
+            {
+                e = null;
+            }
         }
     }
 
@@ -135,7 +142,14 @@ namespace motInboundLib
 
         ~motSQLServer()
         {
-            connection.Close();
+            try
+            {
+                connection.Close();
+            }
+            catch(Exception e)
+            {
+                e = null;
+            }
         }
     }
 

@@ -63,6 +63,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JSON", "JSON", "{E43EE68D-3
 		motTemplates\JSON\Scrip.json = motTemplates\JSON\Scrip.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPRPlusInterface", "CPRPlusInterface\CPRPlusInterface.csproj", "{350C754B-3E6F-4F06-A123-2945D108EDEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{E6380E69-7E57-42A2-9D15-CFBA019B2CCD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FBD5058F-596E-4796-95C0-E8F0C9A35EBE}.Debug|Any CPU.ActiveCfg = Debug
 		{FBD5058F-596E-4796-95C0-E8F0C9A35EBE}.Release|Any CPU.ActiveCfg = Release
+		{350C754B-3E6F-4F06-A123-2945D108EDEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{350C754B-3E6F-4F06-A123-2945D108EDEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{350C754B-3E6F-4F06-A123-2945D108EDEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{350C754B-3E6F-4F06-A123-2945D108EDEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
