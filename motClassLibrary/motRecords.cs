@@ -48,6 +48,11 @@ namespace motInboundLib
         }
         public void setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
+            if (__qualifiedTags == null || __tag == null || __val == null)
+            {
+                return;
+            }
+
             Field f = __qualifiedTags.Find(x => x.tagName.Contains(__tag));
             if (__val.ToString().Length > f.maxLen)
             {
