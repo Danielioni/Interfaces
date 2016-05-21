@@ -1,4 +1,28 @@
-﻿using System;
+﻿// 
+// MIT license
+//
+// Copyright (c) 2016 by Peter H. Jenney and Medicine-On-Time, LLC.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using Npgsql;
@@ -33,46 +57,35 @@ namespace motInboundLib
         ODBCServer
     };
 
-    class motPostgreSQLServer
+    public class motPostgreSQLServer
     {
-        protected NpgsqlConnection connection;
-        protected List<IDataRecord> __recordSet;
-
-        public List<IDataRecord> executeQuery(string strQuery)
+        private NpgsqlConnection connection;
+        private NpgsqlDataAdapter adapter;
+        
+        public bool executeQuery(string strQuery, DataSet __recordSet_)
         {
             try
             {
-                __recordSet.Clear();
+                __recordSet_.Clear();
 
-                NpgsqlDataReader reader = null;
-                NpgsqlCommand command = new NpgsqlCommand(strQuery, connection);
-                reader = command.ExecuteReader();
+                adapter = new NpgsqlDataAdapter(strQuery, connection);
+                adapter.Fill(__recordSet_, "__table");
 
-                while (reader.Read())
-                {
-                    while (reader.Read())
-                    {
-                        __recordSet.Add((IDataRecord)reader);
-                    }
-                }
+                return true;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                return (List<IDataRecord>) null;
+                return false;
             }
-
-            return __recordSet;
         }
 
         public motPostgreSQLServer(string DSN)
         {
             try
             {
-                using (connection = new NpgsqlConnection(DSN))
-                {
-                    connection.Open();
-                }
+                connection = new NpgsqlConnection(DSN);
+                connection.Open();
             }
             catch (Exception e)
             {
@@ -86,55 +99,45 @@ namespace motInboundLib
             {
                 connection.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 e = null;
             }
         }
     }
 
-    class motSQLServer
+    public class motSQLServer
     {
-        protected SqlConnection connection;    
-        protected List<IDataRecord> __recordSet;
+        private SqlConnection connection;
+        private SqlDataAdapter adapter;
 
-        public List<IDataRecord> executeQuery(string strQuery)
+        public bool executeQuery(string strQuery, DataSet __recordSet_)
         {
-            
-            //int __fieldNo = 0;
 
             try
             {
-                __recordSet.Clear();
+                __recordSet_.Clear();
 
-                SqlDataReader reader = null;
-                SqlCommand command = new SqlCommand(strQuery,  connection);
-                reader = command.ExecuteReader();
+                adapter = new SqlDataAdapter(strQuery, connection);
+                adapter.Fill(__recordSet_, "__table");
 
-                while( reader.Read() )
-                {
-                    __recordSet.Add((IDataRecord)reader);
-                }
+                return true;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                return (List<IDataRecord>)null;
+                return false;
             }
-
-            return __recordSet;
         }
 
         public motSQLServer(string DSN)
         {
             try
             {
-                using (connection = new SqlConnection(DSN))
-                {
-                    connection.Open();
-                }
+                connection = new SqlConnection(DSN);
+                connection.Open();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -146,26 +149,24 @@ namespace motInboundLib
             {
                 connection.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 e = null;
             }
         }
     }
 
-    class motODBCServer
+    public class motODBCServer
     {
-        protected OdbcConnection connection;
-        protected List<IDataRecord> __recordSet;
+        private OdbcConnection connection;
+        private OdbcDataAdapter adapter;
 
         public motODBCServer(string DSN)
         {
             try
             {
-                using (connection = new OdbcConnection(DSN))
-                {
-                    connection.Open();
-                }
+                connection = new OdbcConnection(DSN);
+                connection.Open();
             }
             catch (Exception e)
             {
@@ -173,67 +174,60 @@ namespace motInboundLib
             }
         }
 
-        public List<IDataRecord> executeQuery(string strQuery)
+        public bool executeQuery(string strQuery, DataSet __recordSet_)
         {
+            __recordSet_.Clear();
 
             try
             {
-                __recordSet.Clear();
+                __recordSet_.Clear();
 
-                OdbcDataReader reader = null;
-                OdbcCommand command = new OdbcCommand(strQuery, connection);
-                reader = command.ExecuteReader();
+                adapter = new OdbcDataAdapter(strQuery, connection);
+                adapter.Fill(__recordSet_, "__table");
 
-                while (reader.Read())
-                {
-                    while (reader.Read())
-                    {
-                        __recordSet.Add((IDataRecord)reader);
-                    }
-                }
+                return true;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                return (List<IDataRecord>) null;
+                return false;
             }
-
-            return __recordSet;
         }
     }
 
-   public class motDatabase
+    public class motDatabase
     {
         private dbType __wereA = dbType.NULLServer;
         private motSQLServer sqlServer;
         private motPostgreSQLServer npgServer;
         private motODBCServer odbcServer;
+        public DataSet __recordSet;
 
-        public List<IDataRecord> executeQuery(string q)
+        public bool executeQuery(string q)
         {
             try
             {
-                switch(__wereA)
+                switch (__wereA)
                 {
                     case dbType.NPGServer:
-                        return npgServer.executeQuery(q);
+                        return npgServer.executeQuery(q, __recordSet);
 
                     case dbType.ODBCServer:
-                        return odbcServer.executeQuery(q);
+                        return  odbcServer.executeQuery(q, __recordSet);
 
                     case dbType.SQLServer:
-                        return sqlServer.executeQuery(q);
+                        return  sqlServer.executeQuery(q, __recordSet);
 
                     default:
                         break;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
 
-            return (List<IDataRecord>)null;
+            return false;
         }
 
         public motDatabase() { }
@@ -242,19 +236,23 @@ namespace motInboundLib
         {
             try
             {
+                __recordSet = new DataSet("__table");
+
                 switch (__dbtype)
                 {
-                    case dbType.SQLServer:
+                    case dbType.SQLServer:                   
                         sqlServer = new motSQLServer(__connect);
                         __wereA = dbType.SQLServer;
                         break;
-                
+
                     case dbType.ODBCServer:
+                        
                         odbcServer = new motODBCServer(__connect);
                         __wereA = dbType.ODBCServer;
                         break;
 
                     case dbType.NPGServer:
+                        
                         npgServer = new motPostgreSQLServer(__connect);
                         __wereA = dbType.NPGServer;
                         break;
@@ -263,7 +261,7 @@ namespace motInboundLib
                         break;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -314,10 +312,10 @@ namespace motInboundLib
             {
                 db = new motDatabase(DSN, __type);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception("failed to create database object " + e.Message);
-            }  
+            }
         }
 
         ~databaseInputSource() { }

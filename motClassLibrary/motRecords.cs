@@ -1,4 +1,28 @@
-﻿using System;
+﻿// 
+// MIT license
+//
+// Copyright (c) 2016 by Peter H. Jenney and Medicine-On-Time, LLC.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+
+using System;
 using System.Collections.Generic;
 
 namespace motInboundLib
@@ -10,6 +34,8 @@ namespace motInboundLib
         public int maxLen { get; set; }
         public bool required { get; set; }
         public char when { get; set; }
+        public bool autoTruncate { get; set; }
+        public virtual void __rules() { }
 
         public Field(string f, string t, int m, bool r, char w)
         {
@@ -18,6 +44,17 @@ namespace motInboundLib
             maxLen = m;
             required = r;
             when = w;
+            autoTruncate = false;
+        }
+
+        public Field(string f, string t, int m, bool r, char w, bool a)
+        {
+            tagName = f;
+            tagData = t;
+            maxLen = m;
+            required = r;
+            when = w;
+            autoTruncate = a;
         }
     }
 
@@ -53,14 +90,52 @@ namespace motInboundLib
                 return;
             }
 
-            Field f = __qualifiedTags.Find(x => x.tagName.Contains(__tag));
+            Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(__tag.ToLower()));
+
+            f.__rules();
+
             if (__val.ToString().Length > f.maxLen)
             {
-                throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
+                if (f.autoTruncate == false)
+                {
+                    throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
+                }
+                else
+                { 
+                    // Pass through to gateway 
+                }
             }
 
             f.tagData = __val;
         }
+
+        public void setField(List<Field> __qualifiedTags, string __val, string __tag, bool __override)
+        {
+            if (__qualifiedTags == null || __tag == null || __val == null)
+            {
+                return;
+            }
+
+            Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(__tag.ToLower()));
+
+            f.__rules();
+
+            if (__val.ToString().Length > f.maxLen)
+            {
+                if (__override == false)
+                {
+                    throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
+                }
+                else
+                {
+                    // Truncate and pass through to gateway 
+                    __val = __val.Substring(0, f.maxLen-1);
+                }
+            }
+
+            f.tagData = __val;
+        }
+
         public void Write(Port p, List<Field> __qualifiedTags)
         {
             string __record = "<Record>";
@@ -110,7 +185,7 @@ namespace motInboundLib
                 __qualifiedTags.Add(new Field("Table", "Drug", 10, true, 'a'));
                 __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));
                 __qualifiedTags.Add(new Field("RxSys_DrugID", "", 11, true, 'k'));
-                __qualifiedTags.Add(new Field("LblCode", "", 6, false, 'n'));
+                __qualifiedTags.Add(new Field("LblCode", "", 6, false, 'n', true));
                 __qualifiedTags.Add(new Field("ProdCode", "", 4, false, 'n'));
                 __qualifiedTags.Add(new Field("TradeName", "", 100, false, 'n'));
                 __qualifiedTags.Add(new Field("Strength", "", 10, false, 'n'));
@@ -119,12 +194,12 @@ namespace motInboundLib
                 __qualifiedTags.Add(new Field("DoseForm", "", 11, false, 'n'));
                 __qualifiedTags.Add(new Field("Route", "", 9, false, 'n'));
                 __qualifiedTags.Add(new Field("DrugSchedule", "", 1, false, 'n'));
-                __qualifiedTags.Add(new Field("VisualDescription", "", 12, false, 'n'));
+                __qualifiedTags.Add(new Field("VisualDescription", "", 12, false, 'n', true));
                 __qualifiedTags.Add(new Field("DrugName", "", 40, true, 'a'));
                 __qualifiedTags.Add(new Field("ShortName", "", 16, false, 'n'));
                 __qualifiedTags.Add(new Field("NDCNum", "", 11, true, 'w'));
                 __qualifiedTags.Add(new Field("SizeFactor", "", 2, false, 'n'));
-                __qualifiedTags.Add(new Field("Template", "", 1, false, 'n'));
+                __qualifiedTags.Add(new Field("Template", "", 1, false, 'n', true));
                 __qualifiedTags.Add(new Field("DefaultIsolate", "", 1, false, 'n'));
                 __qualifiedTags.Add(new Field("ConsultMsg", "", 45, false, 'n'));
                 __qualifiedTags.Add(new Field("GenericFor", "", 40, false, 'n'));
@@ -155,6 +230,18 @@ namespace motInboundLib
             try
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
+
+        public void setField(string __fieldname, string __val, bool __override)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
             catch (Exception e)
             {
@@ -456,6 +543,17 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
+        public void setField(string __fieldname, string __val, bool __override)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname, __override);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_DocID(string val)
         {
             try
@@ -730,6 +828,17 @@ namespace motInboundLib
             try
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
+        public void setField(string __fieldname, string __val, bool __override)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
             catch (Exception e)
             {
@@ -1305,6 +1414,17 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
+        public void setField(string __fieldname, string __val, bool __override)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname, __override);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_RxNum(string val)
         {
             try
@@ -1604,6 +1724,17 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
+        public void setField(string __fieldname, string __val, bool __override)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname, __override);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_LocID(string val)
         {
             try
@@ -1821,6 +1952,17 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
+        public void setField(string __fieldname, string __val, bool __override)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname, __override);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
         public void setRxSys_StoreID(string val)
         {
             try
@@ -1995,6 +2137,17 @@ namespace motInboundLib
             try
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to insert field. " + e);
+            }
+        }
+        public void setField(string __fieldname, string __val, bool __override)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
             catch (Exception e)
             {
