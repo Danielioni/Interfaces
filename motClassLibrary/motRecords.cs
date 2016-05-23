@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using NLog;
 
 namespace motInboundLib
 {
@@ -64,6 +65,7 @@ namespace motInboundLib
     public class motRecordBase
     {
         protected string _tableAction;
+        protected Logger logger = LogManager.GetLogger("motInboundLib.Record");
 
         public void checkDependencies(List<Field> __qualifiedTags)
         {
@@ -475,6 +477,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
+                logger.Error(@"DrugRecord Write Failure: {0}", e.Message);
                 throw e;
             }
         }
@@ -743,6 +746,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
+                logger.Error(@"PrescriberRecord Write Failure: {0}", e.Message);
                 throw e;
             }
         }
@@ -1338,6 +1342,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
+                logger.Error(@"PatientRecord Write Failure: {0}", e.Message);
                 throw e;
             }
         }
@@ -1661,6 +1666,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
+                logger.Error(@"PrescriptionRecord Write Failure: {0}", e.Message);
                 throw e;
             }
         }
@@ -1891,6 +1897,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
+                logger.Error(@"LocationRecord Write Failure: {0}", e.Message);
                 throw e;
             }
         }
@@ -2086,6 +2093,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
+                logger.Error(@"StoreRecord Write Failure: {0}", e.Message);
                 throw e;
             }
         }
@@ -2213,6 +2221,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
+                logger.Error(@"TimeQtysRecord Write Failure: {0}", e.Message);
                 throw e;
             }
         }

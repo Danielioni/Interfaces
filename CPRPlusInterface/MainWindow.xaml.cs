@@ -291,7 +291,7 @@ namespace CPRPlusInterface
                      // (Missing) __xTable.Add(:"", "Fax");
                      // (Missing) __xTable.Add("", "PagerInfo");
 
-                    // Exceptions are items that need further processing to be comlete fields
+                    // Exceptions are items that need further processing to be complete fields
                     __exception.Add("DEA_ID");
                     __exception.Add("Phone");
                     __exception.Add("Speciality");
@@ -420,31 +420,39 @@ namespace CPRPlusInterface
                     __xTable.Add("", "AnchorDate");
 
 
-                    //List<IDataRecord> __recordSet = db.executeQuery("SELECT * from Rxes");
 
                     string __tag;
                     string __val;
                     string value;
 
-                    if (db.executeQuery("SELECT * FROM public.\"Rxes\";"))
+                    if (db.executeQuery("SELECT * FROM {mumble};"))
                     {
-                        /*
-                                                foreach (IDataRecord __record in db.__recordSet)
-                                                {
-                                                    for (int i = 0; i < __record.FieldCount; i++)
-                                                    {
-                                                        __val = __record.GetString(i);
+                        foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                        {
+                            DataTable table = __record.Table;
 
-                                                        if (__xTable.TryGetValue(__record.GetName(i), out value))
-                                                        {
-                                                            __tag = value;
-                                                            __scrip.setField(__tag, __val);
-                                                        }
-                                                    }
+                            // Print the DataType of each column in the table. 
+                            foreach (DataColumn column in table.Columns)
+                            {
+                                if (__xTable.TryGetValue(column.ColumnName, out value))
+                                {
+                                    __tag = value;
+                                    __val = __record[column.ColumnName].ToString();
 
-                                                    __scrip.Write(__port);
-                                                }
-                        */
+                                    // Conversion rules
+                                    while (__val.Contains("-"))
+                                    {
+                                        __val = __val.Remove(__val.IndexOf("-"), 1);
+                                    }
+
+                                    // Update the local drug record
+                                    __scrip.setField(__tag, __val, true);
+                                }
+                            }
+
+                            // Write the record to the gateway
+                            __scrip.Write(__port);
+                        }
                         return __scrip;
                     }
                 }
