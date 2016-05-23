@@ -25,6 +25,7 @@
 using System;
 using System.Text;
 using System.Net.Sockets;
+using NLog;
 
 /// <summary>
 /// Port is the bas class that talcs to the TCP/IP port that MOT uses.  The system will layer up from there
@@ -39,6 +40,8 @@ namespace motInboundLib
     {
         public TcpClient tcpSocket = null;
         NetworkStream dataStream;
+        private Logger logger;
+
         bool __open = false;
 
         public string tcp_address { get; set; }
@@ -46,6 +49,7 @@ namespace motInboundLib
 
         public Port()
         {
+            logger = LogManager.GetLogger("motInboundLib.Port");
         }
 
         public Port(string address, string port)
@@ -55,6 +59,8 @@ namespace motInboundLib
                 return;
             }
 
+            logger = LogManager.GetLogger("motInboundLib.Port");
+
             tcp_address = address;
             tcp_port = port;
 
@@ -62,15 +68,17 @@ namespace motInboundLib
             {
                 Open();
                 __open = true;
+                logger.Info(@"Successfully Opened {0}:{1}", address, port);
             }
             catch (SocketException e)
             {
+                logger.Fatal(@"Failed to open socket: " + address + " / " + port + " " + e.Message);
                 throw new Exception(e.Message);
             }
             catch (Exception e)
             {
-                throw new Exception("Failed to open socket: " + address + "/" + port + " " + e.Message);
-                //System.Environment.Exit(1);
+                logger.Fatal(@"Failed to open socket: " + address + " / " + port + " " + e.Message);
+                throw new Exception(@"Failed to open socket: " + address + "/" + port + " " + e.Message);
             }
         }
 

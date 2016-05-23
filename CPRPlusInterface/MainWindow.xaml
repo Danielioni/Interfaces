@@ -38,7 +38,7 @@
                     <TextBox x:Name="txtRate" HorizontalAlignment="Left" Height="23" Margin="425,199,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="87" IsReadOnly="True"/>
                     <Slider x:Name="slider" HorizontalAlignment="Left" Margin="92,196,0,0" VerticalAlignment="Top" Width="317" TickPlacement="Both" ValueChanged="slider_ValueChanged" SmallChange="1" TickFrequency="1" Maximum="60" Minimum="1"/>
                     <Label x:Name="label9" Content="Refresh Rate" HorizontalAlignment="Left" Margin="10,196,0,0" VerticalAlignment="Top"/>
-                    
+
                 </Grid>
             </TabItem>
             <TabItem Header="Config" Height="22" Margin="-2,0,2.2,0" VerticalAlignment="Top">
@@ -54,21 +54,21 @@
                     <GroupBox x:Name="groupBox" Header="Database DSN" HorizontalAlignment="Left" Margin="57,29,0,0" VerticalAlignment="Top" Height="178" Width="424"/>
 
 
-                    <TextBox x:Name="txtDSNAddress" HorizontalAlignment="Left" Margin="153,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142" Height="23"/>
-                    <TextBox x:Name="txtDSNPort" HorizontalAlignment="Left" Height="23" Margin="337,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                    <TextBox x:Name="txtUname" HorizontalAlignment="Left" Margin="153,78,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="23"/>
-                    <TextBox x:Name="txtDBPassword" HorizontalAlignment="Left" Height="23" Margin="153,106,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsReadOnlyCaretVisible="True"/>
-                    <TextBox x:Name="txtDatabase" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Margin="153,134,0,0"/>
-                    <ComboBox x:Name="cbDBType" HorizontalAlignment="Left" Margin="227,173,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1">
+                    <TextBox x:Name="txtDSNAddress" HorizontalAlignment="Left" Margin="153,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142" Height="23"/>
+                    <TextBox x:Name="txtDSNPort" HorizontalAlignment="Left" Height="23" Margin="337,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBox x:Name="txtUname" HorizontalAlignment="Left" Margin="153,111,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="23"/>
+                    <TextBox x:Name="txtDBPassword" HorizontalAlignment="Left" Height="23" Margin="153,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsReadOnlyCaretVisible="True"/>
+                    <TextBox x:Name="txtDatabase" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Margin="153,167,0,0"/>
+                    <ComboBox x:Name="cbDBType" HorizontalAlignment="Left" Margin="227,47,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1" SelectionChanged="cbDBType_SelectionChanged">
                         <ListBoxItem Content="ODBC"/>
                         <ListBoxItem Content="SQL Server"/>
                         <ListBoxItem Content="PostgreSQL"/>
                     </ComboBox>
-                    <Label x:Name="label8" Content="Type" HorizontalAlignment="Left" Margin="179,172,0,0" VerticalAlignment="Top" Height="27" Width="48" RenderTransformOrigin="0.929,0.815"/>
-                    <Label x:Name="label6" Content="Database" HorizontalAlignment="Left" Height="30" Margin="85,129,0,0" VerticalAlignment="Top" Width="65"/>
-                    <Label x:Name="label1" Content="IP Address" HorizontalAlignment="Left" Margin="74,50,0,0" VerticalAlignment="Top" Height="26" Width="69"/>
-                    <Label x:Name="label2" Content="User Name" HorizontalAlignment="Left" Margin="76,75,0,0" VerticalAlignment="Top" Height="26" Width="69"/>
-                    <Label x:Name="label3" Content="Password" HorizontalAlignment="Left" Margin="85,103,0,0" VerticalAlignment="Top" Height="26" Width="59"/>
+                    <Label x:Name="label8" Content="Type" HorizontalAlignment="Left" Margin="174,45,0,0" VerticalAlignment="Top" Height="27" Width="48" RenderTransformOrigin="0.929,0.815"/>
+                    <Label x:Name="label6" Content="Database" HorizontalAlignment="Left" Height="30" Margin="85,162,0,0" VerticalAlignment="Top" Width="65"/>
+                    <Label x:Name="label1" Content="IP Address" HorizontalAlignment="Left" Margin="74,83,0,0" VerticalAlignment="Top" Height="26" Width="69"/>
+                    <Label x:Name="label2" Content="User Name" HorizontalAlignment="Left" Margin="76,108,0,0" VerticalAlignment="Top" Height="26" Width="69"/>
+                    <Label x:Name="label3" Content="Password" HorizontalAlignment="Left" Margin="85,136,0,0" VerticalAlignment="Top" Height="26" Width="59"/>
                     <Button x:Name="btnTest" Content="Test" HorizontalAlignment="Left" Margin="487,39,0,0" VerticalAlignment="Top" Width="36" RenderTransformOrigin="0.453,-0.076" Click="btnTest_Click" Height="168"/>
                     <Label x:Name="label4" Content="IP Address" HorizontalAlignment="Left" Margin="77,241,0,0" VerticalAlignment="Top"/>
                     <Label x:Name="label5" Content="Port" HorizontalAlignment="Left" Margin="111,266,0,0" VerticalAlignment="Top"/>
@@ -81,7 +81,7 @@
 
                     <Label x:Name="label3_Copy" Content="Password" HorizontalAlignment="Left" Margin="84,293,0,0" VerticalAlignment="Top" Height="26" Width="59"/>
                     <TextBox x:Name="txtResponse" HorizontalAlignment="Left" Height="38" Margin="74,364,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="391" IsReadOnly="True"/>
-                    <Label x:Name="label7" Content="Port" HorizontalAlignment="Left" Margin="301,47,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="label7" Content="Port" HorizontalAlignment="Left" Margin="301,80,0,0" VerticalAlignment="Top"/>
 
 
 

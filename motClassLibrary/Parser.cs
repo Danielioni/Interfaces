@@ -31,6 +31,7 @@ using System.Xml;
 using System.Text.RegularExpressions;
 using System.Xml.Schema;
 using Newtonsoft.Json;
+using NLog;
 
 namespace motInboundLib
 {
@@ -38,6 +39,7 @@ namespace motInboundLib
     {
         InputStucture __type { get; set; }
         protected Port p;
+        private Logger logger;
         
         private void parseTagged(string inboundData)
         {
@@ -47,7 +49,8 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw;
+                logger.Error(@"Tagged Parser Error: {0}", e.Message);
+                throw new Exception(@"[MOT Tagged Parser] Failed to write: " + e.Message);
             } 
         }
 
@@ -75,10 +78,12 @@ namespace motInboundLib
             }
             catch (JsonReaderException e)
             {
+                logger.Error(@"JSON Reader Error: {0}", e.Message);
                 throw new System.Exception("[MOT Parser] JSON Reader error " + e.Message);
             }
             catch (JsonSerializationException e)
             {
+                logger.Error(@"JSON Serialization Error: {0}", e.Message);
                 throw new System.Exception("[MOT Parser] JSON Serialization error " + e.Message);
             }
         }
@@ -92,6 +97,7 @@ namespace motInboundLib
                 // Check if it's actual XML or not. If so, strip headers up to <Record>
                 if (inputData.Contains("<?xml") == false)
                 {
+                    logger.Error(@"Malformed XML");
                     throw new ArgumentException("[MOT XML Parser] Malformed XML");
                 }
 
@@ -116,7 +122,8 @@ namespace motInboundLib
                     {
                         if (node.InnerText.Length == 0)
                         {
-                            throw new ArgumentException("[MOT XML Parser] Missing Required Element Content at {0}", node.Name);
+                            logger.Error(@"XML Missing Require Element Content {0} in {1}", node.Name, __xmldoc.Name);
+                            throw new ArgumentException(@"[MOT XML Parser] XML Missing Require Element Content " + node.Name  + "in " + __xmldoc.Name);
                         }
 
                         node.Attributes.RemoveNamedItem("required");
@@ -133,7 +140,8 @@ namespace motInboundLib
                     {
                         if (node.InnerText.Length > Convert.ToUInt32(node.Attributes[0].Value))
                         {
-                            throw new ArgumentException("[MOT XML Parser] Element Size Overflow at {0}", node.Name);
+                            logger.Error(@"XML Element Size Overflow at {0} in {1}", node.Name, __xmldoc.Name);
+                            throw new ArgumentException(@"[MOT XML Parser] Element Size Overflow at {0}", node.Name);
                         }
 
                         node.Attributes.RemoveNamedItem("size");
@@ -150,7 +158,8 @@ namespace motInboundLib
                     {
                         if (Convert.ToDouble(node.InnerText) > Convert.ToDouble(node.Attributes[0].Value))
                         {
-                            throw new ArgumentException("[MOT XML Parser] Element MaxValue Overflow at {0}", node.Name);
+                            logger.Error(@"XML Element MaxValue Overflow at {0} in {1}", node.Name, __xmldoc.Name);
+                            throw new ArgumentException(@"[MOT XML Parser] Element MaxValue Overflow at {0}", node.Name);
                         }
 
                         node.Attributes.RemoveNamedItem("maxvalue");
@@ -159,11 +168,13 @@ namespace motInboundLib
             }
             catch (System.Xml.XmlException e)
             {
-                throw new System.Exception("[MOT XML Parser] Parse Failure " + e.Message);
+                logger.Error(@"XML Parse Failure " + e.Message);
+                throw new System.Exception(@"[MOT XML Parser] Parse Failure " + e.Message);
             }
             catch (System.FormatException e)
             {
-                throw new System.Exception("[MOT XML Parser] Parse Error " + e.Message);
+                logger.Error(@"XML Format Error " + e.Message);
+                throw new System.Exception(@"[MOT XML Parser] Parse Error " + e.Message);
             }
 
             //
@@ -195,14 +206,15 @@ namespace motInboundLib
         {
             if (!p.Write(inboundData, inboundData.Length))
             {
-                // Need to do better than this, need to retrieve the error code at least        
-                throw new Exception("[MOT Parser] Failed to write to gateway");
+                // Need to do better than this, need to retrieve the error code at least     
+                logger.Error(@"Failed to write to gateway");
+                throw new Exception(@"[MOT Parser] Failed to write to gateway");
             }
         }
 
         public Parser()
         {
-            ;
+            logger = LogManager.GetLogger("motInboundLib.Parser");
         }
 
         public Parser(Port _p, string inputStream)
@@ -236,12 +248,13 @@ namespace motInboundLib
                     return;
                 }
 
+                logger.Error("[MOT Parser] Unidentified file type");
                 throw new Exception("[MOT Parser] Unidentified file type");
             }
             catch(Exception e)
             {
-                Console.WriteLine("[MOT Gateway] Parse failure: {0}", e.Message);
-                throw;
+                logger.Error("[MOT Gateway] Parse failure: {0}", e.Message);
+                throw new Exception("[MOT Gateway] Parse failure: {0}" + e.Message);
             }
         }
 
@@ -256,29 +269,35 @@ namespace motInboundLib
                 {
                     case InputStucture.__inputXML:
                         parseXML(inputStream);
+                        logger.Info("[MOT Parser] Completed XML processing");
                         break;
 
                     case InputStucture.__inputJSON:
                         parseJSON(inputStream);
+                        logger.Info("[MOT Parser] Completed JSON processing");
                         break;
 
                     case InputStucture.__inputDelimted:
                         parseDelimited(inputStream);
+                        logger.Info("[MOT Parser] Completed Delimited File processing");
                         break;
 
                     case InputStucture.__inputTagged:
                         parseTagged(inputStream);
+                        logger.Info("[MOT Parser] Completed Tagged File processing");
                         break;
 
                     case InputStucture.__inputUndefined:
-                    default:
+                        logger.Info("[MOT Parser] Fell off the bottom, Unknown File Type");
                         break;
 
+                    default:
+                        break;
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                logger.Error("[MOT Gateway] Constuctor failure: {0}\n{1}", e.Message, e.StackTrace);
                 throw;
             }
         }
