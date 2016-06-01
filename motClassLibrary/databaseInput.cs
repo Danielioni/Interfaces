@@ -30,6 +30,102 @@ using System.Data.Odbc;
 using System.Data.SqlClient;
 
 /// <summary>
+/// Medicine-On-Time - motDatabase
+/// 
+///     A base class that abstracts SQL databases and provides query support and returns a DataSet for use by the caller.
+///     
+///     Usage:
+///     
+///         motDatabase __db = new motDatabase( __connect,  __dbtype);
+///         
+///         Where:
+///         
+///             __connect is a formated connection string for dbType
+///             __dbTyype is an enumeration for the set of supported DBMS {SQLServer, NPGServer, ODBCServer, ...}
+///             
+///         bool __success = __db.Query(@"<<Query String Here>>");
+///         
+///             On __success, the query pupulates a public DataSet named __recordSet containing all returned data             
+///         
+///         Errors output to System.Console
+///         
+/// Medicine-On-Time - motDatabaseInputSource
+/// 
+///     A class for collecting specific data from system databases.  It provides a virtual method for each Medicine-On-Time
+///     Legacy Interface Record type. Each is overridden to execute queries and process data to fill and write records to the
+///     MOT database.
+///     
+///     Example:
+///     
+///         public override motTimeQtysRecord getTimeQtyRecord()
+///         {
+///             try
+///                {
+///                     string __query = "{Mumble::Mumble}";   // System Specific Query or View
+///                     
+///                     motTimeQtysRecord __tq = new motTimeQtysRecord();
+///                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
+///
+///                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
+///                     __xTable.Add("StoreLocation", "RxSys_LocID");
+///                     __xTable.Add("ScheduleName", "DoseScheduleName");
+///                     __xTable.Add("DoseTime", "DoseTimeQtys");
+///
+///                     string __tag;
+///                     string __val;
+///                     string __tmp;
+///
+///                     if ((__query.Length > 0) && db.executeQuery(__query))
+///                     {
+///                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+///                         {
+///                             DataTable table = __record.Table;
+///
+///                             // Print the DataType of each column in the table. 
+///                             foreach (DataColumn column in table.Columns)
+///                             {
+///                                 if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+///                                 {
+///                                     __tag = __tmp;
+///                                     __val = __record[column.ColumnName].ToString();
+///
+///                                     // Process Data Managabement Rules 
+///                                     //if (__tag == "ZipCode")
+///                                     //{
+///                                     //    if (__xTable.TryGetValue("ZipPlus4", out __tmp))
+///                                     //    {
+///                                     //        __val += __record["ZipCode"].ToString();
+///                                     //    }
+///                                     //}
+///
+///                                     // Conversion rules
+///                                     while (__val.Contains("-"))
+///                                     {
+///                                         __val = __val.Remove(__val.IndexOf("-"), 1);
+///                                     }
+/// 
+///                                     // Update the local drug record
+///                                     __tq.setField(__tag, __val, __override_length_checking);
+///                                 }
+///                             }
+///
+///                             // Write the record to the gateway
+///                             __tq.Write(__port);
+///                         }
+/// 
+///                         return __tq;
+///                     }
+///                 }
+///                 catch (Exception e)
+///                 {
+///                     throw new Exception("Failed to get Drug Record " + e.Message);
+///                 }
+///
+///                 return base.getTimeQtyRecord();
+///             }
+/// 
+/// 
+/// Connection String Examples
 /// 
 /// connection-string ::= empty-string[;] | attribute[;] | attribute; connection-string
 /// empty-string ::=

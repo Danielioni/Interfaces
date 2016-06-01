@@ -221,6 +221,7 @@ namespace CPRPlusInterface
         class cprPlus : databaseInputSource
         {
             protected Port __port;
+            protected bool __override_length_checking = true;
 
             public cprPlus(dbType __type, string DSN, Port p) : base(__type, DSN)
             {
@@ -361,7 +362,7 @@ namespace CPRPlusInterface
                                     }
 
                                     // Update the local Prescriber record
-                                    __prescriber.setField(__tag, __val, true);
+                                    __prescriber.setField(__tag, __val, __override_length_checking);
                                 }
                             }
 
@@ -464,7 +465,7 @@ namespace CPRPlusInterface
                                     }
 
                                     // Update the local drug record
-                                    __patient.setField(__tag, __val, true);
+                                    __patient.setField(__tag, __val, __override_length_checking);
                                 }
                             }
 
@@ -550,7 +551,7 @@ namespace CPRPlusInterface
                                     }
 
                                     // Update the local drug record
-                                    __scrip.setField(__tag, __val, true);
+                                    __scrip.setField(__tag, __val, __override_length_checking);
                                 }
                             }
 
@@ -624,7 +625,7 @@ namespace CPRPlusInterface
                                     }
 
                                     // Update the local drug record
-                                    __location.setField(__tag, __val, true);
+                                    __location.setField(__tag, __val, __override_length_checking);
                                 }
                             }
 
@@ -697,7 +698,7 @@ namespace CPRPlusInterface
                                     }
 
                                     // Update the local drug record
-                                    __store.setField(__tag, __val, true);
+                                    __store.setField(__tag, __val, __override_length_checking);
                                 }
                             }
 
@@ -763,7 +764,7 @@ namespace CPRPlusInterface
                                     }
 
                                     // Update the local drug record
-                                    __tq.setField(__tag, __val, true);
+                                    __tq.setField(__tag, __val, __override_length_checking);
                                 }
                             }
 
@@ -843,7 +844,7 @@ namespace CPRPlusInterface
                                     }
 
                                     // Update the local drug record
-                                    __drug.setField(__tag, __val, true);
+                                    __drug.setField(__tag, __val, __override_length_checking);
                                 }
                             }
 

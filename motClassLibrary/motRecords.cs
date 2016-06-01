@@ -25,6 +25,25 @@
 using System;
 using System.Collections.Generic;
 using NLog;
+/// <summary>
+/// motRecords - Abstractions for all the record types that the Medicine-On-Time Legacy interface supports.  Classes are constructed 
+///              and can be populated by calling individual methods, one for each field, or by a generic setField() call. All set methods
+///              length check the arguments against the supported Legacy Interface values and throws an exception on overflow.  This can 
+///              be overriden using setField with a bool third argument where "true" maeans Override Length Checking.  No additional data
+///              processing is done by the generic setField functions where the direct methods may do content processing to remove illegal
+///              characters etc.
+///              
+///             Example:
+///             
+///                     motTimeQtysRecord m = new motTimeQtysRecord();
+///                     
+///                    (1) m.setField("DoseScheduleName", "<<dsname>>");       // Set the Dose Schedule Name with Length Checking Enabled
+///                    (2) m.setField("DoseScheduleName", "<<dsname>>", true); // Set the Dose Schedule Name with Length Checking Overridden
+///                    (3) m.setDoseScheduleName("<<dsname>>");                // Set the Dose Schedule Name directly 
+///                    
+///                     m.Write(__port);                                       // Write the completed record to the MOT database monitoring __port
+///                     
+/// </summary>
 
 namespace motInboundLib
 {
