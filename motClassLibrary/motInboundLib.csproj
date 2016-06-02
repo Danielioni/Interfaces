@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="databaseInput.cs" />
     <Compile Include="fileSystemWatcher.cs" />
-    <Compile Include="HttpWatcher.cs" />
+    <Compile Include="httpInput.cs" />
     <Compile Include="inputMethod.cs" />
     <Compile Include="InputStucture.cs" />
     <Compile Include="localAPI.cs" />

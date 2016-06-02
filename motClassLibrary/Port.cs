@@ -118,10 +118,17 @@ namespace motInboundLib
 
         public bool Write(string __buf, int __len)
         {
-            if (tcpSocket != null)
+            try
             {
-                dataStream.Write(Encoding.ASCII.GetBytes(__buf), 0, __len);
-                return true;
+                if (tcpSocket != null)
+                {
+                    dataStream.Write(Encoding.ASCII.GetBytes(__buf), 0, __len);
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error writing to port: {0}", e.Message);
             }
 
             return false;

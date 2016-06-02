@@ -125,33 +125,48 @@ namespace motInboundLib
                 p = new Port("127.0.0.1", "24042");
                 r = new motDrugRecord("Add");
 
-                //r.setRxSys_DrugID("A125BVH");
+                for (int i = 0; i < 1024; i++)
+                {
 
-                r.setField("RxSys_DrugID", "ABDD14565");
-
-                r.setLabelCode("Test");
-                r.setProductCode("1234");
-                r.setTradeName("ALPHAFROG@ 12 MG Tablet");
-                r.setStrength("12");
-                r.setUnit("MG");
-                r.setRxOTC("R");
-                r.setDoseForm("Tablet");
-                r.setRoute("Oral");
-                r.setDrugSchedule("6");
-                r.setVisualDescription("RND/RED/TAB");
-                r.setDrugName("ALPHAFROG@ 12 MG");
-                r.setShortName("HAL 12MG");
-                r.setNDCNum("00023032701");
-                r.setSizeFactor("5");
-                r.setTemplate("C");
-                r.setDefaultIsolate("0");
-                r.setConsultMsg("Don't set your hair on fire");
-                r.setGenericFor("N/A");
+                    r.RxSys_DrugID = "ABDC12579";
+                    r.LabelCode = "Mumble";
 
 
-                r.Write(p);
+                    r.ProductCode = "1234";
+                    r.TradeName = "ALPHAFROG@ 12 MG Tablet";
+                    r.Strength = 12;
+                    r.Unit = "MG";
 
-                
+                  
+
+                    r.RxOTC = "R";
+                    r.DoseForm = "Tablet";
+                    r.Route = "Oral";
+                    r.DrugSchedule = 6;
+
+                    r.VisualDescription = "RND/RED/TAB";
+                    r.DrugName = "ALPHAFROG@ 12 MG";
+                    r.ShortName = "HAL 12MG";
+                    r.NDCNum = "00023-0327-01";
+                    r.SizeFactor = 5;
+                    r.Template = "C";
+                    r.DefaultIsolate = 0;
+                    r.ConsultMsg = "Don't set your hair on fire";
+                    r.GenericFor = "N/A";
+
+
+                    r.Write(p);
+
+                    r.setField("Action", "Change");
+                    r.setField("TradeName", "BetaDog");
+                    r.setField("DrugName", "BETADOG@ 12MG");
+
+                    r.Write(p);
+
+                    r.setField("Action", "Delete");
+
+                    r.Write(p);
+                }              
             }
             catch(Exception e)
             {

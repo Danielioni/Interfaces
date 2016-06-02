@@ -122,14 +122,13 @@ namespace motInboundLib
                     throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
                 }
                 else
-                { 
+                {
                     // Pass through to gateway 
                 }
             }
 
             f.tagData = __val;
         }
-
         public void setField(List<Field> __qualifiedTags, string __val, string __tag, bool __override)
         {
             if (__qualifiedTags == null || __tag == null || __val == null)
@@ -150,13 +149,12 @@ namespace motInboundLib
                 else
                 {
                     // Truncate and pass through to gateway 
-                    __val = __val.Substring(0, f.maxLen-1);
+                    __val = __val.Substring(0, f.maxLen - 1);
                 }
             }
 
             f.tagData = __val;
         }
-
         public void Write(Port p, List<Field> __qualifiedTags)
         {
             string __record = "<Record>";
@@ -183,6 +181,17 @@ namespace motInboundLib
             catch (Exception e)
             {
                 throw e;
+            }
+        }
+        public void Write(Port p, string __text)
+        {
+            try
+            {
+                p.Write(__text, __text.Length);
+            }
+            catch (Exception e)
+            {
+                Console.Write("Failed to write {0} to port.  Error {1}", __text, e.Message);
             }
         }
         public motRecordBase()
@@ -230,6 +239,11 @@ namespace motInboundLib
                 throw e;
             }
         }
+
+        ~motDrugRecord()
+        {
+        }
+
         public motDrugRecord()
         {
         }
@@ -242,10 +256,535 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                Console.Write(e.Message);
+                Console.WriteLine(e.Message);
                 throw e;
             }
         }
+
+        public string RxSys_DrugID
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_drugid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_DrugID", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string LabelCode
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("lblcode"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "LblCode", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string ProductCode
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("prodcode"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "ProdCode", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string TradeName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("tradename"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "TradeName", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int Strength
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("strength"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, Convert.ToString(value), "Strength", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Unit
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("unit"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Unit", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string RxOTC
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxotc"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxOTC", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string DoseForm
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("doseform"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "DoseForm", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Route
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("route"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Route", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int DrugSchedule
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("drugschedule"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    if (value < 2 && value > 7)
+                    {
+                        throw new Exception("Drug Schedule must be 2-7");
+                    }
+
+                    setField(__qualifiedTags, Convert.ToString(value), "DrugSchedule", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string VisualDescription
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("visualdescription"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "VisualDescription", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string DrugName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("drugname"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "DrugName", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string ShortName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("shortname"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "ShortName", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string NDCNum
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("ndcnum"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+
+                    setField(__qualifiedTags, value, "NDCNum", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int SizeFactor
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("sizefactor"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, Convert.ToString(value), "SizeFactor", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Template
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("template"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Template", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int DefaultIsolate
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("defaultisolate"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, Convert.ToString(value), "DefaultIsolate", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string ConsultMsg
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("consultmsg"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "ConsultMsg", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string GenericFor
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("genericfor"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "GenericFor", false);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+
         public void setField(string __fieldname, string __val)
         {
             try
@@ -257,7 +796,6 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-
         public void setField(string __fieldname, string __val, bool __override)
         {
             try
@@ -269,230 +807,13 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-        public void setRxSys_DrugID(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_DrugID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setLabelCode(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "LblCode");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setProductCode(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "ProdCode");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setTradeName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "TradeName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setStrength(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Strength");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setUnit(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Unit");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setRxOTC(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxOTC");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setDoseForm(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "DoseForm");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setRoute(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Route");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setDrugSchedule(string val)
-        {
-            try
-            {
-                if (Convert.ToInt32(val) < 2 && Convert.ToInt32(val) > 7)
-                {
-                    throw new Exception("Drug Schedule must be 2-7");
-                }
 
-                setField(__qualifiedTags, val, "DrugSchedule");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setVisualDescription(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "VisualDescription");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setDrugName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "DrugName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setShortName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "ShortName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setNDCNum(string val)
-        {
-            try
-            {
-                if (val.Contains("-"))
-                {
-                    val.Remove('-');
-                }
-
-                setField(__qualifiedTags, val, "NDCNum");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setSizeFactor(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "SizeFactor");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setTemplate(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Template");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setDefaultIsolate(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "DefaultIsolate");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setConsultMsg(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "ConsultMsg");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setGenericFor(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "GenericFor");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
         public void Write(Port p)
         {
             try
             {
                 Write(p, __qualifiedTags);
+                //Write(p, "<EOF/>");
             }
             catch (Exception e)
             {
@@ -576,187 +897,446 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-        public void setRxSys_DocID(string val)
+
+        public string RxSys_DocID
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "RxSys_DocID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setLastName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "LastName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setFirstName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "FirstNameID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setMiddleInitial(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "MiddleInitial");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAddress1(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Address1");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAddress2(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Address2");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setCity(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "City");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setState(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val.ToUpper(), "State");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setPostalCode(string val)
-        {
-            try
-            {
-                if (val.Contains("-"))
+                try
                 {
-                    val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_docid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+                {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_DocID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string LastName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("lastname"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "LastName");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string FirstName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("firstname"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "FirstNameID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string MiddleInitial
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("middleinitial"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "MiddleInitial");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Address1
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("address1"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Address1");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Address2
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("address2"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Address2");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string City
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("city"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "City");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string State
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("state"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value.ToUpper(), "State");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string PostalCode
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("postalcode"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+
+                    setField(__qualifiedTags, value, "Zip");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Phone
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("phone"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Phone");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Comments
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("comments"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Comments");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string DEA_ID
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("dea_id"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "DEA_ID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string TPID
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("tpid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "TPID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int Specialty
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("speciality"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, Convert.ToString(value), "Specialty");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Fax
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("fax"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Fax");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string PagerInfo
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("pageringfo"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
                 }
 
-                setField(__qualifiedTags, val, "Zip");
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "PagerInfo");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setPhone(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Phone");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setComments(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Comments");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setDEA_ID(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "DEA_ID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setTPID(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "TPID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setSpecialty(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Specialty");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setFax(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Fax");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setPagerInfo(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "PagerInfo");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
+
         public void Write(Port p)
         {
             try
@@ -868,491 +1448,1129 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-        public void setRxSys_DocID(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_DocID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
 
-        }
-        public void setLastName(string val)
-        {
 
-            try
-            {
-                setField(__qualifiedTags, val, "LastName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-        }
-        public void setFirstName(string val)
+        public string RxSys_DocID
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "FirstNameID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setMiddleInitial(string val)
-        {
-            try
-            {
-                if (val.Contains("."))
+                try
                 {
-                    val.Remove('.');  // Middle Initial shouldn't have a '.'
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_docid"));
+                    return f.tagData;
                 }
-
-                setField(__qualifiedTags, val, "MiddleInitial");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAddress1(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Address1");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAddress2(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Address2");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setCity(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "City");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setState(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val.ToUpper(), "State");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setPostalCode(string val)
-        {
-            try
-            {
-                if (val.Contains("-"))
+                catch
                 {
-                    val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                    throw new Exception("Illegal Acess");
                 }
+            }
 
-                setField(__qualifiedTags, val, "Zip");
-            }
-            catch (Exception e)
+            set
             {
-                throw e;
-            }
-        }
-        public void setPhone1(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Phone1");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setPhone2(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Phone2");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setWorkPhone(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "WorkPhone");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setRxSys_LocID(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_LocID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setRoom(string val)
-        {
-            try
-            {
-                if (val.Contains("."))
+                try
                 {
-                    val.Remove('.');  // Middle Initial shouldn't have a '.'
+                    setField(__qualifiedTags, value, "RxSys_DocID");
                 }
-
-                setField(__qualifiedTags, val, "Room");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setComments(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Comments");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setCycleDate(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "CycleDate");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setCycleDays(string val)
-        {
-            try
-            {
-                if (Convert.ToInt32(val) > 35 || Convert.ToInt32(val) < 0)
+                catch (Exception e)
                 {
-                    throw new Exception("CycleDays must be (0-35)");
+                    throw e;
                 }
-
-                setField(__qualifiedTags, val, "CycleDays");
-            }
-            catch (Exception e)
-            {
-                throw e;
             }
         }
-        public void setCycleType(string val)
+        public string LastName
         {
-            try
+            get
             {
-                // Actual error - it would be wrong to convert it to a default value
-                if (Convert.ToInt32(val) != 0 && Convert.ToInt32(val) != 1)
+                try
                 {
-                    throw new Exception("CycleType must be '0 - Monthly' or '1 - Weekly'");
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("lastname"));
+                    return f.tagData;
                 }
-
-                setField(__qualifiedTags, val, "CycleType");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setStatus(string val)
-        {
-            try
-            {
-                // Actual error - it would be wrong to convert it to a default value
-                if (Convert.ToInt32(val) != 0 && Convert.ToInt32(val) != 1)
+                catch
                 {
-                    throw new Exception("Status must be '0 - Hold' or '1 - for Active'");
+                    throw new Exception("Illegal Acess");
                 }
+            }
 
-                setField(__qualifiedTags, val, "Status");
-            }
-            catch (Exception e)
+            set
             {
-                throw e;
-            }
-        }
-        public void setRxSys_LastDoc(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_LastDoc");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setRxSys_PrimaryDoc(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_PrimaryDoc");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setRxSys_AltDoc(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_AltDoc");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setSSN(string val)
-        {
-            try
-            {
-                if (val.Contains("-"))
+                try
                 {
-                    val.Remove('-');  // SSN shouldn't have a '-'
+                    setField(__qualifiedTags, value, "LastName");
                 }
-
-                setField(__qualifiedTags, val, "SSN");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAllergies(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Allergies");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setDiet(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Diet");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setDxNotes(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "DxNotes");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setTreatmentNotes(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "TreatmentNotes");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setDOB(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "DOB");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setHeight(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Height");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setWeight(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Weight");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setResponisbleName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "ResponsibleName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setInsName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "InsName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setInsPNo(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "InsPNo");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAltInsName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "AltInsName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAltInsPNo(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "AltInsPNo");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setMedicareNum(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "MCareNum");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setMedicaidNum(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "MCaidNum");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAdmitDate(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "AdmitDate");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setChartOnly(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "ChartOnly");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setGender(string val)
-        {
-            try
-            {
-                if (val.ToUpper() != "F" && val.ToUpper() != "M")
+                catch (Exception e)
                 {
-                    throw new Exception("Gender  M or F'");
+                    throw e;
                 }
-
-                setField(__qualifiedTags, val, "Gender");
-            }
-            catch (Exception e)
-            {
-                throw e;
             }
         }
+        public string FirstName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("firstname"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "FirstNameID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string MiddleInitial
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("middleinitial"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    while (value.Contains("."))
+                    {
+                        value = value.Remove(value.IndexOf("."), 1);
+                    }
+
+                    setField(__qualifiedTags, value, "MiddleInitial");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Address1
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("address1"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Address1");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Address2
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("address2"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Address2");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string City
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("city"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "City");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string State
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("state"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value.ToUpper(), "State");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string PostalCode
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("postalcode"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+
+                    setField(__qualifiedTags, value, "Zip");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Phone1
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("phone1"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Phone1");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Phone2
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("phone2"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Phone2");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string WorkPhone
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("workphone"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "WorkPhone");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string RxSys_LocID
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_licid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_LocID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Room
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("room"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Room");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Comments
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("comments"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Comments");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string CycleDate
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("cycledate"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "CycleDate");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int CycleDays
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("cycledays"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    if (value > 35 || value < 0)
+                    {
+                        throw new Exception("CycleDays must be (0-35)");
+                    }
+
+                    setField(__qualifiedTags, Convert.ToString(value), "CycleDays");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int CycleType
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("cycletype"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+
+            set
+            {
+                try
+                {
+                    // Actual error - it would be wrong to convert it to a default value
+                    if (value != 0 && value != 1)
+                    {
+                        throw new Exception("CycleType must be '0 - Monthly' or '1 - Weekly'");
+                    }
+
+                    setField(__qualifiedTags, Convert.ToString(value), "CycleType");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int Status
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("status"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    // Actual error - it would be wrong to convert it to a default value
+                    if (value != 0 && value != 1)
+                    {
+                        throw new Exception("Status must be '0 - Hold' or '1 - for Active'");
+                    }
+
+                    setField(__qualifiedTags, Convert.ToString(value), "Status");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string RxSys_LastDoc
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_lastdoc"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_LastDoc");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string RxSys_PrimaryDoc
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_primarydoc"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_PrimaryDoc");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string RxSys_AltDoc
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_altdoc"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_AltDoc");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string SSN
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("ssn"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+
+                    setField(__qualifiedTags, value, "SSN");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Allergies
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("allergies"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Allergies");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Diet
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("diet"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Diet");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string DxNotes
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("dxnotes"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "DxNotes");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string TreatmentNotes
+        {
+
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("treatmentnotes"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "TreatmentNotes");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string DOB
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("dob"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "DOB");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int Height
+        {
+get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("height"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, Convert.ToString(value), "Height");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int Weight
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("weight"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, Convert.ToString(value), "Weight");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string ResponisbleName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("responsiblename"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "ResponsibleName");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string InsName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("insname"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "InsName");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string InsPNo
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("inspno"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "InsPNo");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string AltInsName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("altinsnum"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "AltInsName");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string AltInsPNo
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("altinspno"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "AltInsPNo");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string MedicareNum
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("medicarenum"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "MCareNum");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string MedicaidNum
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("medicaidnum"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "MCaidNum");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string AdmitDate
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("admitdate"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "AdmitDate");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string ChartOnly
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("chartonly"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "ChartOnly");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Gender
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("gender"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    if (value.ToUpper() != "F" && value.ToUpper() != "M")
+                    {
+                        throw new Exception("Gender  M or F'");
+                    }
+
+                    setField(__qualifiedTags, value, "Gender");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+
+
         public void Write(Port p)
         {
             try
@@ -1449,234 +2667,548 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-        public void setRxSys_RxNum(string val)
+        public string RxSys_RxNum
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "RxSys_RxNum");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-        }
-        public void setRxSys_PatID(string val)
-        {
-
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_PatID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-        }
-        public void setRxSys_DocID(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_DrugID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setSig(string val)
-        {
-            try
-            {
-                if (val.Contains("."))
+                try
                 {
-                    val.Remove('.');  // Middle Initial shouldn't have a '.'
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_rxnum"));
+                    return f.tagData;
                 }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
 
-                setField(__qualifiedTags, val, "Sig");
-            }
-            catch (Exception e)
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_RxNum");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setRxStartDate(string val)
+        public string RxSys_PatID
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "RxStartDate");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_patid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_PatID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setRxStopDate(string val)
+        public string RxSys_DocID
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "RxStopDate");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_docid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_DocID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setDiscontinueDate(string val)
+        public string Sig
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "DiscontinueDate");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("sig"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "Sig");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setDoseScheduleName(string val)
+        public string RxStartDate
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "DoseScheduleName");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxstartdate"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "RxStartDate");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setComments(string val)
+        public string RxStopDate
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "Comments");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxstopdate"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "RxStopDate");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setRefils(string val)
+        public string DiscontinueDate
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "Refills");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("discontinuedate"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "DiscontinueDate");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setMDOMStart(string val)
+        public string DoseScheduleName
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "MDOMStart");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("doseschedulename"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "DoseScheduleName");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setMDOMStop(string val)
+        public string Comments
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "MDOMStop");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("comments"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "Comments");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setQtyPerDoese(string val)
+        public string Refils
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "QtyPerDose");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("refills"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "Refills");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setQtyDispensed(string val)
+        public string MDOMStart
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "QtyDispensed");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("mdomstart"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "MDOMStart");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setStatus(string val)
+        public string MDOMStop
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "Status");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("mdomstop"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "MDOMStop");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setDoW(string val)
+        public string QtyPerDoese
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "DoW");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("qtyperdose"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "QtyPerDose");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setSpecialDoses(string val)
+        public string QtyDispensed
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "SpecialDoses");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("qtydispensed"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "QtyDispensed");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setDoseTimesQtys(string val)
+        public string Status
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "DoseTimesQtys");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("status"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "Status");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setChartOnly(string val)
+        public string DoW
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "ChartOnly");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("dow"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "DoW");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setAnchorDate(string val)
+        public string SpecialDoses
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "AnchorDate");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("specialdoses"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "SpecialDoses");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
+        public string DoseTimesQtys
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("dosetimeqtys"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "DoseTimesQtys");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string ChartOnly
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("chartonly"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "ChartOnly");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string AnchorDate
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("anchordate"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "AnchorDate");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+
+
         public void Write(Port p)
         {
             try
@@ -1760,154 +3292,348 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-        public void setRxSys_LocID(string val)
+        public string RxSys_LocID
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "RxSys_LocID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setRxSys_StoreID(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "RxSys_StoreID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setLocationName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "LocationName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAddress1(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Address1");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAddress2(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Address2");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setCity(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "City");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setState(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val.ToUpper(), "State");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setPostalCode(string val)
-        {
-            try
-            {
-                if (val.Contains("-"))
+                try
                 {
-                    val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_locid"));
+                    return f.tagData;
                 }
-
-                setField(__qualifiedTags, val, "Zip");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setPhone(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Phone");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setComments(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Comments");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setCycleDays(string val)
-        {
-            try
-            {
-                if (Convert.ToInt32(val) > 35 || Convert.ToInt32(val) < 0)
+                catch
                 {
-                    throw new Exception("CycleDays must be (0-35)");
+                    throw new Exception("Illegal Acess");
                 }
+            }
 
-                setField(__qualifiedTags, val, "CycleDays");
-            }
-            catch (Exception e)
+            set
             {
-                throw e;
-            }
-        }
-        public void setCycleType(string val)
-        {
-            try
-            {
-                // Actual error - it would be wrong to convert it to a default value
-                if (Convert.ToInt32(val) != 0 && Convert.ToInt32(val) != 1)
+                try
                 {
-                    throw new Exception("CycleType must be '0 - Monthly' or '1 - Weekly'");
+                    setField(__qualifiedTags, value, "RxSys_LocID");
                 }
-
-                setField(__qualifiedTags, val, "CycleType");
-            }
-            catch (Exception e)
-            {
-                throw e;
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
+        public string RxSys_StoreID
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_storeid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_StoreID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string LocationName
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("locationname"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "LocationName");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Address1
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("address1"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Address1");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Address2
+        {
+
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("address2"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Address2");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string City
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("city"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "City");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string State
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("state"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value.ToUpper(), "State");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string PostalCode
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("postalcode"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+
+                    setField(__qualifiedTags, value, "Zip");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Phone
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("phone"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Phone");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Comments
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("comments"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Comments");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int CycleDays
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("cycledays"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    if (value > 35 || value < 0)
+                    {
+                        throw new Exception("CycleDays must be (0-35)");
+                    }
+
+                    setField(__qualifiedTags, Convert.ToString(value), "CycleDays");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public int CycleType
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("cycletype"));
+                    return Convert.ToInt32(f.tagData);
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    // Actual error - it would be wrong to convert it to a default value
+                    if (value != 0 && value != 1)
+                    {
+                        throw new Exception("CycleType must be '0 - Monthly' or '1 - Weekly'");
+                    }
+
+                    setField(__qualifiedTags, Convert.ToString(value), "CycleType");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+
+        }
+
         public void Write(Port p)
         {
             try
@@ -1989,121 +3715,282 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-        public void setRxSys_StoreID(string val)
+        public string RxSys_StoreID
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "RxSys_StoreID");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setStoreName(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "StoreName");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAddress1(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Address1");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setAddress2(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "Address2");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setCity(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val, "City");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setState(string val)
-        {
-            try
-            {
-                setField(__qualifiedTags, val.ToUpper(), "State");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public void setPostalCode(string val)
-        {
-            try
-            {
-                if (val.Contains("-"))
+                try
                 {
-                    val.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_storeid"));
+                    return f.tagData;
                 }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
 
-                setField(__qualifiedTags, val, "Zip");
-            }
-            catch (Exception e)
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_StoreID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setPhone(string val)
+        public string StoreName
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "Phone");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("storename"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "StoreName");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setFax(string val)
+        public string Address1
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "Fax");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("address1"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "Address1");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setDEANum(string val)
+        public string Address2
         {
-            try
+
+            get
             {
-                setField(__qualifiedTags, val, "DEANum");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("address2"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "Address2");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
+        public string City
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("city"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "City");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string State
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("state"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value.ToUpper(), "State");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string PostalCode
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("postalcode"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    if (value.Contains("-"))
+                    {
+                        value.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                    }
+
+                    setField(__qualifiedTags, value, "Zip");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Phone
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("phone"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Phone");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Fax
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("fax"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Fax");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string DEANum
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("deanum"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "DEANum");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+
         public void Write(Port p)
         {
             try
@@ -2181,35 +4068,69 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-        public void setRxSys_LocID(string val)
+        public string RxSys_LocID
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "RxSys_LocID");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_locid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_LocID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setDoseScheduleName(string val)
+        public string DoseScheduleName
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "DoseScheduleName");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("doseschedulename"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "DoseScheduleName");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
-        public void setDoseTimeQtys(List<string> tqlist)
+
+        /*
+        public List<string> DoseTimeQtys
         {
-            string val = "";
+            string val;
 
             try
             {
-                foreach (string s in tqlist)
+                foreach (string s in value)
                 {
                     val += s;
                 }
@@ -2221,17 +4142,36 @@ namespace motInboundLib
                 throw e;
             }
         }
-        public void setDoseTimeQtys(string val)
+*/
+        public string DoseTimeQtys
         {
-            try
+            get
             {
-                setField(__qualifiedTags, val, "DoseTimeQtys");
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("dosetimequtys"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
             }
-            catch (Exception e)
+
+            set
             {
-                throw e;
+                try
+                {
+                    setField(__qualifiedTags, value, "DoseTimeQtys");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
+
+
         public void Write(Port p)
         {
             try
