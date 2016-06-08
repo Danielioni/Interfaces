@@ -38,6 +38,8 @@ namespace motInboundLib
 {
     public class Port
     {
+        public int TCP_TIMEOUT { get; set; } = 300000;
+
         public TcpClient tcpSocket = null;
         NetworkStream dataStream;
         private Logger logger;
@@ -93,6 +95,8 @@ namespace motInboundLib
             {
                 tcpSocket = new TcpClient(tcp_address, Convert.ToInt32(tcp_port));
                 dataStream = tcpSocket.GetStream();
+                dataStream.ReadTimeout = TCP_TIMEOUT;
+                dataStream.WriteTimeout = TCP_TIMEOUT;                        
             }
             catch (ArgumentNullException e)
             {
@@ -115,6 +119,23 @@ namespace motInboundLib
                 tcpSocket.Close();
             }
         }
+
+        public void Flush()
+        {
+            try
+            {
+                if (tcpSocket != null)
+                {
+                    dataStream.Flush();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Port flush failure " + e.Message);
+            }
+        }
+
+
 
         public bool Write(string __buf, int __len)
         {
@@ -148,6 +169,25 @@ namespace motInboundLib
             }
 
             return false;
+        }
+
+        public string Read()
+        {
+            if (tcpSocket != null)
+            {
+                try
+                {
+                    byte[] __readbuf = new byte[4096];
+
+                    int __retval = dataStream.Read(__readbuf, 0, __readbuf.Length);
+                    return Encoding.UTF8.GetString(__readbuf);
+                }
+                catch (Exception e)
+                {        
+                }
+            }
+
+            return null;
         }
 
         public bool Reset()

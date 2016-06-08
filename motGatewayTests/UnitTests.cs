@@ -27,6 +27,7 @@ using System.IO;
 using System.Data;
 using System.Security.Permissions;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace motInboundLib
 {
@@ -218,6 +219,12 @@ namespace motInboundLib
             }
         }
 
+
+       static void catch_socket_data(string __data)
+        {
+            Console.WriteLine("Got {0}", __data);
+        }
+
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         static void Run()
         {
@@ -235,13 +242,38 @@ namespace motInboundLib
             */
 
             // Testing
-            testDrugRecord();
+            //testDrugRecord();
 
             // Works
             //testXMLDoc();
             //testJSONDoc();
-         
+
             //fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO");
+
+            try
+            {
+                motSocket ms = new motSocket(50005, catch_socket_data);
+
+                // This will start the listener and call the callback forever
+                Thread __worker = new Thread(new ThreadStart(ms.listen));
+                __worker.Name = "listener";
+                __worker.Start();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    Thread.Sleep(1024);
+                    Console.WriteLine("Still waiting {0}", i);
+                }
+
+                var iq = 0;
+                ms.close();
+                __worker.Join();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
         }
 
         static void Main(string[] args)

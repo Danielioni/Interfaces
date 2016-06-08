@@ -1,158 +1,138 @@
-﻿// 
-// MIT license
-//
-// Copyright (c) 2016 by Peter H. Jenney and Medicine-On-Time, LLC.
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-// 
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using NHapi.Base.Parser;
+using NHapi.Base.Model;
+using NHapi.Model.V251.Message;
+using System.Threading;
 
+using motInboundLib;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-/// <summary>
-/// 
-/// Note:  A template for a RESTful/JSON Interface
-///
-/// 
-/// </summary>
-
-namespace motInboundLib
+namespace FrameworksHL7
 {
-
-    public class httpInputSource
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
-        protected static async Task<dynamic> getJsonRecord(string __site, string __query)
+        public MainWindow()
         {
+            InitializeComponent();
+
+            //string message = @"MSH|^~\&|CohieCentral|COHIE|Clinical Data Provider|TCH|20060228155525||QRY^R02^QRY_R02|1|P|2.5.1|QRD|20060228155525|R|I||||10^RD&Records&0126|38923^^^^^^^^&TCH|||";
+            //string message = @"MSH|^~\&|3rd Party Interface|SNM|FrameworkLTC|PDC|20090121161123||ZMA|179545|P|2.5||||||ASCII||| ZMA|L|Console14|K200|00182145310|549|1|10|96531|Test Guy";
+            string message = @"MSH|^~\&|3rd Party Interface|SNM|FrameworkLTC|PDC|20110214162636||MFN^M15^MFN_M15|179547|P|2.5||||||ASCII||| MFI|INV^Inventory Master File||UPD|||MFE|MUP|||00039006013|CEIIM|00039006013^LASIX TAB 40MG||||^AVENTIS|PHR\F\PDC\F\DEFAULT\F\DEFAULT||-100||||||| MFE|MUP|||00039006013|CEIIM|00039006013^LASIX TAB 40MG||||^AVENTIS|OSS\F\Console14\F\K200||100|||||||";
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(__site);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //PipeParser parser = new PipeParser();
+                //IMessage m = parser.Parse(message);
 
-                    var response = await client.GetAsync(__query);
+                //MFN_M15 n = m as MFN_M15;
 
-                    dynamic data = null;
-                    if (response != null)
-                    {
-                        string json = response.Content.ReadAsStringAsync().Result;
-                        data = JsonConvert.DeserializeObject(json);
-                    }
+                //Assert.IsNotNull(qryR02);
+                //Assert.AreEqual("38923", qryR02.QRD.GetWhoSubjectFilter(0).IDNumber.Value);
+                HL7SocketListener hsl = new HL7SocketListener(5000);
 
-                    return data;
-                }
+                hsl.start();
 
-                return null;
             }
             catch(Exception e)
             {
-                throw new Exception("Faild reading REST/JSON record: " + e.Message);
+                Console.WriteLine("{0}", e.Message);
             }
-        }
-
-        protected static async Task<dynamic> getXmlRecord(string __site, string __query)
-        {
-            throw new NotImplementedException();
 
             try
             {
-                using (var client = new HttpClient())
+                HL7Rest __input = new HL7Rest();
+
+                while (true)
                 {
-                    client.BaseAddress = new Uri(__site);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
-
-                    var response = await client.GetAsync(__query);
-
-                    dynamic data = null;
-                    if (response != null)
+                    switch (__input.waitForTrigger())
                     {
-                        //string json = response.Content.ReadAsStringAsync().Result;
-                        //data = JsonConvert.DeserializeObject(json);
+                        case RecordType.Drug:
+                            __input.getDrugRecord();
+                            break;
+
+                        case RecordType.Location:
+                            __input.getLocationRecord();
+                            break;
+
+                        case RecordType.Patient:
+                            __input.getPatientRecord();
+                            break;
+
+                        case RecordType.Prescriber:
+                            __input.getPrescriberRecord();
+                            break;
+
+                        case RecordType.Prescription:
+                            __input.getPrescriptionRecord();
+                            break;
+
+                        case RecordType.Store:
+                            __input.getStoreRecord();
+                            break;
+
+                        case RecordType.TimeQty:
+                            __input.getTimeQtyRecord();
+                            break;
+
+                        case RecordType.Unkown:
+                        default:
+                            break;
                     }
-
-                    return data;
                 }
-
-                return null;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                throw new Exception("Faild reading REST/XML record: " + e.Message);
+
             }
         }
-
-        public virtual motDrugRecord getDrugRecord()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual motLocationRecord getLocationRecord()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual motPatientRecord getPatientRecord()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual motPrescriptionRecord getPrescriptionRecord()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual motPrescriberRecord getPrescriberRecord()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual motStoreRecord getStoreRecord()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual motTimeQtysRecord getTimeQtyRecord()
-        {
-            throw new NotImplementedException();
-        }
-        private async Task<bool> UrlExists(string url)
-        {
-            var client = new HttpClient();
-            var httpRequestMsg = new HttpRequestMessage(HttpMethod.Head, url);
-            var response = await client.SendAsync(httpRequestMsg);
-
-            return (response.IsSuccessStatusCode);
-        }
-
-        public httpInputSource(){ }
-
-        ~httpInputSource() { }
     }
 
-    class TestHttpInput : httpInputSource
+    public enum RecordType
+    {
+        Drug,
+        Location,
+        Patient,
+        Prescription,
+        Prescriber,
+        Store,
+        TimeQty,
+        Unkown
+    }
+
+    public class HL7Rest : httpInputSource
     {
         private string __siteRoot = "";
+
+        public RecordType waitForTrigger()
+        {
+            //
+            // Framework will send the following message types
+            //  1. ADT
+            //  2. MFN
+            //  3. RDE (Drug)
+            //  4. RDE (Literal)
+            //  5. RDS
+            //
+
+            Thread.Sleep(5000);
+            Console.WriteLine("Ho Hum: {0}", Thread.CurrentThread.Name);
+            return RecordType.Unkown;
+        }
 
         public override motDrugRecord getDrugRecord()
         {
@@ -161,30 +141,34 @@ namespace motInboundLib
 
             try
             {
-                __xTable.Add("Id", "RxSys_DrugID");
-                __xTable.Add("ManufacturerId", "LblCode");
-                __xTable.Add("ReOrderId", "ProdCode");
-                __xTable.Add("TradeName", "TradeName");
-                __xTable.Add("Strength", "Strength");
-                __xTable.Add("Unit", "Unit");
-                __xTable.Add("RxOtc", "RxOtc");
-                __xTable.Add("DoseForm", "DoseForm");
-                __xTable.Add("Route", "Route");
-                __xTable.Add("Schedule", "DrugSchedule");
-                __xTable.Add("FullVisualDescription", "VisualDescription");
-                __xTable.Add("RxLabelName", "DrugName");
-                __xTable.Add("CardVisualDescription", "ShortName");
-                __xTable.Add("NdcNumber", "NDCNum");
-                __xTable.Add("DrugCupCountId", "SizeFactor");
-                __xTable.Add("PackageTemplate", "Template");
-                __xTable.Add("Version", "ConsultMsg");
-                __xTable.Add("GenericForId", "GenericFor");
+                __xTable.Add("", "RxSys_DrugID");
+                __xTable.Add("", "LblCode");
+                __xTable.Add("", "ProdCode");
+                __xTable.Add("", "TradeName");
+                __xTable.Add("", "Strength");
+                __xTable.Add("", "Unit");
+                __xTable.Add("", "RxOtc");
+                __xTable.Add("", "DoseForm");
+                __xTable.Add("", "Route");
+                __xTable.Add("", "DrugSchedule");
+                __xTable.Add("", "VisualDescription");
+                __xTable.Add("", "DrugName");
+                __xTable.Add("", "ShortName");
+                __xTable.Add("", "NDCNum");
+                __xTable.Add("", "SizeFactor");
+                __xTable.Add("", "Template");
+                __xTable.Add("", "ConsultMsg");
+                __xTable.Add("", "GenericFor");
 
 
                 var __record = getJsonRecord(__siteRoot, @"api/drug/1");
 
                 if (__record != null)
                 {
+                    PipeParser parser = new PipeParser();
+                    IMessage __message = parser.Parse(Convert.ToString(__record));
+
+
                     // Got something, now transform it to what we need
                     // SourceRecord s = <SourceRecord> __record;
                 }
@@ -440,13 +424,15 @@ namespace motInboundLib
                 throw new Exception("Failed to get Time/Quantity data: " + e.Message);
             }
 
+            
             return base.getTimeQtyRecord();
         }
 
-        TestHttpInput(string __rootPath)
+        public HL7Rest(string __rootPath)
         {
             __siteRoot = __rootPath;
         }
 
+        public HL7Rest() { }
     }
 }
