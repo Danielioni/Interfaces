@@ -35,12 +35,12 @@ namespace motInboundLib
    
     public class motSocket
     {
-        Port __p;
+        private Port        __p;
         private static bool __running = false;
 
-        private string              __s_iobuffer = "";
-        private byte[]              __b_iobuffer;
-        private     int             __portnum;
+        private string                  __s_iobuffer = "";
+        private byte[]                  __b_iobuffer;
+        private     int                 __portnum;
 
         private  static TcpClient       __client;
         private  static TcpListener     __trigger;
@@ -49,15 +49,15 @@ namespace motInboundLib
         private  static EndPoint        __remoteEndPoint;
         private  static EndPoint        __localEndPoint;
 
-        private     Logger          __logger;
+        private     Logger              __logger;
 
-        private     Thread          __working_thread;
-        private     Thread          __client_thread;
+        private     Thread              __working_thread;
+        private     Thread              __client_thread;
 
-        public      delegate void   __void_delegate(string __data);
-        public      delegate bool   __bool_delegate();
+        public      delegate void       __void_delegate(string __data);
+        public      delegate bool       __bool_delegate();
 
-        private     __void_delegate __callback;
+        private     __void_delegate     __callback;
 
         /// <summary>
         /// motSocket constructor to immediatly thread the Listener function.
@@ -70,6 +70,7 @@ namespace motInboundLib
             {
                 __callback = __callback_p;
                 __portnum = __port;
+                __logger = LogManager.GetLogger("motInboundLib.Socket");
                 __trigger = new TcpListener(IPAddress.Any, __port);
                 __running = true;
             }
@@ -129,11 +130,16 @@ namespace motInboundLib
                 try
                 {
                     __trigger.Start();
+
+                    __logger.Info("Linstening on port {0}", __portnum);
+
                     __client = __trigger.AcceptTcpClient();
                     __stream = __client.GetStream();
 
                     __remoteEndPoint = __client.Client.RemoteEndPoint;
                     __localEndPoint = __client.Client.LocalEndPoint;
+
+                    __logger.Info("Acceppted connection from remote endpoint {0}", __remoteEndPoint.ToString());
 
                     __client_thread = new Thread(new ThreadStart(read));
                     __client_thread.Name = "reader";
@@ -165,6 +171,8 @@ namespace motInboundLib
 
             try
             {
+                __logger.Info("Reading data ...");
+
                 while (true)
                 {
                     __inbytes = __stream.Read(__b_iobuffer, 0, __b_iobuffer.Length);

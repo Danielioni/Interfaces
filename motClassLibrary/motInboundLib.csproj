@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="databaseInput.cs" />
     <Compile Include="fileSystemWatcher.cs" />
+    <Compile Include="HL7Messages.cs" />
     <Compile Include="httpInput.cs" />
     <Compile Include="inputMethod.cs" />
     <Compile Include="InputStucture.cs" />

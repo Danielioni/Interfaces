@@ -3898,7 +3898,7 @@ get
                 {
                     if (value.Contains("-"))
                     {
-                        value.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                        value = value.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
                     }
 
                     setField(__qualifiedTags, value, "Zip");

@@ -250,22 +250,23 @@ namespace motInboundLib
 
             //fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO");
 
+
             try
             {
-                motSocket ms = new motSocket(50005, catch_socket_data);
+                // create the listener socket on port 50005 and pass a callback function
+                motSocket ms = new motSocket(21110, catch_socket_data);
 
                 // This will start the listener and call the callback forever
                 Thread __worker = new Thread(new ThreadStart(ms.listen));
                 __worker.Name = "listener";
                 __worker.Start();
 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 100; i++)
                 {
                     Thread.Sleep(1024);
                     Console.WriteLine("Still waiting {0}", i);
                 }
 
-                var iq = 0;
                 ms.close();
                 __worker.Join();
             }

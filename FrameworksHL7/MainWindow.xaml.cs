@@ -33,7 +33,7 @@ namespace FrameworksHL7
 
             //string message = @"MSH|^~\&|CohieCentral|COHIE|Clinical Data Provider|TCH|20060228155525||QRY^R02^QRY_R02|1|P|2.5.1|QRD|20060228155525|R|I||||10^RD&Records&0126|38923^^^^^^^^&TCH|||";
             //string message = @"MSH|^~\&|3rd Party Interface|SNM|FrameworkLTC|PDC|20090121161123||ZMA|179545|P|2.5||||||ASCII||| ZMA|L|Console14|K200|00182145310|549|1|10|96531|Test Guy";
-            string message = @"MSH|^~\&|3rd Party Interface|SNM|FrameworkLTC|PDC|20110214162636||MFN^M15^MFN_M15|179547|P|2.5||||||ASCII||| MFI|INV^Inventory Master File||UPD|||MFE|MUP|||00039006013|CEIIM|00039006013^LASIX TAB 40MG||||^AVENTIS|PHR\F\PDC\F\DEFAULT\F\DEFAULT||-100||||||| MFE|MUP|||00039006013|CEIIM|00039006013^LASIX TAB 40MG||||^AVENTIS|OSS\F\Console14\F\K200||100|||||||";
+            string message = @"'\x0B'MSH|^~\&|3rd Party Interface|SNM|FrameworkLTC|PDC|20110214162636||MFN^M15^MFN_M15|179547|P|2.5||||||ASCII||| MFI|INV^Inventory Master File||UPD|||MFE|MUP|||00039006013|CEIIM|00039006013^LASIX TAB 40MG||||^AVENTIS|PHR\F\PDC\F\DEFAULT\F\DEFAULT||-100||||||| MFE|MUP|||00039006013|CEIIM|00039006013^LASIX TAB 40MG||||^AVENTIS|OSS\F\Console14\F\K200||100|||||||\x0C";
             try
             {
                 //PipeParser parser = new PipeParser();
@@ -43,7 +43,8 @@ namespace FrameworksHL7
 
                 //Assert.IsNotNull(qryR02);
                 //Assert.AreEqual("38923", qryR02.QRD.GetWhoSubjectFilter(0).IDNumber.Value);
-                HL7SocketListener hsl = new HL7SocketListener(5000);
+                HL7SocketListener hsl = new HL7SocketListener(21110);
+                //hsl.__test_parser(message);
 
                 hsl.start();
 

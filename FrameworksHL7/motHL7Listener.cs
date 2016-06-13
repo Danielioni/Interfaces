@@ -36,80 +36,149 @@ using NLog;
 
 namespace FrameworksHL7
 {
+    class MSH  // Message Header
+    {
+
+    }
+    class ORC // Common Order
+    {
+        string __id;  // ORC-1
+
+        struct __placer_order_number // EI, ORC-2
+        {
+            string __entiry_id;         // ORC-2-1
+            string __namespace_id;      // ORC-2-2
+            string __universal_id;      // ORC-2-3
+            string __universal_id_type; // ORC-2-4
+        }
+
+        string __filler_order_number;
+
+
+
+    }
+    class PID // Patient Identification
+    {
+
+    }
+    class EVN // Pharmacy Order / Treatment
+    {
+        string __event_type_code;
+        string __recorded_time_date;
+        string __date_time_planned_event;
+        string __event_reason_code;
+        string __operator_id;
+        string __event_occured;
+        string __event_facility;
+    }
+
+    class RAS
+    {
+
+    }
     public class HL7SocketListener
     {
         const int TCP_TIMEOUT = 300000;
 
         private Logger logger;
 
-        private TcpListener __tcp_listener;
-        private Thread __tcp_listener_thread;
-
-        private int __listener_port = 0;
+        public motSocket __socket;
+        private Thread  __worker;
+        private int     __listener_port = 0;
 
         private bool __run_thread = true;
         private string archivePath = null;
 
-        public bool sendACK { get; set; } = true;
+        public bool __send_ack { get; set; } = true;
 
-        string __generate_ACK(string __original_message)
+        string __generate_ack(HL7Message __original_message)
         {
             // create a HL7Message object using the original message as the source to obtain details to reflect back in the ACK message
-            HL7Message tmpMsg = new HL7Message(__original_message);
-            string trigger = tmpMsg.GetHL7Item("MSH-9.2")[0];
-            string originatingApp = tmpMsg.GetHL7Item("MSH-3")[0];
-            string originatingSite = tmpMsg.GetHL7Item("MSH-4")[0];
-            string messageID = tmpMsg.GetHL7Item("MSH-10")[0];
-            string processingID = tmpMsg.GetHL7Item("MSH-11")[0];
-            string hl7Version = tmpMsg.GetHL7Item("MSH-12")[0];
+            //HL7Message tmpMsg = new HL7Message(__original_message);
+            string trigger = __original_message.GetHL7Item("MSH-9.2")[0];
+
+            string originatingApp = __original_message.GetHL7Item("MSH-3")[0];
+            string originatingSite = __original_message.GetHL7Item("MSH-4")[0];
+            string messageID = __original_message.GetHL7Item("MSH-10")[0];
+            string processingID = __original_message.GetHL7Item("MSH-11")[0];
+            string hl7Version = __original_message.GetHL7Item("MSH-12")[0];
             string ackTimestamp = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString();
 
-            StringBuilder ACKString = new StringBuilder();
-            ACKString.Append((char)0x0B);
-            ACKString.Append("MSH|^~\\&|MOT_HL7Listener|MOT_HL7Listener|" + originatingSite + "|" + originatingApp + "|" + ackTimestamp + "||ACK^" + trigger + "|" + messageID + "|" + processingID + "|" + hl7Version);
-            ACKString.Append((char)0x0D);
-            ACKString.Append("MSA|CA|" + messageID);
-            ACKString.Append((char)0x1C);
-            ACKString.Append((char)0x0D);
-            return ACKString.ToString();
+            StringBuilder __ack_string = new StringBuilder();
+            __ack_string.Append((char)0x0B);
+            __ack_string.Append("MSH|^~\\&|MOT_HL7Listener|MOT_HL7Listener|" + originatingSite + "|" + originatingApp + "|" + ackTimestamp + "||ACK^" + trigger + "|" + messageID + "|" + processingID + "|" + hl7Version);
+            __ack_string.Append((char)0x0D);
+            __ack_string.Append("MSA|CA|" + messageID);
+            __ack_string.Append((char)0x1C);
+            __ack_string.Append((char)0x0D);
+            
+            return __ack_string.ToString();
         }
-/*
-        private void ReceieveACK()
-        {
-            int bytesRead;
-            string ackData = "";
-            byte[] receiveBuffer = new byte[4096];
 
-            // wait for the ACK to be returned, or a timeout occurrs. Do nothing with the ACK recived (discard).
-            logger.Info("Recieve ACK thread started");
-            while (this.runThread)
+        public void __test_parser(string __data)
+        {
+            __parse_data(__data);
+        }
+
+       
+        private string __parse_data(string __raw_message)
+        {
+            try
             {
-                try
+                // create a HL7message object from the message recieved. Use this to access elements needed to populate the ACK 
+                HL7Message message = new HL7Message(__raw_message);
+
+                //
+                // Decode
+                //
+                //string __message_trigger = message.GetMessageTrigger();
+                string __message_control_id = message.GetHL7Item("MSH-10")[0];
+                //string __accept_ack_type = message.GetHL7Item("MSH-15")[0];
+                //string __date_stamp = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString();
+
+
+                // send ACK message if MSH-15 is set to AL and ACKs not disabled by -NOACK command line switch
+                //if ((__send_ack) && (__accept_ack_type.ToUpper() == "AL"))
+                if(__send_ack)
                 {
-                    bytesRead = this.PassthruClientStream.Read(receiveBuffer, 0, 4096);
-                    // Message buffer received successfully
-                    ackData += Encoding.UTF8.GetString(receiveBuffer, 0, bytesRead);
-                    // Find a VT character, this is the beginning of the MLLP frame
-                    int start = ackData.IndexOf((char)0x0B);
-                    if (start >= 0)
+                    logger.Info("Sending ACK (Message Control ID: " + __message_control_id + ")");
+
+                    // generate ACK Message and send in response to the message received
+                    string __response = __generate_ack(message);  // TO DO: send ACKS if set in message header, or specified on command line
+                   
+                    try
                     {
-                        // Search for the end of the MLLP frame (a FS character)
-                        int end = ackData.IndexOf((char)0x1C);
-                        if (end > start)
-                        {
-                            LogInformation("ACK received from -PassThru host");
-                            ackData = "";
-                        }
+                        __socket.write(__response);
+                        __socket.flush();
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Error("An error has occurred while sending an ACK to the client " + __socket.remoteEndPoint);
+                        logger.Error(e.Message);
                     }
                 }
-                catch (Exception)
-                {
-                    LogWarning("Connecion timed out or ended while waiting for ACK from PassThru host.");
-                    break;
-                }
+
+                return null;
             }
+            catch (Exception e)
+            {
+                __raw_message = ""; // reset the message data string for the next message
+                logger.Warn("An exception occurred while parsing the HL7 message");
+                logger.Warn(e.Message);
+            }
+
+            return null;
         }
-*/
+
+        private void __process_data(string __data)
+        {
+            // Parse and act on the incoming data
+            while(true)
+            {
+
+            }
+
+        }
 
         private void __receive_data(object __pclient)
         {
@@ -124,7 +193,7 @@ namespace FrameworksHL7
 
             TcpClient __client = (TcpClient)__pclient;
             NetworkStream __socket = __client.GetStream();
-           
+
             while (true)
             {
                 try
@@ -169,24 +238,24 @@ namespace FrameworksHL7
                             string acceptAckType = message.GetHL7Item("MSH-15")[0];
                             string dateStamp = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString();
                             string filename = dateStamp + "_" + (filenameSequenceStart + __message_count).ToString("D6") + "_" + messageTrigger + ".hl7"; //  increment sequence number for each filename
-                    
+
                             // Write the HL7 message to file.
                             __write_message_to_file(message.ToString(), archivePath + filename);
-                            
+
                             // send ACK message is MSH-15 is set to AL and ACKs not disbaled by -NOACK command line switch
-                            if ((sendACK) && (acceptAckType.ToUpper() == "AL"))
+                            if ((__send_ack) && (acceptAckType.ToUpper() == "AL"))
                             {
                                 logger.Info("Sending ACK (Message Control ID: " + messageControlID + ")");
 
                                 // generate ACK Message and send in response to the message received
-                                string response = __generate_ACK(message.ToString());  // TO DO: send ACKS if set in message header, or specified on command line
+                                string response = __generate_ack(message);  // TO DO: send ACKS if set in message header, or specified on command line
                                 byte[] __encodedResponse = Encoding.UTF8.GetBytes(response);
-                           
+
                                 // Send response
                                 try
                                 {
                                     __socket.Write(__encodedResponse, 0, __encodedResponse.Length);
-                                    __socket.Flush();                              
+                                    __socket.Flush();
                                 }
                                 catch (Exception e)
                                 {
@@ -212,26 +281,17 @@ namespace FrameworksHL7
 
             __socket.Close();
         }
-        public void __start_listener()
+        public void __start_listener(int __port)
         {
             try
             {
                 Console.WriteLine("__start_listener: {0}", Thread.CurrentThread.ManagedThreadId);
+                __socket = new motSocket(__port, __test_parser);
 
-                __tcp_listener.Start();
-
-                // run the thread unless a request to stop is received
-                while (this.__run_thread)
-                {
-                    // waits for a client connection to the listener
-                    TcpClient client = __tcp_listener.AcceptTcpClient();
-                    this.logger.Info(@"New client connection accepted from " + client.Client.RemoteEndPoint);
-
- 
-                    // create a new thread. This will handle communication with a client once connected
-                    Thread __client_thread = new Thread(new ParameterizedThreadStart(__receive_data));
-                    __client_thread.Start(client);
-                }
+                // This will start the listener and call the callback 
+                __worker = new Thread(new ThreadStart(__socket.listen));
+                __worker.Name = "listener";
+                __worker.Start();
             }
             catch (Exception e)
             {
@@ -242,9 +302,10 @@ namespace FrameworksHL7
             }
         }
 
-        public void __stop_listener()
+        void __stop()
         {
-            __run_thread = false;
+            __socket.close();
+            __worker.Join();
         }
 
         /*
@@ -271,14 +332,12 @@ namespace FrameworksHL7
         {
             try
             {
-                __tcp_listener = new TcpListener(IPAddress.Any, this.__listener_port);
-                __tcp_listener_thread = new Thread(new ThreadStart(__start_listener));
-                __tcp_listener_thread.Start();
+                __start_listener(__listener_port);
 
                 logger.Info("HL 7 Listener waiting on port: " + __listener_port);
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 
             }
@@ -292,10 +351,76 @@ namespace FrameworksHL7
                 __listener_port = __port;
                 logger = LogManager.GetLogger("motInboundLib.Port");
             }
-            catch(Exception e)
-            { 
+            catch (Exception e)
+            {
             }
         }
+
+        /*
+        MSH|^~\&|ADT1|MCM|LABADT|MCM|198808181126|SECURITY|ADT^A01|MSG00001-|P|2.6
+        EVN|A01|198808181123
+        PID|||PATID1234^5^M11^^AN||JONES^WILLIAM^A^III||19610615|M||2106-3|677 DELAWARE AVENUE^^EVERETT^MA^02149|GL|(919)379-1212|(919)271-3434~(919)277-3114||S||PATID12345001^2^M10^^ACSN|123456789|9-87654^NC
+        NK1|1|JONES^BARBARA^K|SPO|||||20011105
+        NK1|1|JONES^MICHAEL^A|FTH
+        PV1|1|I|2000^2012^01||||004777^LEBAUER^SIDNEY^J.|||SUR||-||ADM|A0
+        AL1|1||^PENICILLIN||CODE16 ~CODE17~CODE18
+        AL1|2||^CAT DANDER||CODE257
+        DG1|001|I9|1550|MAL NEO LIVER, PRIMARY|19880501103005|F
+        PR1|2234|M11|111^CODE151|COMMON PROCEDURES|198809081123
+        ROL|45^RECORDER^ROLE MASTER LIST|AD|RO|KATE^SMITH^ELLEN|199505011201
+        GT1|1122|1519|BILL^GATES^A
+        IN1|001|A357|1234|BCMD|||||132987
+        IN2|ID1551001|SSN12345678
+        ROL|45^RECORDER^ROLE MASTER LIST|AD|RO|KATE^ELLEN|199505011201
+        */
+
+        public class __HL7_field_map
+        {
+            Dictionary<string, Dictionary<int,string>> __definitions;
+            
+            public __HL7_field_map()
+            {
+                __definitions = new Dictionary<string, Dictionary<int, string>>();
+            }
+
+            public void __add_field(string __field, Dictionary<int,string> __map)
+            {
+                __definitions.Add(__field, __map);
+            }
+
+            Dictionary<int, string>__get_map(string __field)
+            {
+                return __definitions[__field];
+            }
+        }
+
+        public class __HL7_record
+        {
+            public char __field_delimiter { get; set; } = '|';
+            public char __component_delimiter { get; set; } = '^';
+            public char __subcomponent_delimiter { get; set; } = '&';
+            public char __repeat_delimiter { get; set; } = '~';
+            public char __escape_delimiter { get; set; } = '\\';
+
+            public string __key;
+            public string __message;
+            List<string> __fields;
+
+            public __HL7_record()
+            {
+                __fields = new List<string>();
+            }
+
+            public void __parse_fields()
+            {
+                string[] __f = __message.Split(__field_delimiter);
+
+                foreach(string __s in __f)
+                {
+                    __fields.Add(__s);
+                }
+            }
+        };
 
         class HL7Message
         {
@@ -306,24 +431,78 @@ namespace FrameworksHL7
             private char subComponentDelimer;
             private char repeatDelimeter;
 
+            private List<__HL7_record> __full_message;
+
             /// <summary>
             /// Constructor. Set the field, component, subcompoenent and repeat delimeters. Throw an exception if the messsage  does not include a MSH segment.
+            /// 
+            /// Message Format 
+            /// --------------
+            /// <0x0B> Message Header Segment<0x0D> 
+            /// Event Type Segment<0x0D>
+            /// Patient Identification Segment<0x0D>
+            /// Patient Visit Segment<0x0D>
+            /// Observation/Result Segment<0x0D>
+            /// Patient Allergy Information Segment<0x0D>
+            /// Diagnosis Segment<0x0D>
+            /// <0x1C><0x0D> 
+            /// 
+            /// HL7 Block ASCII Characters HEX Characters
+            /// --------- ---------------- --------------
+            ///   <SB>        <VT>           0x0B           \v
+            ///   <EB>        <FS>           0x1C 
+            ///   <CR>        <CR>           0x0D           \r
+            /// 
             /// </summary>
             /// <param name="message"></param>
-            public HL7Message(string Message)
+            public HL7Message(string __raw_message)
             {
+                int __start_mark = __raw_message.IndexOf('\v');
+                int __end_mark = __raw_message.IndexOf('\x1C');
 
-                message = Message;
-                segments = Message.Split((char)0x0D);
-                // set the field, component, sub component and repeat delimters
-                int startPos = message.IndexOf("MSH");
-                if (startPos >= 0)
+                if (__end_mark > __start_mark)
                 {
-                    startPos = startPos + 2;
-                    this.fieldDelimeter = message[startPos + 1];
-                    this.componentDelimeter = message[startPos + 2];
-                    this.repeatDelimeter = message[startPos + 3];
-                    this.subComponentDelimer = message[startPos + 5];
+                    __raw_message = __raw_message.Remove(__raw_message.IndexOf('\v'),1);
+                    __raw_message = __raw_message.Remove(__raw_message.IndexOf('\x1C'),1);
+
+                    message = __raw_message;
+                    segments = __raw_message.Split('\x0D');
+
+                    // set the field, component, sub component and repeat delimters
+                    int __start_pos = message.IndexOf("MSH");
+                    if (__start_pos >= 0)
+                    {
+                        __start_pos += 2;
+                        fieldDelimeter = message[__start_pos + 1];
+                        componentDelimeter = message[__start_pos + 2];
+                        repeatDelimeter = message[__start_pos + 3];
+                        subComponentDelimer = message[__start_pos + 5];
+                    }
+
+                    __full_message = new List<__HL7_record>();
+
+                    
+
+                    foreach(string __s in segments)
+                    {
+                        __HL7_record p = new __HL7_record();
+
+                        p.__field_delimiter = fieldDelimeter;
+                        p.__component_delimiter = componentDelimeter;
+                        p.__subcomponent_delimiter = subComponentDelimer;
+                        p.__repeat_delimiter = repeatDelimeter;
+
+                        p.__key = __s.Substring(0, 3);
+                        p.__message = __s.Substring(3);
+                        p.__parse_fields();
+
+                        __full_message.Add(p);
+
+                        // Acknowledge
+
+                    }
+                  
+                    
                 }
                 // throw an exception if a MSH segment is not included in the message. 
                 else
