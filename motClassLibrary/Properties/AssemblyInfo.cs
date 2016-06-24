@@ -7,10 +7,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Medicine-On-Time Gateway Inteface")]
-[assembly: AssemblyDescription("Classes to abstrack the inbound system interface")]
+[assembly: AssemblyDescription("Classes to abstract the inbound system interface")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Medicine-On-Time, LLC.")]
-[assembly: AssemblyProduct("motInboundLib")]
+[assembly: AssemblyProduct("motInboundGatewayLib")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

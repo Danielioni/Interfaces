@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RAS_O17>
+  <MSH>
+    <MSH.1>|</MSH.1>
+    <MSH.2>^~\&amp;</MSH.2>
+    <MSH.3>
+      <HD.1>7edit</HD.1>
+    </MSH.3>
+    <MSH.5>
+      <HD.1>7edit</HD.1>
+    </MSH.5>
+    <MSH.7>20160610190906</MSH.7>
+    <MSH.9>
+      <MSG.1>RAS</MSG.1>
+      <MSG.2>O17</MSG.2>
+    </MSH.9>
+    <MSH.10>MSG-20160610-190906-0018</MSH.10>
+    <MSH.11>
+      <PT.1>P</PT.1>
+    </MSH.11>
+    <MSH.12>
+      <VID.1>2.7.1</VID.1>
+    </MSH.12>
+  </MSH>
+  <RAS_O17.ORDER>
+    <ORC>
+      <ORC.21>
+        <XON.1>Hollis Happy Home</XON.1>
+      </ORC.21>
+    </ORC>
+    <RAS_O17.TIMING>
+      <TQ1>
+        <TQ1.2>
+          <CQ.1>10</CQ.1>
+        </TQ1.2>
+      </TQ1>
+    </RAS_O17.TIMING>
+  </RAS_O17.ORDER>
+</RAS_O17>

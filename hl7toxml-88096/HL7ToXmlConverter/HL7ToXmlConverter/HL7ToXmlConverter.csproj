@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{26F4F086-7D09-4D82-B1DA-F7780872CB56}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Janoman.Healthcare.HL7</RootNamespace>
+    <AssemblyName>HL7ToXmlConverter</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\HL7ToXmlConverter.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Hl7ToXmlConverter.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\impl\misc\CallbackHelper.cs" />
+    <Compile Include="src\impl\Enums.cs" />
+    <Compile Include="src\impl\misc\Evaluater.cs" />
+    <Compile Include="src\impl\HL7ToXmlConverter.cs" />
+    <Compile Include="src\impl\HL7ToXmlConverterFactory.cs" />
+    <Compile Include="src\impl\HL7Analyzer.cs" />
+    <Compile Include="src\impl\HL7ConverterProperties.cs" />
+    <Compile Include="src\impl\HL7Dictionary.cs" />
+    <Compile Include="src\impl\HL7Element.cs" />
+    <Compile Include="src\impl\HL7ElementStack.cs" />
+    <Compile Include="src\impl\HL7Parser.cs" />
+    <Compile Include="src\impl\HL7Scanner.cs" />
+    <Compile Include="src\impl\HL7Sequence.cs" />
+    <Compile Include="src\impl\HL7TokenPair.cs" />
+    <Compile Include="src\impl\exceptions\HL7ToXmlConverterException.cs" />
+    <Compile Include="src\impl\exceptions\HL7AnalyzerException.cs" />
+    <Compile Include="src\impl\exceptions\HL7DictionaryException.cs" />
+    <Compile Include="src\impl\exceptions\HL7ParserException.cs" />
+    <Compile Include="src\impl\exceptions\HL7PropertyException.cs" />
+    <Compile Include="src\impl\exceptions\HL7ScannerException.cs" />
+    <Compile Include="src\impl\HL7XmlOutput.cs" />
+    <Compile Include="src\impl\misc\HL7ToXmlConverterHelper.cs" />
+    <Compile Include="src\spi\IAnalyzer.cs" />
+    <Compile Include="src\spi\ICallback.cs" />
+    <Compile Include="src\spi\IClonable.cs" />
+    <Compile Include="src\spi\IContentHandler.cs" />
+    <Compile Include="src\spi\IConverter.cs" />
+    <Compile Include="src\spi\IDictionary.cs" />
+    <Compile Include="src\spi\IParser.cs" />
+    <Compile Include="src\spi\IProperties.cs" />
+    <Compile Include="src\spi\IScanner.cs" />
+    <Compile Include="src\spi\IXmlOutput.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="doc\XML_Encoding_Rules_for_HL7_v2_Messages.pdf" />
+    <None Include="grammar\hl7-grammar.zip" />
+    <None Include="Hl7ToXmlConverter.snk" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="license\license.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

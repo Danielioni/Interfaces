@@ -1,0 +1,8 @@
+﻿<Window x:Class="FrameworksHL7.HL7MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FrameworksHL7"
+        mc:Ignorable="d"
+        Title="HL7MainWindow" Height="711.4" Width="508.2"/>

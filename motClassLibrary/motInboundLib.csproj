@@ -61,6 +61,7 @@
     <Compile Include="inputMethod.cs" />
     <Compile Include="InputStucture.cs" />
     <Compile Include="localAPI.cs" />
+    <Compile Include="motHL7Listener.cs" />
     <Compile Include="motRecords.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Port.cs" />
@@ -69,12 +70,19 @@
     <Compile Include="webAPI.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="hl7v2xml.dat" />
     <None Include="motInbound.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="MOT.ico" />
     <None Include="NLog.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\hl7toxml-88096\HL7ToXmlConverter\HL7ToXmlConverter\HL7ToXmlConverter.csproj">
+      <Project>{26f4f086-7d09-4d82-b1da-f7780872cb56}</Project>
+      <Name>HL7ToXmlConverter</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

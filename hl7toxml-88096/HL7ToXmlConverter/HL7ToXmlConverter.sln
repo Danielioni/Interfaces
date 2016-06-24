@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HL7ToXmlConverter", "HL7ToXmlConverter\HL7ToXmlConverter.csproj", "{26F4F086-7D09-4D82-B1DA-F7780872CB56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HL7ToXmlConverter.Test", "HL7ToXmlConverterTest\HL7ToXmlConverter.Test.csproj", "{393F2C1E-57F6-40B0-AFCD-F5DD2BA5E5B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DA26E7B1-5E0B-4F36-9AB2-4403D1AE871B}"
+	ProjectSection(SolutionItems) = preProject
+		HL7ToXmlConverter.vsmdi = HL7ToXmlConverter.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HL7ToXmlConverterFramework", "HL7ToXmlConverterFramework", "{11B80402-4645-4877-8438-E45FAEDAE96E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Architecture", "Architecture", "{3AC15842-2AC1-443B-90D0-2C2074BB0684}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs07
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = HL7ToXmlConverter\\HL7ToXmlConverter.csproj
+		SccProjectTopLevelParentUniqueName1 = HL7ToXmlConverter.sln
+		SccProjectName1 = HL7ToXmlConverter
+		SccLocalPath1 = HL7ToXmlConverter
+		SccProjectUniqueName2 = HL7ToXmlConverterTest\\HL7ToXmlConverter.Test.csproj
+		SccProjectTopLevelParentUniqueName2 = HL7ToXmlConverter.sln
+		SccProjectName2 = HL7ToXmlConverterTest
+		SccLocalPath2 = HL7ToXmlConverterTest
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = HL7ToXmlConverter.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{26F4F086-7D09-4D82-B1DA-F7780872CB56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26F4F086-7D09-4D82-B1DA-F7780872CB56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26F4F086-7D09-4D82-B1DA-F7780872CB56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26F4F086-7D09-4D82-B1DA-F7780872CB56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{393F2C1E-57F6-40B0-AFCD-F5DD2BA5E5B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{393F2C1E-57F6-40B0-AFCD-F5DD2BA5E5B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{393F2C1E-57F6-40B0-AFCD-F5DD2BA5E5B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{393F2C1E-57F6-40B0-AFCD-F5DD2BA5E5B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{26F4F086-7D09-4D82-B1DA-F7780872CB56} = {11B80402-4645-4877-8438-E45FAEDAE96E}
+		{393F2C1E-57F6-40B0-AFCD-F5DD2BA5E5B5} = {11B80402-4645-4877-8438-E45FAEDAE96E}
+	EndGlobalSection
+EndGlobal
