@@ -7,13 +7,15 @@ using System.Xml;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
-using Janoman.Healthcare.HL7;
 using NLog;
-
-
+using NHapi.Base.Parser;
+using NHapi.Base.Model;
+using NHapi.Model.V25.Datatype;
+using NHapi.Model.V25.Message;
+using NHapi.Model.V25.Segment;
 namespace motInboundLib
 {
-    public class HL7Message
+    public class HL7Message 
     {
         HL7SocketListener __listener;
         public XmlDocument __content { get; set; }
@@ -64,24 +66,89 @@ namespace motInboundLib
         {
             try
             {
-                __raw_message = __raw_message.Remove(__raw_message.IndexOf('\v'), 1);
+                int __len = 0;
+
+                __raw_message = __raw_message.Remove(__raw_message.IndexOf('\x0B'), 1);
                 __raw_message = __raw_message.Remove(__raw_message.IndexOf('\x1C'), 1);
 
-                char[] __delimiter = { '\r' };
-                __debug = __raw_message.Split(__delimiter);
+                //
+                // Some strings come accross in a fixed size buffer with a lot of trailling nulls. The string's length 
+                // is the buffer size for some reason and it really screws up the parser, so we'll make it its 'true' length
+                // 
+                while(__raw_message[__len] != '\0')
+                {
+                    __len++;
+                }
 
-                HL7Parser __input = new HL7Parser(__raw_message);
-                __content = __input.__record;
+                string __fresh_message =  __raw_message.Substring(0, __len);
+
+               //
+               // Get the actual message and then determine which message it is and send it off to MOT
+               //
+                PipeParser p = new PipeParser();
+                IMessage m = p.Parse(__fresh_message);
+
+                DefaultXMLParser x = new DefaultXMLParser();
+                __content = x.EncodeDocument(m);
 
                 __send_ACK();
 
-                __got_new_content.Release();
+                //
+                // Do the record conversion and send to MOT
+                switch (m.GetStructureName())
+                {
+                    case "RDE_O11": //Pharmacy Treatment Encoded Order
+                        RDE_O11 __rde_o11 = (RDE_O11)m;
+                        this.__process_prescription_record(__rde_o11);
+                        break;
+
+                    case "MFN_M15": // Inventory Item Master Message
+                        this.__process_drug_record((MFN_M15)m);
+                        break;
+
+                    case "RDS_O13": // Pharmacy/Treatment Dispense Message
+                        RDS_O13 __rds_o13 = (RDS_O13)m;
+                        break;
+
+                    
+                    case "ADT_A01":  // Patient Admit Notification
+                        ADT_A01 __adt_a01 = (ADT_A01)m;
+                        __process_patient_record(__adt_a01);
+                        break;
+
+                    case "ADT_A02": // Patient Transfer
+                        ADT_A02 __adt_a02 = (ADT_A02)m;
+                        break;
+
+                    case "ADT_A03": // Patient Discharge/End Visit
+                        ADT_A03 __adt_a03 = (ADT_A03)m;
+                        break;
+
+                    case "ADT_A08":  // Update Patient Information
+                        ADT_A01 __adt_a08 = (ADT_A01)m;
+                        break;
+
+                    case "ADT_A21":   // Delete a patient
+                    case "ADT_A23":
+                        ADT_A21 __adt_a21 = (ADT_A21)m;
+                        break;
+
+                    default:
+                        break;
+                }               
+            }
+            catch (NHapi.Base.HL7Exception h)
+            {
+                __send_NACK("");
+                Console.WriteLine("Parse failure: {0}", h.Message);
+                throw new Exception("Message Parse Failure " + h.Message);
             }
             catch (Exception e)
             {
                 __send_NACK("");
-                throw new Exception("Message Parse Failure");
+                throw new Exception("Message Parse Failure " + e.Message);
             }
+           
         }
         /// <summary>
         /// __load_dictionary() 
@@ -174,49 +241,56 @@ namespace motInboundLib
             XmlNodeList __node_list;
             XmlNode     __node;
 
-            /*
-             * E.G. MSH.2.2 should result in TAG/Child_N/Child_N/... which translates into XML node[0].Child[n-1]
-             */
-
-            //Split up the tag using "."
-            char[] __delimiter = { '.' };
-
-            string[] __parts = __tag.Split(__delimiter);
-
-            __node_list = __content.GetElementsByTagName(__parts[0]);       // "MSH.2.1"
-            __node = __node_list[0];
-
-            if(__node == null)
+            try
             {
-                return null;
-            }
+                /*
+                 * E.G. MSH.2.2 should result in TAG/Child_N/Child_N/... which translates into XML node[0].Child[n-1]
+                 */
 
-            if (__parts.Length > 1)
-            {
-                for (int i = 1; i < __parts.Length; i++)
+                //Split up the tag using "."
+                char[] __delimiter = { '.' };
+
+                string[] __parts = __tag.Split(__delimiter);
+
+                __node_list = __content.GetElementsByTagName(__parts[0]);       // "MSH.2.1"
+                __node = __node_list[0];
+
+                if (__node == null)
                 {
-                    __node = __node.FirstChild;
-
-                    while (!__node.Name.EndsWith(__parts[i]))
-                    {
-                        __node = __node.NextSibling;
-
-                        if(__node == null)
-                        {
-                            return null;
-                        }
-                    }                    
+                    return null;
                 }
-            }
 
-            return __node.InnerText;
+                if (__parts.Length > 1)
+                {
+                    for (int i = 1; i < __parts.Length; i++)
+                    {
+                        __node = __node.FirstChild;
+
+                        while (!__node.Name.EndsWith(__parts[i]))
+                        {
+                            __node = __node.NextSibling;
+
+                            if (__node == null)
+                            {
+                                return null;
+                            }
+                        }
+                    }
+                }
+
+                return __node.InnerText;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Data extraction failure: {0}", e.Message);
+                throw new Exception("Data read failure");
+            }
         }
 
         private void __send_ACK()
         {
             try
             {
-
                     __logger.Info("Sending ACK (Message Control ID: " + __get_field_data("MSH.10") + ")");
 
                     string __time_stamp = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString();
@@ -253,7 +327,6 @@ namespace motInboundLib
 
             try
             {
-
                 __logger.Info("Sending NACK (Message Control ID: " + __get_field_data("MSH.10") + ")");
 
                 string __time_stamp = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString();
@@ -280,209 +353,42 @@ namespace motInboundLib
                 throw new Exception("An exception occurred while parsing the HL7 message " + e.Message);
             }
         }
-    }
 
-
-    class HL7Messages
-    {
-        public class Segment
+        public virtual void __process_drug_record(MFN_M15 m)
         {
-            public string __code { get; set; }
-            public string __description { get; set; }
-            public string __type { get; set; }
-
-            /// <summary>
-            /// __optionality
-            /// 
-            ///  R Required 
-            ///  O Optional
-            ///  C Conditional on trigger event or on some other field(s)
-            ///  X Not used with this trigger event
-            ///  B Left in for backward compatibility with previous versions of HL7
-            ///  W Withdrawn
-            /// </summary>
-
-            public string __optionality { get; set; }
-            public int __table { get; set; }
-            public int __len { get; set; }
-            public string __default { get; set; }
-
-            public Segment() { }
-            public Segment(string __type)
-            {
-                __code = __type;
-            }
+            throw new Exception("Not Implmented");
         }
 
-        // Message Header
-        class MSH : Segment
+        public virtual void __process_prescription_record(RDE_O11 __rde_o_11)
         {
-            string __full_string
-            {
-                get
-                {
-                    return base.__code +
-                                __field_seperator +
-                                __encoding_chars +
-                                __field_seperator +
-                                __sending_application +
-                                __field_seperator +
-                                __sending_facility +
-                                __field_seperator +
-                                __receiving_application +
-                                __field_seperator +
-                                __receiving_facility +
-                                __field_seperator +
-                                __time_stamp +
-                                __field_seperator +
-                                __security +
-                                __field_seperator +
-                                __message_type +
-                                __field_seperator +
-                                __message_control_id +
-                                __field_seperator +
-                                __processing_id +
-                                __field_seperator +
-                                __version_id;
-                }
-
-                set
-                {
-                    __full_string = value;
-                }
-            }
-            public string __field_seperator { get; set; } = "|";
-            public string __encoding_chars { get; set; } = "^~\\&";
-            public string __sending_application { get; set; }
-            public string __sending_facility { get; set; }
-            public string __receiving_application { get; set; }
-            public string __receiving_facility { get; set; }
-            public string __time_stamp { get; set; }
-            public string __security { get; set; }
-            public string __message_type { get; set; }
-            public string __message_control_id { get; set; }
-            public string __processing_id { get; set; }
-            public string __version_id { get; set; }
-
-            public MSH()
-            {
-                __code = "MSH";
-                __description = "Message Header";
-            }
+            throw new Exception("Not Implmented");
         }
 
-        // Patient Identification
-        class PID : Segment
+        public virtual void __process_prescriber_record()
         {
-            public string __set_id { get; set; }            // PID-1
-            public string __id_number { get; set; }         // PID-2-1
-            public string __pil_id_number { get; set; }     // PID-3-1
-            public string __pil_checkdigit { get; set; }    // PID-3-2
-            public string __pil_checkdigit_scheme { get; set; } // PID-3-3
-            public string __pil_aa_namespace_id { get; set; }   // PID-3-4-1
-
-
-
-
-            public PID()
-            {
-                __code = "PID";
-                __description = "Patient Identification";
-            }
+            throw new Exception("Not Implmented");
         }
 
-        class ORC // Common Order
+        public virtual void __process_facility_record()
         {
-            string __id;  // ORC-1
-
-            struct __placer_order_number // EI, ORC-2
-            {
-                string __entiry_id;         // ORC-2-1
-                string __namespace_id;      // ORC-2-2
-                string __universal_id;      // ORC-2-3
-                string __universal_id_type; // ORC-2-4
-            }
-
-            string __filler_order_number;
-
+            throw new Exception("Not Implmented");
         }
 
-
-        class EVN // Pharmacy Order / Treatment
+        public virtual void __process_store_record()
         {
-            string __event_type_code;
-            string __recorded_time_date;
-            string __date_time_planned_event;
-            string __event_reason_code;
-            string __operator_id;
-            string __event_occured;
-            string __event_facility;
+            throw new Exception("Not Implmented");
         }
 
-        class RAS
+        public virtual void __process_time_qty_record()
         {
-
+            throw new Exception("Not Implmented");
         }
-    }
 
-    public class HL7Parser
-    {
-        public XmlDocument __record;
-
-        public HL7Parser(string __source)
+        public virtual void __process_patient_record(ADT_A01 __adt_a01)
         {
-            // Get all input from resources
-            Assembly assembly = Assembly.GetExecutingAssembly();
-
-            
-            //string hl7File = "AdtA08.hl7";
-            //string hl7FilePath = string.Format("{0}.{1}", assembly.GetName().Name, hl7File);
-            //Stream message = assembly.GetManifestResourceStream(hl7FilePath);
-
-            string dictFile = "hl7v2xml.dat";
-            string dictFilePath = string.Format("{0}.{1}", assembly.GetName().Name, dictFile);
-
-            // read grammar
-            FileStream __f = File.Open(@"c:\mot_io\hl7v2xml.dat", FileMode.Open);
-            Stream __stream = __f;
-            var dictionary = __stream;
-
-            //var dictionary = assembly.GetManifestResourceStream(dictFile);
-            var eventsMessages = new Dictionary<string, string>();
-
-            // map events
-            // you have to any expeced event there, not only ADT. If you want to transfom ORU you have
-            // to map as well
-            // mapping means that you can decide that e.g. A04 sould be handled like A01
-            eventsMessages.Add("ADT_A01", "ADT_A01");
-            eventsMessages.Add("ADT_A02", "ADT_A02");
-            eventsMessages.Add("ADT_A03", "ADT_A03");
-            eventsMessages.Add("ADT_A04", "ADT_A01");
-            eventsMessages.Add("ADT_A05", "ADT_A01");
-            eventsMessages.Add("ADT_A08", "ADT_A01");
-            eventsMessages.Add("ADT_A12", "ADT_A12");
-            //eventsMessages.Add("RDE_O11", "RDE_O11");
-
-            // create converter by using factory
-            var converter = HL7ToXmlConverterFactory.Create();
-
-            // strict mode = false means, that the parser will work in lazy mode
-            converter.Properties.SetBoolProperty("strict-mode", false);
-
-            // hl7-namespace = true means, that the HL7Xml will have the default namespace for hl72xml
-            converter.Properties.SetBoolProperty("hl7-namespace", true);
-
-            // set encoding directive
-            converter.Properties.SetStringProperty("encoding", "ISO-8859-1");
-
-            // init converter
-            converter.Init(dictionary, eventsMessages);
-
-            // convert
-            string hl7XML2 = converter.Convert(__source);
-
-            __record = new XmlDocument();
-            __record.LoadXml(hl7XML2);
+            throw new Exception("Not Implmented");
         }
     }
 }
+
+  

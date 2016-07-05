@@ -25,7 +25,7 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 
 'xmlfile = scriptPath & "hl7_25_job.xml"
 'xslfile = scriptPath & "build_dictionary.xsl"
-'xmlout 	= scriptPath & "hl7_25_generated.dat"
+'xmlout  = scriptPath & "hl7_25_generated.dat"
 
 xmlfile = ".\hl7_25_job.xml"
 xslfile = ".\build_dictionary.xsl"

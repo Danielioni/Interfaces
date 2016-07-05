@@ -375,7 +375,8 @@ namespace Janoman.Healthcare.HL7
                 string tmp = string.Empty;
                 string type = "%" + element.Name;
 
-                string definition = this.hl7Dictionary.Lookup(type);
+                string definition = this.hl7Dictionary.Lookup(type);  // TODO: Somehow the attribute %varies gets used as an element which throws.
+
                 if ("(#PCDATA)".Equals(definition)
                     || "(#ANY)".Equals(definition)
                     || "(PCDATA)".Equals(definition)

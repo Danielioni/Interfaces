@@ -3049,15 +3049,15 @@
   <xsd:attributeGroup name="AUT.7.ATTRIBUTES">
     <xsd:attribute name="Item" type="xsd:string" fixed="1152"/>
     <xsd:attribute name="Type" type="xsd:string" fixed="CP"/>
-    <xsd:attribute name="LongName" type="xsd:string" fixed="Reimbursement Limit"/>
+    <xsd:attribute name="LongName" type="xsd:string" fixed="ReimburSegment Limit"/>
   </xsd:attributeGroup>
   <xsd:complexType name="AUT.7.CONTENT">
     <xsd:annotation>
-      <xsd:documentation xml:lang="en">Reimbursement Limit</xsd:documentation>
+      <xsd:documentation xml:lang="en">ReimburSegment Limit</xsd:documentation>
       <xsd:appinfo>
         <hl7:Item>1152</hl7:Item>
         <hl7:Type>CP</hl7:Type>
-        <hl7:LongName>Reimbursement Limit</hl7:LongName>
+        <hl7:LongName>ReimburSegment Limit</hl7:LongName>
       </xsd:appinfo>
     </xsd:annotation>
     <xsd:complexContent>
@@ -8983,15 +8983,15 @@
   <xsd:attributeGroup name="DRG.9.ATTRIBUTES">
     <xsd:attribute name="Item" type="xsd:string" fixed="771"/>
     <xsd:attribute name="Type" type="xsd:string" fixed="CP"/>
-    <xsd:attribute name="LongName" type="xsd:string" fixed="Outlier Reimbursement"/>
+    <xsd:attribute name="LongName" type="xsd:string" fixed="Outlier ReimburSegment"/>
   </xsd:attributeGroup>
   <xsd:complexType name="DRG.9.CONTENT">
     <xsd:annotation>
-      <xsd:documentation xml:lang="en">Outlier Reimbursement</xsd:documentation>
+      <xsd:documentation xml:lang="en">Outlier ReimburSegment</xsd:documentation>
       <xsd:appinfo>
         <hl7:Item>771</hl7:Item>
         <hl7:Type>CP</hl7:Type>
-        <hl7:LongName>Outlier Reimbursement</hl7:LongName>
+        <hl7:LongName>Outlier ReimburSegment</hl7:LongName>
       </xsd:appinfo>
     </xsd:annotation>
     <xsd:complexContent>
@@ -12644,16 +12644,16 @@
     <xsd:attribute name="Item" type="xsd:string" fixed="1606"/>
     <xsd:attribute name="Type" type="xsd:string" fixed="IS"/>
     <xsd:attribute name="Table" type="xsd:string" fixed="HL70459"/>
-    <xsd:attribute name="LongName" type="xsd:string" fixed="Reimbursement Action Code"/>
+    <xsd:attribute name="LongName" type="xsd:string" fixed="ReimburSegment Action Code"/>
   </xsd:attributeGroup>
   <xsd:complexType name="GP2.4.CONTENT">
     <xsd:annotation>
-      <xsd:documentation xml:lang="en">Reimbursement Action Code</xsd:documentation>
+      <xsd:documentation xml:lang="en">ReimburSegment Action Code</xsd:documentation>
       <xsd:appinfo>
         <hl7:Item>1606</hl7:Item>
         <hl7:Type>IS</hl7:Type>
         <hl7:Table>HL70459</hl7:Table>
-        <hl7:LongName>Reimbursement Action Code</hl7:LongName>
+        <hl7:LongName>ReimburSegment Action Code</hl7:LongName>
       </xsd:appinfo>
     </xsd:annotation>
     <xsd:simpleContent>
@@ -12850,16 +12850,16 @@
     <xsd:attribute name="Item" type="xsd:string" fixed="1619"/>
     <xsd:attribute name="Type" type="xsd:string" fixed="IS"/>
     <xsd:attribute name="Table" type="xsd:string" fixed="HL70470"/>
-    <xsd:attribute name="LongName" type="xsd:string" fixed="Reimbursement Type Code"/>
+    <xsd:attribute name="LongName" type="xsd:string" fixed="ReimburSegment Type Code"/>
   </xsd:attributeGroup>
   <xsd:complexType name="GP2.12.CONTENT">
     <xsd:annotation>
-      <xsd:documentation xml:lang="en">Reimbursement Type Code</xsd:documentation>
+      <xsd:documentation xml:lang="en">ReimburSegment Type Code</xsd:documentation>
       <xsd:appinfo>
         <hl7:Item>1619</hl7:Item>
         <hl7:Type>IS</hl7:Type>
         <hl7:Table>HL70470</hl7:Table>
-        <hl7:LongName>Reimbursement Type Code</hl7:LongName>
+        <hl7:LongName>ReimburSegment Type Code</hl7:LongName>
       </xsd:appinfo>
     </xsd:annotation>
     <xsd:simpleContent>
@@ -33836,16 +33836,16 @@
     <xsd:attribute name="Item" type="xsd:string" fixed="1388"/>
     <xsd:attribute name="Type" type="xsd:string" fixed="CE"/>
     <xsd:attribute name="Table" type="xsd:string" fixed="HL70401"/>
-    <xsd:attribute name="LongName" type="xsd:string" fixed="Government Reimbursement Billing Eligibility"/>
+    <xsd:attribute name="LongName" type="xsd:string" fixed="Government ReimburSegment Billing Eligibility"/>
   </xsd:attributeGroup>
   <xsd:complexType name="PRA.11.CONTENT">
     <xsd:annotation>
-      <xsd:documentation xml:lang="en">Government Reimbursement Billing Eligibility</xsd:documentation>
+      <xsd:documentation xml:lang="en">Government ReimburSegment Billing Eligibility</xsd:documentation>
       <xsd:appinfo>
         <hl7:Item>1388</hl7:Item>
         <hl7:Type>CE</hl7:Type>
         <hl7:Table>HL70401</hl7:Table>
-        <hl7:LongName>Government Reimbursement Billing Eligibility</hl7:LongName>
+        <hl7:LongName>Government ReimburSegment Billing Eligibility</hl7:LongName>
       </xsd:appinfo>
     </xsd:annotation>
     <xsd:complexContent>

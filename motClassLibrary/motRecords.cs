@@ -2598,10 +2598,10 @@ get
             {
                 __qualifiedTags.Add(new Field("Table", "Rx", 10, true, 'a'));
                 __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));
-                __qualifiedTags.Add(new Field("RxSys_RxNum", "", 10, true, 'k'));
+                __qualifiedTags.Add(new Field("RxSys_RxNum", "", 12, true, 'k'));
                 __qualifiedTags.Add(new Field("RxSys_PatID", "", 10, true, 'a'));
                 __qualifiedTags.Add(new Field("RxSys_DocID", "", 10, true, 'a'));
-                __qualifiedTags.Add(new Field("RxSys_DrugID", "", 10, true, 'a'));
+                __qualifiedTags.Add(new Field("RxSys_DrugID", "", 11, true, 'a'));
                 __qualifiedTags.Add(new Field("Sig", "", 32767, true, 'a'));
                 __qualifiedTags.Add(new Field("RxStartDate", "", 10, true, 'w'));
                 __qualifiedTags.Add(new Field("RxStopDate", "", 10, true, 'w'));
@@ -2611,7 +2611,7 @@ get
                 __qualifiedTags.Add(new Field("Refills", "", 4, true, 'a'));
                 __qualifiedTags.Add(new Field("RxSys_NewRxNum", "", 10, false, 'w'));
                 __qualifiedTags.Add(new Field("Isolate", "", 2, false, 'n'));
-                __qualifiedTags.Add(new Field("RxType", "", 0, true, 'w'));
+                __qualifiedTags.Add(new Field("RxType", "", 2, true, 'w'));
                 __qualifiedTags.Add(new Field("MDOMStart", "", 2, false, 'n'));
                 __qualifiedTags.Add(new Field("MDOMEnd", "", 2, false, 'n'));
                 __qualifiedTags.Add(new Field("QtyPerDose", "", 6, true, 'w'));
@@ -2622,13 +2622,13 @@ get
                 __qualifiedTags.Add(new Field("DoseTimeQtys", "", 32767, true, 'w'));
                 __qualifiedTags.Add(new Field("ChartOnly", "", 2, true, 'w'));
                 __qualifiedTags.Add(new Field("AnchorDate", "", 10, true, 'w'));
-
             }
             catch (Exception e)
             {
                 throw e;
             }
         }
+
         public motPrescriptionRecord()
         {
         }
@@ -2741,6 +2741,33 @@ get
                 try
                 {
                     setField(__qualifiedTags, value, "RxSys_DocID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string RxSys_DrugID
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_drugid"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_DrugID");
                 }
                 catch (Exception e)
                 {
@@ -2910,7 +2937,7 @@ get
                 }
             }
         }
-        public string Refils
+        public string Refills
         {
             get
             {
@@ -2930,6 +2957,87 @@ get
                 try
                 {
                     setField(__qualifiedTags, value, "Refills");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string RxSys_NewRxNum
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxsys_newrxnum"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_NewRxNum");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string Isolate
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("isolate"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "Isolate");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+        public string RxType
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("rxtype"));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxType");
                 }
                 catch (Exception e)
                 {
@@ -2991,7 +3099,7 @@ get
                 }
             }
         }
-        public string QtyPerDoese
+        public string QtyPerDose
         {
             get
             {

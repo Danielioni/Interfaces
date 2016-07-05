@@ -53,12 +53,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HL7ToXmlConverter\HL7ToXmlConverter.csproj">
-      <Project>{26F4F086-7D09-4D82-B1DA-F7780872CB56}</Project>
-      <Name>HL7ToXmlConverter</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="hl7v2xml.dat" />
   </ItemGroup>
   <ItemGroup>

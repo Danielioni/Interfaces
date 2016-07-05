@@ -90,6 +90,14 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	<xsl:text>)</xsl:text><xsl:text>&#x0D;</xsl:text>
 </xsl:template>
 
+  <xsl:template match="xsd:complexType[xsd:extension]" mode="type">
+	<xsl:text>
+</xsl:text>
+	<xsl:value-of select="concat('%',@name)"/>
+	<xsl:text> (*)</xsl:text>
+  <xsl:text>&#x0D;</xsl:text>
+</xsl:template>
+  
 <xsl:template match="xsd:choice" mode="sequence">
 	<xsl:apply-templates mode="sequence"/>
 </xsl:template>
