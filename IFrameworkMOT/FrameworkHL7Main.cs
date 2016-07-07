@@ -72,7 +72,61 @@ namespace IFrameworkMOT
                 __roman.Add("IX", 9);
                 __roman.Add("X", 10);
 
-                
+
+            }
+
+            private string __parse_repeat_pattern(string __pattern)
+            {
+                //  Val(D) (Daily), Code == QJ#
+                //      1 = Mon, ...
+                //      Example:    MWF QJ135
+                //  Val(E) (Every x Days), Code = Q#D
+                //      Example: Every 2nd Day Q2D
+                //  Val(M) (Monthly), Code = QL#,#,...
+                //      Example: 1st and the 15th of the month  QL1,15
+
+                if (__pattern[0] != 'q' && __pattern[0] != 'Q')
+                {
+                    return null;
+                }
+
+                string __ret_pattern = "";
+                int __index = 2;
+
+                switch (__pattern[1])
+                {
+                    case 'j':
+                    case 'J':
+                        __ret_pattern = "J,";
+                        for (__index = 2; __pattern[__index] != '\0'; __index++)   // Make J,1,2,3
+                        {
+                            __ret_pattern += (__pattern[__index] + ',');
+                        }
+
+                        break;
+
+                    case 'l':
+                    case 'L':
+                        string[] __tok = __pattern.Split(',');
+
+                        __ret_pattern = "L ";
+
+                        while (__tok[__index] != null)                  // Make L,1,15
+                        {
+                            __ret_pattern += (__tok[__index] + ',');
+                        }
+
+                        break;
+
+                    default:            // Assume Q#D
+                        __ret_pattern = "D,";
+
+                        __ret_pattern = __pattern[1].ToString(); // Make D,3
+                        break;
+                }
+
+                return __ret_pattern;
+
             }
 
             public override void __process_prescription_record(RDE_O11 __rde_o_11)
@@ -109,17 +163,17 @@ namespace IFrameworkMOT
                     {
                         // Create record
                         RDE_O11_ORDER __order = __rde_o_11.GetORDER(i);
-                       
+
 
                         motPrescriptionRecord __scrip = new motPrescriptionRecord(__order_type[__order.ORC.OrderControl.Value]);
 
                         // Rx Number
                         __scrip.RxSys_RxNum = __order.RXE.PrescriptionNumber.Value;
 
-                        // Patient ID (PID 2-1)
+                        // Patient ID (PID.2.1)
                         __scrip.RxSys_PatID = __rde_o_11.PATIENT.PID.PatientID.IDNumber.Value;
 
-                        // Doctor ID (RXE 13-1) - Note, there can be multiples -- Concat + '\n';
+                        // Doctor ID (RXE.13.1) - Note, there can be multiples -- Concat + '\n';
                         {
                             XCN[] __tmpXCN = __order.RXE.GetOrderingProviderSDEANumber();
                             string __tmpS = null;
@@ -140,11 +194,11 @@ namespace IFrameworkMOT
                             }
                         }
 
-                        // Drug ID (RXE 2-1)  -- Can be other than the NDC Number
+                        // Drug ID (RXE.2.1)  -- Can be other than the NDC Number
                         __scrip.RxSys_DrugID = __order.RXE.GiveCode.Identifier.Value;
 
 
-                        // Sig (RXE 7.2) - Note, there can be multiples -- Concat + '\n';
+                        // Sig (RXE.7.2) - Note, there can be multiples -- Concat + '\n';
                         {
                             CE[] __tmpCE = __order.RXE.GetProviderSAdministrationInstructions();
                             string __tmpS = null;
@@ -156,7 +210,7 @@ namespace IFrameworkMOT
                                     __tmpS += __tmpCE[__index].Text.Value;
                                     __tmpS += '\n';
                                 }
-                                
+
                                 __scrip.Sig = __tmpS;
                             }
                             else
@@ -165,45 +219,28 @@ namespace IFrameworkMOT
                             }
                         }
 
-                        // Start & End Date (ORC 7-4, RXE 1-4)
+                        // Start & End Date (ORC.7.4, RXE.1.4)
                         {
                             RDE_O11_TIMING_ENCODED __tmpTQ1 = __order.GetTIMING_ENCODED();
 
                             // TQ1 Dates have trailing zeros for time and all we want is the date in YYYYMMDD
-                            __scrip.RxStartDate = __tmpTQ1.TQ1.StartDateTime.Time.Value.Substring(0,8);
+                            __scrip.RxStartDate = __tmpTQ1.TQ1.StartDateTime.Time.Value.Substring(0, 8);
 
                             // End Dates have an odd habit of being NULL
-                            if(!string.IsNullOrEmpty(__tmpTQ1.TQ1.EndDateTime.Time.Value))
-                                __scrip.RxStopDate = __tmpTQ1.TQ1.EndDateTime.Time.Value.Substring(0,8);
+                            if (!string.IsNullOrEmpty(__tmpTQ1.TQ1.EndDateTime.Time.Value))
+                                __scrip.RxStopDate = __tmpTQ1.TQ1.EndDateTime.Time.Value.Substring(0, 8);
                         }
 
 
-                        // DC Date
-                        // Dose Schedule Name (TQ1 3)
+                        // DC Date (RXE.1.5)
+                        if (__order.ORC.OrderControl.Value == "DC")
                         {
-                            RDE_O11_TIMING_ENCODED __tmpTQ1 = __order.GetTIMING_ENCODED();
-                            string __tmpS = null;
-                            RPT __tmpRTP;
-
-                            if (__tmpTQ1.TQ1.RepeatPatternRepetitionsUsed > 1)
-                            {
-                                for (__index = 0; __index < __tmpTQ1.TQ1.RepeatPatternRepetitionsUsed; __index++)
-                                {
-                                    __tmpRTP = __tmpTQ1.TQ1.GetRepeatPattern(__index);
-                                    __tmpS += __tmpRTP.RepeatPatternCode.Identifier.Value;
-                                    __tmpS += ' ';
-                                }
-
-                                __scrip.DoseScheduleName = __tmpS;
-                            }
-                            else
-                            {
-                                __tmpRTP = __tmpTQ1.TQ1.GetRepeatPattern(0);
-                                __scrip.DoseScheduleName = __tmpRTP.RepeatPatternCode.Identifier.Value;
-                            }
+                            __scrip.DiscontinueDate = __order.RXE.QuantityTiming.EndDateTime.Time.Value.Substring(0, 8); ;
                         }
 
-                        // Comments (NTE 3)
+
+
+                        // Comments (NTE.3)
                         {
                             NTE __tmpNTE;
                             string __tmpS = null;
@@ -226,17 +263,126 @@ namespace IFrameworkMOT
                             }
                         }
 
-                        // Refills (RXE )
+                        // Refills (RXE.12)
                         __scrip.Refills = __order.RXE.NumberOfRefills.Value;
 
                         // New Rx Number
                         // Isolate
-                        // Rx Type (RXE 44) -
-                        // TODO: RxType needs Conversion to MOT 
-                        __scrip.RxType = __order.RXE.PharmacyOrderType.Value;
 
-                        // MDOMStart
-                        // MDOMStop
+
+                        // Rx Type (TQ1.3)
+                        //
+                        //  Val(D) (Daily), Code == QJ#
+                        //      1 = Mon, ...
+                        //      Example:    MWF QJ135
+                        //  Val(E) (Every x Days), Code = Q#D
+                        //      Example: Every 2nd Day Q2D
+                        //  Val(M) (Monthly), Code = QL#,#,...
+                        //      Example: 1st and the 15th of the month  QL1,15
+                        //
+                        //
+                        //  Titration is managed by repeating TQ1's with different dosages and Daily Codes
+                        //
+                        //
+                        // 
+                        // TODO: RxType needs Conversion to MOT --  
+                        //  MOT(0)  == Daily [Isolate vals - 0/1]           HL7(TQ1.3)  Code = QJ1
+                        //  MOT(18) == Alternating [Isolate vals - 0/1]     HL7(TQ1.3)  Code = Q#D
+                        //          MDOMStart is number of alternating days or 1 id empty
+                        //  MOT(5)  == Day of Week  [Isolate vals - 0/1]    HL7(TQ1.3)  Code = QJ#######
+                        //          DoW is number of alternating days or 1 id empty
+                        //  MOT(8)  == Monthly Titrating [Isolate vals - 1]
+                        //          MDOMStart is number of alternating days or 1 id empty, MDOMEnd is valid
+                        //  MOT(9)  == Weekly Titrating [Isolate vals - 1]
+                        //  MOT(2)  == PRN [Isolate vals - 1]
+                        //  MOT(13) == Sequential [Isolate vals - 1]    
+                        //  MOT(20) == Monthly TCustom [Isolate vals - 1]
+                        //  MOT(21) == Weekly TCustom [Isolate vals -  1]
+
+                        //  For Titrating (8 & 9) the __scrip.Special Doses field is set to List<string>(1..35) where each entry is formatted 0.00
+                        //  where each entry describes a dose for the day e.g. {5.00,4.00,3.00,2.00,1.00,1.00,1.00}.  Dose time is set using {...}
+                        //  
+                        //  
+                       
+
+                        // MDOMStart - Set for Alternating, Day of Week, & Day of Month
+                        // MDOMStop  - Set for Day of Month
+
+                        // Dose Schedule Name (TQ1.3)
+                        //
+                        // Titration could be represented by  
+                        //   TQ1.1 == "Set Name char(4)"
+                        //   TQ1.7 == <YYYYMMDDHHMM>    -- Start Date
+                        //     
+                        //      {
+                        //          TQ1.3 == <QJ#>
+                        //          TQ1.2 == <DoseQty, Unit>
+                        //          TQ1.4 == <HHMMSS>
+                        //      }
+                        //
+                        //      Example:
+                        //          {
+                        //              {"QJ3", 5, "MG", "13:00"}   -- Starts Wednesday
+                        //              {"QJ4", 4, "MG", "13:00"}
+                        //              {"QJ5", 2, "MG", "13:00"}
+                        //              {"QJ6", 2, "MG", "13:00"}
+                        //              {"QJ7", 1, "MG", "13:00"}
+                        //              {"QJ1", 1, "MG", "13:00"}
+                        //              {"QJ2", 1, "MG", "13:00"}
+                        //          }
+
+                        {
+
+                            int __index1 = 0;
+                            int __index2 = 0;
+                            int __scrip_type = 0;
+                      
+                            List<motTimeQtysRecord> __motTQ_list = new List<motTimeQtysRecord>();
+                            motTimeQtysRecord __motTQ = new motTimeQtysRecord();
+
+
+                            for (__index1 = 0; __index1 < __order.TIMING_ENCODEDRepetitionsUsed; __index1++)  // Number of TQ1's
+                            {
+                                RDE_O11_TIMING_ENCODED __TQ1 = __order.GetTIMING_ENCODED(__index1);                             
+                                RPT[] __RPT = __TQ1.TQ1.GetRepeatPattern();                                   
+
+                                foreach(RPT __rpt in __RPT)
+                                {
+                                    __motTQ.DoseScheduleName = __rpt.RepeatPatternCode.Identifier.Value;
+
+                                    string   _s = __parse_repeat_pattern(__rpt.RepeatPatternCode.Identifier.Value);
+                                    string[] _t = _s.Split(',');
+                              
+                                    switch(_t[0][0])
+                                    {
+                                        case 'J':
+                                            __scrip_type = 0;
+                                            break;
+
+                                        case 'L':
+                                            __scrip_type = 20;
+                                            break;
+
+                                        case 'D':
+                                            __scrip_type = 18;
+                                            
+                                            continue;
+
+                                        default:
+                                            break;
+                                    }
+
+                                    foreach(string _e in _t)
+                                    {
+                                      
+                                    }
+
+
+                                }
+                               
+                                                         
+                            }
+                        }
 
                         // Qty Per Dose (TQ1 2)
                         {

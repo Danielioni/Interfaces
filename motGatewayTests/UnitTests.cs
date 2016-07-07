@@ -62,7 +62,7 @@ namespace motInboundLib
 
             try
             {
-                Port p = new Port("192.168.0.140", "24042");
+                Port p = new Port("127.0.0.1", "24042");
                 Parser __test = new Parser(p, __xdoc, InputStucture.__inputXML);
             }
             catch(Exception e)
@@ -99,7 +99,7 @@ namespace motInboundLib
 
             try
             {
-                Port p = new Port("192.168.0.140", "24042");
+                Port p = new Port("127.0.0.1", "24042");
                 Parser __test = new Parser(p, __jdoc, InputStucture.__inputJSON);
             }
             catch (Exception e)
@@ -126,15 +126,15 @@ namespace motInboundLib
                 p = new Port("127.0.0.1", "24042");
                 r = new motDrugRecord("Add");
 
-                for (int i = 0; i < 1024; i++)
-                {
+                //for (int i = 0; i < 10; i++)
+                //{
 
                     r.RxSys_DrugID = "ABDC12579";
                     r.LabelCode = "Mumble";
 
 
                     r.ProductCode = "1234";
-                    r.TradeName = "ALPHAFROG@ 12 MG Tablet";
+                    r.TradeName = "ALPHAFROG@ 120 MG Tablet";
                     r.Strength = 12;
                     r.Unit = "MG";
 
@@ -146,9 +146,9 @@ namespace motInboundLib
                     r.DrugSchedule = 6;
 
                     r.VisualDescription = "RND/RED/TAB";
-                    r.DrugName = "ALPHAFROG@ 12 MG";
-                    r.ShortName = "HAL 12MG";
-                    r.NDCNum = "00023-0327-01";
+                    r.DrugName = "ALPHAFROG@ 120 MG";
+                    r.ShortName = "HAL 120MG";
+                    r.NDCNum = "00023-0337-01";
                     r.SizeFactor = 5;
                     r.Template = "C";
                     r.DefaultIsolate = 0;
@@ -157,7 +157,7 @@ namespace motInboundLib
 
 
                     r.Write(p);
-
+               
                     r.setField("Action", "Change");
                     r.setField("TradeName", "BetaDog");
                     r.setField("DrugName", "BETADOG@ 12MG");
@@ -167,7 +167,8 @@ namespace motInboundLib
                     r.setField("Action", "Delete");
 
                     r.Write(p);
-                }              
+                    
+               // }              
             }
             catch(Exception e)
             {
@@ -242,15 +243,15 @@ namespace motInboundLib
             */
 
             // Testing
-            //testDrugRecord();
+            testDrugRecord();
 
             // Works
-            //testXMLDoc();
-            //testJSONDoc();
+            testXMLDoc();
+            testJSONDoc();
 
             //fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO");
 
-
+/*
             try
             {
                 // create the listener socket on port 50005 and pass a callback function
@@ -274,7 +275,7 @@ namespace motInboundLib
             {
                 Console.WriteLine(e.Message);
             }
-
+*/
         }
 
         static void Main(string[] args)

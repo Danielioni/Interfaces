@@ -71,6 +71,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "CPRPlusInstall", "CPRPlusIn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IFrameworkMOT", "IFrameworkMOT\IFrameworkMOT.csproj", "{72EE9D01-689C-4990-AB8B-DC6621B1E6A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "motWell", "motWell\motWell.csproj", "{77661540-2DF3-4699-9C30-251A4FF86B1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,10 @@ Global
 		{72EE9D01-689C-4990-AB8B-DC6621B1E6A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72EE9D01-689C-4990-AB8B-DC6621B1E6A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72EE9D01-689C-4990-AB8B-DC6621B1E6A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77661540-2DF3-4699-9C30-251A4FF86B1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77661540-2DF3-4699-9C30-251A4FF86B1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77661540-2DF3-4699-9C30-251A4FF86B1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77661540-2DF3-4699-9C30-251A4FF86B1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
