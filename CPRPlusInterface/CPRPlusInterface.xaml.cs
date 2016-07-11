@@ -39,7 +39,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data;
-//using System.Threading;
+using System.IO;
+using System.Threading;
 using motInboundLib;
 
 
@@ -55,6 +56,7 @@ namespace CPRPlusInterface
         public Port __port;
         public string __DSN;
         public bool __running = false;
+        
 
         public MainWindow()
         {
@@ -217,15 +219,56 @@ namespace CPRPlusInterface
                 __running = false;
             }
         }
-
+        /// <summary>
+        /// TODO: We need away to load queries from .sql files rather than hard coding
+        /// </summary>
         class cprPlus : databaseInputSource
         {
             protected Port __port;
             protected bool __override_length_checking = true;
+            protected Dictionary<string, string> __query;
 
             public cprPlus(dbType __type, string DSN, Port p) : base(__type, DSN)
             {
                 __port = p;
+                __load_queries("");
+            }
+
+            private void __load_queries(string __dirName)
+            {          
+                try
+                {
+                    __query = new Dictionary<string, string>();
+                    string __s_query;
+
+                    // Load files from our runtime directory
+                    if (string.IsNullOrEmpty(__dirName))
+                    {
+                        // find our runtime base directory.  Maybe .\ will work
+                        System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                        string _e = assembly.GetName().Name.ToLower() + @".exe";
+                        int __exe_name = assembly.Location.ToLower().IndexOf(_e);
+                        __dirName = assembly.Location.ToLower().Substring(0, __exe_name) + @"queries";
+                    }
+
+                    string[] __fileEntries = Directory.GetFiles(__dirName);
+                    StreamReader sr = null;
+
+                    foreach (string __fileName in __fileEntries)
+                    {
+                        if (__fileName.ToLower().Contains(".sql"))
+                        {
+                            sr = new StreamReader(__fileName);
+                            __s_query = sr.ReadToEnd();
+                            sr.Close();
+                            __query.Add(System.IO.Path.GetFileName(__fileName.ToLower()), __s_query);
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    throw new Exception("Failed on __load_queries " + e.Message);
+                }
             }
 
             public override motPrescriberRecord getPrescriberRecord()
@@ -238,7 +281,7 @@ namespace CPRPlusInterface
                  * there's no clear "New" set is that all found records will be sent to the inerface on each refresh
                  * loop and the gateway will just reject the ones it already has.  
                  */
-
+                /*
                 string __query = @"CREATE VIEW dbo.vPrescriber AS SELECT
                         --   NOTES												FType					FLen
                        p.Prescriber_ID,-- not null (unique ID)					Integer 				  				INDEX unique
@@ -263,6 +306,7 @@ namespace CPRPlusInterface
                        [JOIN] prescriber_telephone pt -- provide only the primary voice phone #)
    
                        GO";
+                       */
                 try
                 {
 
@@ -302,7 +346,7 @@ namespace CPRPlusInterface
                      *  record set as returned by access or SQL server, but a generic collection of IDataRecords and is usable accross
                      *  all database types.  If the set of records is {0} an exception will be thrown   
                      */
-                    if (db.executeQuery(__query))
+                    if (db.executeQuery(__query["prescriber.sql"]))
                     {
                         string __tag;
                         string __val;
@@ -381,7 +425,7 @@ namespace CPRPlusInterface
 
             public override motPatientRecord getPatientRecord()
             {
-                string __query = "";
+              
 
                 motPatientRecord __patient = new motPatientRecord();
                 Dictionary<string, string> __xTable = new Dictionary<string, string>();
@@ -435,7 +479,7 @@ namespace CPRPlusInterface
 
                 try
                 {
-                    if ((__query.Length > 0) && db.executeQuery(__query))
+                    if (db.executeQuery(__query["patient.sql"]))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
@@ -487,7 +531,6 @@ namespace CPRPlusInterface
             {
                 try
                 {
-                    string __query = "";
                     motPrescriptionRecord __scrip = new motPrescriptionRecord();
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
@@ -521,7 +564,7 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    if ((__query.Length > 0) && db.executeQuery(__query))
+                    if (db.executeQuery(__query["rx.sql"]))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
@@ -573,7 +616,6 @@ namespace CPRPlusInterface
             {
                 try
                 {
-                    string __query = "";
                     motLocationRecord __location = new motLocationRecord();
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
@@ -595,7 +637,7 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    if ((__query.Length > 0) && db.executeQuery(__query))
+                    if (db.executeQuery(__query["location.sql"]))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
@@ -648,7 +690,6 @@ namespace CPRPlusInterface
             {
                 try
                 {
-                    string __query = "";
                     motStoreRecord __store = new motStoreRecord();
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
@@ -668,7 +709,7 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    if ((__query.Length > 0) && db.executeQuery(__query))
+                    if (db.executeQuery(__query["store.sql"]))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
@@ -720,8 +761,7 @@ namespace CPRPlusInterface
             public override motTimeQtysRecord getTimeQtyRecord()
             {
                 try
-                {
-                    string __query = "";
+                {       
                     motTimeQtysRecord __tq = new motTimeQtysRecord();
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
@@ -734,7 +774,7 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    if ((__query.Length > 0) && db.executeQuery(__query))
+                    if (db.executeQuery(__query["timeqty.sql"]))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
@@ -785,7 +825,6 @@ namespace CPRPlusInterface
 
             public override motDrugRecord getDrugRecord()
             {
-                string __query = "";
                 motDrugRecord __drug = new motDrugRecord("Add");
                 Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
@@ -814,7 +853,7 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    if ((__query.Length > 0) && db.executeQuery("SELECT * FROM public.\"Drugs\";"))
+                    if (db.executeQuery(__query["drug.sql"]))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
@@ -867,6 +906,11 @@ namespace CPRPlusInterface
 
                 return base.getDrugRecord();
             }
+        }
+
+        private void txtDSNAddress_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }

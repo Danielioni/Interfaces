@@ -343,44 +343,72 @@ namespace IFrameworkMOT
 
                             for (__index1 = 0; __index1 < __order.TIMING_ENCODEDRepetitionsUsed; __index1++)  // Number of TQ1's
                             {
-                                RDE_O11_TIMING_ENCODED __TQ1 = __order.GetTIMING_ENCODED(__index1);                             
-                                RPT[] __RPT = __TQ1.TQ1.GetRepeatPattern();                                   
+                                RDE_O11_TIMING_ENCODED __TQ1 = __order.GetTIMING_ENCODED(__index1);
+                                RPT[] __RPT = __TQ1.TQ1.GetRepeatPattern();
 
-                                foreach(RPT __rpt in __RPT)
+                                if (__RPT != null && (__RPT.Length > 0))
                                 {
-                                    __motTQ.DoseScheduleName = __rpt.RepeatPatternCode.Identifier.Value;
-
-                                    string   _s = __parse_repeat_pattern(__rpt.RepeatPatternCode.Identifier.Value);
-                                    string[] _t = _s.Split(',');
-                              
-                                    switch(_t[0][0])
+                                    foreach (RPT __rpt in __RPT)
                                     {
-                                        case 'J':
-                                            __scrip_type = 0;
-                                            break;
+                                        __motTQ.DoseScheduleName = __rpt.RepeatPatternCode.Identifier.Value;
 
-                                        case 'L':
-                                            __scrip_type = 20;
-                                            break;
+                                        string _s = __parse_repeat_pattern(__rpt.RepeatPatternCode.Identifier.Value);
+                                        string[] _t = _s.Split(',');
 
-                                        case 'D':
-                                            __scrip_type = 18;
-                                            
-                                            continue;
+                                        switch (_t[0][0])
+                                        {
+                                            case 'J':
+                                                __scrip_type = 0;
+                                                break;
 
-                                        default:
-                                            break;
+                                            case 'L':
+                                                __scrip_type = 20;
+                                                break;
+
+                                            case 'D':
+                                                __scrip_type = 18;
+
+                                                continue;
+
+                                            default:
+                                                break;
+                                        }
+
+                                        foreach (string _e in _t)
+                                        {
+
+                                        }
                                     }
-
-                                    foreach(string _e in _t)
-                                    {
-                                      
-                                    }
-
-
                                 }
-                               
-                                                         
+                                else  // No Repeat Pattern defined
+                                {
+                                    string __times = "";
+                                    string __dose = "";
+                                    string __unit = "";
+                                    string __start_date = "";
+                                    string __end_date = "";
+                                    string __message = "";
+
+                                    for (int t = 0; t < __TQ1.TQ1.ExplicitTimeRepetitionsUsed; t++)
+                                    {
+                                        __times += __TQ1.TQ1.GetExplicitTime(t) + ",";
+                                    }
+
+                                    __dose = __TQ1.TQ1.Quantity.Quantity.Value;
+                                    __unit = __TQ1.TQ1.Quantity.Units.Identifier.Value;
+
+                                    if(!string.IsNullOrEmpty(__TQ1.TQ1.StartDateTime.Time.Value))
+                                        __start_date = __TQ1.TQ1.StartDateTime.Time.Value.Substring(0, 8);
+                                    
+                                    if (!string.IsNullOrEmpty(__TQ1.TQ1.EndDateTime.Time.Value))
+                                        __end_date = __TQ1.TQ1.EndDateTime.Time.Value.Substring(0, 8);
+
+                                    if (!string.IsNullOrEmpty(__TQ1.TQ1.TextInstruction.Value))
+                                        __message = __TQ1.TQ1.TextInstruction.Value;
+
+
+
+                                }                                                                                                                   
                             }
                         }
 

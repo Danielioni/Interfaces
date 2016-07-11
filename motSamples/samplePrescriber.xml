@@ -13,7 +13,7 @@
   <Zip required="true" size="9">02153</Zip> <!--  -->
   <Phone required="true" size="10">6172439900</Phone> <!-- -->
   <Comments size="32767"></Comments> <!-- -->
-  <DEA_ID required="true" size="10">50000</DEA_ID> <!-- -->
+  <DEA_ID required="true" size="10">AA50000</DEA_ID> <!-- -->
   <TPID size="10">60000</TPID> <!--  -->
   <Speciality maxvalue="18">0</Speciality> <!--  -->
   <Fax required="true" size="10">6172439901</Fax> <!-- -->

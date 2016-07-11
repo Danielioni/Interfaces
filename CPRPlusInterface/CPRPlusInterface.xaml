@@ -54,11 +54,11 @@
                     <GroupBox x:Name="groupBox" Header="Database DSN" HorizontalAlignment="Left" Margin="57,29,0,0" VerticalAlignment="Top" Height="178" Width="424"/>
 
 
-                    <TextBox x:Name="txtDSNAddress" HorizontalAlignment="Left" Margin="153,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142" Height="23"/>
-                    <TextBox x:Name="txtDSNPort" HorizontalAlignment="Left" Height="23" Margin="337,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                    <TextBox x:Name="txtUname" HorizontalAlignment="Left" Margin="153,111,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="23"/>
-                    <TextBox x:Name="txtDBPassword" HorizontalAlignment="Left" Height="23" Margin="153,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsReadOnlyCaretVisible="True"/>
-                    <TextBox x:Name="txtDatabase" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Margin="153,167,0,0"/>
+                    <TextBox x:Name="txtDSNAddress" HorizontalAlignment="Left" Margin="153,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142" Height="23" TextChanged="txtDSNAddress_TextChanged" Text="127.0.0.1"/>
+                    <TextBox x:Name="txtDSNPort" HorizontalAlignment="Left" Height="23" Margin="337,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="5432"/>
+                    <TextBox x:Name="txtUname" HorizontalAlignment="Left" Margin="153,111,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="23" Text="test"/>
+                    <TextBox x:Name="txtDBPassword" HorizontalAlignment="Left" Height="23" Margin="153,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsReadOnlyCaretVisible="True" Text="test"/>
+                    <TextBox x:Name="txtDatabase" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Margin="153,167,0,0" Text="Mot"/>
                     <ComboBox x:Name="cbDBType" HorizontalAlignment="Left" Margin="227,47,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1" SelectionChanged="cbDBType_SelectionChanged">
                         <ListBoxItem Content="ODBC"/>
                         <ListBoxItem Content="SQL Server"/>
