@@ -113,7 +113,6 @@ namespace motInboundLib
             }
         }
 
-
         //
         // Create the socket listener class.  Needs to be started next, which happens at the first listen() call
         //
@@ -154,7 +153,6 @@ namespace motInboundLib
                 return __localEndPoint;
             }
         }
-
 
         public void listen()
         {
