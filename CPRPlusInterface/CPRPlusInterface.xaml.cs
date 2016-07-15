@@ -46,7 +46,7 @@ namespace CPRPlusInterface
     {
         public Port __port;
         public string __DSN;
-        public bool __running = true;
+        public volatile bool  __running = true;
         public dbType __db_type = 0;
 
         private Thread __watch_for_drug;
@@ -76,29 +76,51 @@ namespace CPRPlusInterface
             {
                 switch (cbDBType.SelectedIndex)
                 {
-                    // PostgreSQL - @"server=127.0.0.1;port=5432;userid=fred;password=fred!cool;database=Fred");
 
                     case 0:  // ODBC
+                             // ODBC Standard Security: Driver={SQL Server Native Client 11.0};Server=myServerAddress;Database = myDataBase; Uid = myUsername; Pwd = myPassword;
                         __test = new cprPlus(dbType.ODBCServer,
-                                            @"server=" + txtDSNAddress.Text + ";" +
-                                            @"port=" + txtDSNPort.Text + ";" +
-                                            @"userid=" + txtUname.Text + ";" +
-                                            @"password=" + txtDBPassword.Text + ";" +
-                                            @"database=" + txtDatabase.Text,
+                                            @"Driver ={ SQL Server Native Client 11.0 }" + ";" +
+                                            @"Server=" + txtDSNAddress.Text + ";" + txtDSNPort.Text + ";" +
+                                            @"Database=" + txtDatabase.Text + ";" +
+                                            @"Uid=" + txtUname.Text + ";" +
+                                            @"Pwd=" + txtDBPassword.Text + ";",
                                             null);
                         break;
 
                     case 1:
+                        // SQL Server Standard Securtity Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password = myPassword;
                         __test = new cprPlus(dbType.SQLServer,
-                                            @"server=" + txtDSNAddress.Text + ";" +
-                                            @"port=" + txtDSNPort.Text + ";" +
-                                            @"userid=" + txtUname.Text + ";" +
-                                            @"password=" + txtDBPassword.Text + ";" +
-                                            @"database=" + txtDatabase.Text,
+                                            @"Server=" + txtDSNAddress.Text + "," + txtDSNPort.Text + ";" +
+                                            @"Database=" + txtDatabase.Text + ";" +
+                                            @"Id=" + txtUname.Text + ";" +
+                                            @"Password=" + txtDBPassword.Text + ";",
                                             null);
+
+                        // SQL Server Trusted: Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;
+                        /*
+                        __test = new cprPlus(dbType.SQLServer,
+                                           @"server=" + txtDSNAddress.Text + ";" +
+                                           @"port=" + txtDSNPort.Text + ";" +
+                                           @"userid=" + txtUname.Text + ";" +
+                                           @"password=" + txtDBPassword.Text + ";" +
+                                           @"database=" + txtDatabase.Text,
+                                           null);
+                         */
+                        // SQL Server IP: Data Source=190.190.200.100,1433;Network Library=DBMSSOCN; Initial Catalog = myDataBase; User ID = myUsername; Password = myPassword;
+                        /*
+                        __test = new cprPlus(dbType.SQLServer,
+                                        @"server=" + txtDSNAddress.Text + ";" +
+                                        @"port=" + txtDSNPort.Text + ";" +
+                                        @"userid=" + txtUname.Text + ";" +
+                                        @"password=" + txtDBPassword.Text + ";" +
+                                        @"database=" + txtDatabase.Text,
+                                        null);
+                        */
                         break;
 
                     case 2:
+                        // PostgreSQL - @"server=127.0.0.1;port=5432;userid=fred;password=fred!cool;database=Fred";
                         __test = new cprPlus(dbType.NPGServer,
                                             @"server=" + txtDSNAddress.Text + ";" +
                                             @"port=" + txtDSNPort.Text + ";" +
@@ -158,25 +180,43 @@ namespace CPRPlusInterface
 
         private void btnKeep_Click(object sender, RoutedEventArgs e)
         {
+            switch (cbDBType.SelectedIndex)
+            {
 
+                case 0:    // ODBC Standard Security: Driver={SQL Server Native Client 11.0};Server=myServerAddress;Database = myDataBase; Uid = myUsername; Pwd = myPassword;
+                    __DSN = @"Driver ={ SQL Server Native Client 11.0 }" + ";" +
+                             @"Server=" + txtDSNAddress.Text + ";" + txtDSNPort.Text + ";" +
+                             @"Database=" + txtDatabase.Text + ";" +
+                             @"Uid=" + txtUname.Text + ";" +
+                             @"Pwd=" + txtDBPassword.Text + ";";
+                    break;
+
+                case 1:   // SQL Server Standard Securtity Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password = myPassword;
+                    __DSN = @"Server=" + txtDSNAddress.Text + "," + txtDSNPort.Text + ";" +
+                            @"Database=" + txtDatabase.Text + ";" +
+                            @"Id=" + txtUname.Text + ";" +
+                            @"Password=" + txtDBPassword.Text + ";";
+                    break;
+
+                case 2:   // PostgreSQL - @"server=127.0.0.1;port=5432;userid=fred;password=fred!cool;database=Fred";
+                    __DSN = @"server=" + txtDSNAddress.Text + ";" +
+                            @"port=" + txtDSNPort.Text + ";" +
+                            @"userid=" + txtUname.Text + ";" +
+                            @"password=" + txtDBPassword.Text + ";" +
+                            @"database=" + txtDatabase.Text;
+                    break;
+            }
+
+            /*
             __DSN = @"server=" + txtDSNAddress.Text + ";" +
                     @"port=" + txtDSNPort.Text + ";" +
                     @"userid=" + txtUname.Text + ";" +
                     @"password=" + txtDBPassword.Text + ";" +
                     @"database=" + txtDatabase.Text;
+                    */
 
             __port = new Port(txtAddress.Text, txtPort.Text);
 
-            /*
-            __DSN = @"server=127.0.0.1;" +
-                    @"port=5432;" +
-                    @"userid=mot;" +
-                    @"password=mot!cool;" +
-                    @"database=Mot";
-
-             __port = new Port("127.0.0.1", "24042");
-             cbDBType.SelectedIndex = 2;
-            */
 
 
             tabMain.SelectedIndex = 0;
@@ -198,8 +238,6 @@ namespace CPRPlusInterface
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             __running = false;
-
-            // Terminate the running threads
         }
 
         /*
@@ -220,7 +258,7 @@ namespace CPRPlusInterface
             motPrescriberRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __DSN, __address, __port);
 
-            while (__cpr.__lock_port.__running)
+            while(__running)
             {
                 m = __cpr.getPrescriberRecord();
 
@@ -229,12 +267,13 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Add("Recieved Prescriber Record [" + m.FirstName + " " + m.LastName + "]");
+                        lstbxRunningLog.Items.Insert(0,"Recieved Prescriber Record [" + m.FirstName + " " + m.LastName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Add("Did Not Get Prescriber Record");
+                        lstbxRunningLog.Items.Insert(0,"Did Not Get Prescriber Record");
                     }
+
                 }));
 
                 Thread.Sleep(1024);
@@ -247,7 +286,7 @@ namespace CPRPlusInterface
             motPrescriptionRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
-            while (__cpr.__lock_port.__running)
+            while(__running)
             {
                 m = __cpr.getPrescriptionRecord();
 
@@ -256,11 +295,11 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Add("Recieved Prescription Record [" + m.RxSys_RxNum + "]");
+                        lstbxRunningLog.Items.Insert(0,"Recieved Prescription Record [" + m.RxSys_RxNum + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Add("Did Not Get Prescription Record");
+                        lstbxRunningLog.Items.Insert(0,"Did Not Get Prescription Record");
                     }
                 }));
 
@@ -273,7 +312,7 @@ namespace CPRPlusInterface
             motPatientRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
-            while (__cpr.__lock_port.__running)
+            while (__running)
             {
                 m = __cpr.getPatientRecord();
 
@@ -281,11 +320,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Add("Recieved Patient Record [" + m.FirstName + " " + m.LastName + "]");
+                        lstbxRunningLog.Items.Insert(0,"Recieved Patient Record [" + m.FirstName + " " + m.LastName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Add("Did Not Get Patient Record");
+                        lstbxRunningLog.Items.Insert(0,"Did Not Get Patient Record");
                     }
 
                 }));
@@ -299,7 +338,7 @@ namespace CPRPlusInterface
             motLocationRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
-            while (__cpr.__lock_port.__running)
+            while (__running)
             {
                 m = __cpr.getLocationRecord();
 
@@ -308,11 +347,11 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Add("Recieved Location Record [" + m.LocationName + "]");
+                        lstbxRunningLog.Items.Insert(0,"Recieved Location Record [" + m.LocationName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Add("Did Not Get Location Location Record");
+                        lstbxRunningLog.Items.Insert(0,"Did Not Get Location Location Record");
                     }
 
                 }));
@@ -326,7 +365,7 @@ namespace CPRPlusInterface
             motStoreRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
-            while (__cpr.__lock_port.__running)
+            while (__running)
             {
                 m = __cpr.getStoreRecord();
 
@@ -334,11 +373,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Add("Recieved Store Record [" + m.StoreName + "]");
+                        lstbxRunningLog.Items.Insert(0,"Recieved Store Record [" + m.StoreName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Add("Did Not Get Store Patient Record");
+                        lstbxRunningLog.Items.Insert(0,"Did Not Get Store Patient Record");
                     }
                 }));
 
@@ -351,7 +390,7 @@ namespace CPRPlusInterface
             motTimeQtysRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
-            while (__cpr.__lock_port.__running)
+            while (__running)
             {
                 m = __cpr.getTimeQtyRecord();
 
@@ -359,11 +398,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Add("Recieved Time/Qty Record [" + m.DoseScheduleName + "]");
+                        lstbxRunningLog.Items.Insert(0,"Recieved Time/Qty Record [" + m.DoseScheduleName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Add("Did Not Get Time/Qty Record");
+                        lstbxRunningLog.Items.Insert(0,"Did Not Get Time/Qty Record");
                     }
                 }));
 
@@ -376,25 +415,24 @@ namespace CPRPlusInterface
             motDrugRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
-            while (__cpr.__lock_port.__running)
-            {
-                m = __cpr.getDrugRecord();
+            while (__running)
+            {              
+                    m = __cpr.getDrugRecord();
 
-
-                lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    if (m != null)
+                    lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        lstbxRunningLog.Items.Add("Recieved Drug Record [" + m.DrugName + "]");
-                    }
-                    else
-                    {
-                        lstbxRunningLog.Items.Add("Did Not Get Drug Record");
-                    }
-                }));
+                        if (m != null)
+                        {
+                            lstbxRunningLog.Items.Insert(0,"Recieved Drug Record [" + m.DrugName + "]");
+                        }
+                        else
+                        {
+                            lstbxRunningLog.Items.Insert(0,"Did Not Get Drug Record");
+                        }
+                    }));
 
-                Thread.Sleep(1024);
-            }
+                    Thread.Sleep(1024);
+            }           
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -457,72 +495,12 @@ namespace CPRPlusInterface
                 __watch_for_time_qty.Start();
 
                 lstbxRunningLog.Items.Add("started Time/Qty Listener");
-
-                // Wait for the threads to exit
-                /*
-                __watch_for_drug.Join();
-                __watch_for_location.Join();
-                __watch_for_patient.Join();
-                __watch_for_prescriber.Join();
-                __watch_for_prescription.Join();
-                __watch_for_store.Join();
-                __watch_for_time_qty.Join();
-                */
-
             }
             catch (Exception err)
             {
                 txtLastStatus.Text = "FAIL: " + err.Message;
                 __running = false;
             }
-            /*
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    foreach (string __msg in __messages)
-                    {
-
-                        lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            lstbxRunningLog.Items.Add(__msg);
-                        }));
-                    }
-                }
-            });
-            */
-
-            /*
-            string __text = string.Empty;
-
-            while (__running)
-            {
-                Task.Run(() =>
-                {
-                    while (true)
-                    {
-                        if (__messages.Count > 0)
-                        {
-                            if (__messages.TryTake(out __text) == true)
-                            {
-                                break;
-                            }
-                        }
-
-                        Thread.Sleep(1024);
-                    }
-                });
-
-                try
-                {
-                    lstbxRunningLog.Items.Add(__text);
-                }
-                catch (Exception __err)
-                {
-                    lstbxRunningLog.Items.Add("Error: " + __err.Message);
-                }
-            }
-            */
         }
 
         /// <summary>
