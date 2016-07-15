@@ -758,55 +758,53 @@ namespace CPRPlusInterface
 
             public override motPatientRecord getPatientRecord()
             {
-
                 try
                 {
                     motPatientRecord __patient = new motPatientRecord();
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name  
-                    __xTable.Add("", "RxSys_PatID");
-                    /*
-                    __xTable.Add("", "LastName");
-                    __xTable.Add("", "FirstName");
-                    __xTable.Add("", "MiddleInitial");
-                    __xTable.Add("", "Address1");
-                    __xTable.Add("", "Address2");
-                    __xTable.Add("", "City");
-                    __xTable.Add("", "State");
-                    __xTable.Add("", "Zip");
-                    __xTable.Add("", "Phone1");
-                    __xTable.Add("", "Phone2");
-                    __xTable.Add("", "WorkPhone");
-                    __xTable.Add("", "RxSys_LocID");
-                    __xTable.Add("", "Room");
-                    __xTable.Add("", "Comments");
-                    __xTable.Add("", "CycleDate");
-                    __xTable.Add("", "CycleDays");
-                    __xTable.Add("", "CycleType");
-                    __xTable.Add("", "Status");
-                    __xTable.Add("", "RxSys_LastDoc");
-                    __xTable.Add("", "RxSys_PrimaryDoc");
-                    __xTable.Add("", "RxSys_AltDoc");
-                    __xTable.Add("", "SSN");
-                    __xTable.Add("", "Allergies");
-                    __xTable.Add("", "Diet");
-                    __xTable.Add("", "DxNotes");
-                    __xTable.Add("", "TreatmentNotes");
-                    __xTable.Add("", "DOB");
-                    __xTable.Add("", "Height");
-                    __xTable.Add("", "Weight");
-                    __xTable.Add("", "ResponsibleName");
-                    __xTable.Add("", "InsName");
-                    __xTable.Add("", "InsPNo");
-                    __xTable.Add("", "AltInsName");
-                    __xTable.Add("", "AltInsPNo");
-                    __xTable.Add("", "MCareNum");
-                    __xTable.Add("", "MCaidNum");
-                    __xTable.Add("", "AdmitDate");
-                    __xTable.Add("", "ChartOnly");
-                    __xTable.Add("", "Gender");
-                    */
+                    __xTable.Add("rxSys_PatID", "RxSys_PatID");                  
+                    __xTable.Add("LastName", "LastName");
+                    __xTable.Add("FirstName", "FirstName");
+                    //__xTable.Add("", "MiddleInitial");
+                    __xTable.Add("Address1", "Address1");
+                    //__xTable.Add("", "Address2");
+                    __xTable.Add("CITY", "City");
+                    __xTable.Add("STATE", "State");
+                    __xTable.Add("ZIP", "Zip");
+                    __xTable.Add("Phone1", "Phone1");
+                    //__xTable.Add("", "Phone2");
+                    __xTable.Add("WorkPhone", "WorkPhone");
+                    __xTable.Add("RxSys_LocID", "RxSys_LocID");
+                    //__xTable.Add("", "Room");
+                    //__xTable.Add("", "Comments");
+                    //__xTable.Add("", "CycleDate");
+                    //__xTable.Add("", "CycleDays");
+                    //__xTable.Add("", "CycleType");
+                    __xTable.Add("status", "Status");
+                    //__xTable.Add("", "RxSys_LastDoc");
+                    //__xTable.Add("", "RxSys_PrimaryDoc");
+                    //__xTable.Add("", "RxSys_AltDoc");
+                    __xTable.Add("ssn", "SSN");
+                    __xTable.Add("Allergies", "Allergies");
+                    __xTable.Add("Diet", "Diet");
+                    //__xTable.Add("", "DxNotes");
+                    //__xTable.Add("", "TreatmentNotes");
+                    __xTable.Add("DOB", "DOB");
+                    __xTable.Add("Height", "Height");
+                    __xTable.Add("Weight", "Weight");
+                    __xTable.Add("ResponsibleName", "ResponsibleName");
+                    __xTable.Add("InsName", "InsName");
+                    __xTable.Add("InsPNo", "InsPNo");
+                    __xTable.Add("AltInsName", "AltInsName");
+                    __xTable.Add("AltInsPNo", "AltInsPNo");
+                    __xTable.Add("MCareNum", "MCareNum");
+                    __xTable.Add("McCadeNum", "MCaidNum");
+                    //__xTable.Add("", "AdmitDate");
+                    //__xTable.Add("", "ChartOnly");
+                    //__xTable.Add("", "Gender");
+                    
 
                     string __tag;
                     string __val;
@@ -862,45 +860,41 @@ namespace CPRPlusInterface
                 {
                     throw new Exception("Failed to get Patient Record " + e.Message);
                 }
-
-                //return base.getPatientRecord();
             }
 
             public override motPrescriptionRecord getPrescriptionRecord()
             {
-
                 try
                 {
                     motPrescriptionRecord __scrip = new motPrescriptionRecord();
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
-                    __xTable.Add("", "RxSys_RxNum");
-                    /*
-                    __xTable.Add("", "RxSys_PatID");
-                    __xTable.Add("", "RxSys_DocID");
-                    __xTable.Add("", "RxSys_DrugID");
-                    __xTable.Add("", "Sig");
-                    __xTable.Add("", "RxStartDate");
-                    __xTable.Add("", "RxStopDate");
-                    __xTable.Add("", "DiscontinueDate");
-                    __xTable.Add("", "DoseScheduleName");
-                    __xTable.Add("", "Comments");
-                    __xTable.Add("", "Refills");
-                    __xTable.Add("", "RxSys_NewRxNum");
-                    __xTable.Add("", "Isolate");
-                    __xTable.Add("", "RxType");
-                    __xTable.Add("", "MDOMStart");
-                    __xTable.Add("", "MDOMEnd");
-                    __xTable.Add("", "QtyPerDose");
-                    __xTable.Add("", "QtyDispensed");
-                    __xTable.Add("", "Status");
-                    __xTable.Add("", "DoW");
-                    __xTable.Add("", "SpecialDoses");
-                    __xTable.Add("", "DoseTimeQtys");
-                    __xTable.Add("", "ChartOnly");
-                    __xTable.Add("", "AnchorDate");
-                    */
+                    __xTable.Add("RxSys_RxNum", "RxSys_RxNum");
+                    __xTable.Add("RxSys_PatID", "RxSys_PatID");
+                    __xTable.Add("RxSys_DocID", "RxSys_DocID");
+                    __xTable.Add("RxSys_DrugID", "RxSys_DrugID");
+                    __xTable.Add("SIG", "Sig");
+                    __xTable.Add("RxStartDate", "RxStartDate");
+                    __xTable.Add("RxStopDate", "RxStopDate");
+                    //__xTable.Add("", "DiscontinueDate");
+                    //__xTable.Add("", "DoseScheduleName");
+                    __xTable.Add("Comments", "Comments");
+                    __xTable.Add("Refills", "Refills");
+                    //__xTable.Add("", "RxSys_NewRxNum");
+                    //__xTable.Add("", "Isolate");
+                    //__xTable.Add("", "RxType");
+                    //__xTable.Add("", "MDOMStart");
+                    //__xTable.Add("", "MDOMEnd");
+                    __xTable.Add("QtyPerDose", "QtyPerDose");
+                    __xTable.Add("QtyDIspensed", "QtyDispensed");
+                    //__xTable.Add("", "Status");
+                    //__xTable.Add("", "DoW");
+                    //__xTable.Add("", "SpecialDoses");
+                    //__xTable.Add("", "DoseTimeQtys");
+                    //__xTable.Add("", "ChartOnly");
+                    //__xTable.Add("", "AnchorDate");
+                    
 
                     string __tag;
                     string __val;
@@ -955,9 +949,6 @@ namespace CPRPlusInterface
                 {
                     throw new Exception("Failed to get Drug Record " + e.Message);
                 }
-
-
-                //return base.getPrescriptionRecord();
             }
 
             public override motLocationRecord getLocationRecord()
@@ -968,20 +959,19 @@ namespace CPRPlusInterface
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
-                    __xTable.Add("", "RxSys_LocID");
-                    /*
-                    __xTable.Add("", "RxSys_StoreID");
-                    __xTable.Add("", "LocationName");
-                    __xTable.Add("", "Address1");
-                    __xTable.Add("", "Address2");
-                    __xTable.Add("", "City");
-                    __xTable.Add("", "State");
-                    __xTable.Add("", "Zip");
-                    __xTable.Add("", "Phone");
-                    __xTable.Add("", "Comments");
-                    __xTable.Add("", "CycleDays");
-                    __xTable.Add("", "CycleType");
-                    */
+                    __xTable.Add("RxSys_LocID", "RxSys_LocID");
+                    __xTable.Add("RxSys_StoreID", "RxSys_StoreID");
+                    __xTable.Add("LocationName", "LocationName");
+                    __xTable.Add("Address1", "Address1");
+                    __xTable.Add("Address2", "Address2");
+                    __xTable.Add("CITY", "City");
+                    __xTable.Add("STATE", "State");
+                    __xTable.Add("ZIP", "Zip");
+                    __xTable.Add("PHONE", "Phone");
+                    //__xTable.Add("", "Comments");
+                    //__xTable.Add("", "CycleDays");
+                    //__xTable.Add("", "CycleType");
+                    
 
                     string __tag;
                     string __val;
@@ -1035,9 +1025,7 @@ namespace CPRPlusInterface
                 catch (Exception e)
                 {
                     throw new Exception("Failed to get Drug Record " + e.Message);
-                }
-
-                //return base.getLocationRecord();
+                }               
             }
 
             public override motStoreRecord getStoreRecord()
@@ -1048,18 +1036,17 @@ namespace CPRPlusInterface
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
-                    __xTable.Add("", "RxSys_StoreID");
-                    /*
-                    __xTable.Add("", "StoreName");
-                    __xTable.Add("", "Address1");
-                    __xTable.Add("", "Address2");
-                    __xTable.Add("", "City");
-                    __xTable.Add("", "State");
-                    __xTable.Add("", "Zip");
-                    __xTable.Add("", "Phone");
-                    __xTable.Add("", "Fax");
-                    __xTable.Add("", "DEANum");
-                    */
+                    __xTable.Add("RxSys_StoreID", "RxSys_StoreID");
+                    __xTable.Add("StoreName", "StoreName");
+                    __xTable.Add("Address1", "Address1");
+                    __xTable.Add("Address2", "Address2");
+                    __xTable.Add("CITY", "City");
+                    __xTable.Add("STATE", "State");
+                    __xTable.Add("ZIP", "Zip");
+                    __xTable.Add("PHONE", "Phone");
+                    __xTable.Add("FAX", "Fax");
+                    __xTable.Add("DEANum", "DEANum");
+
 
                     string __tag;
                     string __val;
@@ -1115,7 +1102,6 @@ namespace CPRPlusInterface
                     throw new Exception("Failed to get Drug Record " + e.Message);
                 }
 
-                //return base.getStoreRecord();
             }
 
             public override motTimeQtysRecord getTimeQtyRecord()
@@ -1189,8 +1175,6 @@ namespace CPRPlusInterface
                     throw new Exception("Failed to get Drug Record " + e.Message);
                 }
                 */
-
-                //return base.getTimeQtyRecord();
             }
 
             public override motDrugRecord getDrugRecord()
@@ -1200,24 +1184,24 @@ namespace CPRPlusInterface
                     motDrugRecord __drug = new motDrugRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
-                    __xTable.Add("Id", "RxSys_DrugID");
-                    __xTable.Add("ManufacturerId", "LblCode");
-                    __xTable.Add("ReOrderId", "ProdCode");
-                    __xTable.Add("TradeName", "TradeName");
+                    __xTable.Add("RxSys_DrugID", "RxSys_DrugID");
+                    //__xTable.Add("", "LblCode");
+                    //__xTable.Add("ReOrderId", "ProdCode");
+                    __xTable.Add("Drugname", "TradeName");
                     __xTable.Add("Strength", "Strength");
                     __xTable.Add("Unit", "Unit");
-                    __xTable.Add("RxOtc", "RxOtc");
-                    __xTable.Add("DoseForm", "DoseForm");
-                    __xTable.Add("Route", "Route");
-                    __xTable.Add("Schedule", "DrugSchedule");
-                    __xTable.Add("FullVisualDescription", "VisualDescription");
-                    __xTable.Add("RxLabelName", "DrugName");
-                    __xTable.Add("CardVisualDescription", "ShortName");
-                    __xTable.Add("NdcNumber", "NDCNum");
-                    __xTable.Add("DrugCupCountId", "SizeFactor");
-                    __xTable.Add("PackageTemplate", "Template");
-                    __xTable.Add("Version", "ConsultMsg");
-                    __xTable.Add("GenericForId", "GenericFor");
+                    //__xTable.Add("RxOtc", "RxOtc");
+                    //__xTable.Add("DoseForm", "DoseForm");
+                    //__xTable.Add("", "Route");
+                    __xTable.Add("DrugeSchedule", "DrugSchedule");
+                    __xTable.Add("VisualDescription", "VisualDescription");
+                    //__xTable.Add("", "DrugName");
+                    //__xTable.Add("", "ShortName");
+                    __xTable.Add("NDCNum", "NDCNum");
+                    //__xTable.Add("DrugCupCountId", "SizeFactor");
+                    //__xTable.Add("PackageTemplate", "Template");
+                    //__xTable.Add("Version", "ConsultMsg");
+                    __xTable.Add("GenericFor", "GenericFor");
 
 
                     string __tag;
@@ -1279,8 +1263,6 @@ namespace CPRPlusInterface
                 {
                     throw new Exception("Failed to get Drug Record " + e.Message);
                 }
-
-                //return base.getDrugRecord();
             }
         }
 
