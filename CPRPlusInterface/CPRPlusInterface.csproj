@@ -133,12 +133,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SQL Queries\Drug.sql" />
-    <Content Include="SQL Queries\Location.sql" />
-    <Content Include="SQL Queries\Patient.sql" />
-    <Content Include="SQL Queries\Prescriber.sql" />
-    <Content Include="SQL Queries\Rx.sql" />
-    <Content Include="SQL Queries\Store.sql" />
+    <Content Include="SQL Queries\dbo.vMOTDrug.sql" />
+    <Content Include="SQL Queries\dbo.vMOTLocation.sql" />
+    <Content Include="SQL Queries\dbo.vMOTPatient.sql" />
+    <Content Include="SQL Queries\dbo.vMOTPrescriber.sql" />
+    <Content Include="SQL Queries\dbo.vMOTRx .sql" />
+    <Content Include="SQL Queries\dbo.vMOTStore .sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

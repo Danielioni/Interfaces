@@ -46,7 +46,7 @@ namespace CPRPlusInterface
     {
         public Port __port;
         public string __DSN;
-        public volatile bool  __running = true;
+        public volatile bool __running = true;
         public dbType __db_type = 0;
 
         private Thread __watch_for_drug;
@@ -90,12 +90,32 @@ namespace CPRPlusInterface
 
                     case 1:
                         // SQL Server Standard Securtity Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password = myPassword;
-                        __test = new cprPlus(dbType.SQLServer,
-                                            @"Server=" + txtDSNAddress.Text + "," + txtDSNPort.Text + ";" +
-                                            @"Database=" + txtDatabase.Text + ";" +
-                                            @"Id=" + txtUname.Text + ";" +
-                                            @"Password=" + txtDBPassword.Text + ";",
-                                            null);
+                        if (!string.IsNullOrEmpty(txtDSNPort.Text))
+                        {
+                            __test = new cprPlus(dbType.SQLServer,
+                                                @"Server=" + txtDSNAddress.Text + "," + txtDSNPort.Text + ";" +
+                                                @"Database=" + txtDatabase.Text + ";" +
+                                                @"User Id=" + txtUname.Text + ";" +
+                                                @"Password=" + txtDBPassword.Text + ";",
+                                                null);
+                        }
+                        else
+                        {
+                            __test = new cprPlus(dbType.SQLServer,
+                                                @"Server=" + txtDSNAddress.Text + ";" +
+                                                @"Database=" + txtDatabase.Text + ";" +
+                                                @"User Id=" + txtUname.Text + ";" +
+                                                @"Password=" + txtDBPassword.Text + ";",
+                                                null);
+
+                            /*
+                             * Server=DMPRCPR;Database=CPRTEST;User Id=cpr_user;Password=cpruser;
+                             * 
+                             * failed to create database object A network-related or instance-specific error occurred while establishing a connection to SQL Server. 
+                             * The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server 
+                             * is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server)
+                             */
+                        }
 
                         // SQL Server Trusted: Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;
                         /*
@@ -184,18 +204,29 @@ namespace CPRPlusInterface
             {
 
                 case 0:    // ODBC Standard Security: Driver={SQL Server Native Client 11.0};Server=myServerAddress;Database = myDataBase; Uid = myUsername; Pwd = myPassword;
+
                     __DSN = @"Driver ={ SQL Server Native Client 11.0 }" + ";" +
-                             @"Server=" + txtDSNAddress.Text + ";" + txtDSNPort.Text + ";" +
-                             @"Database=" + txtDatabase.Text + ";" +
-                             @"Uid=" + txtUname.Text + ";" +
-                             @"Pwd=" + txtDBPassword.Text + ";";
+                                               @"Server=" + txtDSNAddress.Text + ";" + txtDSNPort.Text + ";" +
+                                               @"Database=" + txtDatabase.Text + ";" +
+                                               @"Uid=" + txtUname.Text + ";" +
+                                               @"Pwd=" + txtDBPassword.Text + ";";
                     break;
 
                 case 1:   // SQL Server Standard Securtity Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password = myPassword;
-                    __DSN = @"Server=" + txtDSNAddress.Text + "," + txtDSNPort.Text + ";" +
-                            @"Database=" + txtDatabase.Text + ";" +
-                            @"Id=" + txtUname.Text + ";" +
-                            @"Password=" + txtDBPassword.Text + ";";
+                    if (!string.IsNullOrEmpty(txtDSNPort.Text))
+                    {
+                        __DSN = @"Server=" + txtDSNAddress.Text + "," + txtDSNPort.Text + ";" +
+                                @"Database=" + txtDatabase.Text + ";" +
+                                @"User Id=" + txtUname.Text + ";" +
+                                @"Password=" + txtDBPassword.Text + ";";
+                    }
+                    else
+                    {
+                        __DSN = @"Server=" + txtDSNAddress.Text + ";" +
+                                @"Database=" + txtDatabase.Text + ";" +
+                                @"User Id=" + txtUname.Text + ";" +
+                                @"Password=" + txtDBPassword.Text + ";";
+                    }
                     break;
 
                 case 2:   // PostgreSQL - @"server=127.0.0.1;port=5432;userid=fred;password=fred!cool;database=Fred";
@@ -258,7 +289,7 @@ namespace CPRPlusInterface
             motPrescriberRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __DSN, __address, __port);
 
-            while(__running)
+            while (__running)
             {
                 m = __cpr.getPrescriberRecord();
 
@@ -267,11 +298,11 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0,"Recieved Prescriber Record [" + m.FirstName + " " + m.LastName + "]");
+                        lstbxRunningLog.Items.Insert(0, "Recieved Prescriber Record [" + m.FirstName + " " + m.LastName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0,"Did Not Get Prescriber Record");
+                        lstbxRunningLog.Items.Insert(0, "Did Not Get Prescriber Record");
                     }
 
                 }));
@@ -286,7 +317,7 @@ namespace CPRPlusInterface
             motPrescriptionRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
-            while(__running)
+            while (__running)
             {
                 m = __cpr.getPrescriptionRecord();
 
@@ -295,11 +326,11 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0,"Recieved Prescription Record [" + m.RxSys_RxNum + "]");
+                        lstbxRunningLog.Items.Insert(0, "Recieved Prescription Record [" + m.RxSys_RxNum + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0,"Did Not Get Prescription Record");
+                        lstbxRunningLog.Items.Insert(0, "Did Not Get Prescription Record");
                     }
                 }));
 
@@ -320,11 +351,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0,"Recieved Patient Record [" + m.FirstName + " " + m.LastName + "]");
+                        lstbxRunningLog.Items.Insert(0, "Recieved Patient Record [" + m.FirstName + " " + m.LastName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0,"Did Not Get Patient Record");
+                        lstbxRunningLog.Items.Insert(0, "Did Not Get Patient Record");
                     }
 
                 }));
@@ -347,11 +378,11 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0,"Recieved Location Record [" + m.LocationName + "]");
+                        lstbxRunningLog.Items.Insert(0, "Recieved Location Record [" + m.LocationName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0,"Did Not Get Location Location Record");
+                        lstbxRunningLog.Items.Insert(0, "Did Not Get Location Location Record");
                     }
 
                 }));
@@ -373,11 +404,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0,"Recieved Store Record [" + m.StoreName + "]");
+                        lstbxRunningLog.Items.Insert(0, "Recieved Store Record [" + m.StoreName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0,"Did Not Get Store Patient Record");
+                        lstbxRunningLog.Items.Insert(0, "Did Not Get Store Patient Record");
                     }
                 }));
 
@@ -398,11 +429,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0,"Recieved Time/Qty Record [" + m.DoseScheduleName + "]");
+                        lstbxRunningLog.Items.Insert(0, "Recieved Time/Qty Record [" + m.DoseScheduleName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0,"Did Not Get Time/Qty Record");
+                        lstbxRunningLog.Items.Insert(0, "Did Not Get Time/Qty Record");
                     }
                 }));
 
@@ -415,24 +446,27 @@ namespace CPRPlusInterface
             motDrugRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
+            // Execute View
+
+
             while (__running)
-            {              
-                    m = __cpr.getDrugRecord();
+            {
+                m = __cpr.getDrugRecord();
 
-                    lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+                lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (m != null)
                     {
-                        if (m != null)
-                        {
-                            lstbxRunningLog.Items.Insert(0,"Recieved Drug Record [" + m.DrugName + "]");
-                        }
-                        else
-                        {
-                            lstbxRunningLog.Items.Insert(0,"Did Not Get Drug Record");
-                        }
-                    }));
+                        lstbxRunningLog.Items.Insert(0, "Recieved Drug Record [" + m.DrugName + "]");
+                    }
+                    else
+                    {
+                        lstbxRunningLog.Items.Insert(0, "Did Not Get Drug Record");
+                    }
+                }));
 
-                    Thread.Sleep(1024);
-            }           
+                Thread.Sleep(1024);
+            }
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -454,7 +488,6 @@ namespace CPRPlusInterface
                 //Thread thread = new Thread(() => download(filename));
 
                 // Kick off each on its own thread
-
                 __watch_for_drug = new Thread(new ThreadStart(() => __listen_for_drug_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_drug.Name = "__drug_listener";
                 __watch_for_drug.Start();
@@ -483,6 +516,7 @@ namespace CPRPlusInterface
                 __watch_for_prescription.Start();
 
                 lstbxRunningLog.Items.Add("started Prescription Listener");
+                
 
                 __watch_for_store = new Thread(new ThreadStart(() => __listen_for_store_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_store.Name = "__store_listener";
@@ -490,11 +524,13 @@ namespace CPRPlusInterface
 
                 lstbxRunningLog.Items.Add("started Store Listener");
 
+                /*
                 __watch_for_time_qty = new Thread(new ThreadStart(() => __listen_for_time_qty_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_time_qty.Name = "__timeqtys_listener";
                 __watch_for_time_qty.Start();
 
                 lstbxRunningLog.Items.Add("started Time/Qty Listener");
+                */
             }
             catch (Exception err)
             {
@@ -511,6 +547,8 @@ namespace CPRPlusInterface
             protected Port __port;
             protected bool __override_length_checking = true;
             protected Dictionary<string, string> __query;
+            protected List<string> __view;
+
 
             public runManager __lock_port;
 
@@ -518,6 +556,7 @@ namespace CPRPlusInterface
             {
                 __port = p;
                 __load_queries("");
+                __set_views();
                 __lock_port = new runManager();
             }
 
@@ -525,7 +564,16 @@ namespace CPRPlusInterface
             {
                 __port = new Port(__address, __p);
                 __load_queries("");
+                __set_views();
                 __lock_port = new runManager();
+            }
+
+            public void __set_views()
+            {
+                foreach (string __v in __view)
+                {
+                    db.executeNonQuery(__v);
+                }
             }
 
             public class runManager
@@ -560,11 +608,14 @@ namespace CPRPlusInterface
                 }
             }
 
+
             private void __load_queries(string __dirName)
             {
                 try
                 {
                     __query = new Dictionary<string, string>();
+                    __view = new List<string>();
+
                     string __s_query;
 
                     // Load files from our runtime directory
@@ -588,6 +639,11 @@ namespace CPRPlusInterface
                             __s_query = sr.ReadToEnd();
                             sr.Close();
                             __query.Add(System.IO.Path.GetFileName(__fileName.ToLower()), __s_query);
+
+                            if (__s_query.ToLower().Contains("create view"))
+                            {
+                                __view.Add(__s_query);
+                            }
                         }
                     }
                 }
@@ -599,7 +655,7 @@ namespace CPRPlusInterface
 
             public override motPrescriberRecord getPrescriberRecord()
             {
-                motPrescriberRecord __prescriber = new motPrescriberRecord();
+                motPrescriberRecord __prescriber = new motPrescriberRecord("Add");
 
                 /*
                  * This could be a view or a query.  It's unclear at this point which is preferred and there doesn't
@@ -672,7 +728,7 @@ namespace CPRPlusInterface
                      *  record set as returned by access or SQL server, but a generic collection of IDataRecords and is usable accross
                      *  all database types.  If the set of records is {0} an exception will be thrown   
                      */
-                    if (db.executeQuery(__query["prescriber.sql"]))
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTPrescriber;"))
                     {
                         string __tag;
                         string __val;
@@ -680,10 +736,9 @@ namespace CPRPlusInterface
 
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
-                            DataTable table = __record.Table;
 
                             // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in table.Columns)
+                            foreach (DataColumn column in __record.Table.Columns)
                             {
                                 if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                 {
@@ -736,10 +791,15 @@ namespace CPRPlusInterface
                                 }
                             }
 
-                            // Write the record to the gateway
-                            __lock_port.__get_lock();
-                            __prescriber.Write(__port);
-                            __lock_port.__release_lock();
+                            try
+                            {
+                                // Write the record to the gateway
+                                __lock_port.__get_lock();
+                                __prescriber.Write(__port);
+                                __lock_port.__release_lock();
+                            }
+                            catch
+                            { }
 
                         }
 
@@ -760,11 +820,11 @@ namespace CPRPlusInterface
             {
                 try
                 {
-                    motPatientRecord __patient = new motPatientRecord();
+                    motPatientRecord __patient = new motPatientRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name  
-                    __xTable.Add("rxSys_PatID", "RxSys_PatID");                  
+                    __xTable.Add("rxSys_PatID", "RxSys_PatID");
                     __xTable.Add("LastName", "LastName");
                     __xTable.Add("FirstName", "FirstName");
                     //__xTable.Add("", "MiddleInitial");
@@ -804,21 +864,19 @@ namespace CPRPlusInterface
                     //__xTable.Add("", "AdmitDate");
                     //__xTable.Add("", "ChartOnly");
                     //__xTable.Add("", "Gender");
-                    
+
 
                     string __tag;
                     string __val;
                     string __tmp;
 
 
-                    if (db.executeQuery(__query["patient.sql"]))
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTPatient;"))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
-                            DataTable table = __record.Table;
-
                             // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in table.Columns)
+                            foreach (DataColumn column in __record.Table.Columns)
                             {
                                 if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                 {
@@ -845,10 +903,15 @@ namespace CPRPlusInterface
                                 }
                             }
 
-                            // Write the record to the gateway
-                            __lock_port.__get_lock();
-                            __patient.Write(__port);
-                            __lock_port.__release_lock();
+                            try
+                            {
+                                // Write the record to the gateway
+                                __lock_port.__get_lock();
+                                __patient.Write(__port);
+                                __lock_port.__release_lock();
+                            }
+                            catch
+                            { }
                         }
 
                         return __patient;
@@ -866,7 +929,7 @@ namespace CPRPlusInterface
             {
                 try
                 {
-                    motPrescriptionRecord __scrip = new motPrescriptionRecord();
+                    motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
@@ -894,20 +957,18 @@ namespace CPRPlusInterface
                     //__xTable.Add("", "DoseTimeQtys");
                     //__xTable.Add("", "ChartOnly");
                     //__xTable.Add("", "AnchorDate");
-                    
+
 
                     string __tag;
                     string __val;
                     string __tmp;
 
-                    if (db.executeQuery(__query["rx.sql"]))
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTRx;"))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
-                            DataTable table = __record.Table;
-
                             // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in table.Columns)
+                            foreach (DataColumn column in __record.Table.Columns)
                             {
                                 if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                 {
@@ -934,10 +995,15 @@ namespace CPRPlusInterface
                                 }
                             }
 
-                            // Write the record to the gateway
-                            __lock_port.__get_lock();
-                            __scrip.Write(__port);
-                            __lock_port.__release_lock();
+                            try
+                            {
+                                // Write the record to the gateway
+                                __lock_port.__get_lock();
+                                __scrip.Write(__port);
+                                __lock_port.__release_lock();
+                            }
+                            catch
+                            { }
                         }
 
                         return __scrip;
@@ -947,7 +1013,7 @@ namespace CPRPlusInterface
                 }
                 catch (Exception e)
                 {
-                    throw new Exception("Failed to get Drug Record " + e.Message);
+                    throw new Exception("Failed to get Scrip Record " + e.Message);
                 }
             }
 
@@ -955,7 +1021,7 @@ namespace CPRPlusInterface
             {
                 try
                 {
-                    motLocationRecord __location = new motLocationRecord();
+                    motLocationRecord __location = new motLocationRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
@@ -971,20 +1037,18 @@ namespace CPRPlusInterface
                     //__xTable.Add("", "Comments");
                     //__xTable.Add("", "CycleDays");
                     //__xTable.Add("", "CycleType");
-                    
+
 
                     string __tag;
                     string __val;
                     string __tmp;
 
-                    if (db.executeQuery(__query["location.sql"]))
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTLocation;"))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
-                            DataTable table = __record.Table;
-
                             // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in table.Columns)
+                            foreach (DataColumn column in __record.Table.Columns)
                             {
                                 if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                 {
@@ -1011,10 +1075,15 @@ namespace CPRPlusInterface
                                 }
                             }
 
-                            // Write the record to the gateway
-                            __lock_port.__get_lock();
-                            __location.Write(__port);
-                            __lock_port.__release_lock();
+                            try
+                            {
+                                // Write the record to the gateway
+                                __lock_port.__get_lock();
+                                __location.Write(__port);
+                                __lock_port.__release_lock();
+                            }
+                            catch
+                            { }
                         }
 
                         return __location;
@@ -1024,15 +1093,15 @@ namespace CPRPlusInterface
                 }
                 catch (Exception e)
                 {
-                    throw new Exception("Failed to get Drug Record " + e.Message);
-                }               
+                    throw new Exception("Failed to get Location Record " + e.Message);
+                }
             }
 
             public override motStoreRecord getStoreRecord()
             {
                 try
                 {
-                    motStoreRecord __store = new motStoreRecord();
+                    motStoreRecord __store = new motStoreRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
@@ -1052,14 +1121,12 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    if (db.executeQuery(__query["store.sql"]))
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTStore;"))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
-                            DataTable table = __record.Table;
-
                             // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in table.Columns)
+                            foreach (DataColumn column in __record.Table.Columns)
                             {
                                 if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                 {
@@ -1086,10 +1153,15 @@ namespace CPRPlusInterface
                                 }
                             }
 
-                            // Write the record to the gateway
-                            __lock_port.__get_lock();
-                            __store.Write(__port);
-                            __lock_port.__release_lock();
+                            try
+                            {
+                                // Write the record to the gateway
+                                __lock_port.__get_lock();
+                                __store.Write(__port);
+                                __lock_port.__release_lock();
+                            }
+                            catch
+                            { }                            
                         }
 
                         return __store;
@@ -1097,9 +1169,11 @@ namespace CPRPlusInterface
 
                     return null;
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
-                    throw new Exception("Failed to get Drug Record " + e.Message);
+                    Console.WriteLine("Get Store Record Failed: {0}", e.Message);
+                    return null;
+                    //throw new Exception("Failed to get Store Record " + e.Message);
                 }
 
             }
@@ -1111,7 +1185,7 @@ namespace CPRPlusInterface
                 /*
                 try
                 {
-                    motTimeQtysRecord __tq = new motTimeQtysRecord();
+                    motTimeQtysRecord __tq = new motTimeQtysRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
@@ -1125,14 +1199,12 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    if (db.executeQuery(__query["timeqty.sql"]))
+                    if (db.executeQuery(timeqty.sSELECT * FROM dbo.vMOTTimeQty;"))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
-                            DataTable table = __record.Table;
-
                             // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in table.Columns)
+                            foreach (DataColumn column in __record.Table.Columns)
                             {
                                 if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                 {
@@ -1159,10 +1231,15 @@ namespace CPRPlusInterface
                                 }
                             }
 
+                            try
+                            {
                             // Write the record to the gateway
                             __lock_port.__get_lock();
                             __tq.Write(__port);
                             __lock_port.__release_lock();
+                            }
+                            catch
+                            { }
                         }
 
                         return __tq;
@@ -1208,14 +1285,12 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    if (db.executeQuery(__query["drug.sql"]))
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTDrug;"))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
-                            DataTable table = __record.Table;
-
                             // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in table.Columns)
+                            foreach (DataColumn column in __record.Table.Columns)
                             {
                                 if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                 {
@@ -1242,11 +1317,15 @@ namespace CPRPlusInterface
                                 }
                             }
 
-                            // Write the record to the gateway
-                            __lock_port.__get_lock();
-                            __drug.Write(__port);
-                            __lock_port.__release_lock();
-
+                            try
+                            {
+                                // Write the record to the gateway
+                                __lock_port.__get_lock();
+                                __drug.Write(__port);
+                                __lock_port.__release_lock();
+                            }
+                            catch
+                            { }
                         }
 
                         return __drug;

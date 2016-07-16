@@ -58,12 +58,12 @@
                     <GroupBox x:Name="groupBox" Header="Database DSN" HorizontalAlignment="Left" Margin="57,29,0,0" VerticalAlignment="Top" Height="178" Width="424"/>
 
 
-                    <TextBox x:Name="txtDSNAddress" HorizontalAlignment="Left" Margin="153,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142" Height="23" TextChanged="txtDSNAddress_TextChanged" Text="127.0.0.1"/>
-                    <TextBox x:Name="txtDSNPort" HorizontalAlignment="Left" Height="23" Margin="337,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="5432"/>
-                    <TextBox x:Name="txtUname" HorizontalAlignment="Left" Margin="153,111,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="23" Text="test"/>
-                    <TextBox x:Name="txtDBPassword" HorizontalAlignment="Left" Height="23" Margin="153,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsReadOnlyCaretVisible="True" Text="test"/>
-                    <TextBox x:Name="txtDatabase" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Margin="153,167,0,0" Text="Mot"/>
-                    <ComboBox x:Name="cbDBType" HorizontalAlignment="Left" Margin="227,47,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="2" SelectionChanged="cbDBType_SelectionChanged">
+                    <TextBox x:Name="txtDSNAddress" HorizontalAlignment="Left" Margin="153,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142" Height="23" TextChanged="txtDSNAddress_TextChanged" Text="DMPCPR"/>
+                    <TextBox x:Name="txtDSNPort" HorizontalAlignment="Left" Height="23" Margin="337,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text=""/>
+                    <TextBox x:Name="txtUname" HorizontalAlignment="Left" Margin="153,111,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="23" Text="cpr_user"/>
+                    <TextBox x:Name="txtDBPassword" HorizontalAlignment="Left" Height="23" Margin="153,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsReadOnlyCaretVisible="True" Text="cpruser"/>
+                    <TextBox x:Name="txtDatabase" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Margin="153,167,0,0" Text="CPRTEST"/>
+                    <ComboBox x:Name="cbDBType" HorizontalAlignment="Left" Margin="227,47,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1" SelectionChanged="cbDBType_SelectionChanged">
                         <ListBoxItem Content="ODBC"/>
                         <ListBoxItem Content="SQL Server"/>
                         <ListBoxItem Content="PostgreSQL"/>
@@ -78,7 +78,7 @@
                     <Label x:Name="label5" Content="Port" HorizontalAlignment="Left" Margin="111,266,0,0" VerticalAlignment="Top"/>
 
 
-                    <TextBox x:Name="txtAddress" HorizontalAlignment="Left" Height="23" Margin="153,242,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Text="127.0.0.1"/>
+                    <TextBox x:Name="txtAddress" HorizontalAlignment="Left" Height="23" Margin="153,242,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Text="66.189.45.17"/>
                     <TextBox x:Name="txtPort" HorizontalAlignment="Left" Height="23" Margin="153,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Text="24042"/>
                     <PasswordBox x:Name="pwdInterface" HorizontalAlignment="Left" Margin="153,294,0,0" VerticalAlignment="Top" Width="295" Height="23"/>
                     <Button x:Name="btnTestPort" Content="Test" HorizontalAlignment="Left" Height="117" Margin="488,222,0,0" VerticalAlignment="Top" Width="35" RenderTransformOrigin="0.381,1.93" Click="btnTestPort_Click"/>

@@ -88,6 +88,9 @@ namespace motInboundLib
 
         public void checkDependencies(List<Field> __qualifiedTags)
         {
+
+            Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("action"));
+
             //  There are rules for fields that are required in add/change/delete.  Test them here
             for (int i = 0; i < __qualifiedTags.Count; i++)
             {
@@ -95,15 +98,16 @@ namespace motInboundLib
                 // required== true, when == 'a', _table action == 'add', tagData == live data -> Pass
                 // required== true, when == 'a', _table action == 'add', tagData == empty -> Exception
 
-                if (__qualifiedTags[i].required && __qualifiedTags[i].when == this._tableAction[0])
+                if (__qualifiedTags[i].required && __qualifiedTags[i].when == f.tagData.ToLower()[0])
                 {
                     if (__qualifiedTags[i].tagData.Length == 0)
                     {
-                        throw new Exception(__qualifiedTags[i].tagData + "empty but required for " + this._tableAction + " operation!");
+                        throw new Exception(__qualifiedTags[i].tagData + "empty but required for " + f.tagData + " operation!");
                     }
                 }
             }
         }
+
         public void setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
             if (__qualifiedTags == null || __tag == null || __val == null)

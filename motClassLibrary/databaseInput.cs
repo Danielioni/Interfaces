@@ -28,6 +28,7 @@ using System.Data;
 using Npgsql;
 using System.Data.Odbc;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// Medicine-On-Time - motDatabase
@@ -157,7 +158,12 @@ namespace motInboundLib
     {
         private NpgsqlConnection connection;
         private NpgsqlDataAdapter adapter;
-        
+
+        public void executeNonQuery(string strQuery)
+        {
+
+        }
+
         public bool executeQuery(string strQuery, DataSet __recordSet_)
         {
             try
@@ -207,6 +213,31 @@ namespace motInboundLib
         private SqlConnection connection;
         private SqlDataAdapter adapter;
 
+        public void executeNonQuery(string strQuery)
+        {
+            try
+            {
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = connection;
+
+                    string[] scripts = Regex.Split(strQuery, @"^\w+GO$", RegexOptions.Multiline);
+
+                    //string[] scripts = strQuery.Split("GO");
+
+                    foreach (string splitScript in scripts)
+                    {
+                        command.CommandText  = splitScript.Substring(0, splitScript.ToLower().IndexOf("go"));
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+               
+            }
+        }
+
         public bool executeQuery(string strQuery, DataSet __recordSet_)
         {
 
@@ -216,6 +247,25 @@ namespace motInboundLib
 
                 adapter = new SqlDataAdapter(strQuery, connection);
                 adapter.Fill(__recordSet_, "__table");
+                /*
+                 * 		e	{"Incorrect syntax near 'GO'."}	System.Exception {System.Data.SqlClient.SqlException}
+                 * 		Procedure	"vMOTPatient"	string
+                 		Server	"DMPCPR"	string
+                        StackTrace	"   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)\r\n   
+                                at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)\r\n  
+                                at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)\r\n   
+                                at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)\r\n   
+                                at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()\r\n   at System.Data.SqlClient.SqlDataReader.get_MetaData()\r\n   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)\r\n   
+                                at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)\r\n   
+                                at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)\r\n   
+                                at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)\r\n   
+                                at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)\r\n   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)\r\n   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)\r\n   
+                                at System.Data.Common.DbDataAdapter.FillInternal(DataSet dataset, DataTable[] datatables, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)\r\n   
+                                at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)\r\n   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, String srcTable)\r\n  
+                                at motInboundLib.motSQLServer.executeQuery(String strQuery, DataSet __recordSet_) in C:\\Users\\pjenney\\Source\\Repos\\Interfaces\\motClassLibrary\\databaseInput.cs:line 218"	string
+
+
+                 */
 
                 return true;
             }
@@ -270,6 +320,10 @@ namespace motInboundLib
             }
         }
 
+        public void executeNonQuery(string strQuery)
+        {
+        }
+
         public bool executeQuery(string strQuery, DataSet __recordSet_)
         {
             __recordSet_.Clear();
@@ -309,10 +363,67 @@ namespace motInboundLib
                         return npgServer.executeQuery(q, __recordSet);
 
                     case dbType.ODBCServer:
-                        return  odbcServer.executeQuery(q, __recordSet);
+                        return odbcServer.executeQuery(q, __recordSet);
 
                     case dbType.SQLServer:
-                        return  sqlServer.executeQuery(q, __recordSet);
+                        return sqlServer.executeQuery(q, __recordSet);
+
+                    default:
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return false;
+        }
+
+        public bool executeNonQuery(string q)
+        {
+            try
+            {
+                switch (__wereA)
+                {
+                    case dbType.NPGServer:
+                        npgServer.executeNonQuery(q);
+                        break;
+
+                    case dbType.ODBCServer:
+                        odbcServer.executeNonQuery(q);
+                        break;
+
+                    case dbType.SQLServer:
+                        sqlServer.executeNonQuery(q);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return false;
+        }
+
+        public bool setView(string __view)
+        {
+            try
+            {
+                switch (__wereA)
+                {
+                    case dbType.NPGServer:
+                        return npgServer.executeQuery(__view, __recordSet);
+
+                    case dbType.ODBCServer:
+                        return odbcServer.executeQuery(__view, __recordSet);
+
+                    case dbType.SQLServer:
+                        return sqlServer.executeQuery(__view, __recordSet);
 
                     default:
                         break;
@@ -336,19 +447,19 @@ namespace motInboundLib
 
                 switch (__dbtype)
                 {
-                    case dbType.SQLServer:                   
+                    case dbType.SQLServer:
                         sqlServer = new motSQLServer(__connect);
                         __wereA = dbType.SQLServer;
                         break;
 
                     case dbType.ODBCServer:
-                        
+
                         odbcServer = new motODBCServer(__connect);
                         __wereA = dbType.ODBCServer;
                         break;
 
                     case dbType.NPGServer:
-                        
+
                         npgServer = new motPostgreSQLServer(__connect);
                         __wereA = dbType.NPGServer;
                         break;
