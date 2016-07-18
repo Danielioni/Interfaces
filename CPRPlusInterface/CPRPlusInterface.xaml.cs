@@ -279,6 +279,11 @@ namespace CPRPlusInterface
 
         private void btnKeep_Click(object sender, RoutedEventArgs e)
         {
+            __update_db_settings();
+        }
+
+        private void __update_db_settings()
+        {
             switch (cbDBType.SelectedIndex)
             {
 
@@ -345,6 +350,7 @@ namespace CPRPlusInterface
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             __running = false;
+            txtLastStatus.Text += "Stopped ...\n";
         }
 
         public void __listen_for_prescriber_record(int __dbtype, string __dsn, string __address, string __port)
@@ -543,11 +549,15 @@ namespace CPRPlusInterface
             try
             {
                 __running = true;
+                __update_db_settings();
 
                 string __s_address = txtMOT_Address.Text;
                 string __s_port = txtMOT_Port.Text;
                 string __dsn = __DSN;
                 int __dbtype = cbDBType.SelectedIndex;
+
+
+                txtLastStatus.Text += "Running ...\n";
 
                 //Thread thread = new Thread(() => download(filename));
 
