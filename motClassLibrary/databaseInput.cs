@@ -154,6 +154,13 @@ namespace motInboundLib
         ODBCServer
     };
 
+    public enum actionType
+    {
+        Add,
+        Change,
+        Delete
+    };
+
     public class motPostgreSQLServer
     {
         private NpgsqlConnection connection;
@@ -227,14 +234,14 @@ namespace motInboundLib
 
                     foreach (string splitScript in scripts)
                     {
-                        command.CommandText  = splitScript.Substring(0, splitScript.ToLower().IndexOf("go"));
+                        command.CommandText = splitScript.Substring(0, splitScript.ToLower().IndexOf("go"));
                         command.ExecuteNonQuery();
                     }
                 }
             }
             catch (Exception e)
             {
-               
+
             }
         }
 
@@ -479,31 +486,58 @@ namespace motInboundLib
     {
         protected motDatabase db;
 
+        // Setters (used for adds, changes and deletes) 
+        public virtual bool setDrugRecord(actionType __action)
+        {
+            throw new NotImplementedException();
+        }
+        public virtual bool setLocationRecord(actionType __action)
+        {
+            throw new NotImplementedException();
+            return false;
+        }
+        public virtual bool setPatientRecord(actionType __action)
+        {
+            throw new NotImplementedException();
+        }
+        public virtual bool setPrescriptionRecord(actionType __action)
+        {
+            throw new NotImplementedException();
+        }
+        public virtual bool setPrescriberRecord(actionType __action)
+        {
+            throw new NotImplementedException();
+        }
+        public virtual bool setStoreRecord(actionType __action)
+        {
+            throw new NotImplementedException();
+        }
+        public virtual bool setTimeQtyRecord(actionType __action)
+        {
+            throw new NotImplementedException();
+        }
+
+        // Getters
         public virtual motDrugRecord getDrugRecord()
         {
             throw new NotImplementedException();
         }
-
         public virtual motLocationRecord getLocationRecord()
         {
             throw new NotImplementedException();
         }
-
         public virtual motPatientRecord getPatientRecord()
         {
             throw new NotImplementedException();
         }
-
         public virtual motPrescriptionRecord getPrescriptionRecord()
         {
             throw new NotImplementedException();
         }
-
         public virtual motPrescriberRecord getPrescriberRecord()
         {
             throw new NotImplementedException();
         }
-
         public virtual motStoreRecord getStoreRecord()
         {
             throw new NotImplementedException();
@@ -512,7 +546,6 @@ namespace motInboundLib
         {
             throw new NotImplementedException();
         }
-
         public databaseInputSource(dbType __type, string DSN)
         {
             try

@@ -22,5 +22,173 @@ namespace CPRPlusInterface.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string POLL_Hours {
+            get {
+                return ((string)(this["POLL_Hours"]));
+            }
+            set {
+                this["POLL_Hours"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public string POLL_Minutes {
+            get {
+                return ((string)(this["POLL_Minutes"]));
+            }
+            set {
+                this["POLL_Minutes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string POLL_Seconds {
+            get {
+                return ((string)(this["POLL_Seconds"]));
+            }
+            set {
+                this["POLL_Seconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int DB_Type {
+            get {
+                return ((int)(this["DB_Type"]));
+            }
+            set {
+                this["DB_Type"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("cpr_user")]
+        public string DB_UserName {
+            get {
+                return ((string)(this["DB_UserName"]));
+            }
+            set {
+                this["DB_UserName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("cpruser")]
+        public string DB_Password {
+            get {
+                return ((string)(this["DB_Password"]));
+            }
+            set {
+                this["DB_Password"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DMPCPR")]
+        public string DB_ServerName {
+            get {
+                return ((string)(this["DB_ServerName"]));
+            }
+            set {
+                this["DB_ServerName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("CPRTEST")]
+        public string DB_DatabaseName {
+            get {
+                return ((string)(this["DB_DatabaseName"]));
+            }
+            set {
+                this["DB_DatabaseName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("66.189.45.17")]
+        public string MOT_Address {
+            get {
+                return ((string)(this["MOT_Address"]));
+            }
+            set {
+                this["MOT_Address"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("24042")]
+        public string MOT_Port {
+            get {
+                return ((string)(this["MOT_Port"]));
+            }
+            set {
+                this["MOT_Port"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MOT_UserName {
+            get {
+                return ((string)(this["MOT_UserName"]));
+            }
+            set {
+                this["MOT_UserName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MOT_Password {
+            get {
+                return ((string)(this["MOT_Password"]));
+            }
+            set {
+                this["MOT_Password"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DB_Address {
+            get {
+                return ((string)(this["DB_Address"]));
+            }
+            set {
+                this["DB_Address"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DB_Port {
+            get {
+                return ((string)(this["DB_Port"]));
+            }
+            set {
+                this["DB_Port"] = value;
+            }
+        }
     }
 }

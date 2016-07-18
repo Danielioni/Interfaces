@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CPRPlusInterface"
         mc:Ignorable="d"
-        Title="CPR+ Gateway" Height="531.4" Width="548.2" ResizeMode="NoResize">
+        Title="CPR+ Gateway" Height="531.4" Width="548.2" ResizeMode="NoResize" Closing="Window_Closing" Activated="Window_Activated">
     <Grid Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
@@ -21,27 +21,33 @@
                 </TransformGroup>
             </TabControl.RenderTransform>
             <TabItem Header="Status">
-                <Grid Background="#FFE5E5E5" Margin="2,0,-4,-2">
+                <Grid Background="#FFE5E5E5" Margin="0,-3,-2.2,0.6" RenderTransformOrigin="0.489,0.537">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="63*"/>
                         <RowDefinition Height="53*"/>
                     </Grid.RowDefinitions>
+                    <GroupBox x:Name="groupBox4" Header="Status " HorizontalAlignment="Left" Margin="187,34,0,0" VerticalAlignment="Top" Height="106" Width="325"/>
+
+                    <GroupBox x:Name="gbRefreshRate" Header="Refresh Rate " HorizontalAlignment="Left" Margin="10,126,0,0" VerticalAlignment="Top" Height="110" Width="144">
+                        <Label x:Name="lblMinutes_Copy" Content="Minutes:" HorizontalAlignment="Left" Margin="17,32,0,0" VerticalAlignment="Top" Cursor="ArrowCD"/>
+                    </GroupBox>
                     <GroupBox x:Name="groupBox3" Header="Actions" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top" Height="110" Width="144"/>
                     <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="22,42,0,0" VerticalAlignment="Top" Width="115" Height="34" Click="btnStart_Click" IsEnabled="False"/>
                     <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="22,81,0,0" VerticalAlignment="Top" Width="115" Height="35" Click="btnStop_Click"/>
-                    <ListBox x:Name="lstbxRunningLog" HorizontalAlignment="Left" Height="223" Margin="10,231,0,0" VerticalAlignment="Top" Width="502" Grid.RowSpan="2"/>
-                    <TextBox x:Name="txtLastStatus" HorizontalAlignment="Left" Height="73" Margin="210,29,0,0" TextWrapping="Wrap" Text="Last Status" VerticalAlignment="Top" Width="302"/>
-                    <CheckBox x:Name="chkLogging" Content="Logging On" HorizontalAlignment="Left" Margin="295,125,0,0" VerticalAlignment="Top" Checked="chkLogging_Checked"/>
-                    <CheckBox x:Name="chkHalt" Content="Halt On Error" HorizontalAlignment="Left" Margin="295,145,0,0" VerticalAlignment="Top"/>
-                    <ComboBox x:Name="cbLogLevel" HorizontalAlignment="Left" Margin="392,121,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1" IsEnabled="False">
+                    <ListBox x:Name="lstbxRunningLog" HorizontalAlignment="Left" Height="202" Margin="10,0,0,0" VerticalAlignment="Top" Width="502" Grid.Row="1"/>
+                    <TextBox x:Name="txtLastStatus" HorizontalAlignment="Left" Height="73" Margin="197,54,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="302"/>
+                    <CheckBox x:Name="chkLogging" Content="Logging On" HorizontalAlignment="Left" Margin="244,165,0,0" VerticalAlignment="Top" Checked="chkLogging_Checked"/>
+                    <CheckBox x:Name="chkHalt" Content="Halt On Error" HorizontalAlignment="Left" Margin="244,183,0,0" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="cbLogLevel" HorizontalAlignment="Left" Margin="344,161,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1" IsEnabled="False">
                         <ListBoxItem Content="Level 0"/>
                         <ListBoxItem Content="Level 1"/>
                         <ListBoxItem Content="Level 2"/>
                     </ComboBox>
-
-                    <TextBox x:Name="txtRate" HorizontalAlignment="Left" Height="23" Margin="425,199,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="87" IsReadOnly="True"/>
-                    <Slider x:Name="slider" HorizontalAlignment="Left" Margin="92,196,0,0" VerticalAlignment="Top" Width="317" TickPlacement="Both" ValueChanged="slider_ValueChanged" SmallChange="1" TickFrequency="1" Maximum="60" Minimum="1"/>
-                    <Label x:Name="label9" Content="Refresh Rate" HorizontalAlignment="Left" Margin="10,196,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tbHours" HorizontalAlignment="Left" Height="22" Margin="89,150,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="40" TextChanged="tbHours_TextChanged"/>
+                    <TextBox x:Name="tbMinutes" HorizontalAlignment="Left" Height="22" Margin="89,177,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="40" TextChanged="tbMinutes_TextChanged"/>
+                    <TextBox x:Name="tbSeconds" HorizontalAlignment="Left" Height="22" Margin="89,204,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="40" RenderTransformOrigin="0.51,3.464" TextChanged="tbSeconds_TextChanged"/>
+                    <Label x:Name="lblHours" Content="Hours:" HorizontalAlignment="Left" Margin="44,147,0,0" VerticalAlignment="Top" Cursor="ArrowCD" RenderTransformOrigin="1.254,0.54"/>
+                    <Label x:Name="lblSeconds" Content="Seconds:" HorizontalAlignment="Left" Margin="33,200,0,0" VerticalAlignment="Top"/>
 
                 </Grid>
             </TabItem>
@@ -52,17 +58,22 @@
                         <RowDefinition Height="5*"/>
                     </Grid.RowDefinitions>
 
+                    <GroupBox x:Name="groupBox1" Header="Interface" HorizontalAlignment="Left" Margin="57,212,0,0" VerticalAlignment="Top" Height="130" Width="424">
+                        <TextBox x:Name="txtMOT_Password" HorizontalAlignment="Left" Height="23" Margin="90,67,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="297"/>
+                    </GroupBox>
+
+
                     <GroupBox x:Name="groupBox2" Header="Response" HorizontalAlignment="Left" Margin="57,342,0,0" VerticalAlignment="Top" Height="70" Width="424"/>
 
 
                     <GroupBox x:Name="groupBox" Header="Database DSN" HorizontalAlignment="Left" Margin="57,29,0,0" VerticalAlignment="Top" Height="178" Width="424"/>
 
 
-                    <TextBox x:Name="txtDSNAddress" HorizontalAlignment="Left" Margin="153,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142" Height="23" TextChanged="txtDSNAddress_TextChanged" Text="DMPCPR"/>
-                    <TextBox x:Name="txtDSNPort" HorizontalAlignment="Left" Height="23" Margin="337,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text=""/>
-                    <TextBox x:Name="txtUname" HorizontalAlignment="Left" Margin="153,111,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="23" Text="cpr_user"/>
-                    <TextBox x:Name="txtDBPassword" HorizontalAlignment="Left" Height="23" Margin="153,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsReadOnlyCaretVisible="True" Text="cpruser"/>
-                    <TextBox x:Name="txtDatabase" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Margin="153,167,0,0" Text="CPRTEST"/>
+                    <TextBox x:Name="txtDBName_Address" HorizontalAlignment="Left" Margin="153,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142" Height="23" TextChanged="txtDSNAddress_TextChanged"/>
+                    <TextBox x:Name="txtDB_Port" HorizontalAlignment="Left" Height="23" Margin="337,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text=""/>
+                    <TextBox x:Name="txtDB_Uname" HorizontalAlignment="Left" Margin="153,111,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="23"/>
+                    <TextBox x:Name="txtDB_Password" HorizontalAlignment="Left" Height="23" Margin="153,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsReadOnlyCaretVisible="True"/>
+                    <TextBox x:Name="txtDB_DBName" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Margin="153,167,0,0"/>
                     <ComboBox x:Name="cbDBType" HorizontalAlignment="Left" Margin="227,47,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1" SelectionChanged="cbDBType_SelectionChanged">
                         <ListBoxItem Content="ODBC"/>
                         <ListBoxItem Content="SQL Server"/>
@@ -78,19 +89,17 @@
                     <Label x:Name="label5" Content="Port" HorizontalAlignment="Left" Margin="111,266,0,0" VerticalAlignment="Top"/>
 
 
-                    <TextBox x:Name="txtAddress" HorizontalAlignment="Left" Height="23" Margin="153,242,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Text="66.189.45.17"/>
-                    <TextBox x:Name="txtPort" HorizontalAlignment="Left" Height="23" Margin="153,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Text="24042"/>
-                    <PasswordBox x:Name="pwdInterface" HorizontalAlignment="Left" Margin="153,294,0,0" VerticalAlignment="Top" Width="295" Height="23"/>
+                    <TextBox x:Name="txtMOT_Address" HorizontalAlignment="Left" Height="23" Margin="153,242,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295"/>
+                    <TextBox x:Name="txtMOT_Port" HorizontalAlignment="Left" Height="23" Margin="153,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295"/>
                     <Button x:Name="btnTestPort" Content="Test" HorizontalAlignment="Left" Height="117" Margin="488,222,0,0" VerticalAlignment="Top" Width="35" RenderTransformOrigin="0.381,1.93" Click="btnTestPort_Click"/>
 
-                    <Label x:Name="label3_Copy" Content="Password" HorizontalAlignment="Left" Margin="84,293,0,0" VerticalAlignment="Top" Height="26" Width="59"/>
+                    <Label x:Name="label3_Copy" Content="Password" HorizontalAlignment="Left" Margin="-95,346,0,0" VerticalAlignment="Top" Height="26" Width="59"/>
                     <TextBox x:Name="txtResponse" HorizontalAlignment="Left" Height="38" Margin="74,364,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="391" IsReadOnly="True"/>
                     <Label x:Name="label7" Content="Port" HorizontalAlignment="Left" Margin="301,80,0,0" VerticalAlignment="Top"/>
 
 
 
                     <Button x:Name="btnKeep" Content="Keep Configuration" HorizontalAlignment="Left" Margin="63,419,0,0" VerticalAlignment="Top" Width="417" BorderThickness="2" Click="btnKeep_Click" Height="34" Grid.RowSpan="2"/>
-                    <GroupBox x:Name="groupBox1" Header="Interface" HorizontalAlignment="Left" Margin="57,212,0,0" VerticalAlignment="Top" Height="130" Width="424"/>
 
 
                 </Grid>

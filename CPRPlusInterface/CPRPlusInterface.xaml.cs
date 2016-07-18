@@ -47,6 +47,8 @@ namespace CPRPlusInterface
         public Port __port;
         public string __DSN;
         public volatile bool __running = true;
+        public volatile int __refresh_rate = 0;
+        public volatile bool __window_ready = false;
         public dbType __db_type = 0;
 
         private Thread __watch_for_drug;
@@ -55,14 +57,89 @@ namespace CPRPlusInterface
         private Thread __watch_for_prescriber;
         private Thread __watch_for_prescription;
         private Thread __watch_for_store;
-        private Thread __watch_for_time_qty;
+        //private Thread __watch_for_time_qty;
 
 
         public MainWindow()
         {
+
             InitializeComponent();
+
+            __load_defaults();
+
+            tbHours.TextChanged += new System.Windows.Controls.TextChangedEventHandler(this.tbHours_TextChanged);
+            tbMinutes.TextChanged += new System.Windows.Controls.TextChangedEventHandler(this.tbMinutes_TextChanged);
+            tbSeconds.TextChanged += new System.Windows.Controls.TextChangedEventHandler(this.tbSeconds_TextChanged);
+
+            __update_refresh_rate();
+
+            if (!string.IsNullOrEmpty(txtDBName_Address.Text) &&
+                !string.IsNullOrEmpty(txtDB_DBName.Text) &&
+                !string.IsNullOrEmpty(txtDB_Uname.Text) &&
+                !string.IsNullOrEmpty(txtDB_Password.Text) &&
+                !string.IsNullOrEmpty(txtMOT_Address.Text) &&
+                !string.IsNullOrEmpty(txtMOT_Port.Text))
+            {
+                btnStart.IsEnabled = true;
+            }
         }
 
+        ~MainWindow()
+        {
+            //__save_defaults();
+        }
+
+        private void __load_defaults()
+        {
+            cbDBType.SelectedIndex = Properties.Settings.Default.DB_Type;
+
+            txtDBName_Address.Text = Properties.Settings.Default.DB_ServerName;
+            txtDB_DBName.Text = Properties.Settings.Default.DB_DatabaseName;
+            txtDB_Port.Text = Properties.Settings.Default.DB_Port;
+            txtDB_Uname.Text = Properties.Settings.Default.DB_UserName;
+            txtDB_Password.Text = Properties.Settings.Default.DB_Password;
+
+            txtMOT_Address.Text = Properties.Settings.Default.MOT_Address;
+            txtMOT_Port.Text = Properties.Settings.Default.MOT_Port;
+            txtMOT_Password.Text = Properties.Settings.Default.MOT_Password;
+
+            tbHours.Text = Properties.Settings.Default.POLL_Hours;
+            tbMinutes.Text = Properties.Settings.Default.POLL_Minutes;
+            tbSeconds.Text = Properties.Settings.Default.POLL_Seconds;
+        }
+
+        private void __save_defaults()
+        {
+            Properties.Settings.Default.DB_Type = cbDBType.SelectedIndex;
+
+            Properties.Settings.Default.DB_ServerName = txtDBName_Address.Text;
+            Properties.Settings.Default.DB_DatabaseName = txtDB_DBName.Text;
+            Properties.Settings.Default.DB_Port = txtDB_Port.Text;
+            Properties.Settings.Default.DB_UserName = txtDB_Uname.Text;
+            Properties.Settings.Default.DB_Password = txtDB_Password.Text;
+
+            Properties.Settings.Default.MOT_Address = txtMOT_Address.Text;
+            Properties.Settings.Default.MOT_Port = txtMOT_Port.Text;
+            Properties.Settings.Default.MOT_Password = txtMOT_Password.Text;
+
+            Properties.Settings.Default.POLL_Hours = tbHours.Text;
+            Properties.Settings.Default.POLL_Minutes = tbMinutes.Text;
+            Properties.Settings.Default.POLL_Seconds = tbSeconds.Text;
+
+            Properties.Settings.Default.Save();
+        }
+
+
+
+        private void __update_refresh_rate()
+        {
+            if (__window_ready)
+            {
+                __refresh_rate = (((Convert.ToInt32(tbHours.Text) * 60) * 60) * 1000) +
+                                 ((Convert.ToInt32(tbMinutes.Text) * 60) * 1000) +
+                                 (Convert.ToInt32(tbSeconds.Text) * 1000);
+            }
+        }
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
@@ -81,31 +158,31 @@ namespace CPRPlusInterface
                              // ODBC Standard Security: Driver={SQL Server Native Client 11.0};Server=myServerAddress;Database = myDataBase; Uid = myUsername; Pwd = myPassword;
                         __test = new cprPlus(dbType.ODBCServer,
                                             @"Driver ={ SQL Server Native Client 11.0 }" + ";" +
-                                            @"Server=" + txtDSNAddress.Text + ";" + txtDSNPort.Text + ";" +
-                                            @"Database=" + txtDatabase.Text + ";" +
-                                            @"Uid=" + txtUname.Text + ";" +
-                                            @"Pwd=" + txtDBPassword.Text + ";",
+                                            @"Server=" + txtDBName_Address.Text + ";" + txtDB_Port.Text + ";" +
+                                            @"Database=" + txtDB_DBName.Text + ";" +
+                                            @"Uid=" + txtDB_Uname.Text + ";" +
+                                            @"Pwd=" + txtDB_Password.Text + ";",
                                             null);
                         break;
 
                     case 1:
                         // SQL Server Standard Securtity Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password = myPassword;
-                        if (!string.IsNullOrEmpty(txtDSNPort.Text))
+                        if (!string.IsNullOrEmpty(txtDB_Port.Text))
                         {
                             __test = new cprPlus(dbType.SQLServer,
-                                                @"Server=" + txtDSNAddress.Text + "," + txtDSNPort.Text + ";" +
-                                                @"Database=" + txtDatabase.Text + ";" +
-                                                @"User Id=" + txtUname.Text + ";" +
-                                                @"Password=" + txtDBPassword.Text + ";",
+                                                @"Server=" + txtDBName_Address.Text + "," + txtDB_Port.Text + ";" +
+                                                @"Database=" + txtDB_DBName.Text + ";" +
+                                                @"User Id=" + txtDB_Uname.Text + ";" +
+                                                @"Password=" + txtDB_Password.Text + ";",
                                                 null);
                         }
                         else
                         {
                             __test = new cprPlus(dbType.SQLServer,
-                                                @"Server=" + txtDSNAddress.Text + ";" +
-                                                @"Database=" + txtDatabase.Text + ";" +
-                                                @"User Id=" + txtUname.Text + ";" +
-                                                @"Password=" + txtDBPassword.Text + ";",
+                                                @"Server=" + txtDBName_Address.Text + ";" +
+                                                @"Database=" + txtDB_DBName.Text + ";" +
+                                                @"User Id=" + txtDB_Uname.Text + ";" +
+                                                @"Password=" + txtDB_Password.Text + ";",
                                                 null);
 
                             /*
@@ -142,11 +219,11 @@ namespace CPRPlusInterface
                     case 2:
                         // PostgreSQL - @"server=127.0.0.1;port=5432;userid=fred;password=fred!cool;database=Fred";
                         __test = new cprPlus(dbType.NPGServer,
-                                            @"server=" + txtDSNAddress.Text + ";" +
-                                            @"port=" + txtDSNPort.Text + ";" +
-                                            @"userid=" + txtUname.Text + ";" +
-                                            @"password=" + txtDBPassword.Text + ";" +
-                                            @"database=" + txtDatabase.Text,
+                                            @"server=" + txtDBName_Address.Text + ";" +
+                                            @"port=" + txtDB_Port.Text + ";" +
+                                            @"userid=" + txtDB_Uname.Text + ";" +
+                                            @"password=" + txtDB_Password.Text + ";" +
+                                            @"database=" + txtDB_DBName.Text,
                                             null);
                         break;
                 }
@@ -168,7 +245,7 @@ namespace CPRPlusInterface
 
             try
             {
-                Port p = new Port(txtAddress.Text, txtPort.Text);
+                Port p = new Port(txtMOT_Address.Text, txtMOT_Port.Text);
                 txtResponse.AppendText(@"Address Is Good To Go!");
                 btnKeep.IsEnabled = true;
                 p.Close();
@@ -196,6 +273,8 @@ namespace CPRPlusInterface
                 default:
                     break;
             }
+
+            //__save_defaults();
         }
 
         private void btnKeep_Click(object sender, RoutedEventArgs e)
@@ -206,35 +285,35 @@ namespace CPRPlusInterface
                 case 0:    // ODBC Standard Security: Driver={SQL Server Native Client 11.0};Server=myServerAddress;Database = myDataBase; Uid = myUsername; Pwd = myPassword;
 
                     __DSN = @"Driver ={ SQL Server Native Client 11.0 }" + ";" +
-                                               @"Server=" + txtDSNAddress.Text + ";" + txtDSNPort.Text + ";" +
-                                               @"Database=" + txtDatabase.Text + ";" +
-                                               @"Uid=" + txtUname.Text + ";" +
-                                               @"Pwd=" + txtDBPassword.Text + ";";
+                            @"Server=" + txtDBName_Address.Text + ";" + txtDB_Port.Text + ";" +
+                            @"Database=" + txtDBName_Address.Text + ";" +
+                            @"Uid=" + txtDB_Uname.Text + ";" +
+                            @"Pwd=" + txtDB_Password.Text + ";";
                     break;
 
                 case 1:   // SQL Server Standard Securtity Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password = myPassword;
-                    if (!string.IsNullOrEmpty(txtDSNPort.Text))
+                    if (!string.IsNullOrEmpty(txtDB_Port.Text))
                     {
-                        __DSN = @"Server=" + txtDSNAddress.Text + "," + txtDSNPort.Text + ";" +
-                                @"Database=" + txtDatabase.Text + ";" +
-                                @"User Id=" + txtUname.Text + ";" +
-                                @"Password=" + txtDBPassword.Text + ";";
+                        __DSN = @"Server=" + txtDBName_Address.Text + "," + txtDB_Port.Text + ";" +
+                                @"Database=" + txtDB_DBName.Text + ";" +
+                                @"User Id=" + txtDB_Uname.Text + ";" +
+                                @"Password=" + txtDB_Password.Text + ";";
                     }
                     else
                     {
-                        __DSN = @"Server=" + txtDSNAddress.Text + ";" +
-                                @"Database=" + txtDatabase.Text + ";" +
-                                @"User Id=" + txtUname.Text + ";" +
-                                @"Password=" + txtDBPassword.Text + ";";
+                        __DSN = @"Server=" + txtDBName_Address.Text + ";" +
+                                @"Database=" + txtDB_DBName.Text + ";" +
+                                @"User Id=" + txtDB_Uname.Text + ";" +
+                                @"Password=" + txtDB_Password.Text + ";";
                     }
                     break;
 
                 case 2:   // PostgreSQL - @"server=127.0.0.1;port=5432;userid=fred;password=fred!cool;database=Fred";
-                    __DSN = @"server=" + txtDSNAddress.Text + ";" +
-                            @"port=" + txtDSNPort.Text + ";" +
-                            @"userid=" + txtUname.Text + ";" +
-                            @"password=" + txtDBPassword.Text + ";" +
-                            @"database=" + txtDatabase.Text;
+                    __DSN = @"server=" + txtDBName_Address.Text + ";" +
+                            @"port=" + txtDB_Port.Text + ";" +
+                            @"userid=" + txtDB_Uname.Text + ";" +
+                            @"password=" + txtDB_Password.Text + ";" +
+                            @"database=" + txtDB_DBName.Text;
                     break;
             }
 
@@ -246,13 +325,15 @@ namespace CPRPlusInterface
                     @"database=" + txtDatabase.Text;
                     */
 
-            __port = new Port(txtAddress.Text, txtPort.Text);
+            __port = new Port(txtMOT_Address.Text, txtMOT_Port.Text);
 
 
 
             tabMain.SelectedIndex = 0;
             btnStart.IsEnabled = true;
             btnKeep.IsEnabled = false;
+
+            //__save_defaults();
 
         }
 
@@ -261,27 +342,10 @@ namespace CPRPlusInterface
             cbLogLevel.IsEnabled = (bool)(chkLogging.IsChecked == true);
         }
 
-        private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            txtRate.Text = Convert.ToUInt16(slider.Value).ToString();
-        }
-
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             __running = false;
         }
-
-        /*
-            var conn = new SqlConnection(connString);
-            conn.Open();
-            var cmd = conn.CreateCommand();
-            cmd.CommandTimeout = 0; // forever and ever
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "WAITFOR (RECEIVE CONVERT(int, message_body) AS Message FROM SBQ)";
-
-            var dataTable = new DataTable();
-            var da = new SqlDataAdapter(command);
-         */
 
         public void __listen_for_prescriber_record(int __dbtype, string __dsn, string __address, string __port)
         {
@@ -307,7 +371,7 @@ namespace CPRPlusInterface
 
                 }));
 
-                Thread.Sleep(1024);
+                Thread.Sleep(__refresh_rate);
             }
         }
 
@@ -334,7 +398,7 @@ namespace CPRPlusInterface
                     }
                 }));
 
-                Thread.Sleep(1024);
+                Thread.Sleep(__refresh_rate);
             }
         }
 
@@ -360,7 +424,7 @@ namespace CPRPlusInterface
 
                 }));
 
-                Thread.Sleep(1024);
+                Thread.Sleep(__refresh_rate);
             }
         }
 
@@ -387,7 +451,7 @@ namespace CPRPlusInterface
 
                 }));
 
-                Thread.Sleep(1024);
+                Thread.Sleep(__refresh_rate);
             }
         }
 
@@ -412,7 +476,7 @@ namespace CPRPlusInterface
                     }
                 }));
 
-                Thread.Sleep(1024);
+                Thread.Sleep(__refresh_rate);
             }
         }
 
@@ -437,7 +501,7 @@ namespace CPRPlusInterface
                     }
                 }));
 
-                Thread.Sleep(1024);
+                Thread.Sleep(__refresh_rate);
             }
         }
 
@@ -465,7 +529,7 @@ namespace CPRPlusInterface
                     }
                 }));
 
-                Thread.Sleep(1024);
+                Thread.Sleep(__refresh_rate);
             }
         }
 
@@ -480,8 +544,8 @@ namespace CPRPlusInterface
             {
                 __running = true;
 
-                string __s_address = txtAddress.Text;
-                string __s_port = txtPort.Text;
+                string __s_address = txtMOT_Address.Text;
+                string __s_port = txtMOT_Port.Text;
                 string __dsn = __DSN;
                 int __dbtype = cbDBType.SelectedIndex;
 
@@ -516,7 +580,7 @@ namespace CPRPlusInterface
                 __watch_for_prescription.Start();
 
                 lstbxRunningLog.Items.Add("started Prescription Listener");
-                
+
 
                 __watch_for_store = new Thread(new ThreadStart(() => __listen_for_store_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_store.Name = "__store_listener";
@@ -1161,7 +1225,7 @@ namespace CPRPlusInterface
                                 __lock_port.__release_lock();
                             }
                             catch
-                            { }                            
+                            { }
                         }
 
                         return __store;
@@ -1348,6 +1412,31 @@ namespace CPRPlusInterface
         private void txtDSNAddress_TextChanged(object sender, TextChangedEventArgs e)
         {
 
+        }
+
+        private void tbHours_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            __update_refresh_rate();
+        }
+
+        private void tbMinutes_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            __update_refresh_rate();
+        }
+
+        private void tbSeconds_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            __update_refresh_rate();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            __save_defaults();
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            __window_ready = true;
         }
     }
 }
