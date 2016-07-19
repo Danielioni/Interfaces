@@ -10,9 +10,7 @@ select
 		meddata.SHAPEDESCRIPTION as VisualDescription,
 		NAME_ as Drugname,
 		NDCMEDI as NDCNum,
-		MCRCMNTEXT as GenericFor,
-		parts.Touchdate,
-		parts.Createdon
+		MCRCMNTEXT as GenericFor
 
 
 from parts
@@ -24,5 +22,3 @@ and meddata.delflag = 0
 and parttype = 'D'
 
 Go
-
-

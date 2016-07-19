@@ -10,11 +10,8 @@ select
 		CITY ,
 		st as STATE,
 		ZIP,
-		PHONE,
-		Touchdate,
-		Createdon
+		PHONE
 
 from client
 
 Go
-

@@ -190,5 +190,71 @@ namespace CPRPlusInterface.Properties {
                 this["DB_Port"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime vDrugLastTouch {
+            get {
+                return ((global::System.DateTime)(this["vDrugLastTouch"]));
+            }
+            set {
+                this["vDrugLastTouch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime vPrescriberLastTouch {
+            get {
+                return ((global::System.DateTime)(this["vPrescriberLastTouch"]));
+            }
+            set {
+                this["vPrescriberLastTouch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime vLocationLastTouch {
+            get {
+                return ((global::System.DateTime)(this["vLocationLastTouch"]));
+            }
+            set {
+                this["vLocationLastTouch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime vPatientLastTouch {
+            get {
+                return ((global::System.DateTime)(this["vPatientLastTouch"]));
+            }
+            set {
+                this["vPatientLastTouch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime vRxLastTouch {
+            get {
+                return ((global::System.DateTime)(this["vRxLastTouch"]));
+            }
+            set {
+                this["vRxLastTouch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime vStoreLastTouch {
+            get {
+                return ((global::System.DateTime)(this["vStoreLastTouch"]));
+            }
+            set {
+                this["vStoreLastTouch"] = value;
+            }
+        }
     }
 }

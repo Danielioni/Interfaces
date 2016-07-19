@@ -45,9 +45,7 @@ select
 		cte_patins2.policy as AltInsPNo,
 		cte_Medicare.policy as MCareNum,
 		cte_Medicaid.policy as McCaidNum,
-		sex as Gender,
-		hr.Touchdate,
-		hr.Createdon
+		sex as Gender
 
 from HR 
 ---where delflag = 0 

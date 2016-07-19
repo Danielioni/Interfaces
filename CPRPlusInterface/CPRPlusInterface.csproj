@@ -137,8 +137,8 @@
     <Content Include="SQL Queries\dbo.vMOTLocation.sql" />
     <Content Include="SQL Queries\dbo.vMOTPatient.sql" />
     <Content Include="SQL Queries\dbo.vMOTPrescriber.sql" />
-    <Content Include="SQL Queries\dbo.vMOTRx .sql" />
-    <Content Include="SQL Queries\dbo.vMOTStore .sql" />
+    <Content Include="SQL Queries\dbo.vMOTRx.sql" />
+    <Content Include="SQL Queries\dbo.vMOTStore.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

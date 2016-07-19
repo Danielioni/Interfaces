@@ -12,13 +12,9 @@ SELECT
 	ph_phone as phone,
 	notes as comments,
 	ph_dea as dea_id,
-	ph_fax as fax,
-	Touchdate,
-	Createdon
+	ph_fax as fax
+	
 
 FROM doctors       
                                             
 GO
-
-
-

@@ -349,8 +349,10 @@ namespace CPRPlusInterface
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
+            DateTime __time_stamp = DateTime.Now;
+
             __running = false;
-            txtLastStatus.Text += "Stopped ...\n";
+            txtLastStatus.Text +=  __time_stamp.ToString() + " Stopped ...\n";
         }
 
         public void __listen_for_prescriber_record(int __dbtype, string __dsn, string __address, string __port)
@@ -546,6 +548,8 @@ namespace CPRPlusInterface
                * and updates the MOT database.   
                */
 
+            DateTime __time_stamp = DateTime.Now;
+
             try
             {
                 __running = true;
@@ -557,7 +561,7 @@ namespace CPRPlusInterface
                 int __dbtype = cbDBType.SelectedIndex;
 
 
-                txtLastStatus.Text += "Running ...\n";
+                txtLastStatus.Text += __time_stamp.ToString() + " Running ...\n";
 
                 //Thread thread = new Thread(() => download(filename));
 
@@ -797,12 +801,16 @@ namespace CPRPlusInterface
                     __exception.Add("Speciality");
                     __exception.Add("Zip");
 
+                    DateTime __last_touch = Properties.Settings.Default.vPrescriberLastTouch;
+
                     /*
                      *  Query the database and collect a set of records where a valid set is {1..n} items.  This is not a traditional
                      *  record set as returned by access or SQL server, but a generic collection of IDataRecords and is usable accross
                      *  all database types.  If the set of records is {0} an exception will be thrown   
                      */
-                    if (db.executeQuery("SELECT * FROM dbo.vMOTPrescriber;"))
+                    string __query = "SELECT * FROM dbo.vMOTPrescriber WHERE Touchdate > " + __last_touch.ToString() + ";";
+
+                    if (db.executeQuery(__query))
                     {
                         string __tag;
                         string __val;
@@ -871,6 +879,9 @@ namespace CPRPlusInterface
                                 __lock_port.__get_lock();
                                 __prescriber.Write(__port);
                                 __lock_port.__release_lock();
+
+                                Properties.Settings.Default.vPrescriberLastTouch = DateTime.Now;
+                                Properties.Settings.Default.Save();
                             }
                             catch
                             { }
@@ -943,7 +954,7 @@ namespace CPRPlusInterface
                     string __tag;
                     string __val;
                     string __tmp;
-
+                    DateTime __last_touch = Properties.Settings.Default.vPatientLastTouch;
 
                     if (db.executeQuery("SELECT * FROM dbo.vMOTPatient;"))
                     {
@@ -983,6 +994,9 @@ namespace CPRPlusInterface
                                 __lock_port.__get_lock();
                                 __patient.Write(__port);
                                 __lock_port.__release_lock();
+
+                                Properties.Settings.Default.vPatientLastTouch = DateTime.Now;
+                                Properties.Settings.Default.Save();
                             }
                             catch
                             { }
@@ -1037,6 +1051,8 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
+                    DateTime __last_touch = Properties.Settings.Default.vRxLastTouch;
+
                     if (db.executeQuery("SELECT * FROM dbo.vMOTRx;"))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
@@ -1075,6 +1091,9 @@ namespace CPRPlusInterface
                                 __lock_port.__get_lock();
                                 __scrip.Write(__port);
                                 __lock_port.__release_lock();
+
+                                Properties.Settings.Default.vRxLastTouch = DateTime.Now;
+                                Properties.Settings.Default.Save();
                             }
                             catch
                             { }
@@ -1116,6 +1135,7 @@ namespace CPRPlusInterface
                     string __tag;
                     string __val;
                     string __tmp;
+                    DateTime __last_touch = Properties.Settings.Default.vLocationLastTouch;
 
                     if (db.executeQuery("SELECT * FROM dbo.vMOTLocation;"))
                     {
@@ -1155,6 +1175,9 @@ namespace CPRPlusInterface
                                 __lock_port.__get_lock();
                                 __location.Write(__port);
                                 __lock_port.__release_lock();
+
+                                Properties.Settings.Default.vLocationLastTouch = DateTime.Now;
+                                Properties.Settings.Default.Save();
                             }
                             catch
                             { }
@@ -1195,10 +1218,13 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
+                    DateTime __last_touch = Properties.Settings.Default.vStoreLastTouch;
+
                     if (db.executeQuery("SELECT * FROM dbo.vMOTStore;"))
                     {
                         foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                         {
+
                             // Print the DataType of each column in the table. 
                             foreach (DataColumn column in __record.Table.Columns)
                             {
@@ -1233,6 +1259,9 @@ namespace CPRPlusInterface
                                 __lock_port.__get_lock();
                                 __store.Write(__port);
                                 __lock_port.__release_lock();
+
+                                Properties.Settings.Default.vStoreLastTouch = DateTime.Now;
+                                Properties.Settings.Default.Save();
                             }
                             catch
                             { }
@@ -1251,12 +1280,11 @@ namespace CPRPlusInterface
                 }
 
             }
-
+/*
             public override motTimeQtysRecord getTimeQtyRecord()
             {
                 return null;
 
-                /*
                 try
                 {
                     motTimeQtysRecord __tq = new motTimeQtysRecord("Add");
@@ -1325,9 +1353,8 @@ namespace CPRPlusInterface
                 {
                     throw new Exception("Failed to get Drug Record " + e.Message);
                 }
-                */
             }
-
+        */
             public override motDrugRecord getDrugRecord()
             {
                 try
@@ -1358,6 +1385,8 @@ namespace CPRPlusInterface
                     string __tag;
                     string __val;
                     string __tmp;
+
+                    DateTime __last_touch = Properties.Settings.Default.vDrugLastTouch;
 
                     if (db.executeQuery("SELECT * FROM dbo.vMOTDrug;"))
                     {
@@ -1397,6 +1426,9 @@ namespace CPRPlusInterface
                                 __lock_port.__get_lock();
                                 __drug.Write(__port);
                                 __lock_port.__release_lock();
+
+                                Properties.Settings.Default.vDrugLastTouch = DateTime.Now;
+                                Properties.Settings.Default.Save();
                             }
                             catch
                             { }
