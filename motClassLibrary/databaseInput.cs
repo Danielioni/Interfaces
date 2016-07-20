@@ -241,7 +241,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-
+                Console.WriteLine("Failed to execute nonQuery {0}", e.Message);
             }
         }
 

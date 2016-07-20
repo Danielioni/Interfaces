@@ -45,7 +45,7 @@
                     </ComboBox>
                     <TextBox x:Name="tbHours" HorizontalAlignment="Left" Height="22" Margin="89,150,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="40" TextChanged="tbHours_TextChanged"/>
                     <TextBox x:Name="tbMinutes" HorizontalAlignment="Left" Height="22" Margin="89,177,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="40" TextChanged="tbMinutes_TextChanged"/>
-                    <TextBox x:Name="tbSeconds" HorizontalAlignment="Left" Height="22" Margin="89,204,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="40" RenderTransformOrigin="0.51,3.464" TextChanged="tbSeconds_TextChanged"/>
+                    <TextBox x:Name="tbSeconds" HorizontalAlignment="Left" Height="22" Margin="89,204,0,0" TextWrapping="Wrap" Text="45" VerticalAlignment="Top" Width="40" RenderTransformOrigin="0.51,3.464" TextChanged="tbSeconds_TextChanged"/>
                     <Label x:Name="lblHours" Content="Hours:" HorizontalAlignment="Left" Margin="44,147,0,0" VerticalAlignment="Top" Cursor="ArrowCD" RenderTransformOrigin="1.254,0.54"/>
                     <Label x:Name="lblSeconds" Content="Seconds:" HorizontalAlignment="Left" Margin="33,200,0,0" VerticalAlignment="Top"/>
 

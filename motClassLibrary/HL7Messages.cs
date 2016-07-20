@@ -230,7 +230,7 @@ namespace motInboundLib
             {
                 return __get_field_data(__mot_fields[__mot_field_name]);
             }
-            catch(Exception e)
+            catch
             {
                 return null;
             }

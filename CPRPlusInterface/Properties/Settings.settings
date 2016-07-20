@@ -6,10 +6,10 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="POLL_Minutes" Type="System.String" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="POLL_Seconds" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">45</Value>
     </Setting>
     <Setting Name="DB_Type" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
@@ -45,22 +45,22 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="vDrugLastTouch" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">2016-05-02</Value>
     </Setting>
     <Setting Name="vPrescriberLastTouch" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">2016-05-02</Value>
     </Setting>
     <Setting Name="vLocationLastTouch" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">2016-05-02</Value>
     </Setting>
     <Setting Name="vPatientLastTouch" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">2016-05-02</Value>
     </Setting>
     <Setting Name="vRxLastTouch" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">2016-05-02</Value>
     </Setting>
     <Setting Name="vStoreLastTouch" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">2016-05-02</Value>
     </Setting>
   </Settings>
 </SettingsFile>

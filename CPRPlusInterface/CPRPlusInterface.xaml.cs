@@ -30,6 +30,7 @@ using System.Collections.Concurrent;
 using System.Windows;
 using System.Windows.Controls;
 using System.Data;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,6 +60,8 @@ namespace CPRPlusInterface
         private Thread __watch_for_store;
         //private Thread __watch_for_time_qty;
 
+        public static Mutex __port_access;
+
 
         public MainWindow()
         {
@@ -71,7 +74,9 @@ namespace CPRPlusInterface
             tbMinutes.TextChanged += new System.Windows.Controls.TextChangedEventHandler(this.tbMinutes_TextChanged);
             tbSeconds.TextChanged += new System.Windows.Controls.TextChangedEventHandler(this.tbSeconds_TextChanged);
 
+            __window_ready = true;
             __update_refresh_rate();
+            __port_access = new Mutex(false, "__port_hold");
 
             if (!string.IsNullOrEmpty(txtDBName_Address.Text) &&
                 !string.IsNullOrEmpty(txtDB_DBName.Text) &&
@@ -91,6 +96,8 @@ namespace CPRPlusInterface
 
         private void __load_defaults()
         {
+            Properties.Settings.Default.Upgrade();
+
             cbDBType.SelectedIndex = Properties.Settings.Default.DB_Type;
 
             txtDBName_Address.Text = Properties.Settings.Default.DB_ServerName;
@@ -106,6 +113,8 @@ namespace CPRPlusInterface
             tbHours.Text = Properties.Settings.Default.POLL_Hours;
             tbMinutes.Text = Properties.Settings.Default.POLL_Minutes;
             tbSeconds.Text = Properties.Settings.Default.POLL_Seconds;
+
+            __update_refresh_rate();
         }
 
         private void __save_defaults()
@@ -135,9 +144,14 @@ namespace CPRPlusInterface
         {
             if (__window_ready)
             {
-                __refresh_rate = (((Convert.ToInt32(tbHours.Text) * 60) * 60) * 1000) +
-                                 ((Convert.ToInt32(tbMinutes.Text) * 60) * 1000) +
-                                 (Convert.ToInt32(tbSeconds.Text) * 1000);
+                if (!string.IsNullOrEmpty(tbHours.Text) &&
+                    !string.IsNullOrEmpty(tbMinutes.Text) &&
+                    !string.IsNullOrEmpty(tbMinutes.Text))
+                {
+                    __refresh_rate = (((Convert.ToInt32(tbHours.Text) * 60) * 60) * 1000) +
+                                     ((Convert.ToInt32(tbMinutes.Text) * 60) * 1000) +
+                                     (Convert.ToInt32(tbSeconds.Text) * 1000);
+                }
             }
         }
 
@@ -352,7 +366,7 @@ namespace CPRPlusInterface
             DateTime __time_stamp = DateTime.Now;
 
             __running = false;
-            txtLastStatus.Text +=  __time_stamp.ToString() + " Stopped ...\n";
+            txtLastStatus.Text += __time_stamp.ToString() + " Stopped ...\n";
         }
 
         public void __listen_for_prescriber_record(int __dbtype, string __dsn, string __address, string __port)
@@ -370,11 +384,11 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0, "Recieved Prescriber Record [" + m.FirstName + " " + m.LastName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Prescriber Record [" + m.FirstName + " " + m.LastName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0, "Did Not Get Prescriber Record");
+                        //  lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Prescriber Record");
                     }
 
                 }));
@@ -398,11 +412,11 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0, "Recieved Prescription Record [" + m.RxSys_RxNum + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Prescription Record [" + m.RxSys_RxNum + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0, "Did Not Get Prescription Record");
+                        // lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Prescription Record");
                     }
                 }));
 
@@ -423,11 +437,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0, "Recieved Patient Record [" + m.FirstName + " " + m.LastName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Patient Record [" + m.FirstName + " " + m.LastName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0, "Did Not Get Patient Record");
+                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Patient Record");
                     }
 
                 }));
@@ -450,11 +464,11 @@ namespace CPRPlusInterface
 
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0, "Recieved Location Record [" + m.LocationName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Location Record [" + m.LocationName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0, "Did Not Get Location Location Record");
+                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Location Location Record");
                     }
 
                 }));
@@ -476,11 +490,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0, "Recieved Store Record [" + m.StoreName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Store Record [" + m.StoreName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0, "Did Not Get Store Patient Record");
+                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Store Patient Record");
                     }
                 }));
 
@@ -529,11 +543,11 @@ namespace CPRPlusInterface
                 {
                     if (m != null)
                     {
-                        lstbxRunningLog.Items.Insert(0, "Recieved Drug Record [" + m.DrugName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Drug Record [" + m.DrugName + "]");
                     }
                     else
                     {
-                        lstbxRunningLog.Items.Insert(0, "Did Not Get Drug Record");
+                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Drug Record");
                     }
                 }));
 
@@ -570,37 +584,39 @@ namespace CPRPlusInterface
                 __watch_for_drug.Name = "__drug_listener";
                 __watch_for_drug.Start();
 
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Drug Listener");
+
                 __watch_for_location = new Thread(new ThreadStart(() => __listen_for_location_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_location.Name = "__location_listener";
                 __watch_for_location.Start();
 
-                lstbxRunningLog.Items.Add("started Location Listener");
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Location Listener");
 
 
                 __watch_for_patient = new Thread(new ThreadStart(() => __listen_for_patient_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_patient.Name = "__patient_listener";
                 __watch_for_patient.Start();
 
-                lstbxRunningLog.Items.Add("started Patient Listener");
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Patient Listener");
 
                 __watch_for_prescriber = new Thread(new ThreadStart(() => __listen_for_prescriber_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_prescriber.Name = "__prescriber_listener";
                 __watch_for_prescriber.Start();
 
-                lstbxRunningLog.Items.Add("started Prescriber Listener");
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescriber Listener");
 
                 __watch_for_prescription = new Thread(new ThreadStart(() => __listen_for_prescription_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_prescription.Name = "__prescription_listener";
                 __watch_for_prescription.Start();
 
-                lstbxRunningLog.Items.Add("started Prescription Listener");
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescription Listener");
 
 
                 __watch_for_store = new Thread(new ThreadStart(() => __listen_for_store_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_store.Name = "__store_listener";
                 __watch_for_store.Start();
 
-                lstbxRunningLog.Items.Add("started Store Listener");
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Store Listener");
 
                 /*
                 __watch_for_time_qty = new Thread(new ThreadStart(() => __listen_for_time_qty_record(__dbtype, __dsn, __s_address, __s_port)));
@@ -628,14 +644,14 @@ namespace CPRPlusInterface
             protected List<string> __view;
 
 
-            public runManager __lock_port;
+            //public runManager __lock_port;
 
             public cprPlus(dbType __type, string DSN, Port p) : base(__type, DSN)
             {
                 __port = p;
                 __load_queries("");
                 __set_views();
-                __lock_port = new runManager();
+                //__lock_port = new runManager();
             }
 
             public cprPlus(dbType __type, string DSN, string __address, string __p) : base(__type, DSN)
@@ -643,7 +659,6 @@ namespace CPRPlusInterface
                 __port = new Port(__address, __p);
                 __load_queries("");
                 __set_views();
-                __lock_port = new runManager();
             }
 
             public void __set_views()
@@ -651,38 +666,6 @@ namespace CPRPlusInterface
                 foreach (string __v in __view)
                 {
                     db.executeNonQuery(__v);
-                }
-            }
-
-            public class runManager
-            {
-                public bool __running { get; set; } = false;
-                public Mutex __port_access;
-
-                public runManager()
-                {
-                    if (!Mutex.TryOpenExisting("__port_hold", out __port_access))
-                    {
-                        __port_access = new Mutex(false, "__port_hold");
-                    }
-
-                    __running = true;
-                }
-
-                ~runManager()
-                {
-                    __running = false;
-                    __port_access.Dispose();
-                }
-
-                public bool __get_lock()
-                {
-                    return (bool)__port_access.WaitOne();
-                }
-
-                public void __release_lock()
-                {
-                    __port_access.ReleaseMutex();
                 }
             }
 
@@ -735,39 +718,6 @@ namespace CPRPlusInterface
             {
                 motPrescriberRecord __prescriber = new motPrescriberRecord("Add");
 
-                /*
-                 * This could be a view or a query.  It's unclear at this point which is preferred and there doesn't
-                 * seem to be an obvious mechanism for selecting a set of "Unseen" records.  What will happen if
-                 * there's no clear "New" set is that all found records will be sent to the inerface on each refresh
-                 * loop and the gateway will just reject the ones it already has.  
-                 */
-                /*
-                string __query = @"CREATE VIEW dbo.vPrescriber AS SELECT
-                        --   NOTES												FType					FLen
-                       p.Prescriber_ID,-- not null (unique ID)					Integer 				  				INDEX unique
-                       p.Last_Name, -- not null									VarChar					25				INDEX not unique
-                       p.First_Name, --not null									VarChar					15
-                       p.Middle_Initial, -- nullable							Char					 1
-                       p.Address_Line_1, -- nullable							VarChar					25
-                       p.Address_Line_2, -- nullable							VarChar					25
-                       p.City, -- nullable										VarChar					20
-                       p.State_Code, -- nullable								Char					2
-                       p.Zip_Code, -- nullable									Integer
-                       p.Zip_Plus_4, -- nullable								Integer
-                       pt.Area_Code, -- nullable								Integer
-                       pt.Telephone_Number, -- nullable 						Integer
-                       pt.Extension, -- nullable								Integer
-                       p.DEA_Number, -- nullable								Char					9
-                       p.DEA_Suffix, -- nullable								Char					6
-                       p.Prescriber_Type, -- not null (DDS, MD, etc)		    VarChar					4
-                       p.Active_Flag -- not null	(Y,N)						Char				    1
-                       FROM	Prescriber p
-
-                       [JOIN] prescriber_telephone pt -- provide only the primary voice phone #)
-
-                       GO";
-                       */
-
                 try
                 {
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
@@ -778,117 +728,76 @@ namespace CPRPlusInterface
                      *  list to do the conversion on the fly. This will work for all items except where the contents of the field are incomplete,
                      *  require transformation, or are otherwise incorrect, we generate and exception list and handle them one at a time.
                      */
-                    __xTable.Add("Prescriber_ID", "RxSys_DocID");
+                    __xTable.Add("Prescriber_ID", "RxSys_DcocID");
                     __xTable.Add("Last_Name", "LastName");
                     __xTable.Add("First_Name", "FirstName");
-                    __xTable.Add("Middle_Initial", "MiddleInitial");
                     __xTable.Add("Address_Line_1", "Address1");
                     __xTable.Add("Address_Line_2", "Address2");
-                    __xTable.Add("City", "City");
-                    __xTable.Add("State_Code", "State");
-                    __xTable.Add("Zip_Code", "Zip");                // Note, the view provides Zipcode and Zip+4, Need to Merge
-                    __xTable.Add("Telephone_Number", "Phone");      // Note, the view provides Areacode, Phone Numberand Extension as 3 items.  Need to Merge
-                                                                    //__xTable.Add("", "Comments");
-                    __xTable.Add("DEA_Number", "DEA_ID");           // Note, the view provides DEA_Number and DEA_Suffix. Need to Merge
-                    __xTable.Add("Extension", "TPID");              // Note, not included or the can be used for the telephone extension  
-                    __xTable.Add("Prescriber_Type", "Speciality");  // Note, provided as chars instead of a number, need to translate
-                                                                    // (Missing) __xTable.Add(:"", "Fax");
-                                                                    // (Missing) __xTable.Add("", "PagerInfo");
+                    __xTable.Add("City", "city");
+                    __xTable.Add("State_Code", "state");
+                    __xTable.Add("Zip_Code", "zip");               
+                    __xTable.Add("Telephone_Number", "phone");  
+                    __xTable.Add("Fax ", "fax");                                           
+                    __xTable.Add("DEA_Number", "dea_id");           
+                    __xTable.Add("Comments", "comments");              
 
-                    // Exceptions are items that need further processing to be complete fields
-                    __exception.Add("DEA_ID");
-                    __exception.Add("Phone");
-                    __exception.Add("Speciality");
-                    __exception.Add("Zip");
-
-                    DateTime __last_touch = Properties.Settings.Default.vPrescriberLastTouch;
 
                     /*
                      *  Query the database and collect a set of records where a valid set is {1..n} items.  This is not a traditional
                      *  record set as returned by access or SQL server, but a generic collection of IDataRecords and is usable accross
                      *  all database types.  If the set of records is {0} an exception will be thrown   
                      */
-                    string __query = "SELECT * FROM dbo.vMOTPrescriber WHERE Touchdate > " + __last_touch.ToString() + ";";
 
-                    if (db.executeQuery(__query))
+
+                    string __tag;
+                    string __val;
+                    string __tmp;
+
+                    SqlDateTime __last_touch = new SqlDateTime(Properties.Settings.Default.vPrescriberLastTouch);
+
+                    Properties.Settings.Default.vPrescriberLastTouch = DateTime.Now;
+                    Properties.Settings.Default.Save();
+
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTPrescriber WHERE Touchdate > '" + __last_touch.ToString() + "';"))
                     {
-                        string __tag;
-                        string __val;
-                        string __tmp;
-
-                        foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                        if (db.__recordSet.Tables["__table"].Rows.Count > 0)
                         {
-
-                            // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in __record.Table.Columns)
+                            foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                             {
-                                if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+
+                                // Print the DataType of each column in the table. 
+                                foreach (DataColumn column in __record.Table.Columns)
                                 {
-                                    __tag = __tmp;
-                                    __val = __record[column.ColumnName].ToString();
-
-                                    // Process CPR+ Rules 
-                                    if (__tag == "DEA_ID")
+                                    if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                     {
-                                        if (__xTable.TryGetValue("DEA_Suffix", out __tmp))
+                                        __tag = __tmp;
+                                        __val = __record[column.ColumnName].ToString();
+
+                                        // Scrubbing rules
+                                        while (__val.Contains("-"))
                                         {
-                                            __val += __record["DEA_Suffix"].ToString();
+                                            __val = __val.Remove(__val.IndexOf("-"), 1);
                                         }
-                                    }
 
-                                    if (__tag == "Phone")
-                                    {
-                                        // Find the Area_code and prepend it to Phone
-                                        if (__xTable.TryGetValue("Area_Code", out __tmp))
-                                        {
-                                            string __new___tmp = __record["Area_Code"].ToString();
-                                            __val += __new___tmp;
-                                        }
+                                        // Update the local Prescriber record
+                                        __prescriber.setField(__tag, __val, __override_length_checking);
                                     }
-
-                                    if (__tag == "Speciality")
-                                    {
-                                        // Compare text to lookup table __tmps - NEED TO Develop Lookup Table
-                                        // Default to Family Practice for now
-                                        __val = "0";
-                                    }
-
-                                    if (__tag == "Zip")
-                                    {
-                                        // Append Zip+4, no '-' 
-                                        if (__xTable.TryGetValue("Zip_Plus_4", out __tmp))
-                                        {
-                                            __val += __record["Zip_Plus_4"].ToString();
-                                        }
-                                    }
-
-                                    // Scrubbing rules
-                                    while (__val.Contains("-"))
-                                    {
-                                        __val = __val.Remove(__val.IndexOf("-"), 1);
-                                    }
-
-                                    // Update the local Prescriber record
-                                    __prescriber.setField(__tag, __val, __override_length_checking);
                                 }
+
+                                try
+                                {
+                                    // Write the record to the gateway
+                                    __port_access.WaitOne();
+                                    __prescriber.Write(__port);
+                                    __port_access.ReleaseMutex();
+                                }
+                                catch
+                                { __port_access.ReleaseMutex(); }
+
                             }
 
-                            try
-                            {
-                                // Write the record to the gateway
-                                __lock_port.__get_lock();
-                                __prescriber.Write(__port);
-                                __lock_port.__release_lock();
-
-                                Properties.Settings.Default.vPrescriberLastTouch = DateTime.Now;
-                                Properties.Settings.Default.Save();
-                            }
-                            catch
-                            { }
-
+                            return __prescriber;
                         }
-
-                        return __prescriber;
                     }
 
                     return null;
@@ -897,8 +806,6 @@ namespace CPRPlusInterface
                 {
                     throw (new Exception("Failed to add CPR+ Prescriber Record" + e.Message));
                 }
-
-                //return base.getPrescriberRecord();
             }
 
             public override motPatientRecord getPatientRecord()
@@ -912,30 +819,17 @@ namespace CPRPlusInterface
                     __xTable.Add("rxSys_PatID", "RxSys_PatID");
                     __xTable.Add("LastName", "LastName");
                     __xTable.Add("FirstName", "FirstName");
-                    //__xTable.Add("", "MiddleInitial");
                     __xTable.Add("Address1", "Address1");
-                    //__xTable.Add("", "Address2");
                     __xTable.Add("CITY", "City");
                     __xTable.Add("STATE", "State");
                     __xTable.Add("ZIP", "Zip");
                     __xTable.Add("Phone1", "Phone1");
-                    //__xTable.Add("", "Phone2");
                     __xTable.Add("WorkPhone", "WorkPhone");
                     __xTable.Add("RxSys_LocID", "RxSys_LocID");
-                    //__xTable.Add("", "Room");
-                    //__xTable.Add("", "Comments");
-                    //__xTable.Add("", "CycleDate");
-                    //__xTable.Add("", "CycleDays");
-                    //__xTable.Add("", "CycleType");
                     __xTable.Add("status", "Status");
-                    //__xTable.Add("", "RxSys_LastDoc");
-                    //__xTable.Add("", "RxSys_PrimaryDoc");
-                    //__xTable.Add("", "RxSys_AltDoc");
                     __xTable.Add("ssn", "SSN");
                     __xTable.Add("Allergies", "Allergies");
                     __xTable.Add("Diet", "Diet");
-                    //__xTable.Add("", "DxNotes");
-                    //__xTable.Add("", "TreatmentNotes");
                     __xTable.Add("DOB", "DOB");
                     __xTable.Add("Height", "Height");
                     __xTable.Add("Weight", "Weight");
@@ -946,63 +840,57 @@ namespace CPRPlusInterface
                     __xTable.Add("AltInsPNo", "AltInsPNo");
                     __xTable.Add("MCareNum", "MCareNum");
                     __xTable.Add("McCadeNum", "MCaidNum");
-                    //__xTable.Add("", "AdmitDate");
-                    //__xTable.Add("", "ChartOnly");
-                    //__xTable.Add("", "Gender");
-
+                    
 
                     string __tag;
                     string __val;
                     string __tmp;
-                    DateTime __last_touch = Properties.Settings.Default.vPatientLastTouch;
 
-                    if (db.executeQuery("SELECT * FROM dbo.vMOTPatient;"))
+                    // Pull the last touch timestamp
+                    SqlDateTime __last_touch = new SqlDateTime(Properties.Settings.Default.vPatientLastTouch);
+
+                    // Save the current Timestamp
+                    Properties.Settings.Default.vPatientLastTouch = DateTime.Now;
+                    Properties.Settings.Default.Save();
+
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTPatient WHERE Touchdate > '" + __last_touch.ToString() + "';"))
                     {
-                        foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                        if (db.__recordSet.Tables["__table"].Rows.Count > 0)
                         {
-                            // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in __record.Table.Columns)
+                            foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                             {
-                                if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+                                // Print the DataType of each column in the table. 
+                                foreach (DataColumn column in __record.Table.Columns)
                                 {
-                                    __tag = __tmp;
-                                    __val = __record[column.ColumnName].ToString();
-
-                                    // Process CPR+ Rules 
-                                    //if (__tag == "DEA_ID")
-                                    //{
-                                    //    if (__xTable.TryGetValue("DEA_Suffix", out __tmp))
-                                    //    {
-                                    //        __val += __record["DEA_Suffix"].ToString();
-                                    //    }
-                                    //}
-
-                                    // Conversion rules
-                                    while (__val.Contains("-"))
+                                    if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                     {
-                                        __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        __tag = __tmp;
+                                        __val = __record[column.ColumnName].ToString();
+
+                                        // Conversion rules
+                                        while (__val.Contains("-"))
+                                        {
+                                            __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        }
+
+                                        // Update the local drug record
+                                        __patient.setField(__tag, __val, __override_length_checking);
                                     }
-
-                                    // Update the local drug record
-                                    __patient.setField(__tag, __val, __override_length_checking);
                                 }
+
+                                try
+                                {
+                                    // Write the record to the gateway
+                                    __port_access.WaitOne();
+                                    __patient.Write(__port);
+                                    __port_access.ReleaseMutex();
+                                }
+                                catch
+                                { __port_access.ReleaseMutex(); }
                             }
 
-                            try
-                            {
-                                // Write the record to the gateway
-                                __lock_port.__get_lock();
-                                __patient.Write(__port);
-                                __lock_port.__release_lock();
-
-                                Properties.Settings.Default.vPatientLastTouch = DateTime.Now;
-                                Properties.Settings.Default.Save();
-                            }
-                            catch
-                            { }
+                            return __patient;
                         }
-
-                        return __patient;
                     }
 
                     return null;
@@ -1028,79 +916,59 @@ namespace CPRPlusInterface
                     __xTable.Add("SIG", "Sig");
                     __xTable.Add("RxStartDate", "RxStartDate");
                     __xTable.Add("RxStopDate", "RxStopDate");
-                    //__xTable.Add("", "DiscontinueDate");
-                    //__xTable.Add("", "DoseScheduleName");
                     __xTable.Add("Comments", "Comments");
                     __xTable.Add("Refills", "Refills");
-                    //__xTable.Add("", "RxSys_NewRxNum");
-                    //__xTable.Add("", "Isolate");
-                    //__xTable.Add("", "RxType");
-                    //__xTable.Add("", "MDOMStart");
-                    //__xTable.Add("", "MDOMEnd");
                     __xTable.Add("QtyPerDose", "QtyPerDose");
                     __xTable.Add("QtyDIspensed", "QtyDispensed");
-                    //__xTable.Add("", "Status");
-                    //__xTable.Add("", "DoW");
-                    //__xTable.Add("", "SpecialDoses");
-                    //__xTable.Add("", "DoseTimeQtys");
-                    //__xTable.Add("", "ChartOnly");
-                    //__xTable.Add("", "AnchorDate");
-
 
                     string __tag;
                     string __val;
                     string __tmp;
 
-                    DateTime __last_touch = Properties.Settings.Default.vRxLastTouch;
+                    SqlDateTime __last_touch = new SqlDateTime(Properties.Settings.Default.vRxLastTouch);
 
-                    if (db.executeQuery("SELECT * FROM dbo.vMOTRx;"))
+                    Properties.Settings.Default.vRxLastTouch = DateTime.Now;
+                    Properties.Settings.Default.Save();
+
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTRx WHERE Touchdate > '" + __last_touch.ToString() + "'; "))
                     {
-                        foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                        if(db.__recordSet.Tables["__table"].Rows.Count > 0)
                         {
-                            // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in __record.Table.Columns)
+                            foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                             {
-                                if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+                                // Print the DataType of each column in the table. 
+                                foreach (DataColumn column in __record.Table.Columns)
                                 {
-                                    __tag = __tmp;
-                                    __val = __record[column.ColumnName].ToString();
-
-                                    // Process CPR+ Rules 
-                                    //if (__tag == "DEA_ID")
-                                    //{
-                                    //    if (__xTable.TryGetValue("DEA_Suffix", out __tmp))
-                                    //    {
-                                    //        __val += __record["DEA_Suffix"].ToString();
-                                    //    }
-                                    //}
-
-                                    // Conversion rules
-                                    while (__val.Contains("-"))
+                                    if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                     {
-                                        __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        __tag = __tmp;
+                                        __val = __record[column.ColumnName].ToString();
+
+                                        // Conversion rules
+                                        while (__val.Contains("-"))
+                                        {
+                                            __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        }
+
+                                        // Update the local drug record
+                                        __scrip.setField(__tag, __val, __override_length_checking);
                                     }
-
-                                    // Update the local drug record
-                                    __scrip.setField(__tag, __val, __override_length_checking);
                                 }
+
+                                try
+                                {
+                                    // Write the record to the gateway
+                                    __port_access.WaitOne();
+                                    __scrip.Write(__port);
+                                    __port_access.ReleaseMutex();
+                                }
+                                catch
+                                { __port_access.ReleaseMutex(); }
                             }
 
-                            try
-                            {
-                                // Write the record to the gateway
-                                __lock_port.__get_lock();
-                                __scrip.Write(__port);
-                                __lock_port.__release_lock();
-
-                                Properties.Settings.Default.vRxLastTouch = DateTime.Now;
-                                Properties.Settings.Default.Save();
-                            }
-                            catch
-                            { }
+                            return __scrip;
                         }
-
-                        return __scrip;
-                    }
+                     }
 
                     return null;
                 }
@@ -1127,63 +995,58 @@ namespace CPRPlusInterface
                     __xTable.Add("STATE", "State");
                     __xTable.Add("ZIP", "Zip");
                     __xTable.Add("PHONE", "Phone");
-                    //__xTable.Add("", "Comments");
-                    //__xTable.Add("", "CycleDays");
-                    //__xTable.Add("", "CycleType");
+
 
 
                     string __tag;
                     string __val;
                     string __tmp;
-                    DateTime __last_touch = Properties.Settings.Default.vLocationLastTouch;
 
-                    if (db.executeQuery("SELECT * FROM dbo.vMOTLocation;"))
+                    SqlDateTime __last_touch = new SqlDateTime(Properties.Settings.Default.vLocationLastTouch);
+
+                    Properties.Settings.Default.vLocationLastTouch = DateTime.Now;
+                    Properties.Settings.Default.Save();
+
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTLocation WHERE Touchdate > '" + __last_touch.ToString() + "'; "))
                     {
-                        foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                        if (db.__recordSet.Tables["__table"].Rows.Count > 0)
                         {
-                            // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in __record.Table.Columns)
+                            foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                             {
-                                if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+                                // Print the DataType of each column in the table. 
+                                foreach (DataColumn column in __record.Table.Columns)
                                 {
-                                    __tag = __tmp;
-                                    __val = __record[column.ColumnName].ToString();
-
-                                    // Process CPR+ Rules 
-                                    //if (__tag == "DEA_ID")
-                                    //{
-                                    //    if (__xTable.TryGetValue("DEA_Suffix", out __tmp))
-                                    //    {
-                                    //        __val += __record["DEA_Suffix"].ToString();
-                                    //    }
-                                    //}
-
-                                    // Conversion rules
-                                    while (__val.Contains("-"))
+                                    if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                     {
-                                        __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        __tag = __tmp;
+                                        __val = __record[column.ColumnName].ToString();
+
+                                        // Conversion rules
+                                        while (__val.Contains("-"))
+                                        {
+                                            __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        }
+
+                                        // Update the local drug record
+                                        __location.setField(__tag, __val, __override_length_checking);
                                     }
-
-                                    // Update the local drug record
-                                    __location.setField(__tag, __val, __override_length_checking);
                                 }
+
+                                try
+                                {
+                                    // Write the record to the gateway
+                                    __port_access.WaitOne();
+                                    __location.Write(__port);
+                                    __port_access.ReleaseMutex();
+
+
+                                }
+                                catch
+                                { __port_access.ReleaseMutex(); }
                             }
 
-                            try
-                            {
-                                // Write the record to the gateway
-                                __lock_port.__get_lock();
-                                __location.Write(__port);
-                                __lock_port.__release_lock();
-
-                                Properties.Settings.Default.vLocationLastTouch = DateTime.Now;
-                                Properties.Settings.Default.Save();
-                            }
-                            catch
-                            { }
+                            return __location;
                         }
-
-                        return __location;
                     }
 
                     return null;
@@ -1218,56 +1081,49 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    DateTime __last_touch = Properties.Settings.Default.vStoreLastTouch;
+                    SqlDateTime __last_touch = new SqlDateTime(Properties.Settings.Default.vStoreLastTouch);
 
-                    if (db.executeQuery("SELECT * FROM dbo.vMOTStore;"))
+                    Properties.Settings.Default.vStoreLastTouch = DateTime.Now;
+                    Properties.Settings.Default.Save();
+
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTStore WHERE Touchdate > '" + __last_touch.ToString() + "'; "))
                     {
-                        foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                        if (db.__recordSet.Tables["__table"].Rows.Count > 0)
                         {
-
-                            // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in __record.Table.Columns)
+                            foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                             {
-                                if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+                                foreach (DataColumn column in __record.Table.Columns)
                                 {
-                                    __tag = __tmp;
-                                    __val = __record[column.ColumnName].ToString();
-
-                                    // Process CPR+ Rules 
-                                    //if (__tag == "DEA_ID")
-                                    //{
-                                    //    if (__xTable.TryGetValue("DEA_Suffix", out __tmp))
-                                    //    {
-                                    //        __val += __record["DEA_Suffix"].ToString();
-                                    //    }
-                                    //}
-
-                                    // Conversion rules
-                                    while (__val.Contains("-"))
+                                    if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                     {
-                                        __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        __tag = __tmp;
+                                        __val = __record[column.ColumnName].ToString();
+
+                                        // Conversion rules
+                                        while (__val.Contains("-"))
+                                        {
+                                            __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        }
+
+                                        // Update the local drug record
+                                        __store.setField(__tag, __val, __override_length_checking);
                                     }
-
-                                    // Update the local drug record
-                                    __store.setField(__tag, __val, __override_length_checking);
                                 }
+
+                                try
+                                {
+                                    // Write the record to the gateway
+                                    __port_access.WaitOne();
+                                    __store.Write(__port);
+                                    __port_access.ReleaseMutex();
+                                }
+                                catch
+                                { __port_access.ReleaseMutex(); }
                             }
 
-                            try
-                            {
-                                // Write the record to the gateway
-                                __lock_port.__get_lock();
-                                __store.Write(__port);
-                                __lock_port.__release_lock();
 
-                                Properties.Settings.Default.vStoreLastTouch = DateTime.Now;
-                                Properties.Settings.Default.Save();
-                            }
-                            catch
-                            { }
+                            return __store;
                         }
-
-                        return __store;
                     }
 
                     return null;
@@ -1280,81 +1136,81 @@ namespace CPRPlusInterface
                 }
 
             }
-/*
-            public override motTimeQtysRecord getTimeQtyRecord()
-            {
-                return null;
-
-                try
-                {
-                    motTimeQtysRecord __tq = new motTimeQtysRecord("Add");
-                    Dictionary<string, string> __xTable = new Dictionary<string, string>();
-
-                    // Load the translaton table -- Database Column Name to Gateway Tag Name                
-                    __xTable.Add("", "RxSys_LocID");
-
-                    //__xTable.Add("", "DoseScheduleName");
-                    //__xTable.Add("", "DoseTimeQtys");
-
-
-                    string __tag;
-                    string __val;
-                    string __tmp;
-
-                    if (db.executeQuery(timeqty.sSELECT * FROM dbo.vMOTTimeQty;"))
-                    {
-                        foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+            /*
+                        public override motTimeQtysRecord getTimeQtyRecord()
                         {
-                            // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in __record.Table.Columns)
-                            {
-                                if (__xTable.TryGetValue(column.ColumnName, out __tmp))
-                                {
-                                    __tag = __tmp;
-                                    __val = __record[column.ColumnName].ToString();
-
-                                    // Process CPR+ Rules 
-                                    //if (__tag == "DEA_ID")
-                                    //{
-                                    //    if (__xTable.TryGetValue("DEA_Suffix", out __tmp))
-                                    //    {
-                                    //        __val += __record["DEA_Suffix"].ToString();
-                                    //    }
-                                    //}
-
-                                    // Conversion rules
-                                    while (__val.Contains("-"))
-                                    {
-                                        __val = __val.Remove(__val.IndexOf("-"), 1);
-                                    }
-
-                                    // Update the local drug record
-                                    __tq.setField(__tag, __val, __override_length_checking);
-                                }
-                            }
+                            return null;
 
                             try
                             {
-                            // Write the record to the gateway
-                            __lock_port.__get_lock();
-                            __tq.Write(__port);
-                            __lock_port.__release_lock();
+                                motTimeQtysRecord __tq = new motTimeQtysRecord("Add");
+                                Dictionary<string, string> __xTable = new Dictionary<string, string>();
+
+                                // Load the translaton table -- Database Column Name to Gateway Tag Name                
+                                __xTable.Add("", "RxSys_LocID");
+
+                                //__xTable.Add("", "DoseScheduleName");
+                                //__xTable.Add("", "DoseTimeQtys");
+
+
+                                string __tag;
+                                string __val;
+                                string __tmp;
+
+                                if (db.executeQuery(timeqty.sSELECT * FROM dbo.vMOTTimeQty;"))
+                                {
+                                    foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                                    {
+                                        // Print the DataType of each column in the table. 
+                                        foreach (DataColumn column in __record.Table.Columns)
+                                        {
+                                            if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+                                            {
+                                                __tag = __tmp;
+                                                __val = __record[column.ColumnName].ToString();
+
+                                                // Process CPR+ Rules 
+                                                //if (__tag == "DEA_ID")
+                                                //{
+                                                //    if (__xTable.TryGetValue("DEA_Suffix", out __tmp))
+                                                //    {
+                                                //        __val += __record["DEA_Suffix"].ToString();
+                                                //    }
+                                                //}
+
+                                                // Conversion rules
+                                                while (__val.Contains("-"))
+                                                {
+                                                    __val = __val.Remove(__val.IndexOf("-"), 1);
+                                                }
+
+                                                // Update the local drug record
+                                                __tq.setField(__tag, __val, __override_length_checking);
+                                            }
+                                        }
+
+                                        try
+                                        {
+                                        // Write the record to the gateway
+                                        __lock_port.__get_lock();
+                                        __tq.Write(__port);
+                                        __lock_port.__release_lock();
+                                        }
+                                        catch
+                                        { }
+                                    }
+
+                                    return __tq;
+                                }
+
+                                return null;
                             }
-                            catch
-                            { }
+                            catch (Exception e)
+                            {
+                                throw new Exception("Failed to get Drug Record " + e.Message);
+                            }
                         }
-
-                        return __tq;
-                    }
-
-                    return null;
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Failed to get Drug Record " + e.Message);
-                }
-            }
-        */
+                    */
             public override motDrugRecord getDrugRecord()
             {
                 try
@@ -1363,22 +1219,12 @@ namespace CPRPlusInterface
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                     __xTable.Add("RxSys_DrugID", "RxSys_DrugID");
-                    //__xTable.Add("", "LblCode");
-                    //__xTable.Add("ReOrderId", "ProdCode");
                     __xTable.Add("Drugname", "TradeName");
                     __xTable.Add("Strength", "Strength");
                     __xTable.Add("Unit", "Unit");
-                    //__xTable.Add("RxOtc", "RxOtc");
-                    //__xTable.Add("DoseForm", "DoseForm");
-                    //__xTable.Add("", "Route");
                     __xTable.Add("DrugeSchedule", "DrugSchedule");
                     __xTable.Add("VisualDescription", "VisualDescription");
-                    //__xTable.Add("", "DrugName");
-                    //__xTable.Add("", "ShortName");
                     __xTable.Add("NDCNum", "NDCNum");
-                    //__xTable.Add("DrugCupCountId", "SizeFactor");
-                    //__xTable.Add("PackageTemplate", "Template");
-                    //__xTable.Add("Version", "ConsultMsg");
                     __xTable.Add("GenericFor", "GenericFor");
 
 
@@ -1386,55 +1232,50 @@ namespace CPRPlusInterface
                     string __val;
                     string __tmp;
 
-                    DateTime __last_touch = Properties.Settings.Default.vDrugLastTouch;
+                    SqlDateTime __last_touch = new SqlDateTime(Properties.Settings.Default.vDrugLastTouch);
 
-                    if (db.executeQuery("SELECT * FROM dbo.vMOTDrug;"))
+                    Properties.Settings.Default.vDrugLastTouch = DateTime.Now;
+                    Properties.Settings.Default.Save();
+
+
+                    if (db.executeQuery("SELECT * FROM dbo.vMOTDrug WHERE Touchdate > '" + __last_touch.ToString() + "'; "))
                     {
-                        foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                        if (db.__recordSet.Tables["__table"].Rows.Count > 0)
                         {
-                            // Print the DataType of each column in the table. 
-                            foreach (DataColumn column in __record.Table.Columns)
+                            foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                             {
-                                if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+                                // Print the DataType of each column in the table. 
+                                foreach (DataColumn column in __record.Table.Columns)
                                 {
-                                    __tag = __tmp;
-                                    __val = __record[column.ColumnName].ToString();
-
-                                    // Process CPR+ Rules 
-                                    //if (__tag == "DEA_ID")
-                                    //{
-                                    //    if (__xTable.TryGetValue("DEA_Suffix", out __tmp))
-                                    //    {
-                                    //        __val += __record["DEA_Suffix"].ToString();
-                                    //    }
-                                    //}
-
-                                    // Conversion rules
-                                    while (__val.Contains("-"))
+                                    if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                     {
-                                        __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        __tag = __tmp;
+                                        __val = __record[column.ColumnName].ToString();
+
+                                        // Conversion rules
+                                        while (__val.Contains("-"))
+                                        {
+                                            __val = __val.Remove(__val.IndexOf("-"), 1);
+                                        }
+
+                                        // Update the local drug record
+                                        __drug.setField(__tag, __val, __override_length_checking);
                                     }
-
-                                    // Update the local drug record
-                                    __drug.setField(__tag, __val, __override_length_checking);
                                 }
+
+                                try
+                                {
+                                    // Write the record to the gateway                             
+                                    __port_access.WaitOne();
+                                    __drug.Write(__port);
+                                    __port_access.ReleaseMutex();
+                                }
+                                catch
+                                { __port_access.ReleaseMutex(); }
                             }
 
-                            try
-                            {
-                                // Write the record to the gateway
-                                __lock_port.__get_lock();
-                                __drug.Write(__port);
-                                __lock_port.__release_lock();
-
-                                Properties.Settings.Default.vDrugLastTouch = DateTime.Now;
-                                Properties.Settings.Default.Save();
-                            }
-                            catch
-                            { }
+                            return __drug;
                         }
-
-                        return __drug;
                     }
 
                     return null;

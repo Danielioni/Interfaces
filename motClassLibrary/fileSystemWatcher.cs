@@ -98,7 +98,7 @@ namespace motInboundLib
                             sr.Close();
                             File.Delete(__fileName);
                         }
-                        catch(Exception e)
+                        catch
                         {
                             sr.Close();
                             if (!File.Exists(__fileName + ".FAILED"))
