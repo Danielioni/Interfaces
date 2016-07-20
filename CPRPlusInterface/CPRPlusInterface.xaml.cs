@@ -372,19 +372,19 @@ namespace CPRPlusInterface
         public void __listen_for_prescriber_record(int __dbtype, string __dsn, string __address, string __port)
         {
 
-            motPrescriberRecord m;
+           // motPrescriberRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __DSN, __address, __port);
 
             while (__running)
             {
-                m = __cpr.getPrescriberRecord();
+                int __count = __cpr.readPrescriberRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
 
-                    if (m != null)
+                    if (__count >  0)
                     {
-                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Prescriber Record [" + m.FirstName + " " + m.LastName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Prescriber Record(s)");
                     }
                     else
                     {
@@ -400,19 +400,19 @@ namespace CPRPlusInterface
 
         public void __listen_for_prescription_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            motPrescriptionRecord m;
+            //motPrescriptionRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
             while (__running)
             {
-                m = __cpr.getPrescriptionRecord();
+                int __count = __cpr.readPrescriptionRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
 
-                    if (m != null)
+                    if (__count > 0)
                     {
-                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Prescription Record [" + m.RxSys_RxNum + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Prescription Record(s)");
                     }
                     else
                     {
@@ -426,18 +426,18 @@ namespace CPRPlusInterface
 
         public void __listen_for_patient_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            motPatientRecord m;
+            //motPatientRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
             while (__running)
             {
-                m = __cpr.getPatientRecord();
+                int __count = __cpr.readPatientRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    if (m != null)
+                    if (__count > 0)
                     {
-                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Patient Record [" + m.FirstName + " " + m.LastName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Patient Record(s)");
                     }
                     else
                     {
@@ -452,19 +452,19 @@ namespace CPRPlusInterface
 
         public void __listen_for_location_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            motLocationRecord m;
+            //motLocationRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
             while (__running)
             {
-                m = __cpr.getLocationRecord();
+                int __count = __cpr.readLocationRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
 
-                    if (m != null)
+                    if (__count > 0)
                     {
-                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Location Record [" + m.LocationName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Location Record(s)");
                     }
                     else
                     {
@@ -479,18 +479,18 @@ namespace CPRPlusInterface
 
         public void __listen_for_store_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            motStoreRecord m;
+            //motStoreRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
             while (__running)
             {
-                m = __cpr.getStoreRecord();
+                int __count = __cpr.readStoreRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    if (m != null)
+                    if (__count > 0)
                     {
-                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Store Record [" + m.StoreName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Store Record(s)");
                     }
                     else
                     {
@@ -529,7 +529,7 @@ namespace CPRPlusInterface
 
         public void __listen_for_drug_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            motDrugRecord m;
+            //motDrugRecord m;
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
 
             // Execute View
@@ -537,13 +537,13 @@ namespace CPRPlusInterface
 
             while (__running)
             {
-                m = __cpr.getDrugRecord();
+                int __count = __cpr.readDrugRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    if (m != null)
+                    if (__count > 0)
                     {
-                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Recieved Drug Record [" + m.DrugName + "]");
+                        lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Drug Record(s)");
                     }
                     else
                     {
@@ -716,12 +716,18 @@ namespace CPRPlusInterface
 
             public override motPrescriberRecord getPrescriberRecord()
             {
+                throw new NotImplementedException("getPrescriberRecord");
+            }
+
+            public int readPrescriberRecords()
+            {
                 motPrescriberRecord __prescriber = new motPrescriberRecord("Add");
 
                 try
                 {
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     List<string> __exception = new List<string>();
+                    int __counter = 0;
 
                     /*
                      *  The field names in the database are generally not going to match the field names MOT uses, so we implment a pairwise 
@@ -790,17 +796,17 @@ namespace CPRPlusInterface
                                     __port_access.WaitOne();
                                     __prescriber.Write(__port);
                                     __port_access.ReleaseMutex();
+
+                                    __counter++; 
                                 }
                                 catch
                                 { __port_access.ReleaseMutex(); }
 
                             }
-
-                            return __prescriber;
                         }
                     }
 
-                    return null;
+                    return __counter;
                 }
                 catch (Exception e)
                 {
@@ -810,10 +816,16 @@ namespace CPRPlusInterface
 
             public override motPatientRecord getPatientRecord()
             {
+                throw new NotImplementedException("getPatientRecord");
+            }
+
+            public int readPatientRecords()
+            {
                 try
                 {
                     motPatientRecord __patient = new motPatientRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
+                    int __counter = 0;
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name  
                     __xTable.Add("rxSys_PatID", "RxSys_PatID");
@@ -884,16 +896,16 @@ namespace CPRPlusInterface
                                     __port_access.WaitOne();
                                     __patient.Write(__port);
                                     __port_access.ReleaseMutex();
+
+                                    __counter++;
                                 }
                                 catch
                                 { __port_access.ReleaseMutex(); }
                             }
-
-                            return __patient;
                         }
                     }
 
-                    return null;
+                    return __counter;
                 }
                 catch (Exception e)
                 {
@@ -903,10 +915,16 @@ namespace CPRPlusInterface
 
             public override motPrescriptionRecord getPrescriptionRecord()
             {
+                throw new NotImplementedException("getPrescriptionRecord");
+            }
+
+            public int readPrescriptionRecords()
+            {
                 try
                 {
                     motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
+                    int __counter = 0;
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
                     __xTable.Add("RxSys_RxNum", "RxSys_RxNum");
@@ -965,12 +983,10 @@ namespace CPRPlusInterface
                                 catch
                                 { __port_access.ReleaseMutex(); }
                             }
-
-                            return __scrip;
                         }
                      }
 
-                    return null;
+                    return __counter;
                 }
                 catch (Exception e)
                 {
@@ -980,10 +996,16 @@ namespace CPRPlusInterface
 
             public override motLocationRecord getLocationRecord()
             {
+                throw new NotImplementedException("getLocationRecord");
+            }
+
+            public int readLocationRecords()
+            {
                 try
                 {
                     motLocationRecord __location = new motLocationRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
+                    int __counter = 0;
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
                     __xTable.Add("RxSys_LocID", "RxSys_LocID");
@@ -1044,12 +1066,10 @@ namespace CPRPlusInterface
                                 catch
                                 { __port_access.ReleaseMutex(); }
                             }
-
-                            return __location;
                         }
                     }
 
-                    return null;
+                    return __counter;
                 }
                 catch (Exception e)
                 {
@@ -1059,10 +1079,17 @@ namespace CPRPlusInterface
 
             public override motStoreRecord getStoreRecord()
             {
+                throw new NotImplementedException("getStoreRecord");
+            }
+
+            public int readStoreRecords()
+            {
                 try
                 {
                     motStoreRecord __store = new motStoreRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
+                    int __counter = 0;
+
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name                
                     __xTable.Add("RxSys_StoreID", "RxSys_StoreID");
@@ -1120,19 +1147,15 @@ namespace CPRPlusInterface
                                 catch
                                 { __port_access.ReleaseMutex(); }
                             }
-
-
-                            return __store;
                         }
                     }
 
-                    return null;
+                    return __counter;
                 }
                 catch (System.Exception e)
                 {
-                    Console.WriteLine("Get Store Record Failed: {0}", e.Message);
-                    return null;
-                    //throw new Exception("Failed to get Store Record " + e.Message);
+                    //Console.WriteLine("Get Store Record Failed: {0}", e.Message);
+                    throw new Exception("Failed to get Store Record " + e.Message);
                 }
 
             }
@@ -1213,10 +1236,16 @@ namespace CPRPlusInterface
                     */
             public override motDrugRecord getDrugRecord()
             {
+                throw new NotImplementedException("getDrugRecord");
+            }
+
+            public int readDrugRecords()
+            {
                 try
                 {
                     motDrugRecord __drug = new motDrugRecord("Add");
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
+                    int __counter = 0;
 
                     __xTable.Add("RxSys_DrugID", "RxSys_DrugID");
                     __xTable.Add("Drugname", "TradeName");
@@ -1273,16 +1302,14 @@ namespace CPRPlusInterface
                                 catch
                                 { __port_access.ReleaseMutex(); }
                             }
-
-                            return __drug;
                         }
                     }
 
-                    return null;
+                    return __counter;
                 }
                 catch (System.InvalidOperationException e)
                 {
-                    MessageBox.Show(e.ToString());
+                    //MessageBox.Show(e.ToString());
                     throw new Exception("Message from PGS: " + e.Message + "\n" + e.StackTrace);
                 }
                 catch (Exception e)

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CPRPlusInterface"
         mc:Ignorable="d"
-        Title="CPR+ Gateway" Height="531.4" Width="548.2" ResizeMode="NoResize" Closing="Window_Closing" Activated="Window_Activated">
+        Title="CPR+ to Medicine-On-Time Transmorgafier" Height="531.4" Width="548.2" ResizeMode="NoResize" Closing="Window_Closing" Activated="Window_Activated">
     <Grid Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
