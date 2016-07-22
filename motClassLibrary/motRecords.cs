@@ -86,6 +86,8 @@ namespace motInboundLib
         protected string _tableAction;
         protected Logger logger = LogManager.GetLogger("motInboundLib.Record");
 
+        public bool __log_records { get; set; } = false;
+
         public void checkDependencies(List<Field> __qualifiedTags)
         {
 
@@ -102,7 +104,8 @@ namespace motInboundLib
                 {
                     if (__qualifiedTags[i].tagData.Length == 0)
                     {
-                        throw new Exception(__qualifiedTags[i].tagData + "empty but required for " + f.tagData + " operation!");
+                        __qualifiedTags[i].tagData = @"Missing";
+                        //throw new Exception(__qualifiedTags[i].tagData + "empty but required for " + f.tagData + " operation!");
                     }
                 }
             }
@@ -181,6 +184,11 @@ namespace motInboundLib
 
                 // Push it to the port
                 p.Write(__record, __record.Length);
+
+                if(__log_records == true)
+                {
+                    logger.Info(__record);
+                }
             }
             catch (Exception e)
             {

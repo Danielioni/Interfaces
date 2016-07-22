@@ -100,12 +100,14 @@ namespace motInboundLib
             }
             catch (ArgumentNullException e)
             {
-                Console.WriteLine("Gateway ArgumentNullException: {0}", e);
-                throw new Exception("Invalid Argument");
+                Console.WriteLine(@"Gateway ArgumentNullException: {0}", e);
+                logger.Error(@"Gateway ArgumentNullException: {0}", e);
+                throw new Exception(@"Invalid Argument");
             }
             catch (SocketException e)
             {
-                Console.WriteLine("Gateway SocketException: {0}", e);
+                Console.WriteLine(@"Gateway SocketException: {0}", e);
+                logger.Error(@"Gateway SocketException: {0}", e);
                 throw;
             }
         }
@@ -131,11 +133,10 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
+                logger.Error(@"Port flush failure " + e.Message);
                 throw new Exception("Port flush failure " + e.Message);
             }
         }
-
-
 
         public bool Write(string __buf, int __len)
         {
@@ -149,7 +150,9 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error writing to port: {0}", e.Message);
+                Console.WriteLine(@"Error writing to port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                logger.Error(@"Error writing to port [" + this.tcp_address + "/" + this.tcp_port + "] :" + e.Message);
+                throw new Exception(@"Error writing to port [" + this.tcp_address + "/" + this.tcp_port + "] :" + e.Message);
             }
 
             return false;

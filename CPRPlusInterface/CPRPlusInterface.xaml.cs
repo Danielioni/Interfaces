@@ -50,6 +50,8 @@ namespace CPRPlusInterface
         public volatile bool __running = true;
         public volatile int __refresh_rate = 0;
         public volatile bool __window_ready = false;
+        public volatile bool __log_details = false;
+
         public dbType __db_type = 0;
 
         private Thread __watch_for_drug;
@@ -113,6 +115,8 @@ namespace CPRPlusInterface
             tbHours.Text = Properties.Settings.Default.POLL_Hours;
             tbMinutes.Text = Properties.Settings.Default.POLL_Minutes;
             tbSeconds.Text = Properties.Settings.Default.POLL_Seconds;
+
+            chkLogging.IsChecked = __log_details;
 
             __update_refresh_rate();
         }
@@ -358,7 +362,7 @@ namespace CPRPlusInterface
 
         private void chkLogging_Checked(object sender, RoutedEventArgs e)
         {
-            cbLogLevel.IsEnabled = (bool)(chkLogging.IsChecked == true);
+            __log_details = (bool)(chkLogging.IsChecked == true);
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
@@ -372,17 +376,30 @@ namespace CPRPlusInterface
         public void __listen_for_prescriber_record(int __dbtype, string __dsn, string __address, string __port)
         {
 
-           // motPrescriberRecord m;
+            lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Prescriber Records [" + Convert.ToString(__refresh_rate) + "]");
+            }));
+
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __DSN, __address, __port);
+            __cpr.__log(__log_details);
+            
 
             while (__running)
             {
+                lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " Checking for Prescriber Records");
+                }));
+
                 int __count = __cpr.readPrescriberRecords();
+                __cpr.__log(__log_details);
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
+                    lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " Checking for Prescriber Records");
 
-                    if (__count >  0)
+                    if (__count > 0)
                     {
                         lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Prescriber Record(s)");
                     }
@@ -400,11 +417,22 @@ namespace CPRPlusInterface
 
         public void __listen_for_prescription_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            //motPrescriptionRecord m;
+            lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Prescription Records [" + Convert.ToString(__refresh_rate) + "]");
+            }));
+
+
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            __cpr.__log(__log_details);
 
             while (__running)
             {
+                lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " Checking for Prescription Records");
+                }));
+
                 int __count = __cpr.readPrescriptionRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
@@ -426,15 +454,26 @@ namespace CPRPlusInterface
 
         public void __listen_for_patient_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            //motPatientRecord m;
+            lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Patient Records [" + Convert.ToString(__refresh_rate) + "]");
+            }));
+
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            __cpr.__log(__log_details);
 
             while (__running)
             {
+                lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " Checking for Patient Records");
+                }));
+
                 int __count = __cpr.readPatientRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
+
                     if (__count > 0)
                     {
                         lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Patient Record(s)");
@@ -452,11 +491,21 @@ namespace CPRPlusInterface
 
         public void __listen_for_location_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            //motLocationRecord m;
+            lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Location Records");
+            }));
+
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            __cpr.__log(__log_details);
 
             while (__running)
             {
+                lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " Checking for Location Records");
+                }));
+
                 int __count = __cpr.readLocationRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
@@ -479,15 +528,26 @@ namespace CPRPlusInterface
 
         public void __listen_for_store_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            //motStoreRecord m;
+            lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Store Records [" + Convert.ToString(__refresh_rate) + "]");
+            }));
+
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            __cpr.__log(__log_details);
 
             while (__running)
             {
+                lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " Checking for Store Records");
+                }));
+
                 int __count = __cpr.readStoreRecords();
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
+
                     if (__count > 0)
                     {
                         lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Read " + Convert.ToString(__count) + " Store Record(s)");
@@ -529,15 +589,23 @@ namespace CPRPlusInterface
 
         public void __listen_for_drug_record(int __dbtype, string __dsn, string __address, string __port)
         {
-            //motDrugRecord m;
+            lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Drug Records [" + Convert.ToString(__refresh_rate) + "]");
+            }));
+
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
-
-            // Execute View
-
+            __cpr.__log(__log_details);
 
             while (__running)
             {
+                lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " Checking for Drug Records");
+                }));
+
                 int __count = __cpr.readDrugRecords();
+
 
                 lstbxRunningLog.Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -584,39 +652,43 @@ namespace CPRPlusInterface
                 __watch_for_drug.Name = "__drug_listener";
                 __watch_for_drug.Start();
 
-                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Drug Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Drug Listener");
+                Thread.Sleep(1024);
 
                 __watch_for_location = new Thread(new ThreadStart(() => __listen_for_location_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_location.Name = "__location_listener";
                 __watch_for_location.Start();
 
-                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Location Listener");
-
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Location Listener");
+                Thread.Sleep(1024);
 
                 __watch_for_patient = new Thread(new ThreadStart(() => __listen_for_patient_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_patient.Name = "__patient_listener";
                 __watch_for_patient.Start();
 
-                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Patient Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Patient Listener");
+                Thread.Sleep(1024);
 
                 __watch_for_prescriber = new Thread(new ThreadStart(() => __listen_for_prescriber_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_prescriber.Name = "__prescriber_listener";
                 __watch_for_prescriber.Start();
 
-                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescriber Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescriber Listener");
+                Thread.Sleep(1024);
 
                 __watch_for_prescription = new Thread(new ThreadStart(() => __listen_for_prescription_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_prescription.Name = "__prescription_listener";
                 __watch_for_prescription.Start();
 
-                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescription Listener");
-
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescription Listener");
+                Thread.Sleep(1024);
 
                 __watch_for_store = new Thread(new ThreadStart(() => __listen_for_store_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_store.Name = "__store_listener";
                 __watch_for_store.Start();
 
-                lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Store Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Store Listener");
+                Thread.Sleep(1024);
 
                 /*
                 __watch_for_time_qty = new Thread(new ThreadStart(() => __listen_for_time_qty_record(__dbtype, __dsn, __s_address, __s_port)));
@@ -643,8 +715,15 @@ namespace CPRPlusInterface
             protected Dictionary<string, string> __query;
             protected List<string> __view;
 
+            public bool __log_records = false;
 
-            //public runManager __lock_port;
+            //public runManager __lock_port
+            public void __log(bool __state)
+            {
+                __log_records = __state;
+            }
+
+
 
             public cprPlus(dbType __type, string DSN, Port p) : base(__type, DSN)
             {
@@ -721,10 +800,11 @@ namespace CPRPlusInterface
 
             public int readPrescriberRecords()
             {
-                motPrescriberRecord __prescriber = new motPrescriberRecord("Add");
-
                 try
                 {
+                    motPrescriberRecord __prescriber = new motPrescriberRecord("Add");
+                    __prescriber.__log_records = __log_records;
+
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     List<string> __exception = new List<string>();
                     int __counter = 0;
@@ -741,11 +821,11 @@ namespace CPRPlusInterface
                     __xTable.Add("Address_Line_2", "Address2");
                     __xTable.Add("City", "city");
                     __xTable.Add("State_Code", "state");
-                    __xTable.Add("Zip_Code", "zip");               
-                    __xTable.Add("Telephone_Number", "phone");  
-                    __xTable.Add("Fax ", "fax");                                           
-                    __xTable.Add("DEA_Number", "dea_id");           
-                    __xTable.Add("Comments", "comments");              
+                    __xTable.Add("Zip_Code", "zip");
+                    __xTable.Add("Telephone_Number", "phone");
+                    __xTable.Add("Fax ", "fax");
+                    __xTable.Add("DEA_Number", "dea_id");
+                    __xTable.Add("Comments", "comments");
 
 
                     /*
@@ -797,7 +877,7 @@ namespace CPRPlusInterface
                                     __prescriber.Write(__port);
                                     __port_access.ReleaseMutex();
 
-                                    __counter++; 
+                                    __counter++;
                                 }
                                 catch
                                 { __port_access.ReleaseMutex(); }
@@ -824,6 +904,8 @@ namespace CPRPlusInterface
                 try
                 {
                     motPatientRecord __patient = new motPatientRecord("Add");
+                    __patient.__log_records = __log_records;
+
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
 
@@ -852,7 +934,6 @@ namespace CPRPlusInterface
                     __xTable.Add("AltInsPNo", "AltInsPNo");
                     __xTable.Add("MCareNum", "MCareNum");
                     __xTable.Add("McCadeNum", "MCaidNum");
-                    
 
                     string __tag;
                     string __val;
@@ -923,6 +1004,8 @@ namespace CPRPlusInterface
                 try
                 {
                     motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
+                    __scrip.__log_records = __log_records;
+
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
 
@@ -950,7 +1033,7 @@ namespace CPRPlusInterface
 
                     if (db.executeQuery("SELECT * FROM dbo.vMOTRx WHERE Touchdate > '" + __last_touch.ToString() + "'; "))
                     {
-                        if(db.__recordSet.Tables["__table"].Rows.Count > 0)
+                        if (db.__recordSet.Tables["__table"].Rows.Count > 0)
                         {
                             foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                             {
@@ -979,12 +1062,14 @@ namespace CPRPlusInterface
                                     __port_access.WaitOne();
                                     __scrip.Write(__port);
                                     __port_access.ReleaseMutex();
+
+                                    __counter++;
                                 }
                                 catch
                                 { __port_access.ReleaseMutex(); }
                             }
                         }
-                     }
+                    }
 
                     return __counter;
                 }
@@ -1004,6 +1089,8 @@ namespace CPRPlusInterface
                 try
                 {
                     motLocationRecord __location = new motLocationRecord("Add");
+                    __location.__log_records = __log_records;
+
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
 
@@ -1017,8 +1104,6 @@ namespace CPRPlusInterface
                     __xTable.Add("STATE", "State");
                     __xTable.Add("ZIP", "Zip");
                     __xTable.Add("PHONE", "Phone");
-
-
 
                     string __tag;
                     string __val;
@@ -1061,10 +1146,12 @@ namespace CPRPlusInterface
                                     __location.Write(__port);
                                     __port_access.ReleaseMutex();
 
-
+                                    __counter++;
                                 }
                                 catch
-                                { __port_access.ReleaseMutex(); }
+                                {
+                                    __port_access.ReleaseMutex();
+                                }
                             }
                         }
                     }
@@ -1087,6 +1174,8 @@ namespace CPRPlusInterface
                 try
                 {
                     motStoreRecord __store = new motStoreRecord("Add");
+                    __store.__log_records = __log_records;
+
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
 
@@ -1143,9 +1232,13 @@ namespace CPRPlusInterface
                                     __port_access.WaitOne();
                                     __store.Write(__port);
                                     __port_access.ReleaseMutex();
+
+                                    __counter++;
                                 }
                                 catch
-                                { __port_access.ReleaseMutex(); }
+                                {
+                                    __port_access.ReleaseMutex();
+                                }
                             }
                         }
                     }
@@ -1234,6 +1327,7 @@ namespace CPRPlusInterface
                             }
                         }
                     */
+
             public override motDrugRecord getDrugRecord()
             {
                 throw new NotImplementedException("getDrugRecord");
@@ -1244,6 +1338,8 @@ namespace CPRPlusInterface
                 try
                 {
                     motDrugRecord __drug = new motDrugRecord("Add");
+                    __drug.__log_records = __log_records;
+
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
 
@@ -1298,9 +1394,13 @@ namespace CPRPlusInterface
                                     __port_access.WaitOne();
                                     __drug.Write(__port);
                                     __port_access.ReleaseMutex();
+
+                                    __counter++;
                                 }
                                 catch
-                                { __port_access.ReleaseMutex(); }
+                                {
+                                    __port_access.ReleaseMutex();
+                                }
                             }
                         }
                     }

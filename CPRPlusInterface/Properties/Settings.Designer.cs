@@ -193,7 +193,7 @@ namespace CPRPlusInterface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2016-05-02")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2015-01-01")]
         public global::System.DateTime vDrugLastTouch {
             get {
                 return ((global::System.DateTime)(this["vDrugLastTouch"]));
@@ -205,7 +205,7 @@ namespace CPRPlusInterface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2016-05-02")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2015-01-01")]
         public global::System.DateTime vPrescriberLastTouch {
             get {
                 return ((global::System.DateTime)(this["vPrescriberLastTouch"]));
@@ -217,7 +217,7 @@ namespace CPRPlusInterface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2016-05-02")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2015-01-01")]
         public global::System.DateTime vLocationLastTouch {
             get {
                 return ((global::System.DateTime)(this["vLocationLastTouch"]));
@@ -229,7 +229,7 @@ namespace CPRPlusInterface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2016-05-02")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2015-01-01")]
         public global::System.DateTime vPatientLastTouch {
             get {
                 return ((global::System.DateTime)(this["vPatientLastTouch"]));
@@ -241,7 +241,7 @@ namespace CPRPlusInterface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2016-05-02")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2015-01-01")]
         public global::System.DateTime vRxLastTouch {
             get {
                 return ((global::System.DateTime)(this["vRxLastTouch"]));
@@ -253,7 +253,7 @@ namespace CPRPlusInterface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2016-05-02")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2015-01-01")]
         public global::System.DateTime vStoreLastTouch {
             get {
                 return ((global::System.DateTime)(this["vStoreLastTouch"]));
