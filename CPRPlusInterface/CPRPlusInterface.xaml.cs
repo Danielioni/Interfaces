@@ -348,7 +348,7 @@ namespace CPRPlusInterface
                     @"database=" + txtDatabase.Text;
                     */
 
-            __port = new Port(txtMOT_Address.Text, txtMOT_Port.Text);
+            //__port = new Port(txtMOT_Address.Text, txtMOT_Port.Text);
 
 
 
@@ -636,6 +636,8 @@ namespace CPRPlusInterface
             {
                 __running = true;
                 __update_db_settings();
+
+                __port = new Port(txtMOT_Address.Text, txtMOT_Port.Text);
 
                 string __s_address = txtMOT_Address.Text;
                 string __s_port = txtMOT_Port.Text;

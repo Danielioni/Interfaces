@@ -3,7 +3,7 @@
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
-"ProjectName" = "8:CPRPlusInstall"
+"ProjectName" = "8:CPRPlusInterfaceInstaller"
 "LanguageId" = "3:1033"
 "CodePage" = "3:1252"
 "UILanguageId" = "3:1033"
@@ -15,14 +15,8 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_103A156D20C05080D6EDBEA9BD52CA98"
-        "OwnerKey" = "8:_3E74DF95BF6E4668B486728E7C342699"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_103A156D20C05080D6EDBEA9BD52CA98"
-        "OwnerKey" = "8:_1FCC5EE5A17B5569E13B1DFB77F70B82"
+        "MsmKey" = "8:_073A0FFB781F4065A2817B607B53C4B6"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -33,6 +27,36 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_204FBCDBFA997119C87862A9FF8318AB"
+        "OwnerKey" = "8:_1FCC5EE5A17B5569E13B1DFB77F70B82"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_204FBCDBFA997119C87862A9FF8318AB"
+        "OwnerKey" = "8:_3E74DF95BF6E4668B486728E7C342699"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_20D60AE095C8273C7D924BFDE1AFE45A"
+        "OwnerKey" = "8:_1FCC5EE5A17B5569E13B1DFB77F70B82"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_20D60AE095C8273C7D924BFDE1AFE45A"
+        "OwnerKey" = "8:_3E74DF95BF6E4668B486728E7C342699"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_20D60AE095C8273C7D924BFDE1AFE45A"
+        "OwnerKey" = "8:_204FBCDBFA997119C87862A9FF8318AB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_2D6E42F1F7A62A2A1164DE5832BC13FD"
         "OwnerKey" = "8:_3E74DF95BF6E4668B486728E7C342699"
         "MsmSig" = "8:_UNDEFINED"
@@ -45,7 +69,31 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_368F4C7B94B145EF99846049084115E1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3E74DF95BF6E4668B486728E7C342699"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_558C900FEDC04535813BEFF826FB0504"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_872DABDAD32046CFAF1A3DF5ABB0DB8D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AA5F29CC31FB4146BE43A5D14B052D41"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -87,6 +135,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CFC8F93763FC421EBCDC3BD84EA6CFE1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D013CAF9BF8B417A86B299EA525FB116"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DC3B007D9878AEFCCA55C3E55624ADCA"
         "OwnerKey" = "8:_1FCC5EE5A17B5569E13B1DFB77F70B82"
         "MsmSig" = "8:_UNDEFINED"
@@ -99,8 +159,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BA8BEE4B4586B92658B865FF90032AD6"
+        "MsmKey" = "8:_E0B08561438D4978B98B0095E6FE9A21"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -130,19 +190,31 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_204FBCDBFA997119C87862A9FF8318AB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_20D60AE095C8273C7D924BFDE1AFE45A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_DC3B007D9878AEFCCA55C3E55624ADCA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_103A156D20C05080D6EDBEA9BD52CA98"
+        "OwnerKey" = "8:_2D6E42F1F7A62A2A1164DE5832BC13FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2D6E42F1F7A62A2A1164DE5832BC13FD"
+        "OwnerKey" = "8:_BA8BEE4B4586B92658B865FF90032AD6"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -153,7 +225,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\CPRPlusInstall.msi"
+        "OutputFilename" = "8:Debug\\MOT2CPRPlus.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -163,6 +235,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -179,6 +267,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -208,20 +304,40 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_103A156D20C05080D6EDBEA9BD52CA98"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_073A0FFB781F4065A2817B607B53C4B6"
+            {
+            "SourcePath" = "8:..\\CPRPlusInterface\\bin\\Debug\\queries\\dbo.vMOTStore.sql"
+            "TargetName" = "8:dbo.vMOTStore.sql"
+            "Tag" = "8:"
+            "Folder" = "8:_5D17865A14CF47EFB547E6F9F3B56145"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1FCC5EE5A17B5569E13B1DFB77F70B82"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:HL7ToXmlConverter, Version=0.9.0.1, Culture=neutral, PublicKeyToken=4dcfee63b997b22b, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:motInboundGatewayLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_103A156D20C05080D6EDBEA9BD52CA98"
+                    "_1FCC5EE5A17B5569E13B1DFB77F70B82"
                     {
-                    "Name" = "8:HL7ToXmlConverter.dll"
+                    "Name" = "8:motInboundGatewayLib.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:HL7ToXmlConverter.dll"
+            "SourcePath" = "8:motInboundGatewayLib.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_ADDA9EF312C84BE8966C926F0469AE0D"
@@ -239,20 +355,51 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1FCC5EE5A17B5569E13B1DFB77F70B82"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_204FBCDBFA997119C87862A9FF8318AB"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:motInboundGatewayLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:NHapi.Model.V25, Version=2.4.0.15, Culture=neutral, PublicKeyToken=d0d8ea960a3440eb, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_1FCC5EE5A17B5569E13B1DFB77F70B82"
+                    "_204FBCDBFA997119C87862A9FF8318AB"
                     {
-                    "Name" = "8:motInboundGatewayLib.dll"
+                    "Name" = "8:NHapi.Model.V25.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:motInboundGatewayLib.dll"
+            "SourcePath" = "8:NHapi.Model.V25.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_ADDA9EF312C84BE8966C926F0469AE0D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_20D60AE095C8273C7D924BFDE1AFE45A"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:NHapi.Base, Version=2.4.0.15, Culture=neutral, PublicKeyToken=d0d8ea960a3440eb, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_20D60AE095C8273C7D924BFDE1AFE45A"
+                    {
+                    "Name" = "8:NHapi.Base.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:NHapi.Base.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_ADDA9EF312C84BE8966C926F0469AE0D"
@@ -299,6 +446,86 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_368F4C7B94B145EF99846049084115E1"
+            {
+            "SourcePath" = "8:..\\CPRPlusInterface\\bin\\Debug\\queries\\dbo.vMOTDrug.sql"
+            "TargetName" = "8:dbo.vMOTDrug.sql"
+            "Tag" = "8:"
+            "Folder" = "8:_5D17865A14CF47EFB547E6F9F3B56145"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_558C900FEDC04535813BEFF826FB0504"
+            {
+            "SourcePath" = "8:..\\CPRPlusInterface\\bin\\Debug\\queries\\dbo.vMOTPatient.sql"
+            "TargetName" = "8:dbo.vMOTPatient.sql"
+            "Tag" = "8:"
+            "Folder" = "8:_5D17865A14CF47EFB547E6F9F3B56145"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_872DABDAD32046CFAF1A3DF5ABB0DB8D"
+            {
+            "SourcePath" = "8:..\\CPRPlusInterface\\bin\\Debug\\queries\\dbo.vMOTPrescriber.sql"
+            "TargetName" = "8:dbo.vMOTPrescriber.sql"
+            "Tag" = "8:"
+            "Folder" = "8:_5D17865A14CF47EFB547E6F9F3B56145"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AA5F29CC31FB4146BE43A5D14B052D41"
+            {
+            "SourcePath" = "8:..\\CPRPlusInterface\\bin\\Debug\\queries\\dbo.vMOTLocation.sql"
+            "TargetName" = "8:dbo.vMOTLocation.sql"
+            "Tag" = "8:"
+            "Folder" = "8:_5D17865A14CF47EFB547E6F9F3B56145"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BA8BEE4B4586B92658B865FF90032AD6"
@@ -394,6 +621,46 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CFC8F93763FC421EBCDC3BD84EA6CFE1"
+            {
+            "SourcePath" = "8:..\\motClassLibrary\\MOT.ico"
+            "TargetName" = "8:MOT.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_ADDA9EF312C84BE8966C926F0469AE0D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D013CAF9BF8B417A86B299EA525FB116"
+            {
+            "SourcePath" = "8:..\\CPRPlusInterface\\bin\\Debug\\queries\\dbo.vMOTRx.sql"
+            "TargetName" = "8:dbo.vMOTRx.sql"
+            "Tag" = "8:"
+            "Folder" = "8:_5D17865A14CF47EFB547E6F9F3B56145"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DC3B007D9878AEFCCA55C3E55624ADCA"
             {
             "AssemblyRegister" = "3:1"
@@ -425,6 +692,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E0B08561438D4978B98B0095E6FE9A21"
+            {
+            "SourcePath" = "8:..\\motClassLibrary\\MOT-Logo (256x256).png"
+            "TargetName" = "8:MOT-Logo (256x256).png"
+            "Tag" = "8:"
+            "Folder" = "8:_ADDA9EF312C84BE8966C926F0469AE0D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -444,7 +731,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_ADDA9EF312C84BE8966C926F0469AE0D"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFilesFolder]\\Medicine-On-Time\\Interface"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -454,7 +741,7 @@
                 {
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_5D17865A14CF47EFB547E6F9F3B56145"
                     {
-                    "Name" = "8:CPRtoMOT"
+                    "Name" = "8:queries"
                     "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
@@ -493,7 +780,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:CPRPlusInstall"
         "ProductCode" = "8:{A478EA7D-455C-435D-8D16-404CAA58AA59}"
-        "PackageCode" = "8:{5ABE38D4-5171-476B-AC3C-7FCB41D6C525}"
+        "PackageCode" = "8:{BE08CA0D-983E-4927-A254-C4868CABEA47}"
         "UpgradeCode" = "8:{92378B6A-F665-4CB7-8678-FDC9EBC234D1}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -615,16 +902,16 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_B2653E686ACB4360B99DC923B35D3C6B"
             {
-            "Name" = "8:Shortcut to Primary output from CPRPlusInterface (Active)"
+            "Name" = "8:CPRPlus to MOT Interface"
             "Arguments" = "8:"
-            "Description" = "8:"
+            "Description" = "8:Pipe to Medicine-On-Time"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
             "Target" = "8:_3E74DF95BF6E4668B486728E7C342699"
             "Folder" = "8:_D6A54F61D2CF44A9BB58BAE020B963F0"
             "WorkingFolder" = "8:_ADDA9EF312C84BE8966C926F0469AE0D"
-            "Icon" = "8:"
+            "Icon" = "8:_CFC8F93763FC421EBCDC3BD84EA6CFE1"
             "Feature" = "8:"
             }
         }
@@ -862,7 +1149,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_E0B08561438D4978B98B0095E6FE9A21"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
