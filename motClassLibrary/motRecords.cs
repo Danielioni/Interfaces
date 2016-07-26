@@ -90,7 +90,6 @@ namespace motInboundLib
 
         public void checkDependencies(List<Field> __qualifiedTags)
         {
-
             Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains("action"));
 
             //  There are rules for fields that are required in add/change/delete.  Test them here
@@ -104,8 +103,11 @@ namespace motInboundLib
                 {
                     if (__qualifiedTags[i].tagData.Length == 0)
                     {
-                        __qualifiedTags[i].tagData = @"Missing";
-                        //throw new Exception(__qualifiedTags[i].tagData + "empty but required for " + f.tagData + " operation!");
+                        string __err = string.Format("Field {0} empty but required for {1} operation on {2} table!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
+
+                        //logger.Error(__err);
+                        Console.WriteLine(__err);
+                        throw new Exception(__err);
                     }
                 }
             }
@@ -185,7 +187,7 @@ namespace motInboundLib
                 // Push it to the port
                 p.Write(__record, __record.Length);
 
-                if(__log_records == true)
+                if (__log_records == true)
                 {
                     logger.Info(__record);
                 }
@@ -926,7 +928,7 @@ namespace motInboundLib
             }
 
             set
-                {
+            {
                 try
                 {
                     setField(__qualifiedTags, value, "RxSys_DocID");
@@ -2254,7 +2256,7 @@ namespace motInboundLib
         }
         public int Height
         {
-get
+            get
             {
                 try
                 {
