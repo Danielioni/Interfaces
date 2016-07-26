@@ -386,7 +386,7 @@ namespace CPRPlusInterface
 
             cprPlus __cpr = new cprPlus((dbType)__dbtype, __DSN, __address, __port);
             __cpr.__log(__log_details);
-            
+
 
             while (__running)
             {
@@ -824,20 +824,19 @@ namespace CPRPlusInterface
                      *  list to do the conversion on the fly. This will work for all items except where the contents of the field are incomplete,
                      *  require transformation, or are otherwise incorrect, we generate and exception list and handle them one at a time.
                      */
-                    __xTable.Add("Prescriber_ID", "RxSys_DcocID");
-                    __xTable.Add("Last_Name", "LastName");
-                    __xTable.Add("First_Name", "FirstName");
-                    __xTable.Add("Address_Line_1", "Address1");
-                    __xTable.Add("Address_Line_2", "Address2");
-                    __xTable.Add("City", "city");
-                    __xTable.Add("State_Code", "state");
-                    __xTable.Add("Zip_Code", "zip");
-                    __xTable.Add("Telephone_Number", "phone");
-                    __xTable.Add("Fax ", "fax");
-                    __xTable.Add("DEA_Number", "dea_id");
-                    __xTable.Add("Comments", "comments");
-
-
+                    __xTable.Add("RxSys_DcocID", "RxSys_DocID");
+                    __xTable.Add("LasName", "LastName");
+                    __xTable.Add("FirstName", "FirstName");
+                    __xTable.Add("Address1", "Address1");
+                    __xTable.Add("Address2", "Address2");
+                    __xTable.Add("city", "city");
+                    __xTable.Add("state", "state");
+                    __xTable.Add("zip", "zip");
+                    __xTable.Add("phone", "phone");
+                    __xTable.Add("fax ", "fax");
+                    __xTable.Add("comments", "comments");
+                    __xTable.Add("dea_id", "dea_id");
+                   
                     /*
                      *  Query the database and collect a set of records where a valid set is {1..n} items.  This is not a traditional
                      *  record set as returned by access or SQL server, but a generic collection of IDataRecords and is usable accross
@@ -976,6 +975,26 @@ namespace CPRPlusInterface
                                             __val = __val.Remove(__val.IndexOf("-"), 1);
                                         }
 
+                                        if (__tag.ToLower() == "dob")  // Dates come through as 1/1/2016, needs to be 20160101
+                                        {
+                                            __val = __normalize_date(__val);
+                                        }
+
+                                        if(__tag.ToLower() == "status")
+                                        {
+                                            if(!string.IsNullOrEmpty(__val))
+                                            {
+                                                if(__val.ToLower() == "active")
+                                                {
+                                                    __val = "1";
+                                                }
+                                                else
+                                                {
+                                                    __val = "0";
+                                                }
+                                            }
+                                        }
+
                                         // Update the local drug record
                                         __patient.setField(__tag, __val, __override_length_checking);
                                     }
@@ -1002,6 +1021,24 @@ namespace CPRPlusInterface
                 {
                     throw new Exception("Failed to get Patient Record " + e.Message);
                 }
+            }
+
+            public string __normalize_date(string __val)
+            {
+                if (!string.IsNullOrEmpty(__val))
+                {
+                    char[] __sep = { '/', ' ' };
+
+                    string[] __items = __val.Split(__sep);
+                    __val = string.Format("{0:D4}{1,2:D2}{2,2:D2}", __items[2], Convert.ToInt32(__items[0]), Convert.ToInt32(__items[1]));
+
+                }
+                else
+                {
+                    __val = string.Format("{0:D4}{1,2:D2}{2,2:D2}", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                }
+
+                return __val;
             }
 
             public override motPrescriptionRecord getPrescriptionRecord()
@@ -1061,8 +1098,19 @@ namespace CPRPlusInterface
                                             __val = __val.Remove(__val.IndexOf("-"), 1);
                                         }
 
+                                        if (__tag.ToLower() == "refills" && __val.Length == 0)
+                                        {
+                                            __val = "0";
+                                        }
+
+                                        if(__tag.ToLower() == "qtydispensed" && __val.Length == 0)
+                                        {
+                                            __val = "0";
+                                        }
+
+
                                         // Update the local drug record
-                                        __scrip.setField(__tag, __val, __override_length_checking);
+                                            __scrip.setField(__tag, __val, __override_length_checking);
                                     }
                                 }
 
@@ -1354,7 +1402,7 @@ namespace CPRPlusInterface
                     int __counter = 0;
 
                     __xTable.Add("RxSys_DrugID", "RxSys_DrugID");
-                    __xTable.Add("Drugname", "TradeName");
+                    __xTable.Add("Drugname", "DrugName");
                     __xTable.Add("Strength", "Strength");
                     __xTable.Add("Unit", "Unit");
                     __xTable.Add("DrugeSchedule", "DrugSchedule");
@@ -1393,8 +1441,14 @@ namespace CPRPlusInterface
                                             __val = __val.Remove(__val.IndexOf("-"), 1);
                                         }
 
+
                                         // Update the local drug record
                                         __drug.setField(__tag, __val, __override_length_checking);
+
+                                        if (__tag.ToLower() == "drugname")
+                                        {
+                                            __drug.setField("TradeName", __val, __override_length_checking);
+                                        }
                                     }
                                 }
 
@@ -1457,6 +1511,19 @@ namespace CPRPlusInterface
         private void Window_Activated(object sender, EventArgs e)
         {
             __window_ready = true;
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime __start_date = new DateTime(2016, 1, 1);
+
+            Properties.Settings.Default.vDrugLastTouch = __start_date;
+            Properties.Settings.Default.vLocationLastTouch = __start_date;
+            Properties.Settings.Default.vPatientLastTouch = __start_date;
+            Properties.Settings.Default.vPrescriberLastTouch = __start_date;
+            Properties.Settings.Default.vRxLastTouch = __start_date;
+            Properties.Settings.Default.vStoreLastTouch = __start_date;
+            Properties.Settings.Default.Save();
         }
     }
 }
