@@ -67,8 +67,6 @@ namespace motInboundLib
 
                     return data;
                 }
-
-                return null;
             }
             catch(Exception e)
             {

@@ -68,7 +68,7 @@ namespace motInboundLib
 
     public class motSocket
     {
-        private Port __p;
+        //private Port __p;
         private static bool __running = false;
 
         private string __s_iobuffer = "";

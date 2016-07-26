@@ -389,9 +389,12 @@ namespace IFrameworkMOT
                                     string __end_date = "";
                                     string __message = "";
 
+                                    string __mot_dosetime = "";
+
                                     for (int t = 0; t < __TQ1.TQ1.ExplicitTimeRepetitionsUsed; t++)
                                     {
                                         __times += __TQ1.TQ1.GetExplicitTime(t) + ",";
+                                        __mot_dosetime += string.Format("{0:D4}{1:D2}", __TQ1.TQ1.GetExplicitTime(t), __TQ1.TQ1.Quantity.Quantity.Value);
                                     }
 
                                     __dose = __TQ1.TQ1.Quantity.Quantity.Value;
@@ -450,6 +453,11 @@ namespace IFrameworkMOT
 
             public override void __process_patient_record(ADT_A01 __adt_a01)
             { }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -105,10 +105,9 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                Console.WriteLine("__start_listenning failure: {0}", e.Message);
-                __logger.Error("An error occurred while attempting to start the listener");
-                __logger.Error(e.Message);
-                __logger.Error("HL7SocketListener exiting.");
+                string __err = string.Format("An error occurred while attempting to start the HL7 listener: {0}\nExiting ...", e.Message);
+                Console.WriteLine(__err);
+                __logger.Error(__err);
             }
         }
 
@@ -128,9 +127,10 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                Console.WriteLine("Socket write error: {0}", e.Message);
-                __logger.Error("An error has occurred while sending an ACK to the client " + __socket.remoteEndPoint);
-                __logger.Error(e.Message);
+                string __err = string.Format("Port I/O error sending ACK to {0}.  {1}", __socket.remoteEndPoint, e.Message);
+
+                Console.WriteLine(__err);
+                __logger.Error(__err);
             }
         }
 
@@ -142,15 +142,14 @@ namespace motInboundLib
             // write the HL7 message to file
             try
             {
-                __logger.Info("Received message. Saving to file " + __filename);
+                __logger.Info("Received message. Saving to file {0}", __filename);
                 StreamWriter file = new StreamWriter(__filename);
                 file.Write(__message);
                 file.Close();
             }
             catch (Exception e)
             {
-                __logger.Warn("Failed to write file " + __filename);
-                __logger.Warn(e.Message);
+                __logger.Warn("Failed to write file {0}, {1}", __filename, e.Message);
             }
         }
 
@@ -159,12 +158,14 @@ namespace motInboundLib
             try
             {
                 __start_listener(__listener_port, __callback);
-                __logger.Info("HL7 Listener waiting on port: " + __listener_port);
+                __logger.Info("HL7 Listener waiting on port: {0}", __listener_port);
             }
             catch (Exception e)
             {
-                __logger.Info("HL7 Listener failed to start on port: " + __listener_port);
-                throw new Exception("HL7 Listener failed to start on port: " + __listener_port);
+                string __err = string.Format("HL7 Listener failed to start on port {0}: {1} ", __listener_port, e.Message);
+
+                __logger.Info(__err);
+                throw new Exception(__err);
             }
         }
 
@@ -173,7 +174,7 @@ namespace motInboundLib
             try
             {
                 __listener_port = __port;
-                __logger = LogManager.GetLogger("motInboundLib.Port");
+                __logger = LogManager.GetLogger("motInboundLib.HL7Listener");
             }
             catch (Exception e)
             {
@@ -294,6 +295,7 @@ namespace motInboundLib
 
                     // set the field, component, sub component and repeat delimters
                     int __start_pos = message.IndexOf("MSH");
+
                     if (__start_pos >= 0)
                     {
                         __start_pos += 2;
@@ -305,8 +307,7 @@ namespace motInboundLib
 
                     __full_message = new List<__HL7_record>();
 
-                    
-
+                   
                     foreach(string __s in segments)
                     {
                         __HL7_record p = new __HL7_record();
@@ -324,9 +325,7 @@ namespace motInboundLib
 
                         // Acknowledge
 
-                    }
-                  
-                    
+                    }                
                 }
                 // throw an exception if a MSH segment is not included in the message. 
                 else

@@ -53,7 +53,15 @@ namespace FrameworksHL7
                 __message = new HL7Message();
             }
 
-
+            /// <summary>
+            /// RXE Information
+            ///     An RXE segment can appear immediately after an RXO segment, in which case the medication is attached to the prescription. 
+            ///     If the RXE segment appears independently, it is used as a historical record of medications and is attached to the patient.
+            ///     
+            /// TQ1 Information
+            ///     
+            /// </summary>
+            /// <param name="__rde_o_11"></param>
             public override void __process_prescription_record(RDE_O11 __rde_o_11)
             {
                 // This record has a little of everything in it including facilities, prescribers, drugs, ...
@@ -121,12 +129,23 @@ namespace FrameworksHL7
 
                         // New Rx Number
                         // Isolate
-                        // Rx Type (RXE 44)
+
+                        // Rx Type (RXE 44) - MOT values are quite different and describe daily, DoW, DoM, Sequential, Titrating, ...   
+
+                        // RXE -44 describes:
+                        //      M	Medication
+                        //      S IV Large Volume Solutions
+                        //      O   Other solution as medication orders
+
                         __scrip.RxType = __order.RXE.PharmacyOrderType.Value;
 
                         // MDOMStart
                         // MDOMStop
-                        // Qty Per Dose
+
+
+                        // Qty Per Dose (RXO 23, RXE 1, TQ1 2)
+                        __scrip.QtyPerDose = __order.RXE.QuantityTiming.Quantity.Quantity.Value;
+
                         // Qty Dispensed (RXE 10)
                         __scrip.QtyDispensed = __order.RXE.DispenseAmount.Value;
 
@@ -144,19 +163,19 @@ namespace FrameworksHL7
                 }
             }
 
-            private void __process_prescriber_record()
+            public override void __process_prescriber_record()
             { }
 
-            private void __process_facility_record()
+            public override void __process_facility_record()
             { }
 
-            private void __process_store_record()
+            public override void __process_store_record()
             { }
 
-            private void __process_time_qty_record()
+            public override void __process_time_qty_record()
             { }
 
-            private void __process_patient_record()
+            public override void __process_patient_record(ADT_A01 __adt_a01)
             { }
         }
 

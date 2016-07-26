@@ -100,25 +100,38 @@ namespace motInboundLib
             }
             catch (ArgumentNullException e)
             {
-                Console.WriteLine(@"Gateway ArgumentNullException: {0}", e);
-                logger.Error(@"Gateway ArgumentNullException: {0}", e);
+                string __error = string.Format(@"Gateway ArgumentNullException: {0}", e.Message);
+
+                Console.WriteLine(__error);
+                logger.Error(__error);
+
                 throw new Exception(@"Invalid Argument");
             }
             catch (SocketException e)
             {
-                Console.WriteLine(@"Gateway SocketException: {0}", e);
-                logger.Error(@"Gateway SocketException: {0}", e);
+                Console.WriteLine(@"Gateway SocketException: {0}", e.Message);
+                logger.Error(@"Gateway SocketException: {0}", e.Message);
                 throw;
             }
         }
 
         public void Close()
         {
-            if (tcpSocket != null)
+            try
             {
-                __open = false;
-                dataStream.Close();
-                tcpSocket.Close();
+                if (tcpSocket != null)
+                {
+                    __open = false;
+                    dataStream.Close();
+                    tcpSocket.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format(@"Error closing port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                Console.WriteLine(__error);
+                logger.Error(__error);
+                throw new Exception(__error);
             }
         }
 
@@ -133,8 +146,10 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                logger.Error(@"Port flush failure " + e.Message);
-                throw new Exception("Port flush failure " + e.Message);
+                string __error = string.Format(@"Error flushing port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                Console.WriteLine(__error);
+                logger.Error(__error);
+                throw new Exception(__error);
             }
         }
 
@@ -150,9 +165,10 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                Console.WriteLine(@"Error writing to port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
-                logger.Error(@"Error writing to port [" + this.tcp_address + "/" + this.tcp_port + "] :" + e.Message);
-                throw new Exception(@"Error writing to port [" + this.tcp_address + "/" + this.tcp_port + "] :" + e.Message);
+                string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                Console.WriteLine(__error);
+                logger.Error(__error);
+                throw new Exception(__error);
             }
 
             return false;
@@ -160,15 +176,25 @@ namespace motInboundLib
 
         public bool Read(ref string __buf)
         {
-            if (tcpSocket != null)
+            try
             {
-                byte[] __readbuf = new byte[256];
-                int __retval = 0;
+                if (tcpSocket != null)
+                {
+                    byte[] __readbuf = new byte[256];
+                    int __retval = 0;
 
-                __retval = dataStream.Read(__readbuf, 0, 256);
-                __buf = Encoding.UTF8.GetString(__readbuf);
+                    __retval = dataStream.Read(__readbuf, 0, 256);
+                    __buf = Encoding.UTF8.GetString(__readbuf);
 
-                return (__retval == 0);
+                    return (__retval == 0);
+                }
+            }
+            catch(Exception e)
+            {
+                string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                Console.WriteLine(__error);
+                logger.Error(__error);
+                throw new Exception(__error);
             }
 
             return false;
@@ -186,7 +212,11 @@ namespace motInboundLib
                     return Encoding.UTF8.GetString(__readbuf);
                 }
                 catch (Exception e)
-                {        
+                {
+                    string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                    Console.WriteLine(__error);
+                    logger.Error(__error);
+                    throw new Exception(__error);
                 }
             }
 
@@ -204,12 +234,16 @@ namespace motInboundLib
                 }
                 catch(Exception e)
                 {
-                    Console.WriteLine(e.Message);
-                    return false;
+                    string __error = string.Format(@"Error resetting port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                    Console.WriteLine(__error);
+                    logger.Error(__error);
+                    throw new Exception(__error);
                 }
+
+                return true;
             }
 
-            return true;
+            return false;
         }
     }
 }

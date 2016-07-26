@@ -24,6 +24,8 @@
 // THE SOFTWARE.
 // 
 
+#define CPRPlus
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -34,6 +36,7 @@ using System.Data.SqlTypes;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using motInboundLib;
 
 
@@ -732,7 +735,6 @@ namespace CPRPlusInterface
                 __port = p;
                 __load_queries("");
                 __set_views();
-                //__lock_port = new runManager();
             }
 
             public cprPlus(dbType __type, string DSN, string __address, string __p) : base(__type, DSN)
@@ -746,7 +748,13 @@ namespace CPRPlusInterface
             {
                 foreach (string __v in __view)
                 {
-                    db.executeNonQuery(__v);
+                    string[] scripts = Regex.Split(__v , @"^\w+GO$", RegexOptions.Multiline);
+
+                    foreach (string splitScript in scripts)
+                    {
+                        string strQuery = splitScript.Substring(0, splitScript.ToLower().IndexOf("go"));
+                        db.executeNonQuery(strQuery);
+                    }               
                 }
             }
 
