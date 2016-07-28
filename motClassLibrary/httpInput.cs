@@ -70,7 +70,7 @@ namespace motInboundLib
             }
             catch(Exception e)
             {
-                throw new Exception("Faild reading REST/JSON record: " + e.Message);
+                throw new Exception("Failed reading REST/JSON record: " + e.Message);
             }
         }
 
