@@ -520,7 +520,7 @@ namespace CPRPlusInterface
                     }
                     else
                     {
-                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Location Location Record");
+                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Location Location Record"));
                     }
 
                 }));
@@ -557,7 +557,7 @@ namespace CPRPlusInterface
                     }
                     else
                     {
-                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Store Patient Record");
+                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Store Patient Record"));
                     }
                 }));
 
@@ -618,7 +618,7 @@ namespace CPRPlusInterface
                     }
                     else
                     {
-                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Drug Record");
+                        //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Did Not Get Drug Record"));
                     }
                 }));
 
@@ -657,42 +657,42 @@ namespace CPRPlusInterface
                 __watch_for_drug.Name = "__drug_listener";
                 __watch_for_drug.Start();
 
-                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Drug Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Drug Listener"));
                 Thread.Sleep(1024);
 
                 __watch_for_location = new Thread(new ThreadStart(() => __listen_for_location_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_location.Name = "__location_listener";
                 __watch_for_location.Start();
 
-                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Location Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Location Listener"));
                 Thread.Sleep(1024);
 
                 __watch_for_patient = new Thread(new ThreadStart(() => __listen_for_patient_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_patient.Name = "__patient_listener";
                 __watch_for_patient.Start();
 
-                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Patient Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Patient Listener"));
                 Thread.Sleep(1024);
 
                 __watch_for_prescriber = new Thread(new ThreadStart(() => __listen_for_prescriber_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_prescriber.Name = "__prescriber_listener";
                 __watch_for_prescriber.Start();
 
-                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescriber Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescriber Listener"));
                 Thread.Sleep(1024);
 
                 __watch_for_prescription = new Thread(new ThreadStart(() => __listen_for_prescription_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_prescription.Name = "__prescription_listener";
                 __watch_for_prescription.Start();
 
-                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescription Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Prescription Listener"));
                 Thread.Sleep(1024);
 
                 __watch_for_store = new Thread(new ThreadStart(() => __listen_for_store_record(__dbtype, __dsn, __s_address, __s_port)));
                 __watch_for_store.Name = "__store_listener";
                 __watch_for_store.Start();
 
-                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Store Listener");
+                //lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + " - Started Store Listener"));
                 Thread.Sleep(1024);
 
                 /*
@@ -700,7 +700,7 @@ namespace CPRPlusInterface
                 __watch_for_time_qty.Name = "__timeqtys_listener";
                 __watch_for_time_qty.Start();
 
-                lstbxRunningLog.Items.Add("started Time/Qty Listener");
+                lstbxRunningLog.Items.Add("started Time/Qty Listener"));
                 */
             }
             catch (Exception err)
@@ -1317,14 +1317,14 @@ namespace CPRPlusInterface
 
                             try
                             {
-                                motTimeQtysRecord __tq = new motTimeQtysRecord("Add");
+                                motTimeQtysRecord __tq = new motTimeQtysRecord("Add"));
                                 Dictionary<string, string> __xTable = new Dictionary<string, string>();
 
                                 // Load the translaton table -- Database Column Name to Gateway Tag Name                
-                                __xTable.Add("", "RxSys_LocID");
+                                __xTable.Add("", "RxSys_LocID"));
 
-                                //__xTable.Add("", "DoseScheduleName");
-                                //__xTable.Add("", "DoseTimeQtys");
+                                //__xTable.Add("", "DoseScheduleName"));
+                                //__xTable.Add("", "DoseTimeQtys"));
 
 
                                 string __tag;

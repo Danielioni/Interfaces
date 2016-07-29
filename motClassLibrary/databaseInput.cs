@@ -269,7 +269,7 @@ namespace motInboundLib
 
                     foreach (string splitScript in scripts)
                     {
-                        command.CommandText = splitScript.Substring(0, splitScript.ToLower().IndexOf("go"));
+                        command.CommandText = splitScript.Substring(0, splitScript.ToLower().IndexOf("go");
                         command.ExecuteNonQuery();
                     }
                 }

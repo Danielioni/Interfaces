@@ -85,7 +85,6 @@
     <Compile Include="FrameworkHL7Main.Designer.cs">
       <DependentUpon>FrameworkHL7Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="HL7_Structs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrameworkHL7Main.resx">

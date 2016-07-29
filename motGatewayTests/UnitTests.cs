@@ -29,6 +29,7 @@ using System.Security.Permissions;
 using System.Collections.Generic;
 using System.Threading;
 
+
 namespace motInboundLib
 {
     class motMain
@@ -192,13 +193,13 @@ namespace motInboundLib
                     motPrescriberRecord __scrip = new motPrescriberRecord();
                     List<Field> __stage = new List<Field>();
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
-                    Port p = new Port("127.0.0.1", "24042");
+                    Port p = new Port("127.0.0.1", "24042"));
 
                     // Load the translaton table -- Database Column Name to Gateway Tag Name 
-                    __xTable.Add("Id", "Id");
+                    __xTable.Add("Id", "Id"));
                     // ...
 
-                    DataSet __recordSet = db.executeQuery("SELECT * from Rxes");
+                    DataSet __recordSet = db.executeQuery("SELECT * from Rxes"));
 
                     foreach(DataTable __table in __recordSet)
                     {
@@ -233,7 +234,7 @@ namespace motInboundLib
             //Test Database Connection
             try
             {
-                cprPlus cpr = new cprPlus(dbType.NPGServer, "server=127.0.0.1;port=5432;userid=mot;password=mot!cool;database=Mot");
+                cprPlus cpr = new cprPlus(dbType.NPGServer, "server=127.0.0.1;port=5432;userid=mot;password=mot!cool;database=Mot"));
                 cpr.getDrugRecord();
             }
             catch(Exception e)
@@ -241,6 +242,7 @@ namespace motInboundLib
                 Console.WriteLine("Failed to open Database for input {0}", e.Message);
             }
             */
+            
 
             // Testing
             testDrugRecord();
@@ -249,7 +251,7 @@ namespace motInboundLib
             testXMLDoc();
             testJSONDoc();
 
-            //fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO");
+            //fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO"));
 
 /*
             try

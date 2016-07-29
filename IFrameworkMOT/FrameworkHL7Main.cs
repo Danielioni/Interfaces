@@ -71,8 +71,6 @@ namespace IFrameworkMOT
                 __roman.Add("VIII", 8);
                 __roman.Add("IX", 9);
                 __roman.Add("X", 10);
-
-
             }
 
             private string __parse_repeat_pattern(string __pattern)
@@ -129,7 +127,7 @@ namespace IFrameworkMOT
 
             }
 
-            public override void __process_prescription_record(RDE_O11 __rde_o_11)
+            public  void __process_prescription_record(RDE_O11 __rde_o_11)
             {
                 // This record has a little of everything in it including facilities, prescribers, drugs, ...
                 // The only required segments are MSH, ORC and OBX but it appears that RXE is heavily used
@@ -158,7 +156,7 @@ namespace IFrameworkMOT
                     __order_type.Add("XO", "Change");
                     __order_type.Add("CA", "Delete");
                     __order_type.Add("RE", "Change");
-
+/*
                     for (int i = 0; i < __rde_o_11.ORDERRepetitionsUsed; i++)
                     {
                         // Create record
@@ -431,7 +429,7 @@ namespace IFrameworkMOT
                         // Chart Only
                         // Anchor Date
 
-                    }
+                    }*/
                 }
                 catch (Exception e)
                 {
@@ -451,13 +449,14 @@ namespace IFrameworkMOT
             public override void __process_time_qty_record()
             { }
 
-            public override void __process_patient_record(ADT_A01 __adt_a01)
-            { }
+            //public override void __process_patient_record(ADT_A01 __adt_a01)
+            //{ }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            MSH __msh = new MSH();
+            ORC __orc = new ORC();
         }
     }
 }
