@@ -53,11 +53,14 @@ namespace motInboundLib
             __data = __data.Remove(__data.IndexOf('\x1C'), 1);
 
             string[] __segments = __data.Split('\r');
+            MSH __resp = new MSH(__segments[0]);
+
+            string __response = string.Empty;
 
             try
             {
                 // Figure out what kind of message it is
-                MSH __resp = new MSH(__segments[0]);
+               
 
                 switch (__resp.__msg_data["MSH-9-3"])
                 {
@@ -82,12 +85,16 @@ namespace motInboundLib
                         break;
                 }
 
-                // Send Response Packet ACK
+                ACK __out = new ACK(__resp);
+                __response = __out.__ack_string;
             }
             catch (Exception e)
             {
-                // Send Response Packet NAK
+                NAK __out = new NAK(__resp, null);
+                __response = __out.__nak_string;
             }
+
+            __write_message_to_endpoint(__response);
         }
 
         public void __start_listener(int __port, motSocket.__void_delegate __callback_p)
@@ -209,65 +216,6 @@ namespace motInboundLib
         ROL|45^RECORDER^ROLE MASTER LIST|AD|RO|KATE^ELLEN|199505011201
         */
 
-        public class __HL7_field_map
-        {
-            Dictionary<string, Dictionary<int,string>> __definitions;
-            
-            public __HL7_field_map()
-            {
-                __definitions = new Dictionary<string, Dictionary<int, string>>();
-            }
-
-            public void __add_field(string __field, Dictionary<int,string> __map)
-            {
-                __definitions.Add(__field, __map);
-            }
-
-            Dictionary<int, string>__get_map(string __field)
-            {
-                return __definitions[__field];
-            }
-        }
-
-        public class __HL7_record
-        {
-            public char __field_delimiter { get; set; } = '|';
-            public char __component_delimiter { get; set; } = '^';
-            public char __subcomponent_delimiter { get; set; } = '&';
-            public char __repeat_delimiter { get; set; } = '~';
-            public char __escape_delimiter { get; set; } = '\\';
-
-            public string __key;
-            public string __message;
-            List<string> __fields;
-
-            public __HL7_record()
-            {
-                __fields = new List<string>();
-            }
-
-            public void __parse_fields()
-            {
-                string[] __f = __message.Split(__field_delimiter);
-
-                foreach(string __s in __f)
-                {
-                    __fields.Add(__s);
-                }
-            }
-        };
-
-        class HL7Message_old
-        {
-            private string[] segments;
-            private string message;
-            private char fieldDelimeter;
-            private char componentDelimeter;
-            private char subComponentDelimer;
-            private char repeatDelimeter;
-
-            private List<__HL7_record> __full_message;
-
             /// <summary>
             /// Constructor. Set the field, component, subcompoenent and repeat delimeters. Throw an exception if the messsage  does not include a MSH segment.
             /// 
@@ -290,59 +238,6 @@ namespace motInboundLib
             /// 
             /// </summary>
             /// <param name="message"></param>
-            public HL7Message_old(string __raw_message)
-            {
-                int __start_mark = __raw_message.IndexOf('\v');
-                int __end_mark = __raw_message.IndexOf('\x1C');
-
-                if (__end_mark > __start_mark)
-                {
-                    __raw_message = __raw_message.Remove(__raw_message.IndexOf('\v'),1);
-                    __raw_message = __raw_message.Remove(__raw_message.IndexOf('\x1C'),1);
-
-                    message = __raw_message;
-                    segments = __raw_message.Split('\x0D');
-
-                    // set the field, component, sub component and repeat delimters
-                    int __start_pos = message.IndexOf("MSH");
-
-                    if (__start_pos >= 0)
-                    {
-                        __start_pos += 2;
-                        fieldDelimeter = message[__start_pos + 1];
-                        componentDelimeter = message[__start_pos + 2];
-                        repeatDelimeter = message[__start_pos + 3];
-                        subComponentDelimer = message[__start_pos + 5];
-                    }
-
-                    __full_message = new List<__HL7_record>();
-
-                   
-                    foreach(string __s in segments)
-                    {
-                        __HL7_record p = new __HL7_record();
-
-                        p.__field_delimiter = fieldDelimeter;
-                        p.__component_delimiter = componentDelimeter;
-                        p.__subcomponent_delimiter = subComponentDelimer;
-                        p.__repeat_delimiter = repeatDelimeter;
-
-                        p.__key = __s.Substring(0, 3);
-                        p.__message = __s.Substring(3);
-                        p.__parse_fields();
-
-                        __full_message.Add(p);
-
-                        // Acknowledge
-
-                    }                
-                }
-                // throw an exception if a MSH segment is not included in the message. 
-                else
-                {
-                    throw new ArgumentException("MSH segment not present.");
-                }
-            }
         }
     }
-}
+
