@@ -34,9 +34,22 @@ using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using NLog;
 
-
 namespace motInboundLib
 {
+
+    public class HL7Event7MessageArgs : EventArgs
+    {
+        public List<Dictionary<string, string>> fields { get; set; }
+        public Dictionary<string, string> descriptions { get; set; }
+        public DateTime timestamp { get; set; }
+    }
+
+    public delegate void ADT_A01EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
+    public delegate void ADT_A12EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
+    public delegate void OMP_O09EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
+    public delegate void RDE_O11EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
+    public delegate void RDS_013EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
+
     public class HL7SocketListener
     {
         const int TCP_TIMEOUT = 300000;
@@ -46,8 +59,18 @@ namespace motInboundLib
         private Thread  __worker;
         private int     __listener_port = 0;
 
+        List<Dictionary<string, string>> __message_data = new List<Dictionary<string, string>>();
+
+        public ADT_A01EventReceivedHandler ADT_A01MessageEventReceived;
+        public ADT_A12EventReceivedHandler ADT_A12MessageEventReceived;
+        public OMP_O09EventReceivedHandler OMP_O09MessageEventReceived;
+        public RDE_O11EventReceivedHandler RDE_O11MessageEventReceived;
+        public RDS_013EventReceivedHandler RDS_O13MessageEventReceived;
+
         public void __parse_message(string __data)
         {
+            HL7Event7MessageArgs __args = new HL7Event7MessageArgs();
+
             // Clean delivery marks
             __data = __data.Remove(__data.IndexOf('\v'), 1);
             __data = __data.Remove(__data.IndexOf('\x1C'), 1);
@@ -59,39 +82,66 @@ namespace motInboundLib
 
             try
             {
-                // Figure out what kind of message it is
-               
-
+                // Figure out what kind of message it is              
                 switch (__resp.__msg_data["MSH-9-3"])
                 {
                     case "RDE_O11":
                         RDE_O11 __rde_o11 = new RDE_O11(__data);
+                        __message_data = __rde_o11.__message_store;
+
+                        RDE_O11EventReceivedHandler __rde_handler = RDE_O11MessageEventReceived;
+                        __args.fields = __message_data;
+                        __args.timestamp = DateTime.Now;
+                        __rde_handler(this, __args);
+
                         break;
 
                     case "OMP_O09":
                         OMP_O09 __omp_o09 = new OMP_O09(__data);
+                        __message_data = __omp_o09.__message_store;
+
+                        OMP_O09EventReceivedHandler __omp_handler = OMP_O09MessageEventReceived;
+                        __args.fields = __message_data;
+                        __args.timestamp = DateTime.Now;
+                        __omp_handler(this, __args);
+
                         break;
 
                     case "RDS_O13":
                         RDS_O13 __rds_o13 = new RDS_O13(__data);
-                        break;
+                        __message_data = __rds_o13.__message_store;
 
+                        RDS_013EventReceivedHandler __rds_handler = RDS_O13MessageEventReceived;
+                        __args.fields = __message_data;
+                        __args.timestamp = DateTime.Now;
+                        __rds_handler(this, __args);
+
+                        break;
 
                     case "ADT_A01":
                         ADT_A01 __adt_a01 = new ADT_A01(__data);
-                        break;
+                        __message_data = __adt_a01.__message_store;
 
-                    default:
+                        ADT_A01EventReceivedHandler __a01_handler = ADT_A01MessageEventReceived;
+                        __args.fields = __message_data;
+                        __args.timestamp = DateTime.Now;
+                        __a01_handler(this, __args);
+
                         break;
                 }
 
                 ACK __out = new ACK(__resp);
                 __response = __out.__ack_string;
+
+                // Fire a new record event ...
+                // 
             }
             catch (Exception e)
             {
                 NAK __out = new NAK(__resp, null);
                 __response = __out.__nak_string;
+
+                Console.Write(e.StackTrace);
             }
 
             __write_message_to_endpoint(__response);
@@ -118,7 +168,7 @@ namespace motInboundLib
             }
         }
 
-        void __stop()
+        public void __stop()
         {
             __socket.close();
             __worker.Join();
@@ -159,7 +209,7 @@ namespace motInboundLib
             }
         }
 
-        public void start(motSocket.__void_delegate __callback)
+        public void __start(motSocket.__void_delegate __callback)
         {
             try
             {
@@ -175,11 +225,11 @@ namespace motInboundLib
             }
         }
 
-        public void start()
+        public void __start()
         {
             try
             {
-                start(__parse_message);
+                __start(__parse_message);
             }
             catch { throw; }
         }

@@ -7,6 +7,7 @@ using System.Threading;
 
 namespace motInboundLib
 {
+
     /// <summary>
     /// Messsages to support for FrameworkLTE
     /// 
@@ -40,6 +41,7 @@ namespace motInboundLib
     /// 
     public class HL7MessageParser
     {
+
         public bool __sub_parse(string __tagname, string __message, char __delimiter, Dictionary<string, string> __message_data, int __minor)
         {
             char[] __local_delimiters = { '\\', '&', '~', '^' };
@@ -74,7 +76,7 @@ namespace motInboundLib
             char[] __delims = { '|' };
             char[] __local_delimiters = { '\\', '&', '~', '^' };
 
-            int __major = 1;
+            int __major = 0;
             int __minor = 1;
             int __gotone;
 
@@ -83,6 +85,21 @@ namespace motInboundLib
 
             foreach (string __field in __field_names)
             {
+                // Catch the Root Name  {RXE,RXE}
+                if(__major == 0)
+                {
+                    __message_data.Add(__tagname, __field);
+                    __major++;
+                    continue;
+                }
+
+                // Doah!  MSH requires something special
+                if(__tagname == "MSH" && __major == 1)
+                {
+                    __message_data.Add(__tagname + "-" + __major.ToString(), "|");
+                    __major++;
+                }
+
                 __message_data.Add(__tagname + "-" + __major.ToString(), __field);
 
                 if (__field != @"^~\&")
@@ -111,7 +128,23 @@ namespace motInboundLib
     {
         public Dictionary<string, string> __field_names;
         public Dictionary<string, string> __msg_data;
- 
+
+        //public event EventHandler __newMessage;
+        //public ML7toMOT __handlers = new ML7toMOT();
+
+        protected string[] __clear_newlines(string[] __strings)
+        {
+            for (int i = 0; i < __strings.Length; i++)
+            {
+                if (__strings[i].IndexOf("\n") != -1)
+                {
+                    __strings[i] = __strings[i].Substring(1);
+                }
+            }
+
+            return __strings;
+        }
+
         public HL7_Message_dictionary()
         {                
             __field_names = new Dictionary<string, string>();
@@ -125,10 +158,16 @@ namespace motInboundLib
         }
     }
 
+    //
+    // Messages - Specific to Softwriters FrameworkLTE
+    //
     public class ADT_A01 : HL7_Message_dictionary   // Register (A04), Update (A08) a Patient
     {
         // A04 - MSH, EVN, PID, PV1, [{OBX}], [{AL1}], [{DG1}]
         // A08 - MSH, EVN, PID, PV1, [{OBX}], [{AL1}], [{DG1}]
+        
+        // Note that IN1 seems to show up with ADT_A04
+
         public MSH __msh;
         public EVN __evn;
         public PID __pid;
@@ -136,10 +175,23 @@ namespace motInboundLib
         public List<OBX> __obx;
         public List<AL1> __al1;
         public List<DG1> __dg1;
+        public List<IN1> __in1;
+
+        public List<Dictionary<string, string>> __message_store;
 
         public ADT_A01(string __message) : base()
         {
+
             string[] __segments = __message.Split('\r');
+
+            __segments = __clear_newlines(__segments);
+
+            __obx = new List<OBX>();
+            __al1 = new List<AL1>();
+            __dg1 = new List<DG1>();
+            __in1 = new List<IN1>();
+
+            __message_store = new List<Dictionary<string, string>>();
 
             foreach (string __field in __segments)
             {
@@ -147,30 +199,46 @@ namespace motInboundLib
                 {
                     case "MSH":
                         __msh = new MSH(__field);
+                        __message_store.Add(__msh.__msg_data);
                         break;
 
                     case "PID":
                         __pid = new PID(__field);
+                        __message_store.Add(__pid.__msg_data);
                         break;
 
                     case "PV1":
                         __pv1 = new PV1(__field);
+                        __message_store.Add(__pv1.__msg_data);
                         break;
 
                     case "EVN":
                         __evn = new EVN(__field);
+                        __message_store.Add(__evn.__msg_data);
                         break;
 
-                    case "TQ1":
-                        __obx.Add(new OBX(__field));
+                    case "OBX":
+                        OBX __tmp_obx = new OBX(__field);
+                        __obx.Add(__tmp_obx);
+                        __message_store.Add(__tmp_obx.__msg_data);
                         break;
 
                     case "AL1":
-                        __al1.Add(new AL1(__field));
+                        AL1 __tmp_al1 = new AL1(__field);
+                        __al1.Add(__tmp_al1);
+                        __message_store.Add(__tmp_al1.__msg_data);
                         break;
 
                     case "DG1":
-                        __dg1.Add(new DG1(__field));
+                        DG1 __tmp_dg1 = new DG1(__field);
+                        __dg1.Add(__tmp_dg1);
+                        __message_store.Add(__tmp_dg1.__msg_data);
+                        break;
+
+                    case "IN1":
+                        IN1 __tmp_in1 = new IN1(__field);
+                        __in1.Add(__tmp_in1);
+                        __message_store.Add(__tmp_in1.__msg_data);
                         break;
 
                     default:
@@ -185,6 +253,8 @@ namespace motInboundLib
     }
     public class ADT_A21 : HL7_Message_dictionary   // Delete a Patient
     {
+        public List<Dictionary<string, string>> __message_store;
+
         // A23 - Not in Spec
         public ADT_A21() 
         {
@@ -206,6 +276,8 @@ namespace motInboundLib
         public RXO __rxo;
         public List<RXC> __rxc;
         public List<NTE> __nte;
+
+        public List<Dictionary<string, string>> __message_store;
 
         /*
                 public class Order
@@ -234,48 +306,73 @@ namespace motInboundLib
         {
             string[] __segments = __message.Split('\r');
 
+            __segments = __clear_newlines(__segments);
+
+            __tq1 = new List<TQ1>();
+            __rxc = new List<RXC>();
+            __nte = new List<NTE>();
+
+            __message_store = new List<Dictionary<string, string>>();
+
             foreach (string __field in __segments)
             {
+
                 switch (__field.Substring(0, 3))
                 {
                     case "MSH":
                         __msh = new MSH(__field);
+                        __message_store.Add(__msh.__msg_data);
                         break;
 
                     case "PID":
                         __pid = new PID(__field);
+                        __message_store.Add(__pid.__msg_data);
                         break;
 
                     case "PV1":
                         __pv1 = new PV1(__field);
+                        __message_store.Add(__pv1.__msg_data);
                         break;
 
                     case "ORC":
                         __orc = new ORC(__field);
+                        __message_store.Add(__orc.__msg_data);
                         break;
 
                     case "TQ1":
-                        __tq1.Add(new TQ1(__field));
+                        TQ1 __tmp_tq1 = new TQ1(__field);
+                        __tq1.Add(__tmp_tq1);
+                        __message_store.Add(__tmp_tq1.__msg_data);
                         break;
 
                     case "RXO":
                         __rxo = new RXO(__field);
+                        __message_store.Add(__rxo.__msg_data);
                         break;
 
                     case "RXC":
-                        __rxc.Add(new RXC(__field));
+                        RXC __tmp_rxc = new RXC(__field);
+                        __rxc.Add(__tmp_rxc);
+                        __message_store.Add(__tmp_rxc.__msg_data);
                         break;
 
                     case "NTE":
-                        __nte.Add(new NTE(__field));
+                        NTE __tmp_nte = new NTE(__field);
+                        __nte.Add(__tmp_nte);
+                        __message_store.Add(__tmp_nte.__msg_data);
                         break;
 
                     default:
                         break;
                 }
             }
+
+            // Raise __newMessage Event
+            Console.WriteLine("Done Processing OMP_O09, now what ...");
         }
     }
+
+
     public class RDE_O11 : HL7_Message_dictionary  // Pharmacy/Treatment Encoded Order Message
     {
         // Drug Order       MSH, [ PID, [PV1] ], { ORC, [RXO, {RXR}, RXE, [{NTE}], {TQ1}, {RXR}, [{RXC}] }, [ZPI]
@@ -293,6 +390,8 @@ namespace motInboundLib
         public List<TQ1> __tq1;
         public ZAS __zas;
         public ZPI __zpi;
+
+        public List<Dictionary<string, string>> __message_store;
 
         /*
                 public class Order
@@ -335,56 +434,82 @@ namespace motInboundLib
         {
             string[] __segments = __message.Split('\r');
 
+            __segments = __clear_newlines(__segments);
+         
+
+            __rxr = new List<RXR>();
+            __rxc = new List<RXC>();
+            __nte = new List<NTE>();
+            __tq1 = new List<TQ1>();
+
+            __message_store = new List<Dictionary<string, string>>();
+            
             foreach (string __type in __segments)
             {
                 switch (__type.Substring(0, 3))
                 {
                     case "MSH":
                         __msh = new MSH(__type);
+                        __message_store.Add(__msh.__msg_data);
                         break;
 
                     case "PID":
                         __pid = new PID(__type);
+                        __message_store.Add(__pid.__msg_data);
                         break;
 
                     case "PV1":
                         __pv1 = new PV1(__type);
+                        __message_store.Add(__pv1.__msg_data);
                         break;
 
                     case "TQ1":
-                        __tq1.Add(new TQ1(__type));
+                        TQ1 __tmp_tq1 = new TQ1(__type);
+                        __tq1.Add(__tmp_tq1);
+                        __message_store.Add(__tmp_tq1.__msg_data);
                         break;
 
                     case "RXC":
-                        __rxc.Add(new RXC(__type));
+                        RXC __tmp_rxc = new RXC(__type);
+                        __rxc.Add(__tmp_rxc);
+                        __message_store.Add(__tmp_rxc.__msg_data);
                         break;
 
                     case "RXE":
                         __rxe = new RXE(__type);
+                        __message_store.Add(__rxe.__msg_data);
                         break;
 
                     case "RXO":
                         __rxo = new RXO(__type);
+                        __message_store.Add(__rxo.__msg_data);
                         break;
 
                     case "RXR":
-                        __rxr.Add(new RXR(__type));
+                        RXR __tmp_rxr = new RXR(__type);
+                        __rxr.Add(__tmp_rxr);
+                        __message_store.Add(__tmp_rxr.__msg_data);
                         break;
 
                     case "ORC":  // Need to parse the order
                         __orc = new ORC(__type);
+                        __message_store.Add(__orc.__msg_data);
                         break;
 
                     case "ZAS":
                         __zas = new ZAS(__type);
+                        __message_store.Add(__zas.__msg_data);
                         break;
 
                     case "ZPI":
                         __zpi = new ZPI(__type);
+                        __message_store.Add(__zpi.__msg_data);
                         break;
 
                     case "NTE":
-                        __nte.Add(new NTE(__type));
+                        NTE __tmp_nte = new NTE(__type);
+                        __nte.Add(__tmp_nte);
+                        __message_store.Add(__tmp_nte.__msg_data);
                         break;
 
                     default:
@@ -392,7 +517,8 @@ namespace motInboundLib
                 }
             }
 
-            Console.WriteLine("Done Processing, now what ...");
+            // Raise __newMessage Event
+            Console.WriteLine("Done Processing RDE_O11, now what ...");
         }
     }
     public class RDS_O13 : HL7_Message_dictionary   // Pharmacy/Treatment Dispense Message
@@ -411,6 +537,8 @@ namespace motInboundLib
         public List<RXR> __rxr;
         public List<RXC> __rxc;
         public ZPI __zpi;
+
+        public List<Dictionary<string, string>> __message_store;
 
         /*
                 public class Order
@@ -448,97 +576,102 @@ namespace motInboundLib
         {
             string[] __segments = __message.Split('\r');
 
+            __segments = __clear_newlines(__segments);
+
+            __nte = new List<NTE>();
+            __tq1 = new List<TQ1>();
+            __rxr = new List<RXR>();
+            __rxc = new List<RXC>();
+
+            __message_store = new List<Dictionary<string, string>>();
+
             foreach (string __field in __segments)
             {
+
                 switch (__field.Substring(0, 3))
                 {
                     case "MSH":
                         __msh = new MSH(__field);
+                        __message_store.Add(__msh.__msg_data);
                         break;
 
                     case "PID":
                         __pid = new PID(__field);
+                        __message_store.Add(__pid.__msg_data);
                         break;
 
                     case "PV1":
                         __pv1 = new PV1(__field);
+                        __message_store.Add(__pv1.__msg_data);
                         break;
 
                     case "ORC":
                         __orc = new ORC(__field);
+                        __message_store.Add(__orc.__msg_data);
                         break;
 
                     case "RXO":
                         __rxo = new RXO(__field);
+                        __message_store.Add(__rxo.__msg_data);
                         break;
 
                     case "RXE":
                         __rxe = new RXE(__field);
+                        __message_store.Add(__rxe.__msg_data);
                         break;
 
                     case "RXD":
                         __rxd = new RXD(__field);
+                        __message_store.Add(__rxd.__msg_data);
                         break;
 
                     case "NTE":
-                        __nte.Add(new NTE(__field));
+                        NTE __tmp_nte = new NTE(__field);
+                        __nte.Add(__tmp_nte);
+                        __message_store.Add(__tmp_nte.__msg_data);
                         break;
 
                     case "TQ1":
-                        __tq1.Add(new TQ1(__field));
+                        TQ1 __tmp_tq1 = new TQ1(__field);
+                        __tq1.Add(__tmp_tq1);
+                        __message_store.Add(__tmp_tq1.__msg_data);
                         break;
 
                     case "RXR":
-                        __rxr.Add(new RXR(__field));
+                        RXR __tmp_rxr = new RXR(__field);
+                        __rxr.Add(__tmp_rxr);
+                        __message_store.Add(__tmp_rxr.__msg_data);
                         break;
 
                     case "RXC":
-                        __rxc.Add(new RXC(__field));
+                        //__rxc.Add(new RXC(__field));
+                        RXC __tmp_rxc = new RXC(__field);
+                        __rxc.Add(__tmp_rxc);
+                        __message_store.Add(__tmp_rxc.__msg_data);
                         break;
 
                     case "ZPI":
                         __zpi = new ZPI(__field);
+                        __message_store.Add(__zpi.__msg_data);
                         break;
 
                     default:
                         break;
                 }
             }
+
+            // Raise __newMessage Event
+            Console.WriteLine("Done Processing RDS_O13, now what ...");
+
         }
         public RDS_O13() : base()
         { }
     }
 
 
-    public class DataPair
-    {
-        public string __tag;
-        public object __data;
-
-        public DataPair(string __a)
-        {
-            __tag = __a;
-        }
-
-        public DataPair(string __a, object __d)
-        {
-            __tag = __a;
-            __data = __d;
-        }
-
-        public DataPair(string __a, string __d)
-        {
-            __tag = __a;
-            __data = __d;
-        }
-
-        public DataPair()
-        {
-            __tag = string.Empty;
-            __data = null;
-        }
-    }
-
+    //
+    //  Segments - These all parse as SEG-#,-#... and stored as a Dictioary<string,string>
+    //
 
     public class AL1 : HL7_Message_dictionary
     {
@@ -719,9 +852,6 @@ namespace motInboundLib
     }
     public class EVN : HL7_Message_dictionary
     {
-
-        //public Dictionary<string, DataPair> __field_names = new Dictionary<string, DataPair>();
-        //public Dictionary<string, string> __msg_data = new Dictionary<string, string>();
         HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
@@ -817,8 +947,6 @@ namespace motInboundLib
     }
     public class MSH : HL7_Message_dictionary
     {
-        //public Dictionary<string, string> __field_names = new Dictionary<string, string>();
-        //public Dictionary<string, string> __msg_data = new Dictionary<string, string>();
         HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
@@ -1006,8 +1134,6 @@ namespace motInboundLib
     }
     public class OBX : HL7_Message_dictionary
     {
-        //public Dictionary<string, DataPair> __field_names = new Dictionary<string, DataPair>();
-        //public Dictionary<string, string> __msg_data = new Dictionary<string, string>();
         HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
@@ -1084,8 +1210,6 @@ namespace motInboundLib
     }
     public class ORC : HL7_Message_dictionary
     {
-        //public Dictionary<string, DataPair> __field_names = new Dictionary<string, DataPair>();
-        //public Dictionary<string, string> __msg_data = new Dictionary<string, string>();
         HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
@@ -1134,8 +1258,6 @@ namespace motInboundLib
     }
     public class PID : HL7_Message_dictionary
     {
-        //public Dictionary<string, DataPair> __field_names = new Dictionary<string, DataPair>();
-        //public Dictionary<string, string> __msg_data = new Dictionary<string, string>();
         HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
@@ -1193,63 +1315,61 @@ namespace motInboundLib
     }
     public class PV1 : HL7_Message_dictionary
     {
-        //public Dictionary<string, DataPair> __field_names = new Dictionary<string, DataPair>();
-        //public Dictionary<string, string> __msg_data = new Dictionary<string, string>();
         HL7MessageParser __parser = new HL7MessageParser();
 
         // TODO:  Finish Field Names
-        private void __load()
+        private void __load()  // TODO:  Finish Patient Visit Fields
         {
-            __field_names.Add("1", @"Set ID");
-            __field_names.Add("2", @"Value Type");
-            __field_names.Add("3", @"Observation Indicator");
-            __field_names.Add("4", @"Observation Sub ID");
-            __field_names.Add("5", @"Observation Value");
-            __field_names.Add("6", @"Units");
-            __field_names.Add("7", @"Reference Range");
-            __field_names.Add("8", @"Abnormal Flags");
-            __field_names.Add("9", @"Probability");
-            __field_names.Add("10", @"Nature of Abnormal Test");
-            __field_names.Add("11", @"Set ID");
-            __field_names.Add("12", @"Value Type");
-            __field_names.Add("13", @"Observation Indicator");
-            __field_names.Add("14", @"Observation Sub ID");
-            __field_names.Add("15", @"Observation Value");
-            __field_names.Add("16", @"Units");
-            __field_names.Add("17", @"Reference Range");
-            __field_names.Add("18", @"Abnormal Flags");
-            __field_names.Add("19", @"Probability");
-            __field_names.Add("20", @"Nature of Abnormal Test");
-            __field_names.Add("21", @"Set ID");
-            __field_names.Add("22", @"Value Type");
-            __field_names.Add("23", @"Observation Indicator");
-            __field_names.Add("24", @"Observation Sub ID");
-            __field_names.Add("25", @"Observation Value");
-            __field_names.Add("26", @"Units");
-            __field_names.Add("27", @"Reference Range");
-            __field_names.Add("28", @"Abnormal Flags");
-            __field_names.Add("29", @"Probability");
-            __field_names.Add("30", @"Nature of Abnormal Test");
-            __field_names.Add("31", @"Set ID");
-            __field_names.Add("32", @"Value Type");
-            __field_names.Add("33", @"Observation Indicator");
-            __field_names.Add("34", @"Observation Sub ID");
-            __field_names.Add("35", @"Observation Value");
-            __field_names.Add("36", @"Units");
-            __field_names.Add("37", @"Reference Range");
-            __field_names.Add("38", @"Abnormal Flags");
-            __field_names.Add("39", @"Probability");
-            __field_names.Add("40", @"Nature of Abnormal Test");
-            __field_names.Add("41", @"Set ID");
-            __field_names.Add("42", @"Value Type");
-            __field_names.Add("43", @"Observation Indicator");
-            __field_names.Add("44", @"Observation Sub ID");
-            __field_names.Add("45", @"Observation Value");
-            __field_names.Add("46", @"Units");
-            __field_names.Add("47", @"Reference Range");
-            __field_names.Add("48", @"Abnormal Flags");
-            __field_names.Add("49", @"Probability");
-            __field_names.Add("50", @"Nature of Abnormal Test");
+            __field_names.Add("PV1-1", @"Set ID");
+            __field_names.Add("PV1-2", @"Patient Class");
+            __field_names.Add("PV1-3", @"Observation Indicator");
+            __field_names.Add("PV1-4", @"Observation Sub ID");
+            __field_names.Add("PV1-5", @"Observation Value");
+            __field_names.Add("PV1-6", @"Units");
+            __field_names.Add("PV1-7", @"Reference Range");
+            __field_names.Add("PV1-8", @"Abnormal Flags");
+            __field_names.Add("PV1-9", @"Probability");
+            __field_names.Add("PV1-10", @"Nature of Abnormal Test");
+            __field_names.Add("PV1-11", @"Set ID");
+            __field_names.Add("PV1-12", @"Value Type");
+            __field_names.Add("PV1-13", @"Observation Indicator");
+            __field_names.Add("PV1-14", @"Observation Sub ID");
+            __field_names.Add("PV1-15", @"Observation Value");
+            __field_names.Add("PV1-16", @"Units");
+            __field_names.Add("PV1-17", @"Reference Range");
+            __field_names.Add("PV1-18", @"Abnormal Flags");
+            __field_names.Add("PV1-19", @"Probability");
+            __field_names.Add("PV1-20", @"Nature of Abnormal Test");
+            __field_names.Add("PV1-21", @"Set ID");
+            __field_names.Add("PV1-22", @"Value Type");
+            __field_names.Add("PV1-23", @"Observation Indicator");
+            __field_names.Add("PV1-24", @"Observation Sub ID");
+            __field_names.Add("PV1-25", @"Observation Value");
+            __field_names.Add("PV1-26", @"Units");
+            __field_names.Add("PV1-27", @"Reference Range");
+            __field_names.Add("PV1-28", @"Abnormal Flags");
+            __field_names.Add("PV1-29", @"Probability");
+            __field_names.Add("PV1-30", @"Nature of Abnormal Test");
+            __field_names.Add("PV1-31", @"Set ID");
+            __field_names.Add("PV1-32", @"Value Type");
+            __field_names.Add("PV1-33", @"Observation Indicator");
+            __field_names.Add("PV1-34", @"Observation Sub ID");
+            __field_names.Add("PV1-35", @"Observation Value");
+            __field_names.Add("PV1-36", @"Units");
+            __field_names.Add("PV1-37", @"Reference Range");
+            __field_names.Add("PV1-38", @"Abnormal Flags");
+            __field_names.Add("PV1-39", @"Probability");
+            __field_names.Add("PV1-40", @"Nature of Abnormal Test");
+            __field_names.Add("PV1-41", @"Set ID");
+            __field_names.Add("PV1-42", @"Value Type");
+            __field_names.Add("PV1-43", @"Observation Indicator");
+            __field_names.Add("PV1-44", @"Observation Sub ID");
+            __field_names.Add("PV1-45", @"Observation Value");
+            __field_names.Add("PV1-46", @"Units");
+            __field_names.Add("PV1-47", @"Reference Range");
+            __field_names.Add("PV1-48", @"Abnormal Flags");
+            __field_names.Add("PV1-49", @"Probability");
+            __field_names.Add("PV1-50", @"Nature of Abnormal Test");
         }
         public PV1() : base()
         {
@@ -1264,62 +1384,60 @@ namespace motInboundLib
     }
     public class RXC : HL7_Message_dictionary
     {
-        //public Dictionary<string, DataPair> __field_names = new Dictionary<string, DataPair>();
-        //public Dictionary<string, string> __msg_data = new Dictionary<string, string>();
         HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
         {
-            __field_names.Add("1", @"RX Component Type");
+            __field_names.Add("RXC-1", @"RX Component Type");
 
-            __field_names.Add("2", @"Component Code");
-            __field_names.Add("2-1", @"Identifier");
-            __field_names.Add("2-2", @"Text");
-            __field_names.Add("2-3", @"Name of Coding System");
-            __field_names.Add("2-4", @"Alternate Identifier");
-            __field_names.Add("2-5", @"Alternate Text");
-            __field_names.Add("2-6", @"Name of Alternate CodingSystem");
+            __field_names.Add("RXC-2", @"Component Code");
+            __field_names.Add("RXC-2-1", @"Identifier");
+            __field_names.Add("RXC-2-2", @"Text");
+            __field_names.Add("RXC-2-3", @"Name of Coding System");
+            __field_names.Add("RXC-2-4", @"Alternate Identifier");
+            __field_names.Add("RXC-2-5", @"Alternate Text");
+            __field_names.Add("RXC-2-6", @"Name of Alternate CodingSystem");
 
-            __field_names.Add("3", @"Component Amount");
+            __field_names.Add("RXC-3", @"Component Amount");
 
-            __field_names.Add("4", @"Component Units");
-            __field_names.Add("4-1", @"Identifier");
-            __field_names.Add("4-2", @"Text");
-            __field_names.Add("4-3", @"Name of Coding System");
-            __field_names.Add("4-4", @"Alternate Identifier");
-            __field_names.Add("4-5", @"Alternate Text");
-            __field_names.Add("4-6", @"NAme of Alternate Coding System");
+            __field_names.Add("RXC-4", @"Component Units");
+            __field_names.Add("RXC-4-1", @"Identifier");
+            __field_names.Add("RXC-4-2", @"Text");
+            __field_names.Add("RXC-4-3", @"Name of Coding System");
+            __field_names.Add("RXC-4-4", @"Alternate Identifier");
+            __field_names.Add("RXC-4-5", @"Alternate Text");
+            __field_names.Add("RXC-4-6", @"NAme of Alternate Coding System");
 
-            __field_names.Add("5", @"Component Strength");
+            __field_names.Add("RXC-5", @"Component Strength");
 
-            __field_names.Add("6", @"Component Strength Units");
-            __field_names.Add("6-1", @"Identifier");
-            __field_names.Add("6-2", @"Text");
-            __field_names.Add("6-3", @"Name of Coding System");
-            __field_names.Add("6-4", @"Alternate Identifier");
-            __field_names.Add("6-5", @"Alternate Text");
-            __field_names.Add("6-6", @"NAme of Alternate Coding System");
+            __field_names.Add("RXC-6", @"Component Strength Units");
+            __field_names.Add("RXC-6-1", @"Identifier");
+            __field_names.Add("RXC-6-2", @"Text");
+            __field_names.Add("RXC-6-3", @"Name of Coding System");
+            __field_names.Add("RXC-6-4", @"Alternate Identifier");
+            __field_names.Add("RXC-6-5", @"Alternate Text");
+            __field_names.Add("RXC-6-6", @"NAme of Alternate Coding System");
 
-            __field_names.Add("7", @"Suplementary Code");
-            __field_names.Add("7-1", @"Identifier");
-            __field_names.Add("7-2", @"Text");
-            __field_names.Add("7-3", @"Name of Coding System");
-            __field_names.Add("7-4", @"Alternate Identifier");
-            __field_names.Add("7-5", @"Alternate Text");
-            __field_names.Add("7-6", @"Name of Alternate Coding System");
+            __field_names.Add("RXC-7", @"Suplementary Code");
+            __field_names.Add("RXC-7-1", @"Identifier");
+            __field_names.Add("RXC-7-2", @"Text");
+            __field_names.Add("RXC-7-3", @"Name of Coding System");
+            __field_names.Add("RXC-7-4", @"Alternate Identifier");
+            __field_names.Add("RXC-7-5", @"Alternate Text");
+            __field_names.Add("RXC-7-6", @"Name of Alternate Coding System");
 
-            __field_names.Add("8", @"Component Drug Volume");
+            __field_names.Add("RXC-8", @"Component Drug Volume");
 
-            __field_names.Add("9", @"Component Drug Volume Units");
-            __field_names.Add("9-1", @"Identifier");
-            __field_names.Add("9-2", @"Text");
-            __field_names.Add("9-3", @"Name of Coding System");
-            __field_names.Add("9-4", @"Alternate Identifier");
-            __field_names.Add("9-5", @"Alternate Text");
-            __field_names.Add("9-6", @"Name of Alternate Coding System");
-            __field_names.Add("9-7", @"Coding System Version ID");
-            __field_names.Add("9-8", @"Alternate Coding System Version");
-            __field_names.Add("9-9", @"Original Text");
+            __field_names.Add("RXC-9", @"Component Drug Volume Units");
+            __field_names.Add("RXC-9-1", @"Identifier");
+            __field_names.Add("RXC-9-2", @"Text");
+            __field_names.Add("RXC-9-3", @"Name of Coding System");
+            __field_names.Add("RXC-9-4", @"Alternate Identifier");
+            __field_names.Add("RXC-9-5", @"Alternate Text");
+            __field_names.Add("RXC-9-6", @"Name of Alternate Coding System");
+            __field_names.Add("RXC-9-7", @"Coding System Version ID");
+            __field_names.Add("RXC-9-8", @"Alternate Coding System Version");
+            __field_names.Add("RXC-9-9", @"Original Text");
         }
         public RXC() : base()
         {
@@ -1386,7 +1504,7 @@ namespace motInboundLib
     }
     public class RXR : HL7_Message_dictionary
     {
-        HL7MessageParser __parser;
+        HL7MessageParser __parser = new HL7MessageParser();
 
 
         private void __load()
@@ -1404,7 +1522,7 @@ namespace motInboundLib
     }
     public class TQ1 : HL7_Message_dictionary
     {
-        HL7MessageParser __parser;
+        HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
         {
@@ -1421,7 +1539,7 @@ namespace motInboundLib
     }
     public class ZAS : HL7_Message_dictionary
     {
-        HL7MessageParser __parser;
+        HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
         {
@@ -1438,7 +1556,7 @@ namespace motInboundLib
     }
     public class ZPI : HL7_Message_dictionary
     {
-        HL7MessageParser __parser;
+        HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
         {
@@ -1453,7 +1571,6 @@ namespace motInboundLib
             __parser.__parse(__message, __msg_data);
         }
     }
-
     public class ACK
     {
         public string __ack_string { get; set; } = string.Empty;
@@ -1492,7 +1609,6 @@ namespace motInboundLib
                            '\x0D';
         }
     }
-
     public class NAK
     {
         public string __nak_string { get; set; } = string.Empty;
@@ -1524,7 +1640,7 @@ namespace motInboundLib
                            __tmp_msh.__msg_data["MSH-4"] + "|" +                 
                            __tmp_msh.__msg_data["MSH-5"] + "|" +
                            __tmp_msh.__msg_data["MSH-6"] + "|" +
-                           __time_stamp + "||ACK^" +
+                           __time_stamp + "||NAK^" +
                            __tmp_msh.__msg_data["MSH-9-2"] + "|" +
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            __tmp_msh.__msg_data["MSH-11"] + "|" +
@@ -1535,6 +1651,166 @@ namespace motInboundLib
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            '\x1C' +
                            '\x0D';
+        }
+    }
+    public class MSA : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+        
+        private void __load()
+        {
+            __field_names.Add("MSA-1", @"Acknowledgment Code");     // AA - Application Accept
+                                                                    // AE - Application Error
+                                                                    // AR - Application Reject
+
+            __field_names.Add("MSA-2", @"Message Control ID");      // = MSH-10
+            __field_names.Add("MSA-3", @"Text Message");            // FrameworkLTE -ZPS
+            __field_names.Add("MSA-4", @"Expected Sequence Number");
+            __field_names.Add("MSA-5", @"Delayed Acknowledment Time");
+            __field_names.Add("MSA-6", @"Error Condition");
+            __field_names.Add("MSA-6-1", @"Identifier");
+            __field_names.Add("MSA-6-2", @"Text");
+            __field_names.Add("MSA-6-3", @"Name of Coding System");
+            __field_names.Add("MSA-6-4", @"Alternate Identifier");
+            __field_names.Add("MSA-6-5", @"Text");
+            __field_names.Add("MSA-6-6", @"Name of Alternate Coding System");
+        }
+        public MSA() : base()
+        {
+            __load();
+        }
+        public MSA(string __message) : base ()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class IN1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public IN1() : base()
+        {
+            __load();
+        }
+        public IN1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class NK1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public NK1() : base()
+        {
+            __load();
+        }
+        public NK1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class GT1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public GT1() : base()
+        {
+            __load();
+        }
+        public GT1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class ERR : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public ERR() : base()
+        {
+            __load();
+        }
+        public ERR(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class FT1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public FT1() : base()
+        {
+            __load();
+        }
+        public FT1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class IIM : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public IIM() : base()
+        {
+            __load();
+        }
+        public IIM(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class MFE : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public MFE() : base()
+        {
+            __load();
+        }
+        public MFE(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class MFI : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public MFI() : base()
+        {
+            __load();
+        }
+        public MFI(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
         }
     }
 };

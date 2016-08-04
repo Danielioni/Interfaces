@@ -85,6 +85,7 @@ namespace motInboundLib
     {
         protected string _tableAction;
         protected Logger logger = LogManager.GetLogger("motInboundLib.Record");
+        protected Port __default;
 
         public bool __log_records { get; set; } = false;
 
@@ -208,8 +209,19 @@ namespace motInboundLib
                 Console.Write("Failed to write {0} to port.  Error {1}", __text, e.Message);
             }
         }
+
+        public void Write(List<Field> __tags)
+        {
+            Write(__default, __tags);
+        }
+
         public motRecordBase()
         {
+            try
+            {
+                __default = new Port("127.0.0.1", "24042");
+            }
+            catch { throw; }
         }
     }
 
@@ -258,10 +270,10 @@ namespace motInboundLib
         {
         }
 
-        public motDrugRecord()
+        public motDrugRecord() : base()
         {
         }
-        public motDrugRecord(string Action)
+        public motDrugRecord(string Action) : base()
         {
             try
             {
@@ -985,7 +997,7 @@ namespace motInboundLib
             {
                 try
                 {
-                    setField(__qualifiedTags, value, "FirstNameID");
+                    setField(__qualifiedTags, value, "FirstName");
                 }
                 catch (Exception e)
                 {
@@ -1177,8 +1189,15 @@ namespace motInboundLib
 
             set
             {
+                char[] __junk = { '(', ')', '-', '.', ',' };
+
                 try
                 {
+                    while (value.IndexOfAny(__junk) > -1)
+                    {
+                        value = value.Remove(value.IndexOfAny(__junk), 1);
+                    }
+
                     setField(__qualifiedTags, value, "Phone");
                 }
                 catch (Exception e)
@@ -1424,10 +1443,10 @@ namespace motInboundLib
                 throw e;
             }
         }
-        public motPatientRecord()
+        public motPatientRecord() : base()
         {
         }
-        public motPatientRecord(string Action)
+        public motPatientRecord(string Action) : base()
         {
             try
             {
@@ -1464,6 +1483,33 @@ namespace motInboundLib
         }
 
 
+        public string RxSys_PatID
+        {
+            get
+            {
+                try
+                {
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_patid")));
+                    return f.tagData;
+                }
+                catch
+                {
+                    throw new Exception("Illegal Acess");
+                }
+            }
+
+            set
+            {
+                try
+                {
+                    setField(__qualifiedTags, value, "RxSys_PatDocID");
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
         public string RxSys_DocID
         {
             get
@@ -1537,7 +1583,7 @@ namespace motInboundLib
             {
                 try
                 {
-                    setField(__qualifiedTags, value, "FirstNameID");
+                    setField(__qualifiedTags, value, "FirstName");
                 }
                 catch (Exception e)
                 {
@@ -1734,8 +1780,15 @@ namespace motInboundLib
 
             set
             {
+                char[] __junk = { '(', ')', '-', '.', ',' };
+
                 try
                 {
+                    while(value.IndexOfAny(__junk) > -1 )
+                    {
+                        value = value.Remove(value.IndexOfAny(__junk), 1); 
+                    }
+
                     setField(__qualifiedTags, value, "Phone1");
                 }
                 catch (Exception e)
@@ -1761,8 +1814,15 @@ namespace motInboundLib
 
             set
             {
+                char[] __junk = { '(', ')', '-', '.', ',' };
+
                 try
                 {
+                    while (value.IndexOfAny(__junk) > -1)
+                    {
+                        value = value.Remove(value.IndexOfAny(__junk), 1);
+                    }
+
                     setField(__qualifiedTags, value, "Phone2");
                 }
                 catch (Exception e)
@@ -1788,8 +1848,15 @@ namespace motInboundLib
 
             set
             {
+                char[] __junk = { '(', ')', '-', '.', ',' };
+
                 try
                 {
+                    while (value.IndexOfAny(__junk) > -1)
+                    {
+                        value = value.Remove(value.IndexOfAny(__junk), 1);
+                    }
+
                     setField(__qualifiedTags, value, "WorkPhone");
                 }
                 catch (Exception e)
@@ -2583,8 +2650,6 @@ namespace motInboundLib
                 }
             }
         }
-
-
         public void Write(Port p)
         {
             try
@@ -2596,6 +2661,10 @@ namespace motInboundLib
                 logger.Error(@"PatientRecord Write Failure: {0}", e.Message);
                 throw e;
             }
+        }
+        public void Write()
+        {
+            base.Write(__qualifiedTags);
         }
     }
 
@@ -2633,7 +2702,7 @@ namespace motInboundLib
                 __qualifiedTags.Add(new Field("Status", "", 2, true, 'w'));
                 __qualifiedTags.Add(new Field("DoW", "", 7, true, 'w'));
                 __qualifiedTags.Add(new Field("SpecialDoses", "", 32767, false, 'n'));
-                __qualifiedTags.Add(new Field("DoseTimeQtys", "", 32767, true, 'w'));
+                __qualifiedTags.Add(new Field("DoseTimesQtys", "", 32767, true, 'w'));
                 __qualifiedTags.Add(new Field("ChartOnly", "", 2, true, 'w'));
                 __qualifiedTags.Add(new Field("AnchorDate", "", 10, true, 'w'));
             }
@@ -2643,10 +2712,10 @@ namespace motInboundLib
             }
         }
 
-        public motPrescriptionRecord()
+        public motPrescriptionRecord() : base()
         {
         }
-        public motPrescriptionRecord(string Action)
+        public motPrescriptionRecord(string Action) : base()
         {
             try
             {
@@ -2914,8 +2983,15 @@ namespace motInboundLib
 
             set
             {
+                char[] __junk = { ' ', ';', ':' };
+
                 try
                 {
+                    while(value.IndexOfAny(__junk) > -1)
+                    {
+                        value = value.Remove(value.IndexOfAny(__junk), 1);
+                    }
+
                     setField(__qualifiedTags, value, "DoseScheduleName");
                 }
                 catch (Exception e)
@@ -3343,6 +3419,10 @@ namespace motInboundLib
                 throw e;
             }
         }
+        public void Write()
+        {
+            base.Write(__qualifiedTags);
+        }
     }
 
     /// <summary>
@@ -3376,10 +3456,10 @@ namespace motInboundLib
                 throw e;
             }
         }
-        public motLocationRecord()
+        public motLocationRecord() : base()
         {
         }
-        public motLocationRecord(string Action)
+        public motLocationRecord(string Action) : base()
         {
             try
             {
@@ -3652,8 +3732,15 @@ namespace motInboundLib
 
             set
             {
+                char[] __junk = { '(', ')', '-', '.', ',' };
+
                 try
                 {
+                    while (value.IndexOfAny(__junk) > -1)
+                    {
+                        value = value.Remove(value.IndexOfAny(__junk), 1);
+                    }
+                
                     setField(__qualifiedTags, value, "Phone");
                 }
                 catch (Exception e)
@@ -3768,6 +3855,10 @@ namespace motInboundLib
                 throw e;
             }
         }
+        public void Write()
+        {
+            base.Write(__qualifiedTags);
+        }
     }
 
     /// <summary>
@@ -3799,10 +3890,10 @@ namespace motInboundLib
                 throw e;
             }
         }
-        public motStoreRecord()
+        public motStoreRecord() : base()
         {
         }
-        public motStoreRecord(string Action)
+        public motStoreRecord(string Action) : base()
         {
             try
             {
@@ -4048,8 +4139,15 @@ namespace motInboundLib
 
             set
             {
+                char[] __junk = { '(', ')', '-', '.', ',' };
+
                 try
                 {
+                    while (value.IndexOfAny(__junk) > -1)
+                    {
+                        value = value.Remove(value.IndexOfAny(__junk), 1);
+                    }
+
                     setField(__qualifiedTags, value, "Phone");
                 }
                 catch (Exception e)
@@ -4125,6 +4223,10 @@ namespace motInboundLib
                 throw e;
             }
         }
+        public void Write()
+        {
+            base.Write(__qualifiedTags);
+        }
     }
 
     /// <summary>
@@ -4150,11 +4252,11 @@ namespace motInboundLib
             }
         }
 
-        public motTimeQtysRecord()
+        public motTimeQtysRecord() : base()
         {
         }
 
-        public motTimeQtysRecord(string Action)
+        public motTimeQtysRecord(string Action) : base()
         {
             try
             {
@@ -4292,8 +4394,6 @@ namespace motInboundLib
                 }
             }
         }
-
-
         public void Write(Port p)
         {
             try
@@ -4305,6 +4405,10 @@ namespace motInboundLib
                 logger.Error(@"TimeQtysRecord Write Failure: {0}", e.Message);
                 throw e;
             }
+        }
+        public void Write()
+        {
+            base.Write(__qualifiedTags);
         }
     }
 }

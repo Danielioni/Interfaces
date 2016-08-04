@@ -67,7 +67,7 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "CPRPlusInterfaceInstaller",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "motWell", "motWell\motWell.csproj", "{77661540-2DF3-4699-9C30-251A4FF86B1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "motHL7Lib", "motHL7\motHL7Lib.csproj", "{B4063947-0929-4136-A256-A732ACFF64C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworksInterface", "WpfApplication1\FrameworksInterface.csproj", "{34A2EEE1-EF8D-43A9-8EBF-DE836CE1D3B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,10 +92,10 @@ Global
 		{77661540-2DF3-4699-9C30-251A4FF86B1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{77661540-2DF3-4699-9C30-251A4FF86B1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77661540-2DF3-4699-9C30-251A4FF86B1C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4063947-0929-4136-A256-A732ACFF64C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4063947-0929-4136-A256-A732ACFF64C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4063947-0929-4136-A256-A732ACFF64C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4063947-0929-4136-A256-A732ACFF64C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34A2EEE1-EF8D-43A9-8EBF-DE836CE1D3B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34A2EEE1-EF8D-43A9-8EBF-DE836CE1D3B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34A2EEE1-EF8D-43A9-8EBF-DE836CE1D3B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34A2EEE1-EF8D-43A9-8EBF-DE836CE1D3B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

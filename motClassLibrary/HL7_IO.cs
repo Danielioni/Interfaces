@@ -10,6 +10,7 @@ using motInboundLib;
 
 namespace motInboundLib
 {
+
     class HL7_IO
     {
         private void __send_ACK()

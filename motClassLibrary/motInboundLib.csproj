@@ -56,12 +56,12 @@
   <ItemGroup>
     <Compile Include="databaseInput.cs" />
     <Compile Include="fileSystemWatcher.cs" />
-    <Compile Include="HL7_IO.cs" />
     <Compile Include="HL7_Structs.cs" />
     <Compile Include="httpInput.cs" />
     <Compile Include="inputMethod.cs" />
     <Compile Include="InputStucture.cs" />
     <Compile Include="localAPI.cs" />
+    <Compile Include="lookupTables.cs" />
     <Compile Include="motHL7Listener.cs" />
     <Compile Include="motRecords.cs" />
     <Compile Include="Parser.cs" />
@@ -71,7 +71,6 @@
     <Compile Include="webAPI.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="motInbound.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
