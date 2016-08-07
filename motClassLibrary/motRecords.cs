@@ -106,7 +106,7 @@ namespace motInboundLib
                     {
                         string __err = string.Format("Field {0} empty but required for {1} operation on {2} table!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
 
-                        //logger.Error(__err);
+                        logger.Error(__err);
                         Console.WriteLine(__err);
                         throw new Exception(__err);
                     }
@@ -209,20 +209,32 @@ namespace motInboundLib
                 Console.Write("Failed to write {0} to port.  Error {1}", __text, e.Message);
             }
         }
-
         public void Write(List<Field> __tags)
-        {
-            Write(__default, __tags);
-        }
-
-        public motRecordBase()
         {
             try
             {
-                __default = new Port("127.0.0.1", "24042");
+                Port p = new Port("127.0.0.1", "24042");
+                Write(p, __tags);
             }
-            catch { throw; }
+            catch(Exception e)
+            {
+                throw e;
+            }
         }
+        public void Write(string __str)
+        {
+            try
+            {
+                Port p = new Port("127.0.0.1", "24042");
+                Write(p, __str);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        public motRecordBase()
+        { }
     }
 
     /// <summary>
@@ -1494,7 +1506,7 @@ namespace motInboundLib
                 }
                 catch
                 {
-                    throw new Exception("Illegal Acess");
+                    throw new Exception("Illegal Access");
                 }
             }
 
@@ -1502,7 +1514,7 @@ namespace motInboundLib
             {
                 try
                 {
-                    setField(__qualifiedTags, value, "RxSys_PatDocID");
+                    setField(__qualifiedTags, value, "RxSys_PatID");
                 }
                 catch (Exception e)
                 {

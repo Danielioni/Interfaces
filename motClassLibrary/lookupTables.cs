@@ -10,6 +10,8 @@ namespace motInboundLib
         Dictionary<string, string> __repeatCodes;
         Dictionary<string, string> __doseSchedules;
         Dictionary<string, string> __drugSchedules;
+        Dictionary<string, int> __rxType;
+
 
 
         public lookupTables()
@@ -17,6 +19,7 @@ namespace motInboundLib
             __repeatCodes = new Dictionary<string, string>();
             __doseSchedules = new Dictionary<string, string>();
             __drugSchedules = new Dictionary<string, string>();
+            __rxType = new Dictionary<string, int>();
 
             // Basic dose schedules with swag default times
             __doseSchedules.Add("QD", "0800");                  // Once a day
@@ -33,7 +36,9 @@ namespace motInboundLib
             __drugSchedules.Add("V", "5");
             __drugSchedules.Add("VI", "6");
             __drugSchedules.Add("VII", "7");
-            
+
+            __rxType.Add("P", 2);
+
         }
     }
 }

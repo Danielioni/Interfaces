@@ -31,6 +31,14 @@ namespace HL7Interface
             __source_ip = Properties.Settings.Default.SourceIP;
             __source_port = Properties.Settings.Default.SourcePort;
 
+            // __listener = new httpListener();
+            // __listener = new fileSystemListener();
+            // __listener = new mumbleListener()
+            //
+            // __listener.EventHandler += __mumbleEvent;
+
+
+
             __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
 
             __listener.ADT_A01MessageEventReceived += __process_ADT_A01_Event;
@@ -63,44 +71,25 @@ namespace HL7Interface
 
             return __tmp;
         }
-        static void __process_ADT_A01_Event(Object sender, HL7Event7MessageArgs __args)
+        void __process_ADT_A01_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            Console.WriteLine("ADT_A01 Event Received");
-            foreach(Dictionary<string,string> __fields in __args.fields)
-            {   
-                foreach(KeyValuePair<string,string> __pair in __fields)
-                {                    
-                    Console.WriteLine("{0}:{1}", __pair.Key, __pair.Value);
-                }
-            }
-        }
-        static void __process_ADT_A12_Event(Object sender, HL7Event7MessageArgs __args)
-        {
-            Console.WriteLine("ADT_A12 Event Received");
+            Console.WriteLine("*** ADT_A01 Event Received ***");
+
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***ADT_A01 Event Received ***");
+            }));
+
             foreach (Dictionary<string, string> __fields in __args.fields)
             {
-                foreach (KeyValuePair<string, string> __pair in __fields)
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    Console.WriteLine("{0}:{1}", __pair.Key, __pair.Value);
-
-                }
+                    foreach (KeyValuePair<string, string> __pair in __fields)
+                    {
+                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
+                    }
+                }));
             }
-        }
-        static void __process_OMP_O09_Event(Object sender, HL7Event7MessageArgs __args)
-        {
-            Console.WriteLine("OMP_O09 Event Received");
-            foreach (Dictionary<string, string> __fields in __args.fields)
-            {
-                foreach (KeyValuePair<string, string> __pair in __fields)
-                {
-                    Console.WriteLine("{0}:{1}", __pair.Key, __pair.Value);
-
-                }
-            }
-        }
-        static void __process_RDE_O11_Event(Object sender, HL7Event7MessageArgs __args)
-        {
-            Console.WriteLine("RDE_O11 Event Received");
 
             motPatientRecord __pr = new motPatientRecord("Add");
             motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
@@ -108,6 +97,94 @@ namespace HL7Interface
             motLocationRecord __loc = new motLocationRecord("Add");
             motStoreRecord __store = new motStoreRecord("Add");
             motDrugRecord __drug = new motDrugRecord("Add");
+
+        }
+        void __process_ADT_A12_Event(Object sender, HL7Event7MessageArgs __args)
+        {
+            Console.WriteLine("*** ADT_A12 Event Received ***");
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " *** ADT_A12 Event Received ***");
+            }));
+
+            foreach (Dictionary<string, string> __fields in __args.fields)
+            {
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    foreach (KeyValuePair<string, string> __pair in __fields)
+                    {
+                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
+                    }
+                }));
+            }
+
+            motPatientRecord __pr = new motPatientRecord("Add");
+            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
+            motPrescriberRecord __doc = new motPrescriberRecord("Add");
+            motLocationRecord __loc = new motLocationRecord("Add");
+            motStoreRecord __store = new motStoreRecord("Add");
+            motDrugRecord __drug = new motDrugRecord("Add");
+
+        }
+        void __process_OMP_O09_Event(Object sender, HL7Event7MessageArgs __args)
+        {
+            Console.WriteLine("*** OMP_O09 Event Received ***");
+
+            foreach (Dictionary<string, string> __fields in __args.fields)
+            {
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDEOMP_O09_O11 Event Received ***");
+
+                    foreach (KeyValuePair<string, string> __pair in __fields)
+                    {
+                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
+                    }
+                }));
+
+                foreach (KeyValuePair<string, string> __pair in __fields)
+                {
+                    Console.WriteLine("{0}:{1}", __pair.Key, __pair.Value);
+
+                }
+            }
+
+            motPatientRecord __pr = new motPatientRecord("Add");
+            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
+            motPrescriberRecord __doc = new motPrescriberRecord("Add");
+            motLocationRecord __loc = new motLocationRecord("Add");
+            motStoreRecord __store = new motStoreRecord("Add");
+            motDrugRecord __drug = new motDrugRecord("Add");
+
+        }
+        void __process_RDE_O11_Event(Object sender, HL7Event7MessageArgs __args)
+        {
+            Console.WriteLine("*** RDE_O11 Event Received ***");
+
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDE_O11 Event Received ***");
+            }));
+
+            foreach (Dictionary<string, string> __fields in __args.fields)
+            {
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    foreach (KeyValuePair<string, string> __pair in __fields)
+                    {
+                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
+                    }
+                }));
+            }
+
+
+            motPatientRecord __pr = new motPatientRecord("Add");
+            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
+            motPrescriberRecord __doc = new motPrescriberRecord("Add");
+            motLocationRecord __loc = new motLocationRecord("Add");
+            motStoreRecord __store = new motStoreRecord("Add");
+            motDrugRecord __drug = new motDrugRecord("Add");
+
             string __time_qty = string.Empty;
 
             foreach (Dictionary<string, string> __fields in __args.fields)
@@ -132,11 +209,16 @@ namespace HL7Interface
                             __doc.Address2 = __assign("ORC-24-2", __fields);
                             __doc.City = __assign("ORC-24-3", __fields);
                             __doc.State = __assign("ORC-24-4", __fields);
-                            __doc.PostalCode = __assign("ORC-24-5", __fields);                          
+                            __doc.PostalCode = __assign("ORC-24-5", __fields);
+
+                            __scrip.RxSys_DocID = __doc.RxSys_DocID;
+
                             break;
 
                         case "PID":
-                            __pr.RxSys_PatID = __assign("PID-2-1", __fields);
+                            __pr.RxSys_PatID = __assign("PID-2", __fields);
+                            __scrip.RxSys_PatID = __pr.RxSys_PatID;
+
                             __pr.LastName = __assign("PID-5-1", __fields);
                             __pr.FirstName = __assign("PID-5-2", __fields);
                             __pr.MiddleInitial = __assign("PID-5-3", __fields);
@@ -150,6 +232,8 @@ namespace HL7Interface
                             __pr.Phone1 = __assign("PID-13", __fields);
                             __pr.WorkPhone = __assign("PID-14", __fields);
                             __pr.SSN = __assign("PID-19", __fields);
+
+
                             break;
 
                         case "RXE":
@@ -160,13 +244,14 @@ namespace HL7Interface
                             __drug.Strength = Convert.ToInt32(__assign("RXE-25", __fields));
                             __drug.Unit = __assign("RXE-26", __fields);
 
+                            __scrip.RxSys_DrugID = __drug.NDCNum;
                             __scrip.RxSys_RxNum = __assign("RXE-15", __fields);
                             __scrip.DoseScheduleName = __assign("RXE-7-1", __fields);
                             __scrip.Sig = __assign("RXE-7-2", __fields);
                             __scrip.QtyDispensed = __assign("RXE-10", __fields);
-                            __scrip.Refills = __assign("RXE-12", __fields);                     
+                            __scrip.Refills = __assign("RXE-12", __fields);
 
-                            __store.RxSys_StoreID= __assign("RXE-40-1", __fields);
+                            __store.RxSys_StoreID = __assign("RXE-40-1", __fields);
                             __store.StoreName = __assign("RXE-40-2", __fields);
                             __store.Address1 = __assign("RXE-41-1", __fields);
                             __store.Address2 = __assign("RXE-41-2", __fields);
@@ -175,7 +260,10 @@ namespace HL7Interface
                             __store.PostalCode = __assign("RXE-41-5", __fields);
                             break;
 
+                      
                         case "RXO":
+
+
                             break;
 
                         case "RXR":
@@ -195,14 +283,24 @@ namespace HL7Interface
                             //
                             // There are a lot of other codes coming down that aren't documented, HS for example ...
 
-                            __scrip.RxStartDate = __assign("TQ1-7", __fields).Substring(0,8);
-                            __scrip.RxStopDate = __assign("TQ1-7", __fields).Substring(0,8);
+                            __scrip.RxStartDate = __assign("TQ1-7", __fields).Substring(0, 8);
+                            __scrip.RxStopDate = __assign("TQ1-7", __fields).Substring(0, 8);
 
                             Double __transform = Convert.ToDouble(__assign("TQ1-2-1", __fields));
-                          
+
                             __time_qty += string.Format("{0:0000}{1:00.00}", __assign("TQ1-4", __fields), __transform);
 
                             break;
+
+                        case "ZPI":
+
+                            __scrip.RxSys_RxNum = __assign("ZPI-34", __fields);
+
+                            // TODO:  Locate the sore DEA Num
+                            __store.DEANum = __assign("ZPI-21", __fields).Substring(0,10);
+
+                            break;
+
 
                     }
                 }
@@ -211,29 +309,46 @@ namespace HL7Interface
             // Clean up and assign the temp values
             __scrip.DoseTimesQtys = __time_qty;
 
-            // __scrip.Write();
-            // __pr.Write();
-            // __doc.Write();
-            // __loc.Write();
-            // __drug.Write();
-            // __store.Write();
-
-
             // Write them all to the gateway
-        }
-        static void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
-        {
-            Console.WriteLine("RDS_O13 Event Received");
-            foreach (Dictionary<string, string> __fields in __args.fields)
+            try
             {
-                foreach (KeyValuePair<string, string> __pair in __fields)
-                {
-                    Console.WriteLine("{0}:{1}", __pair.Key, __pair.Value);
+                Port __p = new Port(__target_ip, __target_port);
 
-                }
+                __scrip.Write(__p);
+                __pr.Write(__p);
+                __doc.Write(__p);
+                __loc.Write(__p);
+                __drug.Write(__p);
+                __store.Write(__p);
+            }
+            catch (Exception e)
+            {
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lbStatus.Items.Insert(0, DateTime.Now.ToString() + e.Message);
+                }));
             }
         }
+        void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
+        {
+            Console.WriteLine("*** RDS_O13 Event Received ***");
 
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDS_O13 Event Received ***");
+            }));
+
+            foreach (Dictionary<string, string> __fields in __args.fields)
+            {
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    foreach (KeyValuePair<string, string> __pair in __fields)
+                    {
+                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
+                    }
+                }));
+            }
+        }
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             btnStop.IsEnabled = true;
@@ -241,7 +356,6 @@ namespace HL7Interface
 
             __listener.__start();
         }
-
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             btnStop.IsEnabled = false;
@@ -249,23 +363,33 @@ namespace HL7Interface
 
             __listener.__stop();
         }
-
-        private void ListViewItem_Selected(object sender, RoutedEventArgs e)
+        private void tbTargetPort_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-
+            var textBox = sender as System.Windows.Controls.TextBox;
+            __target_port = textBox.Text;        
         }
-
-        private void lvHL7Messages_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void tbSourcePort_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            
+            var textBox = sender as System.Windows.Controls.TextBox;
+            __source_port = textBox.Text;
         }
-
-        private void textBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void tbSourceIP_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-
+            var textBox = sender as System.Windows.Controls.TextBox;
+            __source_ip = textBox.Text;
+        }
+        private void tbTargetIP_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            var textBox = sender as System.Windows.Controls.TextBox;
+            __target_ip = textBox.Text;
+        }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Console.WriteLine("Buh Bye!");
+        }
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
-
-
-
 }

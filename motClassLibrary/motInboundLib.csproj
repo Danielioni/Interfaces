@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="databaseInput.cs" />
+    <Compile Include="eventSink.cs" />
     <Compile Include="fileSystemWatcher.cs" />
     <Compile Include="HL7_Structs.cs" />
     <Compile Include="httpInput.cs" />
