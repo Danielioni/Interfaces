@@ -113,6 +113,13 @@ namespace motInboundLib
                 }
             }
         }
+        public void Clear(List<Field> __qualifiedTags)
+        {
+            foreach(Field __field in __qualifiedTags)
+            {
+                __field.tagData = string.Empty;
+            }
+        }
 
         public void setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
@@ -1493,7 +1500,10 @@ namespace motInboundLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
 
         public string RxSys_PatID
         {

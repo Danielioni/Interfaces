@@ -177,10 +177,10 @@ namespace motInboundLib
             }
         }
 
-        class cprPlus : databaseInputSource
+        class PharmaServe : databaseInputSource
         {
            
-            public cprPlus(dbType __type, string DSN) : base(__type, DSN)
+            public PharmaServe(dbType __type, string DSN) : base(__type, DSN)
             { }
 
             // Find all new Drug Records and add them to the system
@@ -234,7 +234,7 @@ namespace motInboundLib
             //Test Database Connection
             try
             {
-                cprPlus cpr = new cprPlus(dbType.NPGServer, "server=127.0.0.1;port=5432;userid=mot;password=mot!cool;database=Mot"));
+                PharmaServe cpr = new PharmaServe(dbType.NPGServer, "server=127.0.0.1;port=5432;userid=mot;password=mot!cool;database=Mot"));
                 cpr.getDrugRecord();
             }
             catch(Exception e)

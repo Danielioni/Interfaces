@@ -236,7 +236,7 @@ namespace motInboundLib
         public void executeNonQuery(string strQuery)
         {
 
-#if !CPRPlus     
+#if !PharmaServe     
             
             try
             {

@@ -1,6 +1,4 @@
-﻿#define EXCLUDE
-
-// 
+﻿// 
 // MIT license
 //
 // Copyright (c) 2016 by Peter H. Jenney and Medicine-On-Time, LLC.
@@ -24,24 +22,20 @@
 // THE SOFTWARE.
 // 
 
-#define cprPlus
-
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Windows;
-using System.Windows.Controls;
 using System.Data;
 using System.Data.SqlTypes;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.IO;
 using System.Text.RegularExpressions;
+
 using motInboundLib;
 
-
-
-namespace CPRPlusInterface
+namespace McKessonInterface
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -164,7 +158,7 @@ namespace CPRPlusInterface
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            cprPlus __test;
+            PharmaServe __test;
 
             txtResponse.Clear();
             btnStart.IsEnabled = false;
@@ -177,7 +171,7 @@ namespace CPRPlusInterface
 
                     case 0:  // ODBC
                              // ODBC Standard Security: Driver={SQL Server Native Client 11.0};Server=myServerAddress;Database = myDataBase; Uid = myUsername; Pwd = myPassword;
-                        __test = new cprPlus(dbType.ODBCServer,
+                        __test = new PharmaServe(dbType.ODBCServer,
                                             @"Driver ={ SQL Server Native Client 11.0 }" + ";" +
                                             @"Server=" + txtDBName_Address.Text + ";" + txtDB_Port.Text + ";" +
                                             @"Database=" + txtDB_DBName.Text + ";" +
@@ -190,7 +184,7 @@ namespace CPRPlusInterface
                         // SQL Server Standard Securtity Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password = myPassword;
                         if (!string.IsNullOrEmpty(txtDB_Port.Text))
                         {
-                            __test = new cprPlus(dbType.SQLServer,
+                            __test = new PharmaServe(dbType.SQLServer,
                                                 @"Server=" + txtDBName_Address.Text + "," + txtDB_Port.Text + ";" +
                                                 @"Database=" + txtDB_DBName.Text + ";" +
                                                 @"User Id=" + txtDB_Uname.Text + ";" +
@@ -199,47 +193,20 @@ namespace CPRPlusInterface
                         }
                         else
                         {
-                            __test = new cprPlus(dbType.SQLServer,
+                            __test = new PharmaServe(dbType.SQLServer,
                                                 @"Server=" + txtDBName_Address.Text + ";" +
                                                 @"Database=" + txtDB_DBName.Text + ";" +
                                                 @"User Id=" + txtDB_Uname.Text + ";" +
                                                 @"Password=" + txtDB_Password.Text + ";",
                                                 null);
-
-                            /*
-                             * Server=DMPRCPR;Database=CPRTEST;User Id=cpr_user;Password=cpruser;
-                             * 
-                             * failed to create database object A network-related or instance-specific error occurred while establishing a connection to SQL Server. 
-                             * The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server 
-                             * is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server)
-                             */
                         }
 
-                        // SQL Server Trusted: Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;
-                        /*
-                        __test = new cprPlus(dbType.SQLServer,
-                                           @"server=" + txtDSNAddress.Text + ";" +
-                                           @"port=" + txtDSNPort.Text + ";" +
-                                           @"userid=" + txtUname.Text + ";" +
-                                           @"password=" + txtDBPassword.Text + ";" +
-                                           @"database=" + txtDatabase.Text,
-                                           null);
-                         */
-                        // SQL Server IP: Data Source=190.190.200.100,1433;Network Library=DBMSSOCN; Initial Catalog = myDataBase; User ID = myUsername; Password = myPassword;
-                        /*
-                        __test = new cprPlus(dbType.SQLServer,
-                                        @"server=" + txtDSNAddress.Text + ";" +
-                                        @"port=" + txtDSNPort.Text + ";" +
-                                        @"userid=" + txtUname.Text + ";" +
-                                        @"password=" + txtDBPassword.Text + ";" +
-                                        @"database=" + txtDatabase.Text,
-                                        null);
-                        */
+
                         break;
 
                     case 2:
                         // PostgreSQL - @"server=127.0.0.1;port=5432;userid=fred;password=fred!cool;database=Fred";
-                        __test = new cprPlus(dbType.NPGServer,
+                        __test = new PharmaServe(dbType.NPGServer,
                                             @"server=" + txtDBName_Address.Text + ";" +
                                             @"port=" + txtDB_Port.Text + ";" +
                                             @"userid=" + txtDB_Uname.Text + ";" +
@@ -384,7 +351,7 @@ namespace CPRPlusInterface
                 lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Prescriber Records [" + Convert.ToString(__refresh_rate) + "]");
             }));
 
-            cprPlus __cpr = new cprPlus((dbType)__dbtype, __DSN, __address, __port);
+            PharmaServe __cpr = new PharmaServe((dbType)__dbtype, __DSN, __address, __port);
             __cpr.__log(__log_details);
 
 
@@ -426,7 +393,7 @@ namespace CPRPlusInterface
             }));
 
 
-            cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            PharmaServe __cpr = new PharmaServe((dbType)__dbtype, __dsn, __address, __port);
             __cpr.__log(__log_details);
 
             while (__running)
@@ -462,7 +429,7 @@ namespace CPRPlusInterface
                 lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Patient Records [" + Convert.ToString(__refresh_rate) + "]");
             }));
 
-            cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            PharmaServe __cpr = new PharmaServe((dbType)__dbtype, __dsn, __address, __port);
             __cpr.__log(__log_details);
 
             while (__running)
@@ -499,7 +466,7 @@ namespace CPRPlusInterface
                 lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Location Records");
             }));
 
-            cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            PharmaServe __cpr = new PharmaServe((dbType)__dbtype, __dsn, __address, __port);
             __cpr.__log(__log_details);
 
             while (__running)
@@ -536,7 +503,7 @@ namespace CPRPlusInterface
                 lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Store Records [" + Convert.ToString(__refresh_rate) + "]");
             }));
 
-            cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            PharmaServe __cpr = new PharmaServe((dbType)__dbtype, __dsn, __address, __port);
             __cpr.__log(__log_details);
 
             while (__running)
@@ -568,7 +535,7 @@ namespace CPRPlusInterface
         public void __listen_for_time_qty_record(int __dbtype, string __dsn, string __address, string __port)
         {
             motTimeQtysRecord m;
-            cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            PharmaServe __cpr = new PharmaServe((dbType)__dbtype, __dsn, __address, __port);
 
             while (__running)
             {
@@ -597,7 +564,7 @@ namespace CPRPlusInterface
                 lstbxRunningLog.Items.Insert(0, DateTime.Now.ToString() + "  Started Listening for Drug Records [" + Convert.ToString(__refresh_rate) + "]");
             }));
 
-            cprPlus __cpr = new cprPlus((dbType)__dbtype, __dsn, __address, __port);
+            PharmaServe __cpr = new PharmaServe((dbType)__dbtype, __dsn, __address, __port);
             __cpr.__log(__log_details);
 
             while (__running)
@@ -713,7 +680,7 @@ namespace CPRPlusInterface
         /// <summary>
         /// TODO: We need away to load queries from .sql files rather than hard coding
         /// </summary>
-        class cprPlus : databaseInputSource
+        class PharmaServe : databaseInputSource
         {
             protected Port __port;
             protected bool __override_length_checking = true;
@@ -730,14 +697,14 @@ namespace CPRPlusInterface
 
 
 
-            public cprPlus(dbType __type, string DSN, Port p) : base(__type, DSN)
+            public PharmaServe(dbType __type, string DSN, Port p) : base(__type, DSN)
             {
                 __port = p;
                 __load_queries("");
                 __set_views();
             }
 
-            public cprPlus(dbType __type, string DSN, string __address, string __p) : base(__type, DSN)
+            public PharmaServe(dbType __type, string DSN, string __address, string __p) : base(__type, DSN)
             {
                 __port = new Port(__address, __p);
                 __load_queries("");
@@ -748,13 +715,13 @@ namespace CPRPlusInterface
             {
                 foreach (string __v in __view)
                 {
-                    string[] scripts = Regex.Split(__v , @"^\w+GO$", RegexOptions.Multiline);
+                    string[] scripts = Regex.Split(__v, @"^\w+GO$", RegexOptions.Multiline);
 
                     foreach (string splitScript in scripts)
                     {
                         string strQuery = splitScript.Substring(0, splitScript.ToLower().IndexOf("go"));
                         db.executeNonQuery(strQuery);
-                    }               
+                    }
                 }
             }
 
@@ -836,7 +803,7 @@ namespace CPRPlusInterface
                     __xTable.Add("fax ", "fax");
                     __xTable.Add("comments", "comments");
                     __xTable.Add("dea_id", "dea_id");
-                   
+
                     /*
                      *  Query the database and collect a set of records where a valid set is {1..n} items.  This is not a traditional
                      *  record set as returned by access or SQL server, but a generic collection of IDataRecords and is usable accross
@@ -899,7 +866,7 @@ namespace CPRPlusInterface
                 }
                 catch (Exception e)
                 {
-                    throw (new Exception("Failed to add CPR+ Prescriber Record" + e.Message));
+                    throw (new Exception("Failed to add PharmaServe Prescriber Record" + e.Message));
                 }
             }
 
@@ -913,104 +880,153 @@ namespace CPRPlusInterface
                 try
                 {
                     motPatientRecord __patient = new motPatientRecord("Add");
-                    __patient.__log_records = __log_records;
-
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
 
+                    List<string> __views = new List<string>();
+
+                    // There are multiple views that comprise an MOT record
+                    __views.Add("vPatient");
+                    __views.Add("vPatientAlergy");
+                    __views.Add("vPatientDiagnosis");
+                    __views.Add("vPatientNote");
+
                     // Load the translaton table -- Database Column Name to Gateway Tag Name  
-                    __xTable.Add("rxSys_PatID", "RxSys_PatID");
-                    __xTable.Add("LastName", "LastName");
-                    __xTable.Add("FirstName", "FirstName");
-                    __xTable.Add("Address1", "Address1");
-                    __xTable.Add("CITY", "City");
-                    __xTable.Add("STATE", "State");
-                    __xTable.Add("ZIP", "Zip");
-                    __xTable.Add("Phone1", "Phone1");
-                    __xTable.Add("WorkPhone", "WorkPhone");
-                    __xTable.Add("RxSys_LocID", "RxSys_LocID");
-                    __xTable.Add("status", "Status");
-                    __xTable.Add("ssn", "SSN");
-                    __xTable.Add("Allergies", "Allergies");
-                    __xTable.Add("Diet", "Diet");
-                    __xTable.Add("DOB", "DOB");
-                    __xTable.Add("Height", "Height");
-                    __xTable.Add("Weight", "Weight");
-                    __xTable.Add("ResponsibleName", "ResponsibleName");
-                    __xTable.Add("InsName", "InsName");
-                    __xTable.Add("InsPNo", "InsPNo");
-                    __xTable.Add("AltInsName", "AltInsName");
-                    __xTable.Add("AltInsPNo", "AltInsPNo");
-                    __xTable.Add("MCareNum", "MCareNum");
-                    __xTable.Add("McCadeNum", "MCaidNum");
+                    __xTable.Add("Patient_ID", "RxSys_PatID");
+                    __xTable.Add("Patient_Location_Code", "RxSys_LocID");
+                    __xTable.Add("Primary_Prescriber_ID", "RxSys_PrimaryDoc");
+                    __xTable.Add("Last_Name", "LastName");
+                    __xTable.Add("First_Name", "FirstName");
+                    __xTable.Add("Middle_Initial", "MiddleInitial");
+                    __xTable.Add("Address_Line_1", "Address1");
+                    __xTable.Add("Address_Line_2", "Address1");
+                    __xTable.Add("City", "City");
+                    __xTable.Add("State_Code", "State");
+                    __xTable.Add("Zip_Code", "Zip");
+                    __xTable.Add("Zip_Plus_4", "Zip_Plus_4");
+                    __xTable.Add("Telephone_Number", "Phone1");
+                    __xTable.Add("Area_Code", "AreaCode");
+                    __xTable.Add("Extension", "WorkPhone");
+                    __xTable.Add("SSN", "SSN");
+                    __xTable.Add("Birth_Date", "DOB"); // SqlDateTime
+                    __xTable.Add("Deceased Date", "Comments"); // SqlDateTime
+                    __xTable.Add("Sex", "Gender");
 
-                    string __tag;
-                    string __val;
-                    string __tmp;
+                    // Note, these might have several instances per patient so we'll need to append.  This might mean keeping patient records in 
+                    // memory and updating them befor a write.
+                    __xTable.Add("Allergy_Free_Text", "Alleries");
+                    __xTable.Add("condition_description", "DxNotes");
+                    __xTable.Add("Note_Text", "TreatmentNotes");
 
-                    // Pull the last touch timestamp
-                    SqlDateTime __last_touch = new SqlDateTime(Properties.Settings.Default.vPatientLastTouch);
 
-                    // Save the current Timestamp
-                    Properties.Settings.Default.vPatientLastTouch = DateTime.Now;
-                    Properties.Settings.Default.Save();
-
-                    if (db.executeQuery("SELECT * FROM dbo.vMOTPatient WHERE Touchdate > '" + __last_touch.ToString() + "';"))
+                    foreach (string __view in __views)
                     {
-                        if (db.__recordSet.Tables["__table"].Rows.Count > 0)
+                        string __tag;
+                        string __val;
+                        string __tmp;
+                        string __zip = string.Empty;
+                        string __plus4 = string.Empty;
+                        string __phone = string.Empty;
+                        string __area_code = string.Empty;
+                        string __ext = string.Empty;
+
+
+                        // Pull the last touch timestamp
+                        SqlDateTime __last_touch = new SqlDateTime(Properties.Settings.Default.vPatientLastTouch);
+
+                        // Save the current Timestamp
+                        Properties.Settings.Default.vPatientLastTouch = DateTime.Now;
+                        Properties.Settings.Default.Save();
+
+                        if (db.executeQuery("SELECT * FROM " + __view + "  WHERE MSSQLTS > '" + __last_touch.ToString() + "';"))
                         {
-                            foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
+                            if (db.__recordSet.Tables["__table"].Rows.Count > 0)
                             {
-                                // Print the DataType of each column in the table. 
-                                foreach (DataColumn column in __record.Table.Columns)
+                                foreach (DataRow __record in db.__recordSet.Tables["__table"].Rows)
                                 {
-                                    if (__xTable.TryGetValue(column.ColumnName, out __tmp))
+                                    // Print the DataType of each column in the table. 
+                                    foreach (DataColumn column in __record.Table.Columns)
                                     {
-                                        __tag = __tmp;
-                                        __val = __record[column.ColumnName].ToString();
-
-                                        // Conversion rules
-                                        while (__val.Contains("-"))
+                                        if (__xTable.TryGetValue(column.ColumnName, out __tmp))
                                         {
-                                            __val = __val.Remove(__val.IndexOf("-"), 1);
-                                        }
+                                            __tag = __tmp;
+                                            __val = __record[column.ColumnName].ToString();
 
-                                        if (__tag.ToLower() == "dob")  // Dates come through as 1/1/2016, needs to be 20160101
-                                        {
-                                            __val = __normalize_date(__val);
-                                        }
-
-                                        if(__tag.ToLower() == "status")
-                                        {
-                                            if(!string.IsNullOrEmpty(__val))
+                                            // Conversion rules
+                                            while (__val.Contains("-"))
                                             {
-                                                if(__val.ToLower() == "active")
-                                                {
-                                                    __val = "1";
-                                                }
-                                                else
-                                                {
-                                                    __val = "0";
-                                                }
+                                                __val = __val.Remove(__val.IndexOf("-"), 1);
                                             }
-                                        }
 
-                                        // Update the local drug record
-                                        __patient.setField(__tag, __val, __override_length_checking);
+                                            // cat(Zip + Plus 4)
+                                            if (__tag.ToLower() == "zip" && !string.IsNullOrEmpty(__zip))
+                                            {
+                                                __zip = __val;
+                                            }
+
+                                            if (__tag.ToLower() == "zip_plus_4" && !string.IsNullOrEmpty(__plus4))
+                                            {
+                                                __plus4 = __val;
+                                            }
+
+                                            if (!string.IsNullOrEmpty(__zip) && !string.IsNullOrEmpty(__plus4))
+                                            {
+                                                __val = __zip + __plus4;
+                                                __zip = __plus4 = string.Empty;
+                                            }
+                                            // Done cat( Zip )
+
+                                            // cat(area_code + phone + ext)
+                                            if (__tag.ToLower() == "phone1" && !string.IsNullOrEmpty(__phone))
+                                            {
+                                                __phone = __val;
+                                            }
+
+                                            if (__tag.ToLower() == "areacode" && !string.IsNullOrEmpty(__area_code))
+                                            {
+                                                __area_code = __val;
+                                            }
+
+                                            if (!string.IsNullOrEmpty("__phone1") && !string.IsNullOrEmpty("__area_code"))
+                                            {
+                                                __val = __phone + __area_code;
+                                                __phone = __area_code = string.Empty;
+                                            }
+                                            // End cat( Phone )
+
+                                            if (__tag.ToLower() == "dob")  // Dates come through as 1/1/2016, needs to be 20160101
+                                            {
+                                                __val = __normalize_date(__val);
+                                            }
+
+                                            if (__tag.ToLower() == "comments")
+                                            {
+                                                __val = "Deceased date: " + __normalize_date(__val);
+                                            }
+
+                                            // Update the local drug record
+                                            __patient.setField(__tag, __val, __override_length_checking);
+                                        }
+                                    }
+
+                                    try
+                                    {
+                                        // Write the record to the gateway
+                                        __port_access.WaitOne();
+                                        __patient.Write(__port);
+                                        __port_access.ReleaseMutex();
+
+                                        __counter++;
+                                    }
+                                    catch
+                                    {
+                                        __port_access.ReleaseMutex();
                                     }
                                 }
 
-                                try
-                                {
-                                    // Write the record to the gateway
-                                    __port_access.WaitOne();
-                                    __patient.Write(__port);
-                                    __port_access.ReleaseMutex();
-
-                                    __counter++;
-                                }
-                                catch
-                                { __port_access.ReleaseMutex(); }
+                                __patient.Clear();
+                                __patient.setField("Table", "Patient");
+                                __patient.setField("Action", "Add");
                             }
                         }
                     }
@@ -1103,14 +1119,14 @@ namespace CPRPlusInterface
                                             __val = "0";
                                         }
 
-                                        if(__tag.ToLower() == "qtydispensed" && __val.Length == 0)
+                                        if (__tag.ToLower() == "qtydispensed" && __val.Length == 0)
                                         {
                                             __val = "0";
                                         }
 
 
                                         // Update the local drug record
-                                            __scrip.setField(__tag, __val, __override_length_checking);
+                                        __scrip.setField(__tag, __val, __override_length_checking);
                                     }
                                 }
 
@@ -1532,4 +1548,3 @@ namespace CPRPlusInterface
         }
     }
 }
-
