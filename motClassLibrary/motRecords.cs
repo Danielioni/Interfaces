@@ -115,10 +115,17 @@ namespace motInboundLib
         }
         public void Clear(List<Field> __qualifiedTags)
         {
+            string __type = __qualifiedTags[0].tagData;
+            string __action = __qualifiedTags[1].tagData;
+
             foreach(Field __field in __qualifiedTags)
             {
                 __field.tagData = string.Empty;
             }
+
+            __qualifiedTags[0].tagData = __type;
+            __qualifiedTags[1].tagData = __action;
+
         }
 
         public void setField(List<Field> __qualifiedTags, string __val, string __tag)
