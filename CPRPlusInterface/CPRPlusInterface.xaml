@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CPRPlusInterface"
         mc:Ignorable="d"
-        Title="CPR+ to Medicine-On-Time Transmorgafier" Height="531.4" Width="548.2" ResizeMode="NoResize" Closing="Window_Closing" Activated="Window_Activated" Closed="Window_Closed">
+        Title="CPR+ to Medicine-On-Time Interface" Height="531.4" Width="548.2" ResizeMode="NoResize" Closing="Window_Closing" Activated="Window_Activated" Closed="Window_Closed">
     <Grid Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
@@ -22,11 +22,15 @@
             </TabControl.RenderTransform>
             <TabItem Header="Status">
                 <Grid Background="#FFE5E5E5" Margin="0,-3,-2.2,0.6" RenderTransformOrigin="0.489,0.537">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48*"/>
+                        <ColumnDefinition Width="41*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="63*"/>
                         <RowDefinition Height="53*"/>
                     </Grid.RowDefinitions>
-                    <GroupBox x:Name="groupBox4" Header="Status " HorizontalAlignment="Left" Margin="187,34,0,0" VerticalAlignment="Top" Height="106" Width="325"/>
+                    <GroupBox x:Name="groupBox4" Header="Status " HorizontalAlignment="Left" Margin="187,34,0,0" VerticalAlignment="Top" Height="106" Width="325" Grid.ColumnSpan="2"/>
 
                     <GroupBox x:Name="gbRefreshRate" Header="Refresh Rate " HorizontalAlignment="Left" Margin="10,126,0,0" VerticalAlignment="Top" Height="110" Width="144">
                         <Label x:Name="lblMinutes_Copy" Content="Minutes:" HorizontalAlignment="Left" Margin="17,32,0,0" VerticalAlignment="Top" Cursor="ArrowCD"/>
@@ -34,11 +38,11 @@
                     <GroupBox x:Name="groupBox3" Header="Actions" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top" Height="110" Width="144"/>
                     <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="22,42,0,0" VerticalAlignment="Top" Width="115" Height="34" Click="btnStart_Click" IsEnabled="False"/>
                     <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="22,81,0,0" VerticalAlignment="Top" Width="115" Height="35" Click="btnStop_Click"/>
-                    <ListBox x:Name="lstbxRunningLog" HorizontalAlignment="Left" Height="202" Margin="10,0,0,0" VerticalAlignment="Top" Width="502" Grid.Row="1"/>
-                    <TextBox x:Name="txtLastStatus" HorizontalAlignment="Left" Height="73" Margin="197,54,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="302"/>
-                    <CheckBox x:Name="chkLogging" Content="Logging On" HorizontalAlignment="Left" Margin="244,165,0,0" VerticalAlignment="Top" Checked="chkLogging_Checked"/>
-                    <CheckBox x:Name="chkHalt" Content="Halt On Error" HorizontalAlignment="Left" Margin="244,183,0,0" VerticalAlignment="Top"/>
-                    <ComboBox x:Name="cbLogLevel" HorizontalAlignment="Left" Margin="344,161,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1" IsEnabled="False">
+                    <ListBox x:Name="lstbxRunningLog" HorizontalAlignment="Left" Height="202" Margin="10,0,0,0" VerticalAlignment="Top" Width="502" Grid.Row="1" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="txtLastStatus" HorizontalAlignment="Left" Height="73" Margin="197,54,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="302" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="chkLogging" Content="Logging On" HorizontalAlignment="Left" Margin="244,165,0,0" VerticalAlignment="Top" Checked="chkLogging_Checked" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="chkHalt" Content="Halt On Error" HorizontalAlignment="Left" Margin="244,183,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <ComboBox x:Name="cbLogLevel" HorizontalAlignment="Left" Margin="55.627,161,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="1" IsEnabled="False" Grid.Column="1">
                         <ListBoxItem Content="Level 0"/>
                         <ListBoxItem Content="Level 1"/>
                         <ListBoxItem Content="Level 2"/>
@@ -48,7 +52,7 @@
                     <TextBox x:Name="tbSeconds" HorizontalAlignment="Left" Height="22" Margin="89,204,0,0" TextWrapping="Wrap" Text="45" VerticalAlignment="Top" Width="40" RenderTransformOrigin="0.51,3.464" TextChanged="tbSeconds_TextChanged"/>
                     <Label x:Name="lblHours" Content="Hours:" HorizontalAlignment="Left" Margin="44,147,0,0" VerticalAlignment="Top" Cursor="ArrowCD" RenderTransformOrigin="1.254,0.54"/>
                     <Label x:Name="lblSeconds" Content="Seconds:" HorizontalAlignment="Left" Margin="33,200,0,0" VerticalAlignment="Top"/>
-                    <Button x:Name="button" Content="Reset Date" HorizontalAlignment="Left" Margin="244,210,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+                    <Button x:Name="button" Content="Reset Date" HorizontalAlignment="Left" Margin="244,210,0,0" VerticalAlignment="Top" Width="75" Click="button_Click" Grid.ColumnSpan="2"/>
 
                 </Grid>
             </TabItem>

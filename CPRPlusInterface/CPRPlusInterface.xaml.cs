@@ -770,6 +770,7 @@ namespace CPRPlusInterface
 
             public void __set_views()
             {
+                /*
                 foreach (string __v in __view)
                 {
                     string[] scripts = Regex.Split(__v , @"^\w+GO$", RegexOptions.Multiline);
@@ -780,11 +781,14 @@ namespace CPRPlusInterface
                         db.executeNonQuery(strQuery);
                     }               
                 }
+                */
             }
 
 
             private void __load_queries(string __dirName)
             {
+                return;
+                /*
                 try
                 {
                     __query = new Dictionary<string, string>();
@@ -825,6 +829,7 @@ namespace CPRPlusInterface
                 {
                     throw new Exception("Failed on __load_queries " + e.Message);
                 }
+                */
             }
 
             public override motPrescriberRecord getPrescriberRecord()
