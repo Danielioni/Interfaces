@@ -65,7 +65,6 @@ namespace motInboundLib
             }
         }
     }
-
     public class motSocket
     {
         //private Port __p;

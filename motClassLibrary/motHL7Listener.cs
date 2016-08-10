@@ -1,6 +1,8 @@
 ﻿// 
 // MIT license
 // 
+// Copyright (c) 2016 by Peter H. Jenney and Medicine-On-Time, LLC.
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights

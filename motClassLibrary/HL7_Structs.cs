@@ -172,10 +172,16 @@ namespace motInboundLib
         public EVN __evn;
         public PID __pid;
         public PV1 __pv1;
+        public PR1 __pr1;
+
+        public GT1 __gt1;
         public List<OBX> __obx;
         public List<AL1> __al1;
+        public List<ROL> __rol;
         public List<DG1> __dg1;
         public List<IN1> __in1;
+        public List<IN2> __in2;
+        public List<NK1> __nk1;
 
         public List<Dictionary<string, string>> __message_store;
 
@@ -186,10 +192,14 @@ namespace motInboundLib
 
             __segments = __clear_newlines(__segments);
 
+
             __obx = new List<OBX>();
             __al1 = new List<AL1>();
             __dg1 = new List<DG1>();
             __in1 = new List<IN1>();
+            __in2 = new List<IN2>();
+            __nk1 = new List<NK1>();
+            __rol = new List<ROL>();
 
             __message_store = new List<Dictionary<string, string>>();
 
@@ -197,36 +207,15 @@ namespace motInboundLib
             {
                 switch (__field.Substring(0, 3))
                 {
-                    case "MSH":
-                        __msh = new MSH(__field);
-                        __message_store.Add(__msh.__msg_data);
-                        break;
-
-                    case "PID":
-                        __pid = new PID(__field);
-                        __message_store.Add(__pid.__msg_data);
-                        break;
-
-                    case "PV1":
-                        __pv1 = new PV1(__field);
-                        __message_store.Add(__pv1.__msg_data);
+                    case "AL1":
+                        AL1 __tmp_al1 = new AL1(__field);
+                        __al1.Add(__tmp_al1);
+                        __message_store.Add(__tmp_al1.__msg_data);
                         break;
 
                     case "EVN":
                         __evn = new EVN(__field);
                         __message_store.Add(__evn.__msg_data);
-                        break;
-
-                    case "OBX":
-                        OBX __tmp_obx = new OBX(__field);
-                        __obx.Add(__tmp_obx);
-                        __message_store.Add(__tmp_obx.__msg_data);
-                        break;
-
-                    case "AL1":
-                        AL1 __tmp_al1 = new AL1(__field);
-                        __al1.Add(__tmp_al1);
-                        __message_store.Add(__tmp_al1.__msg_data);
                         break;
 
                     case "DG1":
@@ -235,10 +224,59 @@ namespace motInboundLib
                         __message_store.Add(__tmp_dg1.__msg_data);
                         break;
 
+                    case "GT1":
+                        __gt1 = new GT1(__field);
+                        __message_store.Add(__gt1.__msg_data);
+                        break;
+
                     case "IN1":
                         IN1 __tmp_in1 = new IN1(__field);
                         __in1.Add(__tmp_in1);
                         __message_store.Add(__tmp_in1.__msg_data);
+                        break;
+
+                    case "IN2":
+                        IN2 __tmp_in2 = new IN2(__field);
+                        __in2.Add(__tmp_in2);
+                        __message_store.Add(__tmp_in2.__msg_data);
+                        break;
+
+                    case "MSH":
+                        __msh = new MSH(__field);
+                        __message_store.Add(__msh.__msg_data);
+                        break;
+
+                    case "NK1":
+                        NK1 __tmp_nk1 = new NK1(__field);
+                        __nk1.Add(__tmp_nk1);
+                        __message_store.Add(__tmp_nk1.__msg_data);
+                        break;
+
+                    case "OBX":
+                        OBX __tmp_obx = new OBX(__field);
+                        __obx.Add(__tmp_obx);
+                        __message_store.Add(__tmp_obx.__msg_data);
+                        break;
+
+                    case "PID":
+                        __pid = new PID(__field);
+                        __message_store.Add(__pid.__msg_data);
+                        break;
+
+                    case "PR1":
+                        __pr1 = new PR1(__field);
+                        __message_store.Add(__pr1.__msg_data);
+                        break;
+
+                    case "PV1":
+                        __pv1 = new PV1(__field);
+                        __message_store.Add(__pv1.__msg_data);
+                        break;
+
+                    case "ROL":
+                        ROL __tmp_rol = new ROL(__field);
+                        __rol.Add(__tmp_rol);
+                        __message_store.Add(__tmp_rol.__msg_data);
                         break;
 
                     default:
@@ -712,6 +750,101 @@ namespace motInboundLib
             Console.WriteLine("Finished parsing AL1");
         }
     }
+    public class EVN : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        {
+            __field_names.Add("1", @"Event Type Code");
+
+            __field_names.Add("2", @"Recorded Date/Time");
+            __field_names.Add("2-1", @"Time");
+            __field_names.Add("2-2", @"Degree of Percision");
+            __field_names.Add("3", @"Date/Time Planned Event");
+            __field_names.Add("4", @"Event Reason Code");
+            __field_names.Add("5", @"Operator ID");
+            __field_names.Add("5-1", @"ID Number");
+            __field_names.Add("5-1-1", @"Surname");
+            __field_names.Add("5-1-2", @"Own Surname Prefix");
+            __field_names.Add("5-1-3", @"Surname Prefix From Partner/Spouse");
+            __field_names.Add("5-1-4", @"Surname From Partner/Spouse");
+            __field_names.Add("5-2", @"Family Name");
+            __field_names.Add("5-3", @"Given Name");
+            __field_names.Add("5-4", @"Second and Further Given Names or Initials Thereof");
+            __field_names.Add("5-5", @"Suffix");
+            __field_names.Add("5-6", @"Prefix");
+            __field_names.Add("5-7", @"Degree");
+            __field_names.Add("5-8", @"Source Table");
+            __field_names.Add("5-9", @"Assigning Authority");
+            __field_names.Add("5-9-1", @"Namespace ID");
+            __field_names.Add("5-9-2", @"Universal ID");
+            __field_names.Add("5-9-3", @"Universal ID Type");
+            __field_names.Add("5-10", @"Name Type Code");
+            __field_names.Add("5-11", @"Identifier Check Digit");
+            __field_names.Add("5-12", @"Check Digit Scheme");
+            __field_names.Add("5-13", @"Identifier Type Code");
+            __field_names.Add("5-14", @"Assigning Facility");
+            __field_names.Add("5-14-1", @"Namespace ID");
+            __field_names.Add("5-14-2", @"Universal ID");
+            __field_names.Add("5-14-3", @"Universal ID Type");
+            __field_names.Add("5-15", @"Name Representation Code");
+            __field_names.Add("5-16", @"Name Context");
+            __field_names.Add("5-16-1", @"Text");
+            __field_names.Add("5-16-2", @"Name of Coding System");
+            __field_names.Add("5-16-3", @"Alternate Identifier");
+            __field_names.Add("5-16-4", @"Alternate Text");
+            __field_names.Add("5-16-5", @"Name of Alternate Coding System");
+            __field_names.Add("5-17", @"Name Validity Range");
+            __field_names.Add("5-17-1", @"Range Start Date/Time");
+            __field_names.Add("5-17-1-1", @"Time");
+            __field_names.Add("5-17-1-2", @"Degree of Percision");
+            __field_names.Add("5-17-2", @"Range End Date/Time");
+            __field_names.Add("5-17-2-1", @"Time");
+            __field_names.Add("5-17-2-2", @"Degree of Percision");
+            __field_names.Add("5-18", @"Name Assembly Order");
+            __field_names.Add("5-19", @"Effective Date");
+            __field_names.Add("5-19-1", @"Time");
+            __field_names.Add("5-19-2", @"Degree of Percision");
+            __field_names.Add("5-20", @"Expiration Date ");
+            __field_names.Add("5-20-1", @"Time");
+            __field_names.Add("5-20-2", @"Degree of Percision");
+            __field_names.Add("5-21", @"Profssional Suffix");
+            __field_names.Add("5-22", @"Assigning Juristiction");
+            __field_names.Add("5-22-1", @"Text");
+            __field_names.Add("5-22-2", @"Name of Coding System");
+            __field_names.Add("5-22-3", @"Alternate Identifier");
+            __field_names.Add("5-22-4", @"Alternate Text");
+            __field_names.Add("5-22-5", @"Name of Alternate Coding System");
+            __field_names.Add("5-23", @"Assigning Agency or Department");
+            __field_names.Add("5-23-1", @"Text");
+            __field_names.Add("5-23-2", @"Name of Coding System");
+            __field_names.Add("5-23-3", @"Alternate Identifier");
+            __field_names.Add("5-23-4", @"Alternate Text");
+            __field_names.Add("5-23-5", @"Name of Alternate Coding System");
+            __field_names.Add("6", @"Event Occured");
+            __field_names.Add("6-1", @"Time");
+            __field_names.Add("6-2", @"Degree of Percision");
+            __field_names.Add("7", @"Event Facility");
+            __field_names.Add("7-1", @"Namespace ID");
+            __field_names.Add("7-2", @"Universal ID");
+            __field_names.Add("7-3", @"Universal ID Type");
+
+        }
+
+
+
+        public EVN() : base()
+        {
+            __load();
+        }
+
+        public EVN(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
     public class DG1 : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();
@@ -850,96 +983,97 @@ namespace motInboundLib
             __parser.__parse(__message, __msg_data);
         }
     }
-    public class EVN : HL7_Message_dictionary
+    public class GT1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public GT1() : base()
+        {
+            __load();
+        }
+        public GT1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class IIM : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public IIM() : base()
+        {
+            __load();
+        }
+        public IIM(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class IN1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public IN1() : base()
+        {
+            __load();
+        }
+        public IN1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class IN2 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public IN2() : base()
+        {
+            __load();
+        }
+        public IN2(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class MSA : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
         {
-            __field_names.Add("1", @"Event Type Code");
+            __field_names.Add("MSA-1", @"Acknowledgment Code");     // AA - Application Accept
+                                                                    // AE - Application Error
+                                                                    // AR - Application Reject
 
-            __field_names.Add("2", @"Recorded Date/Time");
-            __field_names.Add("2-1", @"Time");
-            __field_names.Add("2-2", @"Degree of Percision");
-            __field_names.Add("3", @"Date/Time Planned Event");
-            __field_names.Add("4", @"Event Reason Code");
-            __field_names.Add("5", @"Operator ID");
-            __field_names.Add("5-1", @"ID Number");
-            __field_names.Add("5-1-1", @"Surname");
-            __field_names.Add("5-1-2", @"Own Surname Prefix");
-            __field_names.Add("5-1-3", @"Surname Prefix From Partner/Spouse");
-            __field_names.Add("5-1-4", @"Surname From Partner/Spouse");
-            __field_names.Add("5-2", @"Family Name");
-            __field_names.Add("5-3", @"Given Name");
-            __field_names.Add("5-4", @"Second and Further Given Names or Initials Thereof");
-            __field_names.Add("5-5", @"Suffix");
-            __field_names.Add("5-6", @"Prefix");
-            __field_names.Add("5-7", @"Degree");
-            __field_names.Add("5-8", @"Source Table");
-            __field_names.Add("5-9", @"Assigning Authority");
-            __field_names.Add("5-9-1", @"Namespace ID");
-            __field_names.Add("5-9-2", @"Universal ID");
-            __field_names.Add("5-9-3", @"Universal ID Type");
-            __field_names.Add("5-10", @"Name Type Code");
-            __field_names.Add("5-11", @"Identifier Check Digit");
-            __field_names.Add("5-12", @"Check Digit Scheme");
-            __field_names.Add("5-13", @"Identifier Type Code");
-            __field_names.Add("5-14", @"Assigning Facility");
-            __field_names.Add("5-14-1", @"Namespace ID");
-            __field_names.Add("5-14-2", @"Universal ID");
-            __field_names.Add("5-14-3", @"Universal ID Type");
-            __field_names.Add("5-15", @"Name Representation Code");
-            __field_names.Add("5-16", @"Name Context");
-            __field_names.Add("5-16-1", @"Text");
-            __field_names.Add("5-16-2", @"Name of Coding System");
-            __field_names.Add("5-16-3", @"Alternate Identifier");
-            __field_names.Add("5-16-4", @"Alternate Text");
-            __field_names.Add("5-16-5", @"Name of Alternate Coding System");
-            __field_names.Add("5-17", @"Name Validity Range");
-            __field_names.Add("5-17-1", @"Range Start Date/Time");
-            __field_names.Add("5-17-1-1", @"Time");
-            __field_names.Add("5-17-1-2", @"Degree of Percision");
-            __field_names.Add("5-17-2", @"Range End Date/Time");
-            __field_names.Add("5-17-2-1", @"Time");
-            __field_names.Add("5-17-2-2", @"Degree of Percision");
-            __field_names.Add("5-18", @"Name Assembly Order");
-            __field_names.Add("5-19", @"Effective Date");
-            __field_names.Add("5-19-1", @"Time");
-            __field_names.Add("5-19-2", @"Degree of Percision");
-            __field_names.Add("5-20", @"Expiration Date ");
-            __field_names.Add("5-20-1", @"Time");
-            __field_names.Add("5-20-2", @"Degree of Percision");
-            __field_names.Add("5-21", @"Profssional Suffix");
-            __field_names.Add("5-22", @"Assigning Juristiction");
-            __field_names.Add("5-22-1", @"Text");
-            __field_names.Add("5-22-2", @"Name of Coding System");
-            __field_names.Add("5-22-3", @"Alternate Identifier");
-            __field_names.Add("5-22-4", @"Alternate Text");
-            __field_names.Add("5-22-5", @"Name of Alternate Coding System");
-            __field_names.Add("5-23", @"Assigning Agency or Department");
-            __field_names.Add("5-23-1", @"Text");
-            __field_names.Add("5-23-2", @"Name of Coding System");
-            __field_names.Add("5-23-3", @"Alternate Identifier");
-            __field_names.Add("5-23-4", @"Alternate Text");
-            __field_names.Add("5-23-5", @"Name of Alternate Coding System");
-            __field_names.Add("6", @"Event Occured");
-            __field_names.Add("6-1", @"Time");
-            __field_names.Add("6-2", @"Degree of Percision");
-            __field_names.Add("7", @"Event Facility");
-            __field_names.Add("7-1", @"Namespace ID");
-            __field_names.Add("7-2", @"Universal ID");
-            __field_names.Add("7-3", @"Universal ID Type");
-
+            __field_names.Add("MSA-2", @"Message Control ID");      // = MSH-10
+            __field_names.Add("MSA-3", @"Text Message");            // FrameworkLTE -ZPS
+            __field_names.Add("MSA-4", @"Expected Sequence Number");
+            __field_names.Add("MSA-5", @"Delayed Acknowledment Time");
+            __field_names.Add("MSA-6", @"Error Condition");
+            __field_names.Add("MSA-6-1", @"Identifier");
+            __field_names.Add("MSA-6-2", @"Text");
+            __field_names.Add("MSA-6-3", @"Name of Coding System");
+            __field_names.Add("MSA-6-4", @"Alternate Identifier");
+            __field_names.Add("MSA-6-5", @"Text");
+            __field_names.Add("MSA-6-6", @"Name of Alternate Coding System");
         }
-
-
-
-        public EVN() : base()
+        public MSA() : base()
         {
             __load();
         }
-
-        public EVN(string __message) : base()
+        public MSA(string __message) : base()
         {
             __load();
             __parser.__parse(__message, __msg_data);
@@ -1098,6 +1232,22 @@ namespace motInboundLib
             return null;
         }
 
+    }
+    public class NK1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public NK1() : base()
+        {
+            __load();
+        }
+        public NK1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
     }
     public class NTE : HL7_Message_dictionary
     {
@@ -1313,6 +1463,22 @@ namespace motInboundLib
             __parser.__parse(__message, __msg_data);
         }
     }
+    public class PR1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public PR1() : base()
+        {
+            __load();
+        }
+        public PR1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
     public class PV1 : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();
@@ -1377,6 +1543,22 @@ namespace motInboundLib
         }
 
         public PV1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class ROL : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public ROL() : base()
+        {
+            __load();
+        }
+        public ROL(string __message) : base()
         {
             __load();
             __parser.__parse(__message, __msg_data);
@@ -1519,7 +1701,7 @@ namespace motInboundLib
         {
             __parser.__parse(__message, __msg_data);
         }
-    }
+    } 
     public class TQ1 : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();
@@ -1571,6 +1753,8 @@ namespace motInboundLib
             __parser.__parse(__message, __msg_data);
         }
     }
+
+
     public class ACK
     {
         public string __ack_string { get; set; } = string.Empty;
@@ -1637,7 +1821,7 @@ namespace motInboundLib
             __nak_string = '\x0B' +
                            @"MSH|^~\&|" +
                            __tmp_msh.__msg_data["MSH-3"] + "|" +
-                           __tmp_msh.__msg_data["MSH-4"] + "|" +                 
+                           __tmp_msh.__msg_data["MSH-4"] + "|" +
                            __tmp_msh.__msg_data["MSH-5"] + "|" +
                            __tmp_msh.__msg_data["MSH-6"] + "|" +
                            __time_stamp + "||NAK^" +
@@ -1651,166 +1835,6 @@ namespace motInboundLib
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            '\x1C' +
                            '\x0D';
-        }
-    }
-    public class MSA : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-        
-        private void __load()
-        {
-            __field_names.Add("MSA-1", @"Acknowledgment Code");     // AA - Application Accept
-                                                                    // AE - Application Error
-                                                                    // AR - Application Reject
-
-            __field_names.Add("MSA-2", @"Message Control ID");      // = MSH-10
-            __field_names.Add("MSA-3", @"Text Message");            // FrameworkLTE -ZPS
-            __field_names.Add("MSA-4", @"Expected Sequence Number");
-            __field_names.Add("MSA-5", @"Delayed Acknowledment Time");
-            __field_names.Add("MSA-6", @"Error Condition");
-            __field_names.Add("MSA-6-1", @"Identifier");
-            __field_names.Add("MSA-6-2", @"Text");
-            __field_names.Add("MSA-6-3", @"Name of Coding System");
-            __field_names.Add("MSA-6-4", @"Alternate Identifier");
-            __field_names.Add("MSA-6-5", @"Text");
-            __field_names.Add("MSA-6-6", @"Name of Alternate Coding System");
-        }
-        public MSA() : base()
-        {
-            __load();
-        }
-        public MSA(string __message) : base ()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
-        }
-    }
-    public class IN1 : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-
-        private void __load()
-        { }
-        public IN1() : base()
-        {
-            __load();
-        }
-        public IN1(string __message) : base()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
-        }
-    }
-    public class NK1 : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-
-        private void __load()
-        { }
-        public NK1() : base()
-        {
-            __load();
-        }
-        public NK1(string __message) : base()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
-        }
-    }
-    public class GT1 : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-
-        private void __load()
-        { }
-        public GT1() : base()
-        {
-            __load();
-        }
-        public GT1(string __message) : base()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
-        }
-    }
-    public class ERR : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-
-        private void __load()
-        { }
-        public ERR() : base()
-        {
-            __load();
-        }
-        public ERR(string __message) : base()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
-        }
-    }
-    public class FT1 : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-
-        private void __load()
-        { }
-        public FT1() : base()
-        {
-            __load();
-        }
-        public FT1(string __message) : base()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
-        }
-    }
-    public class IIM : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-
-        private void __load()
-        { }
-        public IIM() : base()
-        {
-            __load();
-        }
-        public IIM(string __message) : base()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
-        }
-    }
-    public class MFE : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-
-        private void __load()
-        { }
-        public MFE() : base()
-        {
-            __load();
-        }
-        public MFE(string __message) : base()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
-        }
-    }
-    public class MFI : HL7_Message_dictionary
-    {
-        HL7MessageParser __parser = new HL7MessageParser();
-
-        private void __load()
-        { }
-        public MFI() : base()
-        {
-            __load();
-        }
-        public MFI(string __message) : base()
-        {
-            __load();
-            __parser.__parse(__message, __msg_data);
         }
     }
 };

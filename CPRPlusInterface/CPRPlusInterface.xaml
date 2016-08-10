@@ -96,7 +96,7 @@
 
                     <Label x:Name="label3_Copy" Content="Password" HorizontalAlignment="Left" Margin="-95,346,0,0" VerticalAlignment="Top" Height="26" Width="59"/>
                     <TextBox x:Name="txtResponse" HorizontalAlignment="Left" Height="38" Margin="74,364,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="391" IsReadOnly="True"/>
-                    <Label x:Name="label7" Content="Port" HorizontalAlignment="Left" Margin="301,80,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="label7" Content="Port" HorizontalAlignment="Left" Margin="301,80,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.963,0.461"/>
 
 
 

@@ -105,6 +105,17 @@ namespace CPRPlusInterface
 
             cbDBType.SelectedIndex = Properties.Settings.Default.DB_Type;
 
+            if(cbDBType.SelectedIndex == (int)dbType.SQLServer)
+            {
+                label1.Content = "DB Server";
+                txtDB_Port.IsEnabled = false;
+            }
+            else
+            {
+                label1.Content = "IP Address";
+                txtDB_Port.IsEnabled = true;
+            }
+
             txtDBName_Address.Text = Properties.Settings.Default.DB_ServerName;
             txtDB_DBName.Text = Properties.Settings.Default.DB_DatabaseName;
             txtDB_Port.Text = Properties.Settings.Default.DB_Port;
@@ -279,21 +290,34 @@ namespace CPRPlusInterface
 
         private void cbDBType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //  Set up the specific elements needed by each type
-            switch (cbDBType.SelectedIndex)
+            if (label1 != null)
             {
-                case 0: // ODBC Server
-                    break;
+                //  Set up the specific elements needed by each type
+                switch (cbDBType.SelectedIndex)
+                {
+                    case 0: // ODBC Server
 
-                case 1: // SQL Server
-                    break;
+                        label1.Content = "IP Address";
+                        txtDB_Port.IsEnabled = true;
+                        break;
 
-                case 2: // PostgreSQL Server
-                    break;
+                    case 1: // SQL Server
 
-                default:
-                    break;
+                        label1.Content = "DB Server";
+                        txtDB_Port.IsEnabled = false;
+                        break;
+
+                    case 2: // PostgreSQL Server
+
+                        label1.Content = "IP Address";
+                        txtDB_Port.IsEnabled = true;
+                        break;
+
+                    default:
+                        break;
+                }
             }
+                
 
             //__save_defaults();
         }
