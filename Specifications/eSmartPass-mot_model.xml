@@ -1,0 +1,551 @@
+<?xml version="1.0"?>
+<records>
+    <record name="organization" table="organizations">
+        <!-- The organization record is used to record information about facilities, pharmacies and managing organizations like
+             MOT and eSmartPass. There is a parent-child relationship between organizations indicated by the 'parent id' field.
+        -->
+        <field name="display name" type="string" required="false">
+          <!--The name of the organization as it should appear in the UI and on reports. -->
+        </field>
+        <field name="qs1 organization id" type="string" required="false">
+           <!-- The ID of the organization in QS1. This should properly be named QS1 Facility ID and needs to match that
+            field of the Adt Change and Rde change records. -->
+        </field>
+        <field name="admin email" type="string" required="false">
+           <!-- The email address of the administrator of this organization -->
+        </field>
+        <field name="billing email" type="string" required="false">
+           <!-- The email address of the person handling bills sent to this organization -->
+        </field>
+        <field name="mar text" type="string" required="false" imported="false">
+           <!-- The text that will appear on the printed MAR. Typically the name of the pharmacy and a telephone number. -->
+        </field>
+        <field name="secret" type="string" required="false" imported="false">
+           <!-- A computer generated string of digits and letters that allow administrators to connect new computers to the organization. -->
+        </field>
+        <field name="parent id" type="int32" required="false" imported="false">
+          <!--The eSmartPass key ID of the parent organization. NOT the 'qs1 organization id' -->
+        </field>
+    </record>
+    <record name="Adt Change" table="adt_changes">
+        <!-- An ADT change provides information about patients. When received by eSmartPass, the data is processed and
+             transmitted to the facility. Certain fields (such as 'release date') need approval before the information
+             is merged with the facility data. Other fields are updated silently.
+         -->
+        <field name="Time Sent" type="datetime" required="true" imported="true">
+          <!-- The time that the message originated at the pharmacy. -->
+        </field>
+        <field name="Trigger Event" type="string" required="false" imported="true" restrictedToValues="false">
+            <value value="A01">The patient was admitted.</value>
+            <value value="A03">The patient was discharged.</value>
+          <!--The patient event (admit, discharge, etc) caused this message. QS1 provides other events then those listed, but these are handled
+            slightly differently. -->
+        </field>
+        <field name="Qs1 Facility Id" type="string" required="true" imported="true" stored="false">
+          <!--The ID of facility in QS1. Must be unique per pharmacy. Does not need any specific format. -->
+        </field>
+        <field name="Qs1 Patient Id" type="string" required="true" imported="true">
+          <!-- The ID of patient in QS1. Must be unique per facility and match the ID used for RDE messages. Does not need any specific format. -->
+        </field>
+        <field name="Family Name" type="string" required="false" imported="true">
+            <!--The  family name of the patient (last name). -->
+        </field>
+        <field name="Given Name" type="string" required="false" imported="true">
+            <!-- The given name of the patient (first name). -->
+        </field>
+        <field name="Middle Name" type="string" required="false" imported="true">
+          <!-- The middle name of the patient. -->
+        </field>
+        <field name="Name Suffix" type="string" required="false" imported="true">
+          <!--The suffix of the patient's name (II, JR, etc) -->
+        </field>
+        <field name="Name Prefix" type="string" required="false" imported="true">
+            The prefix of the patient's name (DR, MRS, etc).
+        </field>
+        <field name="Name Degree" type="string" required="false" imported="true">
+          <!-- The title that appear after names (ESQ, etc) -->
+        </field>
+        <field name="Gender" type="string" required="false" imported="true" restrictedToValues="true">
+            <value value="M">Male</value>
+            <value value="F">Female</value>
+        </field>
+        <field name="Allergies" type="string" isArray="true" required="false" imported="true">
+          <!--A list of the patient's allergies -->
+        </field>
+        <field name="Diagnosis" type="string" isArray="true" required="false" imported="true">
+          <!-- A list of the patient's diagnoses. (General diagnoses apart from specific medication diagnosis). -->
+        </field>
+        <field name="Admission Date" type="datetime" required="false" imported="true">
+          <!-- The  time that the patient was admitted. -->
+        </field>
+        <field name="Release Date" type="datetime" required="false" imported="true">
+          <!-- The time that the patient was released (discharged) -->
+        </field>
+        <field name="Review Status" type="string" required="false" unused="true">
+        </field>
+        <field name="Reviewed By Id" type="int32" required="false" unused="true">
+        </field>
+        <field name="Primary Care Provider" type="string" required="false" imported="true">
+          <!-- The name of the patient's primary care provider -->
+        </field>
+        <field name="Birth Date" type="datetime" required="false" imported="true">
+          <!-- The patient's birth date -->
+        </field>
+    </record>
+    <record name="Rde Change" table="rde_changes">
+        <!-- An RDE change provides information about a patient's orders. Once transmitted to eSmartPass, an administrator
+             at the facility is able to review and merge the order changed (new orders, discontinued orders, etc) before
+             the changes are accepted. The 'Rx Replaced By' field allows silent updates to the rx number for an order in
+             the event of a discontinue and re-assign.
+         -->
+        <field name="Time Sent" type="datetime" required="true" imported="true">
+            The time that the message originated at the pharmacy.
+        </field>
+        <field name="Rde Type" type="string" required="true" imported="true" restrictedToValues="true">
+            <value value="NW">This is a new order</value>
+            <value value="XO">An existing order has been changed</value>
+            <value value="DS">An existing order has been dispensed</value>
+            <value value="DC">An order has been discontinued.</value>
+            <!--A  code that indicates why this message was sent. Note for orders whose RX Number (barcode) is changing,
+            we expect both a DC for the old number and a NW for the new number.-->
+        </field>
+        <field name="Qs1 Facility Id" type="string" required="true" imported="true" stored="false">
+          <!-- The ID of facility in QS1. Must be unique per pharmacy. Does not need any specific format. -->
+        </field>
+        <field name="Qs1 Patient Id" type="string" required="true" imported="true">
+          <!-- The ID of patient in QS1. Must be unique per facility and match the ID used for ADT messages. Does not need any specific format. -->
+        </field>
+        <field name="Rx Number" type="string" required="true" imported="true">
+          <!-- The unique number for the order, typically its barcode. -->
+        </field>
+        <field name="Rx Replaced By" type="string" required="false" imported="true">
+            <!--For DC orders, the RX number of the order that will replace it (if known). For NW orders that replace an
+            existing order, the RX number of the original order that the NW order is replacing. -->
+        </field>
+        <field name="Drug" type="string" required="true" imported="true">
+          <!-- The name of the drug for regular orders or the name of treatment, procedure, etc. for non-drug orders -->
+        </field>
+        <field name="Original Start Date" type="datetime" required="false" imported="true">
+          <!-- The time that the order was first started, even it its RX number has changed. -->
+        </field>
+        <field name="Primary Care Provider" type="string" required="false" imported="true">
+          <!-- The name of the primary care provider who created the order. -->
+        </field>
+        <field name="Condition" type="string" required="false" imported="true">
+          <!-- The condition that this order treats. -->
+        </field>
+        <field name="Refills" type="string" required="false" imported="true">
+          <!-- The number of refills remaining for the order -->
+        </field>
+        <field name="Directions" type="rde direction" isArray="true" required="false" imported="true" complexType="true">
+          <!-- A list of the directions for the order. An order may have any number of directions, but each direction will
+            create a new block on the printed MAR so some attempt should be made to consolidate give times where possible. -->
+        </field>
+        <field name="Non Drug Id" type="string" required="false" imported="true">
+          <!-- For non drug orders, this text will become the 'barcode' -->
+        </field>
+        <field name="Order Type" type="string" required="true" imported="true" restrictedToValues="true">
+            <value value="M">Medication</value>
+            <value value="T">Treatment</value>
+            <value value="N">Nursing Consideration</value>
+            <value value="I">Insulin</value>
+          <!-- Used to group orders on the MAR and to allow filtering in the user interface. -->
+        </field>
+        <field name="Order Id Type" type="string" required="true" imported="true" restrictedToValues="true">
+            <value value="B">Barcode</value>
+            <value value="N">Non Drug ID</value>
+          <!-- Indicates whether the order has a true barcode or just text -->
+        </field>
+        <field name="Give Unit Type" type="string" required="false" imported="true">
+            A textual description of how one 'unit' of the order is measured (TAB, ML, OZ, etc.). Used for inventory tracking (unimplemented)
+        </field>
+        <field name="Qty Dispensed" type="float32" required="false" imported="true">
+          <!-- The amount of the GiveUnitType that was dispensed when the message was sent. Used for inventory tracking (unimplemented) -->
+        </field>
+    </record>
+    <record name="rde direction" parentTable="rde_changes">
+        <field name="Direction Number" type="int32" required="true" imported="true">
+          <!-- This is a unique number per order that identifies the sort order of directions (1, 2, 3, 4, etc) -->
+        </field>
+        <field name="Directions" type="string" required="false" imported="true">
+           <!-- The text of the directions -->
+        </field>
+        <field name="Start Date" type="datetime" required="false" imported="true">
+          <!-- The first moment in time at which the directions are valid -->
+        </field>
+        <field name="End Date" type="datetime" required="false" imported="true">
+           <!-- The first moment in time at which the directions are NO LONGER valid. The order can be given at times >= StartDate and < EndDate. -->
+        </field>
+        <field name="Prn Allowed" type="bool" required="false" imported="true">
+          <!-- If true, the order may be given 'as needed'. -->
+        </field>
+        <field name="Time Codes" type="string" isArray="true" required="false" imported="true">
+          <!-- An array of time codes for this direction. These will be translated into 'Give Times' and 'Checks' as appropriate for the time code. Time
+            codes for a specific time of day (I.E. 08:00) will translate as expected. -->
+        </field>
+        <field name="Give Times" type="rde give time" isArray="true" required="false" imported="true" complexType="true">
+          <!-- A list of the times of day at which this order may be given. -->
+        </field>
+        <field name="Day Pattern" type="string" required="false" imported="true">
+          <!-- A textual field that describes on which days the order may be given. The pattern begins with one of three codes that describes
+            the type of pattern. 'P' indicates the order may be given with a repeating pattern of days. 'D' indicates it may be given on specific
+            days of the week. 'M' indicates it may be given on specific days of the month. Examples: 'P1': the order will be given every day.
+            'P10': The order will be given every other day starting on the PatternStartDate. 'D0M0W00S': The order will be given on Mon, Wed and Sat.
+            'M15,30': The order will be given on the 15th and 30th (or the last day of the month if it has fewer then 30 days) -->
+        </field>
+        <field name="Week Pattern" type="string" required="false" imported="true">
+          <!--A textual field that describes on which weeks the order may be given. The pattern begins with one of two codes that describes
+            the type of pattern. 'P' indicates the order may be given with a repeating pattern of weeks. 'W' indicates it may be given on specific
+            weeks of the month. Examples: 'P1': the order will be given every week. 'P10': The order will be given every other week starting on the
+            PatternStartDate (that is, it may be given for the first seven days starting PatternStartDate and then may not be given the next seven
+            days, etc). 'W2,L': The order may be given the second and last weeks of the month.
+
+            Weekly patterns are most effective when combined with a daily pattern. For example, a DayPattern of D0000T00 and a WeekPattern of W2,L
+            would result in an order given on the 2nd and last Thursdays in a month. -->
+        </field>
+        <field name="Pattern Start Date" type="datetime" required="false" imported="true">
+          <!-- All patterns are calculated relative to this date. The time is ignored. -->
+        </field>
+        <field name="Checks" type="string" isArray="true" required="false" imported="true" restrictedToValues="true">
+            <value value="PULSE">Pulse Rate</value>
+            <value value="BP">Blood Pressure</value>
+            <value value="FSBS">Finger-stick Blood Sugar</value>
+            <value value="SITE">Site of Administration</value>
+            <value value="OFF">Time of Removal</value>
+            <value value="ON">Time of Application</value>
+            <value value="O2SAT">Oxygen Saturation</value>
+            <value value="AMT">Amount Administered</value>
+            <value value="TEMP">Temperature</value>
+            <value value="RESP">Respiration</value>
+            <value value="PAIN">Pain Level</value>
+          <!-- These codes require the user to perform a patient check and to record a value before recording the medication on the MAR. Additional codes
+            may be added in the future as required -->
+        </field>
+        <field name="Merged" type="bool" required="false" unused="true">
+        </field>
+        <field name="Qty Per Dose" type="float32" required="false" imported="true">
+          <!-- The amount of the GiveUnitType that should be given for this direction -->
+        </field>
+    </record>
+    <record name="rde give time" parentTable="rde direction">
+        <field name="Start Minute" type="int32" required="true" imported="true">
+          <!-- The time at which the order is to be given measured in minutes past midnight. Therefore 8am is 480. -->
+        </field>
+        <field name="End Minute" type="int32" required="true" imported="true">
+          <!--For an order that is given at a particular time of day, this should match StartMinute. For orders that can be given during a shift,
+            this is the time of the end of the shift (in minutes past midnight). Shifts that end after midnight will have a StartMinute larger
+            then the EndMinute. Example 2300 - 0700 will be listed as a StartMinute of 1380 and an EndMinute of 420. -->
+        </field>
+    </record>
+
+    <record name="Medicine On Time Store Time Code" url="https://esmartpass.com/motapi/store_time_code">
+        <!-- This API call submits a single time code record to the eSmartConcepts server. The content type should be
+            'application/json' with UTF-8 encoding. The Time Codes provide a mapping of the hour of administration data
+            stored in the MOT software with the 'give times' and 'patient checks' used by eSmartPass.
+
+            Give Times are the time(s) of day an order may be given, which may be a range of time for some orders.
+
+            Patient Checks are values that must be entered when an order is given to confirm that it is safe to give the
+            order. Examples include Blood Pressure, Heart Rate, Site of Administration.
+
+            Time codes are inherited! If a pharmacy defines certain time codes, they will be available to all facilities
+            served by that pharmacy.
+         -->
+        <field name="pharmacy id" type="int32" required="true">
+          <!-- The ID of the pharmacy submitting this upload -->
+        </field>
+        <field name="secret" type="string" required="true">
+          <!-- The password of the pharmacy submitting this upload -->
+        </field>
+        <field name="organization id" type="int32" required="true">
+          <!-- The ID of the organization for whom the time code should be saved. If equal to the pharmacy ID, then all facilities associated with that pharmacy will see this time code. 
+          If associated with a particular facility, only that facility will see the time code. -->
+        </field>
+        <field name="time code" type="string" required="true">
+          <!-- The code that will appear in the "Time of Day" field from the pharmacy. Examples include "MORNING", "7-14", "PULSE" -->
+        </field>
+        <field name="is patient check" type="bool" required="false">
+          <!-- If true, this code does not indicate a time of day, but rather a task that must be performed in conjunction with giving the order each time it is to be given. If true, "start minute" and "end minute" will be ignored.-->
+        </field>
+        <field name="mar text" type="string" required="true">
+          <!-- The text that will appear on the printed MAR. Should be only a few characters long (3-8) -->
+        </field>
+        <field name="start minute" type="int32" required="false">
+          <!-- The time in minutes after midnight that the order may first be given. Ignored for patient checks -->
+        </field>
+        <field name="end minute" type="int32" required="false">
+            The time in minutes after midnight that the order may last be given. If less then "start minute" the order will start on one day and end on the next.
+        </field>
+        <field name="check prompt" type="string" required="false">
+          <!-- The text that will appear on screen when a patient check is require. This field can be any (reasonable) length 
+          and is used as a more descriptive form of 'mar text'. I.E. 'Record patient's pulse' Ignored if the time code is not a 
+          patient check. -->
+        </field>
+        <result]>
+            <result status="200">Time code record accepted</result>
+            <result status="400">The content was malformed</result>
+            <result status="401">The pharmacy ID and/or secret are incorrect.</result>
+            <result status="403">The organization ID belongs to a different pharmacy then the pharmacy ID.</result>
+            <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
+        </result>
+    </record>
+
+    <record name="Medicine On Time Fetch Time Codes" url="https://esmartpass.com/motapi/fetch_time_codes">
+      <!-- This API call submits a single time code record to the eSmartConcepts server. The content type should be 'application/json'
+      with UTF-8 encoding. -->
+        <field name="pharmacy id" type="int32" required="true">
+          <!-- The ID of the pharmacy submitting this fetch request  -->
+        </field>
+        <field name="secret" type="string" required="true">
+          <!-- The password of the pharmacy submitting this fetch request -->
+        </field>
+        <field name="organization id" type="int32" required="true">
+          <!-- The ID of the organization for whom the time codes should be fetched. This will also fetch time codes from a parent 
+          organization. -->
+        </field>
+        <result>
+            <result status="200">
+              <!-- Times codes retrieved successfully. The body will contain an the following fields in JSON format -->
+                <field name="records" isArray="true" required="true">
+                    <!-- This is an array of records in the following format. -->
+                    <field name="time code" type="string" required="true">
+                        The code that will appear in the "Time of Day" field from the pharmacy. Examples include "MORNING", "7-14", "PULSE"
+                    </field>
+                    <field name="is patient check" type="bool" required="false">
+                      <!-- If true, this code does not indicate a time of day, but rather a task that must be performed in 
+                      conjunction with giving the order each time it is to be given. If true, "start minute" and "end minute" 
+                      will be ignored. -->
+                    </field>
+                    <field name="mar text" type="string" required="true">
+                      <!-- The text that will appear on the printed MAR. Should be only a few characters long (3-8) -->
+                    </field>
+                    <field name="start minute" type="int32" required="false">
+                       <!-- The time in minutes after midnight that the order may first be given. Ignored for patient checks. -->
+                    </field>
+                    <field name="end minute" type="int32" required="false">
+                      <!-- The time in minutes after midnight that the order may last be given. If less then "start minute" the 
+                      order will start on one day and end on the next. -->
+                    </field>
+                    <field name="check prompt" type="string" required="false">
+                      <!-- The text that will appear on screen when a patient check is require. This field can be any (reasonable) 
+                      length and is used as a more descriptive form of 'mar text'. I.E. 'Record patient's pulse' Ignored if the time 
+                      code is not a patient check. -->
+                    </field>
+                    <field name="inherited" type="bool" required="false">
+                      <!-- If true, this code is defined in a parent organization. Time codes that are defined in a child organization
+                      will hide time codes with the same value in a parent organization. -->
+                    </field>
+                </field>
+            </result>
+            <result status="400">The content was malformed</result>
+            <result status="401">The pharmacy ID and/or secret are incorrect.</result>
+            <result status="403">The organization ID belongs to a different pharmacy then the pharmacy ID.</result>
+            <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
+        </result>
+    </record>
+
+    <record name="Medicine On Time Patient Upload" url="https://esmartpass.com/motapi/upload_patient_record">
+      <!-- This API call submits a single patient record to the eSmartConcepts server. The content type should be 'application/json' 
+      with UTF-8 encoding. -->
+        <field name="pharmacy id" type="int32" required="true">
+          <!-- The ID of the pharmacy submitting this upload -->
+        </field>
+        <field name="secret" type="string" required="true">
+          <!-- he password of the pharmacy submitting this upload -->
+        </field>
+        <field name="patient data" type="AdtChange" required="true">
+          <!-- A single change being submitted to the eSmartPass server -->
+        </field>
+        <result>
+            <result status="200">Patient record accepted</result>
+            <result status="400">The content was malformed</result>
+            <result status="401">The pharmacy ID and/or secret are incorrect.</result>
+            <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
+        </result>
+    </record>
+
+    <record name="Medicine On Time Order Upload" url="https://esmartpass.com/motapi/upload_order_record">
+      <!-- This API call submits a single order record to the eSmartConcepts server. The content type should be 'application/json' 
+      with UTF-8 encoding. -->
+        <field name="pharmacy id" type="int32" required="true">
+            The ID of the pharmacy submitting this upload
+        </field>
+        <field name="secret" type="string" required="true">
+          <!-- The password of the pharmacy submitting this upload -->
+        </field>
+        <field name="order data" type="RdeChange" required="true">
+           <!--  A single change being submitted to the eSmartPass server -->
+        </field>
+        <result>
+            <result status="200">Order record accepted</result>
+            <result status="400">The content was malformed</result>
+            <result status="401">The pharmacy ID and/or secret are incorrect.</result>
+            <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
+        </result>
+    </record>
+
+    <record name="bubble medication" table="bubble_medication">
+        <field name="rx" type="string" required="true">
+          <!-- The RX number (barcode) of the order for the medication in this bubble. -->
+        </field>
+        <field name="qty" type="float32" required="true">
+          <!-- The number of pills in this bubble -->
+        </field>
+    </record>
+
+    <record name="bubble data" table="bubble_data">
+        <field name="idx" type="int32" required="true">
+          <!-- The bubble on the card (1-35) -->
+        </field>
+        <field name="give date" type="date" required="false">
+          <!-- The specific day that the bubble should be given. This field IS required unless the card is a PRN card -->
+        </field>
+        <field name="time code" type="string" required="false">
+          <!-- Must be either a 24-hour formatted time of day (16:00) or a valid time code -->
+        </field>
+        <field name="meds" type="bubble medication" isArray="true" required="true">
+          <!-- A list of the medications packed in this bubble -->
+        </field>
+    </record>
+
+    <record name="Medicine On Time Card Data" url="https://esmartpass.com/motapi/upload_card_data">
+        <!-- This API call informs the eSmartServer that a new card has been created with medications for specific orders.
+             The content type should be 'application/json' with UTF-8 encoding. This mapping of card serial number to
+             specific rx numbers allows eSmartPass to show the user all medications for a card bubble when the serial
+             number is scanned.
+        -->
+        <field name="pharmacy id" type="int32" required="true">
+          <!-- The ID of the pharmacy submitting this upload -->
+        </field>
+        <field name="secret" type="string" required="true">
+          <!-- The password of the pharmacy submitting this upload -->
+        </field>
+        <field name="organization id" type="int32" required="true">
+           <!-- The ID of the facility for the card -->
+        </field>
+        <field name="serial number" type="string" required="true">
+          <!-- The serial number of the card. -->
+        </field>
+        <field name="is prn" type="bool" required="false">
+          <!-- If true, this card may be given 'as needed'. -->
+        </field>
+        <field name="bubbles" type="bubble data" isArray="true" required="true">
+           <!-- --> A list of the medications packed in each bubble on the card -->
+        </field>
+        <result>
+            <result status="200">Card data accepted</result>
+            <result status="400">The content was malformed</result>
+            <result status="401">The pharmacy ID and/or secret are incorrect.</result>
+            <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
+        </result>
+    </record>
+
+    <record name="Medicine On Time Create Pharmacy" url="https://esmartpass.com/motapi/create_pharmacy">
+        <!-- 
+        This API call creates a new pharmacy on the eSmartConcepts server. The content type should be 'application/json' with UTF-8 encoding.
+        
+        This is used by the administration software to initialize a new pharmacy for operations with eSmartPass.
+
+        Example HTTP Request:
+
+        POST /motapi/create_pharmacy HTTP/1.0
+        Content-Type: application/json
+        Content-Length: 1234
+
+        {
+           "mot secret": "{3F2504E0-4F89-41D3-9A0C-0305E82C3301}",
+           "pharmacy": {
+                "display name": "Test Pharmacy",
+                "admin email": "admin@test.pharm.us",
+                "mar text": "Test Pharmacy\n(800) 123-4567",
+                "secret": "{3C9E3D9B-1B74-41C3-876D-8C374D5F0B48}"
+           }
+        }
+        -->
+
+        <field name="mot secret" type="string" required="true">
+          <!-- The Medicine on Time password -->
+        </field>
+        <field name="pharmacy" type="Organization" required="true">
+          <!-- A description of the pharmacy to be created. -->
+        </field>
+        <result>
+            <result status="200">
+              <!-- he pharmacy was created successfully. The body will contain the following fields in JSON format 
+              (ie: '{"pharmacy id":1234}') -->
+                <field name="pharmacy id" type="int32" required="true">
+                    The ID of the pharmacy that was created.
+                </field>
+            </result>
+            <result status="400">The content was malformed</result>
+            <result status="401">The secret was incorrect.</result>
+            <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
+        </result>
+    </record>
+
+    <record name="Medicine On Time Create Facility" url="https://esmartpass.com/motapi/create_facility">
+        <!-- 
+        This API call creates a new facility on the eSmartConcepts server. The content type should be 'application/json' with UTF-8 encoding
+        
+        This is used by the MOT software when a pharmacy starts a new facility on eSmartPass
+        -->
+        <field name="pharmacy id" type="int32" required="true">
+            <!-- The ID of the pharmacy submitting this upload -->
+        </field>
+        <field name="secret" type="string" required="true">
+          <!-- The password of the pharmacy submitting this upload -->
+        </field>
+        <field name="facility" type="Organization" required="true">
+          <!-- A description of the facility to be created. -->
+        </field>
+        <result>
+            <result status="200">Facility record accepted</result>
+            <result status="400">The content was malformed</result>
+            <result status="401">The secret was incorrect.</result>
+            <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
+        </result>
+    </record>
+
+    <record name="Medicine On Time Get Billing Details" url="https://esmartpass.com/motapi/get_billing">
+      <!-- This API call retrieves the billing details for a month from the eSmartConcepts server. The content type should be 'application/json' with UTF-8 encoding. -->
+        <field name="mot secret" type="string" required="true">
+            The Medicine on Time password
+        </field>
+        <field name="year" type="int32" required="true">
+            The year to retrieve.
+        </field>
+        <field name="month" type="int32" required="true">
+            The month of the year to retrieve. 1 = January
+        </field>
+        <field name="summary" type="bool" required="false">
+          <!-- If summary is set to true, the report will only include a count of patients for each facility who are admitted and not released on the
+            first day of the month of the report. By default the report will list each patient's name so that billing questions may be answered. -->
+        </field>
+        <result>
+            <result status="200">
+              <!-- The billng report was created successfully. The body will contain the following fields in JSON format -->
+                <field name="timestamp" type="datetime" required="true">
+                  <!-- -->The time the billing report was generated (the time the report was originally run, not the time of the API request). -->
+                </field>
+                <field name="records" isArray="true" required="true">
+                  <!-- This is an array of records in the following format. -->
+                    <field name="pharmacy id" type="int32" required="true" />
+                    <field name="pharmacy name" type="string" required="true">This field will not be generated if 'summary' is set to true on the request.</field>
+                    <field name="facility id" type="string" required="true">This is the unique string per pharmacy.</field>
+                    <field name="facility name" type="string" required="true">This field will not be generated if 'summary' is set to true on the request.</field>
+                    <field name="patient count" type="int32" required="false">
+                      <!-- This field will only be present if 'summary' is set to true on the request. -->
+                    </field>
+                    <field name="patient" type="string" required="false">
+                      <!--The patient's name in the format sprintf("%s, %s %s", familyname, givenname, middlename).
+                        This field will not be generated if 'summary' is set to true on the request. -->
+                    </field>
+                </field>
+            </result>
+            <result status="400">The content was malformed or the date does not make sense</result>
+            <result status="401">The secret was incorrect.</result>
+            <result status="404">The content is formed correctly, but the billing details for the specified year and month are not available.</result>
+            <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
+        </result>
+    </record>
+</records>
