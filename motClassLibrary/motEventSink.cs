@@ -43,7 +43,7 @@ namespace motInboundLib
         public DateTime timestamp { get; set; }
     }
 
-    class eventSink
+    class motEventSink
     {
         __socket_input_event_handler        __socket_event;
         __http_input_event_handler          __http_event;
@@ -113,7 +113,7 @@ namespace motInboundLib
 
     class eventListener
     {
-        eventSink __listener = new eventSink();
+        motEventSink __listener = new motEventSink();
     }
 }
 

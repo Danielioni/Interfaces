@@ -36,7 +36,7 @@ using NLog;
 
 namespace motInboundLib
 {
-    public class Port
+    public class motPort
     {
         public int TCP_TIMEOUT { get; set; } = 300000;
 
@@ -49,12 +49,12 @@ namespace motInboundLib
         public string tcp_address { get; set; }
         public string tcp_port { get; set; }
 
-        public Port()
+        public motPort()
         {
             logger = LogManager.GetLogger("motInboundLib.Port");
         }
 
-        public Port(string address, string port)
+        public motPort(string address, string port)
         {
             if(__open)
             {
@@ -84,7 +84,7 @@ namespace motInboundLib
             }
         }
 
-        ~Port()
+        ~motPort()
         {
             Close();
         }

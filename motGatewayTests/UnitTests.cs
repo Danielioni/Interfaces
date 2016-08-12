@@ -63,8 +63,8 @@ namespace motInboundLib
 
             try
             {
-                Port p = new Port("127.0.0.1", "24042");
-                Parser __test = new Parser(p, __xdoc, InputStucture.__inputXML);
+                motPort p = new motPort("127.0.0.1", "24042");
+                motParser __test = new motParser(p, __xdoc, motInputStuctures.__inputXML);
             }
             catch(Exception e)
             {
@@ -100,8 +100,8 @@ namespace motInboundLib
 
             try
             {
-                Port p = new Port("127.0.0.1", "24042");
-                Parser __test = new Parser(p, __jdoc, InputStucture.__inputJSON);
+                motPort p = new motPort("127.0.0.1", "24042");
+                motParser __test = new motParser(p, __jdoc, motInputStuctures.__inputJSON);
             }
             catch (Exception e)
             {
@@ -120,11 +120,11 @@ namespace motInboundLib
         static void testDrugRecord()
         {
             motDrugRecord r;
-            Port p;
+            motPort p;
 
             try
             {
-                p = new Port("127.0.0.1", "24042");
+                p = new motPort("127.0.0.1", "24042");
                 r = new motDrugRecord("Add");
 
                 //for (int i = 0; i < 10; i++)

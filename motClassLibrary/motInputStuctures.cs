@@ -29,7 +29,7 @@ using System.Text;
 
 namespace motInboundLib
 {
-    public enum InputStucture
+    public enum motInputStuctures
     {
         __inputDelimted = 0,
         __inputTagged,

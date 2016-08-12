@@ -85,7 +85,7 @@ namespace motInboundLib
     {
         protected string _tableAction;
         protected Logger logger = LogManager.GetLogger("motInboundLib.Record");
-        protected Port __default;
+        protected motPort __default;
 
         public bool __log_records { get; set; } = false;
 
@@ -179,7 +179,7 @@ namespace motInboundLib
 
             f.tagData = __val;
         }
-        public void Write(Port p, List<Field> __qualifiedTags)
+        public void Write(motPort p, List<Field> __qualifiedTags)
         {
             string __record = "<Record>";
 
@@ -212,7 +212,7 @@ namespace motInboundLib
                 throw e;
             }
         }
-        public void Write(Port p, string __text)
+        public void Write(motPort p, string __text)
         {
             try
             {
@@ -227,7 +227,7 @@ namespace motInboundLib
         {
             try
             {
-                Port p = new Port("127.0.0.1", "24042");
+                motPort p = new motPort("127.0.0.1", "24042");
                 Write(p, __tags);
             }
             catch(Exception e)
@@ -239,7 +239,7 @@ namespace motInboundLib
         {
             try
             {
-                Port p = new Port("127.0.0.1", "24042");
+                motPort p = new motPort("127.0.0.1", "24042");
                 Write(p, __str);
             }
             catch (Exception e)
@@ -860,7 +860,7 @@ namespace motInboundLib
             }
         }
 
-        public void Write(Port p)
+        public void Write(motPort p)
         {
             try
             {
@@ -1396,7 +1396,7 @@ namespace motInboundLib
             }
         }
 
-        public void Write(Port p)
+        public void Write(motPort p)
         {
             try
             {
@@ -2679,7 +2679,7 @@ namespace motInboundLib
                 }
             }
         }
-        public void Write(Port p)
+        public void Write(motPort p)
         {
             try
             {
@@ -3436,7 +3436,7 @@ namespace motInboundLib
         }
 
 
-        public void Write(Port p)
+        public void Write(motPort p)
         {
             try
             {
@@ -3872,7 +3872,7 @@ namespace motInboundLib
 
         }
 
-        public void Write(Port p)
+        public void Write(motPort p)
         {
             try
             {
@@ -4240,7 +4240,7 @@ namespace motInboundLib
             }
         }
 
-        public void Write(Port p)
+        public void Write(motPort p)
         {
             try
             {
@@ -4423,7 +4423,7 @@ namespace motInboundLib
                 }
             }
         }
-        public void Write(Port p)
+        public void Write(motPort p)
         {
             try
             {

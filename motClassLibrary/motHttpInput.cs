@@ -43,7 +43,6 @@ using System.Threading.Tasks;
 
 namespace motInboundLib
 {
-
     public class httpInputSource
     {
         protected static async Task<dynamic> getJsonRecord(string __site, string __query)

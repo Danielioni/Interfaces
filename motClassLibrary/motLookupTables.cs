@@ -29,7 +29,7 @@ using System.Text;
 
 namespace motInboundLib
 {
-    public class lookupTables
+    public class motLookupTables
     {
         Dictionary<string, string> __repeatCodes;
         Dictionary<string, string> __doseSchedules;
@@ -38,7 +38,7 @@ namespace motInboundLib
 
 
 
-        public lookupTables()
+        public motLookupTables()
         {
             __repeatCodes = new Dictionary<string, string>();
             __doseSchedules = new Dictionary<string, string>();

@@ -31,9 +31,9 @@ using System.Threading;
 
 namespace motInboundLib
 {
-    public class fileSystemWatcher : inputMethod
+    public class motFileSystemWatcher
     {
-        Port pt;
+        motPort pt;
 
         public void writeData()
         {
@@ -43,7 +43,7 @@ namespace motInboundLib
         {
             try
             {
-                pt = new Port(address, port);
+                pt = new motPort(address, port);
             }
             catch (Exception e)
             {
@@ -94,7 +94,7 @@ namespace motInboundLib
                         try
                         {
                             sr = new StreamReader(__fileName);
-                            Parser p = new Parser(pt, sr.ReadToEnd());
+                            motParser p = new motParser(pt, sr.ReadToEnd());
                             sr.Close();
                             File.Delete(__fileName);
                         }
@@ -115,12 +115,12 @@ namespace motInboundLib
             }
         }
 
-        public fileSystemWatcher()
+        public motFileSystemWatcher()
         {
             watchDirectory(System.IO.Directory.GetCurrentDirectory());
         }
 
-        public fileSystemWatcher(string dirName)
+        public motFileSystemWatcher(string dirName)
         {
             if (!System.IO.Directory.Exists(dirName))
             {
@@ -130,7 +130,7 @@ namespace motInboundLib
             watchDirectory(dirName);
         }
 
-        public fileSystemWatcher(string dirName, string address, string port)
+        public motFileSystemWatcher(string dirName, string address, string port)
         {
             if (!System.IO.Directory.Exists(dirName))
             {

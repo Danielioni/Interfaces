@@ -232,7 +232,7 @@ namespace HL7Interface
                 __pr.Allergies = __allergies;
                 __pr.DxNotes = __diagnosis;
 
-                Port __p = new Port(__target_ip, __target_port);
+                motPort __p = new motPort(__target_ip, __target_port);
 
                 __pr.Write(__p);
                
@@ -524,7 +524,7 @@ namespace HL7Interface
             // Write them all to the gateway
             try
             {
-                Port __p = new Port(__target_ip, __target_port);
+                motPort __p = new motPort(__target_ip, __target_port);
 
                 __scrip.Write(__p);
                 __pr.Write(__p);

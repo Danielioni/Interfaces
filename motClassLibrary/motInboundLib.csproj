@@ -8,9 +8,10 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>motInboundLib</RootNamespace>
-    <AssemblyName>motInboundGatewayLib</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <AssemblyName>motInboundLib</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,22 +56,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="databaseInput.cs" />
-    <Compile Include="eventSink.cs" />
-    <Compile Include="fileSystemWatcher.cs" />
-    <Compile Include="HL7_Structs.cs" />
-    <Compile Include="httpInput.cs" />
-    <Compile Include="inputMethod.cs" />
-    <Compile Include="InputStucture.cs" />
-    <Compile Include="localAPI.cs" />
-    <Compile Include="lookupTables.cs" />
+    <Compile Include="motDatabaseInput.cs" />
+    <Compile Include="motEventSink.cs" />
+    <Compile Include="motFileSystemWatcher.cs" />
+    <Compile Include="motHL7Structs.cs" />
+    <Compile Include="motHttpInput.cs" />
+    <Compile Include="motInputStuctures.cs" />
+    <Compile Include="motLookupTables.cs" />
     <Compile Include="motHL7Listener.cs" />
     <Compile Include="motRecords.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="Port.cs" />
+    <Compile Include="motParser.cs" />
+    <Compile Include="motPort.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="socketInput.cs" />
-    <Compile Include="webAPI.cs" />
+    <Compile Include="motSocket.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="MOT.ico" />

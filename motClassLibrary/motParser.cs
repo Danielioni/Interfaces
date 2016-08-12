@@ -35,10 +35,10 @@ using NLog;
 
 namespace motInboundLib
 {
-    public class Parser
+    public class motParser
     {
-        InputStucture __type { get; set; }
-        protected Port p;
+        motInputStuctures __type { get; set; }
+        protected motPort p;
         private Logger logger;
         
         private void parseTagged(string inboundData)
@@ -212,12 +212,12 @@ namespace motInboundLib
             }
         }
 
-        public Parser()
+        public motParser()
         {
             logger = LogManager.GetLogger("motInboundLib.Parser");
         }
 
-        public Parser(Port _p, string inputStream)
+        public motParser(motPort _p, string inputStream)
         {
             
             p = _p;
@@ -259,7 +259,7 @@ namespace motInboundLib
         }
 
       
-        public Parser(Port _p, string inputStream, InputStucture __type)
+        public motParser(motPort _p, string inputStream, motInputStuctures __type)
         {
             p = _p;
 
@@ -267,27 +267,27 @@ namespace motInboundLib
             {
                 switch (__type)
                 {
-                    case InputStucture.__inputXML:
+                    case motInputStuctures.__inputXML:
                         parseXML(inputStream);
                         logger.Info("[MOT Parser] Completed XML processing");
                         break;
 
-                    case InputStucture.__inputJSON:
+                    case motInputStuctures.__inputJSON:
                         parseJSON(inputStream);
                         logger.Info("[MOT Parser] Completed JSON processing");
                         break;
 
-                    case InputStucture.__inputDelimted:
+                    case motInputStuctures.__inputDelimted:
                         parseDelimited(inputStream);
                         logger.Info("[MOT Parser] Completed Delimited File processing");
                         break;
 
-                    case InputStucture.__inputTagged:
+                    case motInputStuctures.__inputTagged:
                         parseTagged(inputStream);
                         logger.Info("[MOT Parser] Completed Tagged File processing");
                         break;
 
-                    case InputStucture.__inputUndefined:
+                    case motInputStuctures.__inputUndefined:
                         logger.Info("[MOT Parser] Fell off the bottom, Unknown File Type");
                         break;
 
