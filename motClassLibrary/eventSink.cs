@@ -35,6 +35,7 @@ namespace motInboundLib
         public delegate void __socket_input_event_handler(Object __sender, EventArgs __args);
         public delegate void __http_input_event_handler(Object __sender, EventArgs __args);
         public delegate void __filesystem_input_event_handler(Object __sender, EventArgs __args);
+        public delegate void __database_input_event_handler(Object __sender, EventArgs __args);
 
     public class EventMessageArgs : EventArgs
     {
@@ -47,6 +48,7 @@ namespace motInboundLib
         __socket_input_event_handler        __socket_event;
         __http_input_event_handler          __http_event;
         __filesystem_input_event_handler    __filesystem_event;
+        __database_input_event_handler      __database_event;
 
         public void __event__listener(string __port, string __uri, string __directory)
         {
@@ -93,6 +95,19 @@ namespace motInboundLib
             __args.items = __items;
             __args.timestamp = DateTime.Now;
             __filesystem_handler(this, __args);
+        }
+
+        public void __database_listener(string __directory)
+        {
+            string[] __items = { string.Empty };
+            EventMessageArgs __args = null;
+            __database_input_event_handler __database_handler = __database_event;
+
+            // await __level0_filesystem_listener();
+
+            __args.items = __items;
+            __args.timestamp = DateTime.Now;
+            __database_handler(this, __args);
         }
     }
 
