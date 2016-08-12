@@ -31,6 +31,8 @@ using System.Threading;
 
 namespace motInboundLib
 {
+    using motCommonLib;
+
     public class motFileSystemWatcher
     {
         motPort pt;
@@ -48,7 +50,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                throw e;
+                throw;
             }
         }
 
@@ -60,7 +62,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
 
             watchDirectory(dirName);
@@ -75,7 +77,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
 
             while (true)

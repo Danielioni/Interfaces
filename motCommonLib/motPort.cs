@@ -34,7 +34,7 @@ using NLog;
 /// a RESTful/JSON interface and anything else that's needed
 /// </summary>
 
-namespace motInboundLib
+namespace motCommonLib
 {
     public class motPort
     {

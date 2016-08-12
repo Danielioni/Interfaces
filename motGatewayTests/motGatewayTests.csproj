@@ -63,6 +63,10 @@
       <Project>{e6380e69-7e57-42a2-9d15-cfba019b2ccd}</Project>
       <Name>motInboundLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\motCommonLib\motCommonLib.csproj">
+      <Project>{ca048b94-057e-4f73-b60d-4f79096e46c9}</Project>
+      <Name>motCommonLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

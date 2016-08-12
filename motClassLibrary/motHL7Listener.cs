@@ -24,20 +24,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.Xml;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
-using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
 using NLog;
 
 namespace motInboundLib
 {
+    using motCommonLib;
 
     public class HL7Event7MessageArgs : EventArgs
     {

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace motOutboundLib
 {
-    public class DatabaseViews
+    public class motDatabaseViews
     {
     }
 }

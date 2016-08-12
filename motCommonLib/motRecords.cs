@@ -45,7 +45,7 @@ using NLog;
 ///                     
 /// </summary>
 
-namespace motInboundLib
+namespace motCommonLib
 {
     public class Field
     {
@@ -209,7 +209,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
         public void Write(motPort p, string __text)
@@ -232,7 +232,7 @@ namespace motInboundLib
             }
             catch(Exception e)
             {
-                throw e;
+                throw;
             }
         }
         public void Write(string __str)
@@ -244,7 +244,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
         public motRecordBase()
@@ -288,7 +288,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -309,7 +309,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                throw e;
+                throw;
             }
         }
 
@@ -336,7 +336,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -363,7 +363,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -390,7 +390,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -417,7 +417,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -444,7 +444,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -471,7 +471,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -498,7 +498,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -525,7 +525,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -552,7 +552,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -584,7 +584,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -611,7 +611,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -638,7 +638,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -665,7 +665,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -697,7 +697,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -724,7 +724,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -751,7 +751,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -778,7 +778,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -805,7 +805,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -832,7 +832,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -870,7 +870,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error(@"DrugRecord Write Failure: {0}", e.Message);
-                throw e;
+                throw;
             }
         }
     }
@@ -908,7 +908,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
         public motPrescriberRecord()
@@ -924,7 +924,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw e;
+                throw;
             }
         }
         public void setField(string __fieldname, string __val)
@@ -973,7 +973,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1000,7 +1000,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1027,7 +1027,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1054,7 +1054,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1081,7 +1081,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1108,7 +1108,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1135,7 +1135,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1162,7 +1162,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1194,7 +1194,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1228,7 +1228,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1255,7 +1255,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1282,7 +1282,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1309,7 +1309,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1336,7 +1336,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1363,7 +1363,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1391,7 +1391,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1405,7 +1405,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error(@"PrescriberRecord Write Failure: {0}", e.Message);
-                throw e;
+                throw;
             }
         }
     }
@@ -1466,7 +1466,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
         public motPatientRecord() : base()
@@ -1482,7 +1482,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw e;
+                throw;
             }
         }
         public void setField(string __fieldname, string __val)
@@ -1535,7 +1535,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1562,7 +1562,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1589,7 +1589,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1616,7 +1616,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1648,7 +1648,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1675,7 +1675,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1702,7 +1702,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1729,7 +1729,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1756,7 +1756,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1788,7 +1788,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1822,7 +1822,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1856,7 +1856,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1890,7 +1890,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1917,7 +1917,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1944,7 +1944,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1971,7 +1971,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -1998,7 +1998,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2030,7 +2030,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2064,7 +2064,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2097,7 +2097,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2124,7 +2124,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2151,7 +2151,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2178,7 +2178,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2210,7 +2210,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2237,7 +2237,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2264,7 +2264,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2291,7 +2291,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2319,7 +2319,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2346,7 +2346,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2373,7 +2373,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2400,7 +2400,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2427,7 +2427,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2454,7 +2454,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2481,7 +2481,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2508,7 +2508,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2535,7 +2535,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2562,7 +2562,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2589,7 +2589,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2616,7 +2616,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2643,7 +2643,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2675,7 +2675,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2688,7 +2688,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error(@"PatientRecord Write Failure: {0}", e.Message);
-                throw e;
+                throw;
             }
         }
         public void Write()
@@ -2737,7 +2737,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -2754,7 +2754,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw e;
+                throw;
             }
         }
         public void setField(string __fieldname, string __val)
@@ -2802,7 +2802,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2829,7 +2829,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2856,7 +2856,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2883,7 +2883,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2910,7 +2910,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2937,7 +2937,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2964,7 +2964,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -2991,7 +2991,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3025,7 +3025,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3052,7 +3052,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3079,7 +3079,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3106,7 +3106,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3133,7 +3133,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3160,7 +3160,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3187,7 +3187,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3214,7 +3214,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3241,7 +3241,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3268,7 +3268,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3295,7 +3295,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3322,7 +3322,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3349,7 +3349,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3376,7 +3376,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3403,7 +3403,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3430,7 +3430,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3445,7 +3445,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error(@"PrescriptionRecord Write Failure: {0}", e.Message);
-                throw e;
+                throw;
             }
         }
         public void Write()
@@ -3482,7 +3482,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
         public motLocationRecord() : base()
@@ -3498,7 +3498,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw e;
+                throw;
             }
         }
         public void setField(string __fieldname, string __val)
@@ -3546,7 +3546,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3573,7 +3573,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3600,7 +3600,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3627,7 +3627,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3655,7 +3655,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3682,7 +3682,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3708,7 +3708,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3740,7 +3740,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3774,7 +3774,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3801,7 +3801,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3833,7 +3833,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -3866,7 +3866,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
 
@@ -3881,7 +3881,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error(@"LocationRecord Write Failure: {0}", e.Message);
-                throw e;
+                throw;
             }
         }
         public void Write()
@@ -3916,7 +3916,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
         public motStoreRecord() : base()
@@ -3932,7 +3932,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw e;
+                throw;
             }
         }
         public void setField(string __fieldname, string __val)
@@ -3980,7 +3980,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4007,7 +4007,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4034,7 +4034,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4062,7 +4062,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4089,7 +4089,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4115,7 +4115,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4147,7 +4147,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4181,7 +4181,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4208,7 +4208,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4235,7 +4235,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4249,7 +4249,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error(@"StoreRecord Write Failure: {0}", e.Message);
-                throw e;
+                throw;
             }
         }
         public void Write()
@@ -4277,7 +4277,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -4295,7 +4295,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 Console.Write(e.Message);
-                throw e;
+                throw;
             }
         }
 
@@ -4344,7 +4344,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4371,7 +4371,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4392,7 +4392,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
 */
@@ -4419,7 +4419,7 @@ namespace motInboundLib
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -4432,7 +4432,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error(@"TimeQtysRecord Write Failure: {0}", e.Message);
-                throw e;
+                throw;
             }
         }
         public void Write()

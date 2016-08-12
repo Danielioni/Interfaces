@@ -28,9 +28,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using NLog;
 
-namespace motInboundLib
+namespace motCommonLib
 {
         public delegate void __socket_input_event_handler(Object __sender, EventArgs __args);
         public delegate void __http_input_event_handler(Object __sender, EventArgs __args);

@@ -32,6 +32,8 @@ using System.Threading;
 
 namespace motInboundLib
 {
+    using motCommonLib;
+
     class motMain
     {
         static void testXMLDoc()

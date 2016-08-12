@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace motOutboundLib
 {
-    class httpOutput
+    class motHttpOutput
     {
     }
 }

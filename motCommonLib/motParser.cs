@@ -33,7 +33,7 @@ using System.Xml.Schema;
 using Newtonsoft.Json;
 using NLog;
 
-namespace motInboundLib
+namespace motCommonLib
 {
     public class motParser
     {

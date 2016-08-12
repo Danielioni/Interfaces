@@ -28,11 +28,10 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 
 /// <summary>
 /// 
@@ -43,6 +42,8 @@ using System.Threading.Tasks;
 
 namespace motInboundLib
 {
+    using motCommonLib;
+
     public class httpInputSource
     {
         protected static async Task<dynamic> getJsonRecord(string __site, string __query)

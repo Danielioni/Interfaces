@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 
 using motInboundLib;
+using motCommonLib;
 
 namespace HL7Interface
 {

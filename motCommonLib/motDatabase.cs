@@ -145,7 +145,7 @@ using NLog;
 /// </summary>
 
 
-namespace motInboundLib
+namespace motCommonLib
 {
     public enum dbType
     {
@@ -211,7 +211,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -309,7 +309,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -319,9 +319,8 @@ namespace motInboundLib
             {
                 connection.Close();
             }
-            catch (Exception e)
+            catch
             {
-                e = null;
             }
         }
     }
@@ -340,7 +339,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -413,7 +412,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error("Failed while executing Query: {0}", e.Message);
-                throw e;
+                throw;
             }
 
             return false;
@@ -444,7 +443,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Error("Failed while executing NonQuery: {0}", e.Message);
-                throw e;
+                throw;
             }
 
             return false;
@@ -472,7 +471,7 @@ namespace motInboundLib
             catch (Exception e)
             {
                 logger.Warn("Failed to set view: {0}", e.Message);
-                throw e;
+                throw;
             }
 
             return false;
@@ -521,7 +520,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                throw e;
+                throw;
             }
         }
     }

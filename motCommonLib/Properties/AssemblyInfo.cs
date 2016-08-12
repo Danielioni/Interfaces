@@ -6,13 +6,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("motOutboundLib")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("motCommonLib")]
+[assembly: AssemblyDescription("Medicine-On-Time Common Library Classes")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("motOutboundLib")]
+[assembly: AssemblyCompany("Medicine-On-Time, LLC")]
+[assembly: AssemblyProduct("motCommonLib")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Medicine-On-Time")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b8caced9-09d0-411f-9fd6-11dcf222ddfd")]
+[assembly: Guid("ca048b94-057e-4f73-b60d-4f79096e46c9")]
 
 // Version information for an assembly consists of the following four values:
 //

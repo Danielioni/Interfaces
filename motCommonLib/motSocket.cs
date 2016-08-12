@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 using NLog;
 using System.Net.Mail;
 
-namespace motInboundLib
+namespace motCommonLib
 {
 
     public class motMailServer
