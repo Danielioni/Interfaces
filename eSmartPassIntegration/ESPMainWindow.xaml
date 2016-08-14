@@ -1,12 +1,32 @@
-﻿<Window x:Class="eSmartPassIntegration.MainWindow"
+﻿<Window x:Name="wndMain" x:Class="eSmartPassIntegration.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:eSmartPassIntegration"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Medicine-On-Time to eSmartPass" Height="350" Width="525" Activated="wndMain_Activated">
     <Grid>
-        
+        <Border x:Name="borderMain" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="302" Margin="0,10,0,0" VerticalAlignment="Top" Width="517" CornerRadius="20">
+           
+        </Border>
+        <ListView x:Name="lstMain" HorizontalAlignment="Left" Height="100" Margin="27,30,0,0" VerticalAlignment="Top" Width="358" BorderThickness="0" FontSize="10" Cursor="Cross" RenderTransformOrigin="0.497,0.7" SelectionChanged="lstMain_SelectionChanged">
+            <ListView.View>
+                <GridView/>
+            </ListView.View>
+        </ListView>
+        <Image x:Name="imgMOTLogo" Margin="20,220,232,9" Source="MOTLogoForGoogleApps-320x80.jpg">
+            <Image.Effect>
+                <DropShadowEffect/>
+            </Image.Effect>
+        </Image>
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="405,30,0,0" VerticalAlignment="Top" Width="97" Height="150" Click="btnStart_Click"/>
+        <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="405,185,0,0" VerticalAlignment="Top" Width="97" Height="110" Click="btnStop_Click"/>
+        <CheckBox x:Name="cbkLogEvents" Content="Log Events" Margin="300,266,132,27"/>
+        <TextBox x:Name="tbxTargetAddress" HorizontalAlignment="Left" Height="23" Margin="130,178,0,0" TextWrapping="Wrap" Text="https://esmartpass.com/" VerticalAlignment="Top" Width="255" TextChanged="textBox_TextChanged"/>
+        <TextBox x:Name="tbxTargetRoot" HorizontalAlignment="Left" Height="23" Margin="130,201,0,0" TextWrapping="Wrap" Text="motapi" VerticalAlignment="Top" Width="255"/>
+        <CheckBox x:Name="cbkDebug" Content="Debug" Margin="300,248,132,47"/>
+        <Label x:Name="lblTargetIP" Content="Target Address:" Margin="29,0,0,122" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="96" Height="26"/>
+        <Label x:Name="lblTargetRoot" Content="Target Root:" Margin="47,0,0,99" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="77" Height="26"/>
     </Grid>
 </Window>

@@ -1,7 +1,36 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="eSmartPassIntegration.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="TargetURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">esmartpass.com</Value>
+    </Setting>
+    <Setting Name="TargetRoot" Type="System.String" Scope="User">
+      <Value Profile="(Default)">motapi</Value>
+    </Setting>
+    <Setting Name="Debug" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Logging" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DB_Address" Type="System.String" Scope="User">
+      <Value Profile="(Default)">192.168.1.9</Value>
+    </Setting>
+    <Setting Name="DB_Port" Type="System.String" Scope="User">
+      <Value Profile="(Default)">5432</Value>
+    </Setting>
+    <Setting Name="DB_UserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">mot</Value>
+    </Setting>
+    <Setting Name="DB_Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)">mot!cool</Value>
+    </Setting>
+    <Setting Name="DB_DatabaseName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Mot</Value>
+    </Setting>
+    <Setting Name="TargetPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">80</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>
