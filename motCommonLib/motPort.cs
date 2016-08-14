@@ -25,6 +25,7 @@
 using System;
 using System.Text;
 using System.Net.Sockets;
+using System.Net;
 using NLog;
 
 /// <summary>
@@ -40,8 +41,8 @@ namespace motCommonLib
     {
         public int TCP_TIMEOUT { get; set; } = 300000;
 
-        public TcpClient tcpSocket = null;
-        NetworkStream dataStream;
+        private TcpClient tcpSocket = null;
+        private NetworkStream dataStream;
         private Logger logger;
 
         bool __open = false;
@@ -56,7 +57,17 @@ namespace motCommonLib
 
         public motPort(string address, string port)
         {
-            if(__open)
+            IPAddress[] __host = Dns.GetHostAddresses(address);
+
+            foreach (IPAddress __h in __host)
+            {
+                if (__h.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    address = __h.ToString();
+                }
+            }
+
+            if (__open)
             {
                 return;
             }

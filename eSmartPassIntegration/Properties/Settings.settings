@@ -15,7 +15,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="DB_Address" Type="System.String" Scope="User">
-      <Value Profile="(Default)">192.168.1.9</Value>
+      <Value Profile="(Default)">127.0.0.1</Value>
     </Setting>
     <Setting Name="DB_Port" Type="System.String" Scope="User">
       <Value Profile="(Default)">5432</Value>
