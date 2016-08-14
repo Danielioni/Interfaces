@@ -52,8 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="motEventSink.cs" />
-    <Compile Include="motFileSystemWatcher.cs" />
-    <Compile Include="motHttpInput.cs" />
+    <Compile Include="motFileSystemListener.cs" />
+    <Compile Include="motHttpListener.cs" />
     <Compile Include="motHL7Listener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

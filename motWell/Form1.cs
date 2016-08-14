@@ -13,7 +13,7 @@ namespace motWell
 {
     public partial class Form1 : Form
     {
-        motFileSystemWatcher __fsw;
+        motFileSystemListener __fsw;
 
         public Form1()
         {
@@ -22,7 +22,7 @@ namespace motWell
 
         public void startWatching()
         {
-            __fsw = new motFileSystemWatcher("C:/MOT_IO", "127.0.0.1", "24042");
+            __fsw = new motFileSystemListener("C:/MOT_IO", "127.0.0.1", "24042");
         }
 
         public void stopWatching()

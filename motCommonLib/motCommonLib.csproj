@@ -68,6 +68,7 @@
     <Compile Include="motPort.cs" />
     <Compile Include="motRecords.cs" />
     <Compile Include="motSocket.cs" />
+    <Compile Include="motUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

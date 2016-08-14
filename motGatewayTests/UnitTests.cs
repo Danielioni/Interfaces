@@ -28,11 +28,11 @@ using System.Data;
 using System.Security.Permissions;
 using System.Collections.Generic;
 using System.Threading;
-
+using motCommonLib;
 
 namespace motInboundLib
 {
-    using motCommonLib;
+    
 
     class motMain
     {
@@ -65,7 +65,7 @@ namespace motInboundLib
 
             try
             {
-                motPort p = new motPort("127.0.0.1", "24042");
+                motPort p = new motPort("localhost", "24042");
                 motParser __test = new motParser(p, __xdoc, motInputStuctures.__inputXML);
             }
             catch(Exception e)
@@ -102,7 +102,7 @@ namespace motInboundLib
 
             try
             {
-                motPort p = new motPort("127.0.0.1", "24042");
+                motPort p = new motPort("localhost", "24042");
                 motParser __test = new motParser(p, __jdoc, motInputStuctures.__inputJSON);
             }
             catch (Exception e)
@@ -126,7 +126,7 @@ namespace motInboundLib
 
             try
             {
-                p = new motPort("127.0.0.1", "24042");
+                p = new motPort("localhost", "24042");
                 r = new motDrugRecord("Add");
 
                 //for (int i = 0; i < 10; i++)
@@ -181,7 +181,7 @@ namespace motInboundLib
 
         class PharmaServe : databaseInputSource
         {
-           
+          
             public PharmaServe(dbType __type, string DSN) : base(__type, DSN)
             { }
 
@@ -247,13 +247,13 @@ namespace motInboundLib
             
 
             // Testing
-            testDrugRecord();
+            //testDrugRecord();
 
             // Works
-            testXMLDoc();
-            testJSONDoc();
+            //testXMLDoc();
+            //testJSONDoc();
 
-            //fileSystemWatcher f = new fileSystemWatcher("C:\\MOT_IO"));
+            motFileSystemListener f = new motFileSystemListener("C:\\MOT_IO", "localhost", "24042");
 
 /*
             try

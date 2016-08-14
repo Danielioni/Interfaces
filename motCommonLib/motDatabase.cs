@@ -209,7 +209,7 @@ namespace motCommonLib
                 connection = new NpgsqlConnection(DSN);
                 connection.Open();
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -221,9 +221,8 @@ namespace motCommonLib
             {
                 connection.Close();
             }
-            catch (Exception e)
+            catch
             {
-                e = null;
             }
         }
     }
@@ -307,7 +306,7 @@ namespace motCommonLib
                 connection = new SqlConnection(DSN);
                 connection.Open();
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -337,7 +336,7 @@ namespace motCommonLib
                 connection = new OdbcConnection(DSN);
                 connection.Open();
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -518,7 +517,7 @@ namespace motCommonLib
                         break;
                 }
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -537,7 +536,6 @@ namespace motCommonLib
         public virtual bool setLocationRecord(actionType __action)
         {
             throw new NotImplementedException();
-            return false;
         }
         public virtual bool setPatientRecord(actionType __action)
         {

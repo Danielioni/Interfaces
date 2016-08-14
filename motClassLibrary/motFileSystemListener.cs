@@ -28,12 +28,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Net;
+using System.Net.Sockets;
+
 
 namespace motInboundLib
 {
     using motCommonLib;
 
-    public class motFileSystemWatcher
+    public class motFileSystemListener
     {
         motPort pt;
 
@@ -54,29 +57,20 @@ namespace motInboundLib
             }
         }
 
-        private void watchDirectory(string dirName, string address, string port)
+        public void watchDirectory(string __dir_name)
         {
-            try
-            {
-                openPort(address, port);
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
-
-            watchDirectory(dirName);
+            watchDirectory(__dir_name, "localhost", "24042");
         }
 
-        private void watchDirectory(string dirName)
+        private void watchDirectory(string dirName, string __address, string __port)
         {
 
             try
             {
-                openPort("127.0.0.1", "24042");
+                openPort(__address, __port);            
             }
-            catch (Exception e)
-            {
+            catch
+            {            
                 throw;
             }
 
@@ -117,12 +111,13 @@ namespace motInboundLib
             }
         }
 
-        public motFileSystemWatcher()
+
+        public motFileSystemListener()
         {
-            watchDirectory(System.IO.Directory.GetCurrentDirectory());
+            watchDirectory(Directory.GetCurrentDirectory());
         }
 
-        public motFileSystemWatcher(string dirName)
+        public motFileSystemListener(string dirName)
         {
             if (!System.IO.Directory.Exists(dirName))
             {
@@ -132,7 +127,7 @@ namespace motInboundLib
             watchDirectory(dirName);
         }
 
-        public motFileSystemWatcher(string dirName, string address, string port)
+        public motFileSystemListener(string dirName, string address, string port)
         {
             if (!System.IO.Directory.Exists(dirName))
             {

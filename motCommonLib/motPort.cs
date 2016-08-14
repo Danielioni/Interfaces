@@ -57,15 +57,7 @@ namespace motCommonLib
 
         public motPort(string address, string port)
         {
-            IPAddress[] __host = Dns.GetHostAddresses(address);
-
-            foreach (IPAddress __h in __host)
-            {
-                if (__h.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    address = __h.ToString();
-                }
-            }
+            address = motUtils.__normalize_address(address);
 
             if (__open)
             {
