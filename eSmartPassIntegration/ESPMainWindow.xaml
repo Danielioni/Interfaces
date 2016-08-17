@@ -5,28 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:eSmartPassIntegration"
         mc:Ignorable="d"
-        Title="Medicine-On-Time to eSmartPass" Height="350" Width="525" Activated="wndMain_Activated">
+        Title="Medicine-On-Time to eSmartPass" Height="350" Width="641.667" Activated="wndMain_Activated" AllowsTransparency="True" WindowStyle="None">
     <Grid>
-        <Border x:Name="borderMain" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="302" Margin="0,10,0,0" VerticalAlignment="Top" Width="517" CornerRadius="20">
-           
-        </Border>
-        <ListView x:Name="lstMain" HorizontalAlignment="Left" Height="100" Margin="27,30,0,0" VerticalAlignment="Top" Width="358" BorderThickness="0" FontSize="10" Cursor="Cross" RenderTransformOrigin="0.497,0.7" SelectionChanged="lstMain_SelectionChanged">
-            <ListView.View>
-                <GridView/>
-            </ListView.View>
-        </ListView>
-        <Image x:Name="imgMOTLogo" Margin="20,220,232,9" Source="MOTLogoForGoogleApps-320x80.jpg">
-            <Image.Effect>
-                <DropShadowEffect/>
-            </Image.Effect>
-        </Image>
-        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="405,30,0,0" VerticalAlignment="Top" Width="97" Height="150" Click="btnStart_Click"/>
-        <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="405,185,0,0" VerticalAlignment="Top" Width="97" Height="110" Click="btnStop_Click"/>
-        <CheckBox x:Name="cbkLogEvents" Content="Log Events" Margin="300,266,132,27"/>
-        <TextBox x:Name="tbxTargetAddress" HorizontalAlignment="Left" Height="23" Margin="130,178,0,0" TextWrapping="Wrap" Text="https://esmartpass.com/" VerticalAlignment="Top" Width="255" TextChanged="textBox_TextChanged"/>
-        <TextBox x:Name="tbxTargetRoot" HorizontalAlignment="Left" Height="23" Margin="130,201,0,0" TextWrapping="Wrap" Text="motapi" VerticalAlignment="Top" Width="255"/>
-        <CheckBox x:Name="cbkDebug" Content="Debug" Margin="300,248,132,47"/>
-        <Label x:Name="lblTargetIP" Content="Target Address:" Margin="29,0,0,122" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="96" Height="26"/>
-        <Label x:Name="lblTargetRoot" Content="Target Root:" Margin="47,0,0,99" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="77" Height="26"/>
+        <Border x:Name="borderMain" BorderBrush="Black" BorderThickness="4" CornerRadius="20" Margin="10"/>
+
+        <Image x:Name="imgMOTLogo" Source="MOTLogoForGoogleApps-320x80.jpg" Height="79.37" Margin="10,21.124,229.42,0" VerticalAlignment="Top"/>
+      
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="512.536,30,0,0" VerticalAlignment="Top" Width="97" Height="88.704" Click="btnStart_Click"/>
+        <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="512.536,123.704,0,0" VerticalAlignment="Top" Width="97" Height="87.392" Click="btnStop_Click"/>
+        <Button x:Name="btnExit" Content="Exit" Margin="512.131,216.096,32.536,46.512" Click="btn_Exit_Click"/>
+
+        <TextBox x:Name="tbxTargetAddress" HorizontalAlignment="Left" Height="23" Margin="135.691,237.62,0,0" TextWrapping="Wrap" Text="https://esmartpass.com/" VerticalAlignment="Top" Width="255" TextChanged="textBox_TextChanged"/>
+        <TextBox x:Name="tbxTargetRoot" HorizontalAlignment="Left" Height="23" Margin="135.691,263.156,0,0" TextWrapping="Wrap" Text="motapi" VerticalAlignment="Top" Width="255"/>
+        <CheckBox x:Name="cbkDebug" Content="Debug" Margin="0,245.23,132,49.77" HorizontalAlignment="Right" Width="100"/>
+        <CheckBox x:Name="cbkLogEvents" Content="Log Events" Margin="0,270.63,132,22.37" HorizontalAlignment="Right" Width="100"/>
+        <Label x:Name="lblTargetIP" Content="Target Address:" Margin="36.536,0,0,90.208" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="96" Height="26"/>
+        <Label x:Name="lblTargetRoot" Content="Target Root:" Margin="41.281,0,0,64.208" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="77" Height="26"/>
     </Grid>
 </Window>

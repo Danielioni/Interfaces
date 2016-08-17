@@ -24,7 +24,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlTypes;
 using NLog;
+using RestSharp;
+using RestSharp.Authenticators;
+using RestSharp.Serializers;
+
 /// <summary>
 /// motRecords - Abstractions for all the record types that the Medicine-On-Time Legacy interface supports.  Classes are constructed 
 ///              and can be populated by calling individual methods, one for each field, or by a generic setField() call. All set methods
@@ -55,6 +61,7 @@ namespace motCommonLib
         public bool required { get; set; }
         public char when { get; set; }
         public bool autoTruncate { get; set; }
+        public bool __new { get; set; }
         public virtual void __rules() { }
 
         public Field(string f, string t, int m, bool r, char w)
@@ -64,9 +71,18 @@ namespace motCommonLib
             maxLen = m;
             required = r;
             when = w;
-            autoTruncate = false;
+            autoTruncate = __new = false;
         }
-
+        public Field(string f, string t, int m, bool r, char w, bool a, bool n)
+        {
+            tagName = f;
+            tagData = t;
+            maxLen = m;
+            required = r;
+            when = w;
+            autoTruncate = true;
+            __new = true;
+        }
         public Field(string f, string t, int m, bool r, char w, bool a)
         {
             tagName = f;
@@ -75,6 +91,22 @@ namespace motCommonLib
             required = r;
             when = w;
             autoTruncate = a;
+        }
+    }
+    public class Query
+    {
+        public string __table { set; get; }
+        public Dictionary<string, string> __field;
+
+        public Query()
+        {
+            __field = new Dictionary<string, string>();
+        }
+
+        public void Clear()
+        {
+            __table = string.Empty;
+            __field.Clear();
         }
     }
 
@@ -86,9 +118,7 @@ namespace motCommonLib
         protected string _tableAction;
         protected Logger logger = LogManager.GetLogger("motInboundLib.Record");
         protected motPort __default;
-
         public bool __log_records { get; set; } = false;
-
         public void checkDependencies(List<Field> __qualifiedTags)
         {
             Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("action")));
@@ -118,7 +148,7 @@ namespace motCommonLib
             string __type = __qualifiedTags[0].tagData;
             string __action = __qualifiedTags[1].tagData;
 
-            foreach(Field __field in __qualifiedTags)
+            foreach (Field __field in __qualifiedTags)
             {
                 __field.tagData = string.Empty;
             }
@@ -127,20 +157,26 @@ namespace motCommonLib
             __qualifiedTags[1].tagData = __action;
 
         }
-
-        public void setField(List<Field> __qualifiedTags, string __val, string __tag)
+        public bool setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
             if (__qualifiedTags == null || __tag == null || __val == null)
             {
-                return;
+                return false;
             }
 
             Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((__tag.ToLower())));
+
+            if (f == null)
+            {
+                __qualifiedTags.Add(new Field(__tag, __val, -1, false, 'n', false, true));
+                return false;   // Field doesn't exist
+            }
 
             f.__rules();
 
             if (__val.ToString().Length > f.maxLen)
             {
+                /*
                 if (f.autoTruncate == false)
                 {
                     throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
@@ -149,23 +185,33 @@ namespace motCommonLib
                 {
                     // Pass through to gateway 
                 }
+                */
             }
 
             f.tagData = __val;
+
+            return true;
         }
-        public void setField(List<Field> __qualifiedTags, string __val, string __tag, bool __override)
+        public bool setField(List<Field> __qualifiedTags, string __val, string __tag, bool __override)
         {
             if (__qualifiedTags == null || __tag == null || __val == null)
             {
-                return;
+                return false;
             }
 
             Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((__tag.ToLower())));
+
+            if (f == null)
+            {
+                __qualifiedTags.Add(new Field(__tag, __val, -1, false, 'n', false, true));
+                return false;   // Field doesn't exist
+            }
 
             f.__rules();
 
             if (__val.ToString().Length > f.maxLen)
             {
+                /*
                 if (__override == false)
                 {
                     throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
@@ -175,9 +221,11 @@ namespace motCommonLib
                     // Truncate and pass through to gateway 
                     __val = __val.Substring(0, f.maxLen - 1);
                 }
+                */
             }
 
             f.tagData = __val;
+            return true;
         }
         public void Write(motPort p, List<Field> __qualifiedTags)
         {
@@ -230,7 +278,7 @@ namespace motCommonLib
                 motPort p = new motPort("127.0.0.1", "24042");
                 Write(p, __tags);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw;
             }
@@ -247,6 +295,87 @@ namespace motCommonLib
                 throw;
             }
         }
+
+        public object writeREST_JSON(string __uri, string __account, string __password, List<Field> __tags, Dictionary<string,string> __map)
+        {
+            // Build the JSON structure 
+            //Dictionary<string, string>.Enumerator __cursor = __map.GetEnumerator();
+            //__cursor.MoveNext();
+
+            var __json_request = "{\n"; 
+
+            foreach(Field __tag in __tags)
+            {
+                string __temp_tag = motUtils.__get_dict_value(__map, __tag.tagName);
+                if(__temp_tag != null && !string.IsNullOrEmpty(__tag.tagData))
+                {
+                    __json_request += string.Format("{0} : {1}\n", __tag.tagName, __tag.tagData);
+                }
+            }
+
+            __json_request += "};\n";
+
+
+            var restClient = new RestClient(__uri)
+            {
+                Authenticator = new HttpBasicAuthenticator(__account, __password)
+            };
+            RestRequest request = new RestRequest();
+            request.Method = Method.POST;
+            request.AddHeader("Content-Type", "application/json");
+
+           
+
+            //var myContentJson = JsonConvert.SerializeObject(obj, settings);
+
+            request.AddParameter("application/json", __json_request, ParameterType.RequestBody);
+
+            var response = restClient.Execute(request);
+
+            //To make the call async
+            //var cancellationTokenSource = new CancellationTokenSource();
+            //var response2 = restClient.ExecuteTaskAsync<T>(request, cancellationTokenSource.Token);
+
+            if (response.ErrorException != null)
+            {
+                const string message = "Error retrieving response.  Check inner details for more info.";
+                var browserStackException = new ApplicationException(message, response.ErrorException);
+                throw browserStackException;
+            }
+
+            return response.Content;
+
+        }
+        public void readDatabaseRecord(motDatabase __db, Query __query, List<Field> __qualifiedTags)
+        {
+
+            Dictionary<string, string>.Enumerator __cursor = __query.__field.GetEnumerator();
+
+            var __base_query =
+                string.Format("SELECT * FROM public.\"Facilities\", public.\"Addresses\", public.\"Patients\" WHERE \"Patients\".\"AddressId\" = \"Addresses\".\"Id\" AND \"Patients\".\"FacilityId\" = \"Facilities\".\"Id\"");
+ 
+
+            while (__cursor.MoveNext())
+            {
+                __base_query += string.Format("AND \"{0}\" = '{1}' ", __cursor.Current.Key, __cursor.Current.Value);
+            }
+
+            __base_query += ";";
+
+            if (__db.executeQuery(__base_query))
+            {
+                if (__db.__recordSet.Tables["__table"].Rows.Count > 0)
+                {
+                    DataRow __record = __db.__recordSet.Tables["__table"].Rows[0];
+
+                    // Print the DataType of each column in the table. 
+                    foreach (DataColumn column in __record.Table.Columns)
+                    {
+                        setField(__qualifiedTags, __record[column.ColumnName].ToString(), column.ColumnName, true);
+                    }
+                }
+            }
+        }
         public motRecordBase()
         { }
     }
@@ -256,7 +385,7 @@ namespace motCommonLib
     /// </summary>
     public class motDrugRecord : motRecordBase
     {
-        public List<Field> __qualifiedTags;
+        public volatile List<Field> __qualifiedTags;
 
         private void createRecord(string tableAction)
         {
@@ -291,11 +420,9 @@ namespace motCommonLib
                 throw;
             }
         }
-
         ~motDrugRecord()
         {
         }
-
         public motDrugRecord() : base()
         {
         }
@@ -309,6 +436,22 @@ namespace motCommonLib
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
+        public void readDatabaseRecord(motDatabase __db, Query __query)
+        {
+            if (__db == null || __query == null)
+            {
+                throw new ArgumentNullException("Null value passed as argument");
+            }
+            try
+            {
+                readDatabaseRecord(__db, __query, __qualifiedTags);
+            }
+            catch
+            {
                 throw;
             }
         }
@@ -949,7 +1092,21 @@ namespace motCommonLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
-
+        public void readDatabaseRecord(motDatabase __db, Query __query)
+        {
+            if (__db == null || __query == null)
+            {
+                throw new ArgumentNullException("Null value passed as argument");
+            }
+            try
+            {
+                readDatabaseRecord(__db, __query, __qualifiedTags);
+            }
+            catch
+            {
+                throw;
+            }
+        }
         public string RxSys_DocID
         {
             get
@@ -1415,7 +1572,7 @@ namespace motCommonLib
     /// </summary>
     public class motPatientRecord : motRecordBase
     {
-        public List<Field> __qualifiedTags;
+        public volatile List<Field> __qualifiedTags;
 
         private void createRecord(string tableAction)
         {
@@ -1510,6 +1667,22 @@ namespace motCommonLib
         public void Clear()
         {
             base.Clear(__qualifiedTags);
+        }
+
+        public void readDatabaseRecord(motDatabase __db, Query __query)
+        {
+            if (__db == null || __query == null)
+            {
+                throw new ArgumentNullException("Null value passed as argument");
+            }
+            try
+            {
+                readDatabaseRecord(__db, __query, __qualifiedTags);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public string RxSys_PatID
@@ -1813,9 +1986,9 @@ namespace motCommonLib
 
                 try
                 {
-                    while(value.IndexOfAny(__junk) > -1 )
+                    while (value.IndexOfAny(__junk) > -1)
                     {
-                        value = value.Remove(value.IndexOfAny(__junk), 1); 
+                        value = value.Remove(value.IndexOfAny(__junk), 1);
                     }
 
                     setField(__qualifiedTags, value, "Phone1");
@@ -2806,6 +2979,21 @@ namespace motCommonLib
                 }
             }
         }
+        public void readDatabaseRecord(motDatabase __db, Query __query)
+        {
+            if (__db == null || __query == null)
+            {
+                throw new ArgumentNullException("Null value passed as argument");
+            }
+            try
+            {
+                readDatabaseRecord(__db, __query, __qualifiedTags);
+            }
+            catch
+            {
+                throw;
+            }
+        }
         public string RxSys_PatID
         {
             get
@@ -3016,7 +3204,7 @@ namespace motCommonLib
 
                 try
                 {
-                    while(value.IndexOfAny(__junk) > -1)
+                    while (value.IndexOfAny(__junk) > -1)
                     {
                         value = value.Remove(value.IndexOfAny(__junk), 1);
                     }
@@ -3523,6 +3711,21 @@ namespace motCommonLib
                 throw new Exception("Failed to insert field. " + e);
             }
         }
+        public void readDatabaseRecord(motDatabase __db, Query __query)
+        {
+            if (__db == null || __query == null)
+            {
+                throw new ArgumentNullException("Null value passed as argument");
+            }
+            try
+            {
+                readDatabaseRecord(__db, __query, __qualifiedTags);
+            }
+            catch
+            {
+                throw;
+            }
+        }
         public string RxSys_LocID
         {
             get
@@ -3769,7 +3972,7 @@ namespace motCommonLib
                     {
                         value = value.Remove(value.IndexOfAny(__junk), 1);
                     }
-                
+
                     setField(__qualifiedTags, value, "Phone");
                 }
                 catch (Exception e)
@@ -3955,6 +4158,21 @@ namespace motCommonLib
             catch (Exception e)
             {
                 throw new Exception("Failed to insert field. " + e);
+            }
+        }
+        public void readDatabaseRecord(motDatabase __db, Query __query)
+        {
+            if (__db == null || __query == null)
+            {
+                throw new ArgumentNullException("Null value passed as argument");
+            }
+            try
+            {
+                readDatabaseRecord(__db, __query, __qualifiedTags);
+            }
+            catch
+            {
+                throw;
             }
         }
         public string RxSys_StoreID
@@ -4319,6 +4537,21 @@ namespace motCommonLib
             catch (Exception e)
             {
                 throw new Exception("Failed to insert field. " + e);
+            }
+        }
+        public void readDatabaseRecord(motDatabase __db, Query __query)
+        {
+            if (__db == null || __query == null)
+            {
+                throw new ArgumentNullException("Null value passed as argument");
+            }
+            try
+            {
+                readDatabaseRecord(__db, __query, __qualifiedTags);
+            }
+            catch
+            {
+                throw;
             }
         }
         public string RxSys_LocID

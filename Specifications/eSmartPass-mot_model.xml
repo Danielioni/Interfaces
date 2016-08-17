@@ -281,7 +281,7 @@
           and is used as a more descriptive form of 'mar text'. I.E. 'Record patient's pulse' Ignored if the time code is not a 
           patient check. -->
         </field>
-        <result]>
+        <result>
             <result status="200">Time code record accepted</result>
             <result status="400">The content was malformed</result>
             <result status="401">The pharmacy ID and/or secret are incorrect.</result>
@@ -439,7 +439,6 @@
             <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
         </result>
     </record>
-
     <record name="Medicine On Time Create Pharmacy" url="https://esmartpass.com/motapi/create_pharmacy">
         <!-- 
         This API call creates a new pharmacy on the eSmartConcepts server. The content type should be 'application/json' with UTF-8 encoding.
@@ -482,7 +481,6 @@
             <result status="406">The content-type should be 'application/json' with UTF-8 encoding</result>
         </result>
     </record>
-
     <record name="Medicine On Time Create Facility" url="https://esmartpass.com/motapi/create_facility">
         <!-- 
         This API call creates a new facility on the eSmartConcepts server. The content type should be 'application/json' with UTF-8 encoding

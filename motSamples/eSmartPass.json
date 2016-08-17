@@ -1,0 +1,52 @@
+//POST / motapi / upload_card_data HTTP / 1.0 Content - Type: application / json Content - Length: 1234
+
+"card": {
+  "pharmacy id": "{5E2504E0-4F89-41D3-9A0C-0305E82C3301}",   
+  "secret": "{3F2504E0-4F89-41D3-9A0C-0305E82C3301}",
+  "organization id": 10,
+  "serial number": "122344567",
+  "is prn": "false",
+
+  "bubbles": [
+    {
+      "1dx": "1",
+      "give date": "02/01/2016",
+      "time code": "00:00 - 23:59",
+
+      "meds": [
+        {
+          "NDC": "1234556",
+          "qty": 2.5
+        },
+        {
+          "NDC": "5432132",
+          "qty": 1
+        },
+        {
+          "NDC": "0092886",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "1dx": "2",
+      "give date": "02/01/2016",   
+      "time code": "00:00 - 23:59", 
+
+      "meds": [
+        {
+          "NDC": "1234556", 
+          "qty": 2.5
+        },
+        {
+          "NDC": "5432132",
+          "qty": 1
+        },
+        {
+          "NDC": "0092886",
+          "qty": 2
+        }
+      ]
+    }
+  ]
+}
