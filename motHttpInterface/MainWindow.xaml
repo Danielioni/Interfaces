@@ -1,0 +1,16 @@
+﻿<Window x:Class="motHttpInterface.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:motHttpInterface"
+        mc:Ignorable="d"
+        Title="Medicine-On-Time to http Listener" Height="350" Width="525" >
+    <Grid>
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="405,30,0,0" VerticalAlignment="Top" Width="97" Height="150" Click="ListenerStart_Click"/>
+        <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="405,185,0,0" VerticalAlignment="Top" Width="97" Height="110" Click="ListenerStop_Click"/>
+        <TextBox x:Name="tbxURI" HorizontalAlignment="Left" Height="23" Margin="127,33,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="266"/>
+        <Label x:Name="lblURI" Content="Listener URI:" Margin="11,0,0,263" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="100" Height="26"/>
+        <TextBox x:Name="tBoxOutput" HorizontalAlignment="Left" Height="234" Margin="18,61,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="375"/>
+    </Grid>
+</Window>
