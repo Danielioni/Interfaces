@@ -5,18 +5,92 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using Newtonsoft.Json;
 
 namespace motCommonLib
 {
-    public class KeyPair
-    {
+    public class  KeyPair
+    { 
+        System.TypeCode __type;
+        System.Type __system_type;
+
         public string Key { get; set; }
-        public string Value { get; set; }
+        public object Value
+        {
+            get
+            {
+                return (System.TypeCode)Value;   
+            }
+
+            set
+            {
+                __system_type = value.GetType();
+                Value = value;
+            }
+        }
+
+        public KeyPair(string k, object v)
+        {
+            Key = k;
+
+            __system_type = v.GetType();
+            Value = v;
+        }
+
+        public KeyPair(string k, Int32 v)
+        {
+            Key = k;
+            Value = v;
+
+            __type = TypeCode.Int32;
+            __system_type = v.GetType();
+
+        }
 
         public KeyPair(string k, string v)
         {
             Key = k;
             Value = v;
+
+            __type = TypeCode.String;
+            __system_type = v.GetType();
+        }
+
+        public KeyPair(string k, bool v)
+        {
+            Key = k;
+            Value = v;
+
+            __type = TypeCode.Boolean;
+            __system_type = v.GetType();
+        }
+
+        public System.TypeCode GetValueType()
+        {
+            return __type;
+        }
+
+        public new string ToString()
+        {
+            switch (__type)
+            {
+                case TypeCode.String:
+                    return string.Format("\"{0}\" : \"{1}\"", Key, Value);
+                    
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    return string.Format("\"{0}\" : {1}", Key, Value);
+
+                case TypeCode.Boolean:
+                    return string.Format("\"{0}\" : {1}", Key, Value.ToString());
+
+                case TypeCode.Object:
+                    return string.Format("[]");
+                
+                default:
+                    return string.Empty;
+            }
         }
     }
 

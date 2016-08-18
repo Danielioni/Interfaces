@@ -13,7 +13,7 @@
       
         <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="512.536,30,0,0" VerticalAlignment="Top" Width="97" Height="88.704" Click="btnStart_Click"/>
         <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="512.536,123.704,0,0" VerticalAlignment="Top" Width="97" Height="87.392" Click="btnStop_Click"/>
-        <Button x:Name="btnExit" Content="Exit" Margin="512.131,216.096,32.536,46.512" Click="btn_Exit_Click"/>
+        <Button x:Name="btnExit" Content="Exit" Margin="512.131,216.096,32.536,46.512"/>
 
         <TextBox x:Name="tbxTargetAddress" HorizontalAlignment="Left" Height="23" Margin="135.691,237.62,0,0" TextWrapping="Wrap" Text="https://esmartpass.com/" VerticalAlignment="Top" Width="255" TextChanged="textBox_TextChanged"/>
         <TextBox x:Name="tbxTargetRoot" HorizontalAlignment="Left" Height="23" Margin="135.691,263.156,0,0" TextWrapping="Wrap" Text="motapi" VerticalAlignment="Top" Width="255"/>

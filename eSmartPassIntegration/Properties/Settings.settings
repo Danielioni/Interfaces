@@ -32,5 +32,8 @@
     <Setting Name="TargetPort" Type="System.String" Scope="User">
       <Value Profile="(Default)">80</Value>
     </Setting>
+    <Setting Name="Secret" Type="System.String" Scope="User">
+      <Value Profile="(Default)">51fab5a8-f216-4258-a01e-ae2bb1d53b9d</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

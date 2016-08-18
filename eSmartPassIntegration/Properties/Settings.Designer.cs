@@ -142,5 +142,17 @@ namespace eSmartPassIntegration.Properties {
                 this["TargetPort"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("51fab5a8-f216-4258-a01e-ae2bb1d53b9d")]
+        public string Secret {
+            get {
+                return ((string)(this["Secret"]));
+            }
+            set {
+                this["Secret"] = value;
+            }
+        }
     }
 }
