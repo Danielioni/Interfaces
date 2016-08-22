@@ -1,42 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
+using System.Data;
+using System.Data.SqlTypes;
+using System.IO;
 
 using motCommonLib;
 using motOutboundLib;
 using motInboundLib;
 
 using System.Net;
-using System.Net.Sockets;
-
-using System.Net.Http;
-
-using System.Net.Http.Headers;
-
-using System.Threading.Tasks;
-
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Authenticators;
 using RestSharp.Deserializers;
 using RestSharp.Validation;
 
-
-using System.Data;
-using System.Data.SqlTypes;
-using System.IO;
 
 namespace eSmartPassIntegration
 {
@@ -475,7 +457,11 @@ namespace eSmartPassIntegration
             { }
         }
 
-   
+        public class motESScrip : motJSONbase
+        {
+
+        }
+
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             //lstMain.Items.Add("Welcome to CamptonLand!");

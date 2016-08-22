@@ -23,39 +23,51 @@ namespace HL7Interface.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
         public string TargetIP {
             get {
                 return ((string)(this["TargetIP"]));
             }
+            set {
+                this["TargetIP"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("24042")]
+        [global::System.Configuration.DefaultSettingValueAttribute("24041")]
         public string TargetPort {
             get {
                 return ((string)(this["TargetPort"]));
             }
+            set {
+                this["TargetPort"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
         public string SourceIP {
             get {
                 return ((string)(this["SourceIP"]));
             }
+            set {
+                this["SourceIP"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("21110")]
+        [global::System.Configuration.DefaultSettingValueAttribute("24042")]
         public string SourcePort {
             get {
                 return ((string)(this["SourcePort"]));
+            }
+            set {
+                this["SourcePort"] = value;
             }
         }
     }

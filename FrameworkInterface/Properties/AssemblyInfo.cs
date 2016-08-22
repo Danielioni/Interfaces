@@ -7,13 +7,13 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HL7Interface")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("FrameworkLTC to MOT HL7 Gateway")]
+[assembly: AssemblyDescription("Medicine-On-Time HL7 Gateway")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("HL7Interface")]
+[assembly: AssemblyCompany("Medicine-On-Time")]
+[assembly: AssemblyProduct("FrameworkLTC2MOT")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Medicine-On-Time")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

@@ -3,7 +3,7 @@
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
-"ProjectName" = "8:FrameworkInstaller"
+"ProjectName" = "8:FrameworksLTC Gateway"
 "LanguageId" = "3:1033"
 "CodePage" = "3:1252"
 "UILanguageId" = "3:1033"
@@ -69,38 +69,44 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_680E7094D2D1F07B26B9172FB1D637BA"
+        "OwnerKey" = "8:_29F1516AE5F7FFB789AA7422B62C57F4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_680E7094D2D1F07B26B9172FB1D637BA"
+        "OwnerKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A6F39A3813AC2EB43E2C03C46EEDC572"
-        "OwnerKey" = "8:_F05BA7B6E30E4A6781A1BC8F51508D79"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A6F39A3813AC2EB43E2C03C46EEDC572"
+        "MsmKey" = "8:_BF268A07DB704D458F8ADC90E9AFA820"
         "OwnerKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A6F39A3813AC2EB43E2C03C46EEDC572"
+        "MsmKey" = "8:_E03E2B3746B3ACAFC9B4FE9702C7CF40"
         "OwnerKey" = "8:_29F1516AE5F7FFB789AA7422B62C57F4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_BF268A07DB704D458F8ADC90E9AFA820"
+        "MsmKey" = "8:_E03E2B3746B3ACAFC9B4FE9702C7CF40"
         "OwnerKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_BF268A07DB704D458F8ADC90E9AFA820"
-        "OwnerKey" = "8:_F05BA7B6E30E4A6781A1BC8F51508D79"
+        "MsmKey" = "8:_ED947A7E890445E6BD746BC7FA0BF9BF"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -111,8 +117,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_06123C6B50CE02860020027882084C61"
+        "MsmKey" = "8:_FE70C7D88148401F95E6BB25F94D41BB"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -131,6 +137,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_29F1516AE5F7FFB789AA7422B62C57F4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E03E2B3746B3ACAFC9B4FE9702C7CF40"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -142,19 +154,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_680E7094D2D1F07B26B9172FB1D637BA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_039D4DB7B0A13188D2F4FA7623D93391"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A6F39A3813AC2EB43E2C03C46EEDC572"
+        "OwnerKey" = "8:_BF268A07DB704D458F8ADC90E9AFA820"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BF268A07DB704D458F8ADC90E9AFA820"
+        "OwnerKey" = "8:_06123C6B50CE02860020027882084C61"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -175,6 +193,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.5"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.5 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.5"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -191,6 +225,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -344,14 +386,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A6F39A3813AC2EB43E2C03C46EEDC572"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_680E7094D2D1F07B26B9172FB1D637BA"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_A6F39A3813AC2EB43E2C03C46EEDC572"
+                    "_680E7094D2D1F07B26B9172FB1D637BA"
                     {
                     "Name" = "8:Newtonsoft.Json.dll"
                     "Attributes" = "3:512"
@@ -406,6 +448,57 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E03E2B3746B3ACAFC9B4FE9702C7CF40"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_E03E2B3746B3ACAFC9B4FE9702C7CF40"
+                    {
+                    "Name" = "8:RestSharp.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:RestSharp.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ED947A7E890445E6BD746BC7FA0BF9BF"
+            {
+            "SourcePath" = "8:..\\motClassLibrary\\NLog.config"
+            "TargetName" = "8:NLog.config"
+            "Tag" = "8:"
+            "Folder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F05BA7B6E30E4A6781A1BC8F51508D79"
             {
             "AssemblyRegister" = "3:1"
@@ -437,6 +530,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE70C7D88148401F95E6BB25F94D41BB"
+            {
+            "SourcePath" = "8:..\\FrameworkInterface\\MOT.ico"
+            "TargetName" = "8:MOT.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -458,7 +571,7 @@
             {
             "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
             "Name" = "8:#1925"
-            "AlwaysCreate" = "11:FALSE"
+            "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Property" = "8:TARGETDIR"
@@ -467,7 +580,7 @@
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_D51AF9070C794682AFA3C901351E78F2"
                     {
                     "Name" = "8:Log"
-                    "AlwaysCreate" = "11:FALSE"
+                    "AlwaysCreate" = "11:TRUE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
                     "Property" = "8:_0DCE0541A8304B1D9245AF01C4C1CBD1"
@@ -505,7 +618,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FrameworkInstaller"
         "ProductCode" = "8:{61F5150D-0324-4F95-93CA-33E09D361053}"
-        "PackageCode" = "8:{F3EBB8BF-DAF2-48F9-96FA-8CB074AD3327}"
+        "PackageCode" = "8:{CD9AD81E-A6FF-49D8-97A4-3DB20618C89B}"
         "UpgradeCode" = "8:{01804129-2BA5-45E0-AF4D-1AD5FBE090FC}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -625,6 +738,20 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C7A5109BA2274325BBACAC24F32D4E6F"
+            {
+            "Name" = "8:Framework to MOT HL7"
+            "Arguments" = "8:"
+            "Description" = "8:HL7 Gateway"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
+            "Folder" = "8:_ED5A97A94C99425EB248EEDBD35ADE03"
+            "WorkingFolder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
+            "Icon" = "8:_FE70C7D88148401F95E6BB25F94D41BB"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {

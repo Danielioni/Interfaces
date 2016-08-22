@@ -31,12 +31,12 @@ namespace motCommonLib
 {
     public class motLookupTables
     {
-        Dictionary<string, string> __repeatCodes;
-        Dictionary<string, string> __doseSchedules;
-        Dictionary<string, string> __drugSchedules;
-        Dictionary<string, int> __rxType;
-
-
+        public volatile Dictionary<string, string> __repeatCodes;
+        public volatile Dictionary<string, string> __doseSchedules;
+        public volatile Dictionary<string, string> __drugSchedules;
+        public volatile Dictionary<string, int> __rxType;
+        public volatile Dictionary<int, int> __fwk_to_mot_days;
+        public volatile Dictionary<string, string> __fwk_zpi_origin_code;
 
         public motLookupTables()
         {
@@ -44,13 +44,30 @@ namespace motCommonLib
             __doseSchedules = new Dictionary<string, string>();
             __drugSchedules = new Dictionary<string, string>();
             __rxType = new Dictionary<string, int>();
+            __fwk_to_mot_days = new Dictionary<int, int>();
+            __fwk_zpi_origin_code = new Dictionary<string, string>();
+
+            __fwk_zpi_origin_code.Add("0", "Not Specified");
+            __fwk_zpi_origin_code.Add("1", "Written");
+            __fwk_zpi_origin_code.Add("2", "Telephone");
+            __fwk_zpi_origin_code.Add("3", "Electronic");
+            __fwk_zpi_origin_code.Add("4", "Facsimilie");
+
+            __fwk_to_mot_days.Add(1, 2); // FWK Day 1 = Mon, MOT Day 1 = Sun
+            __fwk_to_mot_days.Add(2, 3);
+            __fwk_to_mot_days.Add(3, 4);
+            __fwk_to_mot_days.Add(4, 5);
+            __fwk_to_mot_days.Add(5, 6);
+            __fwk_to_mot_days.Add(6, 7);
+
 
             // Basic dose schedules with swag default times
-            __doseSchedules.Add("QD", "0800");                  // Once a day
-            __doseSchedules.Add("BID", "0800,1800");            // Twice a day 
-            __doseSchedules.Add("TID", "0800,1200,1800");       // Three times a day
-            __doseSchedules.Add("QID", "0800,1200,1800,2100");  // Four times a day
-            __doseSchedules.Add("QHS", "2100");                 // Daily at Bedtime
+            __doseSchedules.Add("QD",  "0800{0:00.00}");                                // Once a day
+            __doseSchedules.Add("BID", "0800{0:00.00}1800{0:00.00}");                   // Twice a day 
+            __doseSchedules.Add("TID", "0800{0:00.00}1200{0:00.00}1800");               // Three times a day
+            __doseSchedules.Add("QID", "0800{0:00.00}1200{0:00.00}1800{0:00.00}2100");  // Four times a day
+            __doseSchedules.Add("QHS", "2100{0:00.00}");                                // Daily at Bedtime
+            __doseSchedules.Add("HS",  "2100{0:00.00}");
 
             // Sometimes DEA drug schedules are represented as roman numerals
             __drugSchedules.Add("I", "1");
@@ -62,7 +79,6 @@ namespace motCommonLib
             __drugSchedules.Add("VII", "7");
 
             __rxType.Add("P", 2);
-
         }
     }
 }

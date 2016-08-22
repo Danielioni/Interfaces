@@ -1,0 +1,1282 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="Mot.Shared.Model.Cards" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Card">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="SerialNo" Type="Edm.Int32" />
+        <Property Name="CardStatus" Type="Mot.Shared.Model.Cards.CardStatus" Nullable="false" />
+        <Property Name="PrintDateTime" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="StartTime" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="Days" Type="Mot.Shared.Model.Patients.CardDays" Nullable="false" />
+        <Property Name="PatientId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="CupName" Type="Edm.String" />
+        <Property Name="DueDate" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="DayCareCard" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="CardType" Type="Mot.Shared.Model.Rxes.RxType" Nullable="false" />
+        <Property Name="CardFormat" Type="Mot.Shared.Model.Cards.CardFormat" Nullable="false" />
+        <Property Name="ExcludedRxes" Type="Collection(Edm.Guid)" Nullable="false" />
+        <Property Name="Capacity" Type="Mot.Shared.Model.Patients.CardCapacity" Nullable="false" />
+        <Property Name="FacilityId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="FacilityName" Type="Edm.String" />
+        <Property Name="IsVoid" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="IsReturned" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="IsApproved" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="ApprovedBy" Type="Edm.String" />
+        <Property Name="ApprovedOn" Type="Edm.DateTimeOffset" />
+        <Property Name="DispenseDate" Type="Edm.DateTimeOffset" />
+        <Property Name="BatchId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="ColorName" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Cups" Type="Collection(Mot.Shared.Model.Cards.Cup)" />
+      </EntityType>
+      <EntityType Name="ColorCard">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Name" Type="Edm.String" Nullable="false" />
+        <Property Name="Time12Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time1Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time2Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time3Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time4Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time5Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time6Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time7Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time8Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time9Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time10Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time11Am" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time12Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time1Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time2Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time3Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time4Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time5Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time6Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time7Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time8Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time9Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time10Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Time11Pm" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Monthly" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Weekly" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="PRN" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="Sequential" Type="Mot.Shared.Model.Cards.Color" Nullable="false" />
+        <Property Name="IsDefault" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EntityType Name="Cup">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="CardId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Time" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="ColorCode" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Drugs" Type="Collection(Mot.Shared.Model.Cards.DrugQuantity)" />
+      </EntityType>
+      <EntityType Name="DrugQuantity">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="CupId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="DrugId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="RxQuantities" Type="Collection(Edm.Decimal)" Nullable="false" />
+        <Property Name="DrugName" Type="Edm.String" />
+        <Property Name="Quantity" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Details" Type="Collection(Mot.Shared.Model.Cards.DrugQuantityDetail)" />
+      </EntityType>
+      <EntityType Name="DrugQuantityDetail">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="DrugQuantityId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="RxId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="IsCycleRx" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="RxType" Type="Mot.Shared.Model.Rxes.RxType" Nullable="false" />
+        <Property Name="PrescriberFirstName" Type="Edm.String" />
+        <Property Name="PrescriberLastName" Type="Edm.String" />
+        <Property Name="PrescriberMiddleInitial" Type="Edm.String" />
+        <Property Name="PrescriberTitle" Type="Mot.Shared.Model.Rxes.PrescriberTitle" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EnumType Name="CardStatus">
+        <Member Name="NeedingFill" Value="0" />
+        <Member Name="NeedingApprove" Value="1" />
+      </EnumType>
+      <EnumType Name="CardFormat">
+        <Member Name="Monthly" Value="0" />
+        <Member Name="Weekly" Value="1" />
+        <Member Name="Prn" Value="2" />
+        <Member Name="Sequential" Value="3" />
+        <Member Name="MonthlyTitrating" Value="4" />
+        <Member Name="WeeklyTitrating" Value="5" />
+      </EnumType>
+      <EnumType Name="Color">
+        <Member Name="Yellow" Value="0" />
+        <Member Name="White" Value="1" />
+        <Member Name="Orange" Value="2" />
+        <Member Name="Blue" Value="3" />
+        <Member Name="Red" Value="4" />
+        <Member Name="Green" Value="5" />
+        <Member Name="Gray" Value="6" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model.Drugs" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="ConsultMessage">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Message" Type="Edm.String" Nullable="false" />
+        <Property Name="IsActive" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="IsDefault" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="IsReferToSingleDrug" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EntityType Name="DrugCupCount">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="SizeFactor" Type="Mot.Shared.Model.Drugs.SizeFactor" Nullable="false" />
+        <Property Name="RegularCupCount" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="LargeCupCount" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EntityType Name="Drug">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="NdcNumber" Type="Edm.String" Nullable="false" />
+        <Property Name="TradeName" Type="Edm.String" />
+        <Property Name="DoseForm" Type="Edm.String" />
+        <Property Name="Route" Type="Edm.String" />
+        <Property Name="RxOtc" Type="Mot.Shared.Model.Drugs.RxOtc" Nullable="false" />
+        <Property Name="Strength" Type="Edm.String" />
+        <Property Name="Unit" Type="Edm.String" />
+        <Property Name="PackageTemplate" Type="Mot.Shared.Model.Drugs.PackageTemplate" Nullable="false" />
+        <Property Name="AutoIsolateRx" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="CardVisualDescription" Type="Edm.String" />
+        <Property Name="FullVisualDescription" Type="Edm.String" />
+        <Property Name="RxLabelName" Type="Edm.String" Nullable="false" />
+        <Property Name="DosageCupName" Type="Edm.String" Nullable="false" />
+        <Property Name="Schedule" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ReOrderId" Type="Edm.String" />
+        <Property Name="RxSystemId" Type="Edm.String" />
+        <Property Name="SeqNo" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ShowInPickList" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="ManufacturerId" Type="Edm.Guid" />
+        <Property Name="DrugCupCountId" Type="Edm.Guid" />
+        <Property Name="ImageId" Type="Edm.Guid" />
+        <Property Name="GenericForId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Manufacturer" Type="Mot.Shared.Model.Drugs.Manufacturer">
+          <ReferentialConstraint Property="ManufacturerId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="DrugCupCount" Type="Mot.Shared.Model.Drugs.DrugCupCount">
+          <ReferentialConstraint Property="DrugCupCountId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Image" Type="Mot.Shared.Model.Image">
+          <ReferentialConstraint Property="ImageId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="GenericFor" Type="Mot.Shared.Model.Drugs.GenericFor">
+          <ReferentialConstraint Property="GenericForId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="ConsultMessages" Type="Collection(Mot.Shared.Model.Drugs.ConsultMessage)" />
+      </EntityType>
+      <EntityType Name="DoseInstruction">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Text" Type="Edm.String" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EntityType Name="GenericFor">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Name" Type="Edm.String" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EntityType Name="Manufacturer">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="LabelerCode" Type="Edm.String" Nullable="false" />
+        <Property Name="FirmName" Type="Edm.String" Nullable="false" />
+        <Property Name="ShortName" Type="Edm.String" Nullable="false" />
+        <Property Name="SeqNo" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FdaReg" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Notes" Type="Edm.String" />
+        <Property Name="AddressId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Address" Type="Mot.Shared.Model.Address">
+          <ReferentialConstraint Property="AddressId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <ComplexType Name="DoseInstructionUsageCount">
+        <Property Name="Text" Type="Edm.String" />
+        <Property Name="ScheduleCount" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </ComplexType>
+      <EnumType Name="SizeFactor">
+        <Member Name="FactorCustom" Value="0" />
+        <Member Name="Factor1" Value="1" />
+        <Member Name="Factor2" Value="2" />
+        <Member Name="Factor3" Value="3" />
+        <Member Name="Factor4" Value="4" />
+        <Member Name="Factor5" Value="5" />
+        <Member Name="Factor6" Value="6" />
+        <Member Name="FactorBulk" Value="7" />
+      </EnumType>
+      <EnumType Name="RxOtc">
+        <Member Name="Rx" Value="0" />
+        <Member Name="Otc" Value="1" />
+      </EnumType>
+      <EnumType Name="PackageTemplate">
+        <Member Name="A" Value="0" />
+        <Member Name="B" Value="1" />
+        <Member Name="C" Value="2" />
+        <Member Name="D" Value="3" />
+        <Member Name="E" Value="4" />
+        <Member Name="F" Value="5" />
+        <Member Name="G" Value="6" />
+        <Member Name="H" Value="7" />
+        <Member Name="I" Value="8" />
+        <Member Name="J" Value="9" />
+        <Member Name="K" Value="10" />
+        <Member Name="L" Value="11" />
+        <Member Name="M" Value="12" />
+        <Member Name="N" Value="13" />
+        <Member Name="None" Value="14" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model.Patients" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="DoseSchedule">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Name" Type="Edm.String" Nullable="false" />
+        <Property Name="Definition" Type="Edm.String" Nullable="false" />
+        <Property Name="IsCustom" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="RxOldIdForCustomDs" Type="Edm.String" />
+        <Property Name="DoseScheduleDefaultState" Type="Mot.Shared.Model.Patients.DoseScheduleDefaultState" Nullable="false" />
+        <Property Name="FacilityId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="DoseScheduleItems" Type="Collection(Mot.Shared.Model.Patients.DoseScheduleItem)" ContainsTarget="true" />
+        <NavigationProperty Name="Facility" Type="Mot.Shared.Model.Patients.Facility">
+          <ReferentialConstraint Property="FacilityId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="DoseScheduleItem">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Time" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Dose" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="DoseScheduleId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="DoseSchedule" Type="Mot.Shared.Model.Patients.DoseSchedule">
+          <ReferentialConstraint Property="DoseScheduleId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="DoseInstructions" Type="Collection(Mot.Shared.Model.Drugs.DoseInstruction)" />
+      </EntityType>
+      <EntityType Name="FacilityContact">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Title" Type="Edm.String" />
+        <Property Name="LastName" Type="Edm.String" Nullable="false" />
+        <Property Name="FirstName" Type="Edm.String" Nullable="false" />
+        <Property Name="IsPrimary" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Email" Type="Edm.String" />
+        <Property Name="Notes" Type="Edm.String" />
+        <Property Name="IsReportRecipient" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="FacilityId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Phones" Type="Collection(Mot.Shared.Model.Phone)" ContainsTarget="true" />
+        <NavigationProperty Name="Facility" Type="Mot.Shared.Model.Patients.Facility">
+          <ReferentialConstraint Property="FacilityId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="PatientPrescriber">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="PatientId" Type="Edm.Guid" />
+        <Property Name="PrescriberId" Type="Edm.Guid" />
+        <Property Name="IsCurrent" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="AssignedDate" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Patient" Type="Mot.Shared.Model.Patients.Patient">
+          <ReferentialConstraint Property="PatientId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Prescriber" Type="Mot.Shared.Model.Rxes.Prescriber">
+          <ReferentialConstraint Property="PrescriberId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="Facility">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Name" Type="Edm.String" Nullable="false" />
+        <Property Name="IsDefault" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Email" Type="Edm.String" />
+        <Property Name="Npi" Type="Edm.String" />
+        <Property Name="RxSystemId" Type="Edm.String" />
+        <Property Name="AddressId" Type="Edm.Guid" />
+        <Property Name="StoreId" Type="Edm.Guid" />
+        <Property Name="PatientDefaultSettingsId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Phones" Type="Collection(Mot.Shared.Model.Phone)" ContainsTarget="true" />
+        <NavigationProperty Name="Address" Type="Mot.Shared.Model.Address">
+          <ReferentialConstraint Property="AddressId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Store" Type="Mot.Shared.Model.Store">
+          <ReferentialConstraint Property="StoreId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="PatientDefaultSettings" Type="Mot.Shared.Model.PatientDefaultSettings">
+          <ReferentialConstraint Property="PatientDefaultSettingsId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="FacilityContacts" Type="Collection(Mot.Shared.Model.Patients.FacilityContact)" />
+        <NavigationProperty Name="DoseSchedules" Type="Collection(Mot.Shared.Model.Patients.DoseSchedule)" />
+      </EntityType>
+      <EntityType Name="Patient">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="FirstName" Type="Edm.String" Nullable="false" />
+        <Property Name="LastName" Type="Edm.String" Nullable="false" />
+        <Property Name="MiddleInitial" Type="Edm.String" />
+        <Property Name="Room" Type="Edm.String" />
+        <Property Name="Email" Type="Edm.String" />
+        <Property Name="CupName" Type="Edm.String" Nullable="false" />
+        <Property Name="RxSystemId" Type="Edm.String" />
+        <Property Name="Gender" Type="Mot.Shared.Model.Gender" Nullable="false" />
+        <Property Name="ThumbnailImage" Type="Edm.Binary" />
+        <Property Name="Language" Type="Edm.Int32" />
+        <Property Name="DateOfBirth" Type="Edm.DateTimeOffset" />
+        <Property Name="Height" Type="Edm.String" />
+        <Property Name="Weight" Type="Edm.String" />
+        <Property Name="AdmissionDate" Type="Edm.DateTimeOffset" />
+        <Property Name="ChartNumber" Type="Edm.String" />
+        <Property Name="DueDate" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="Format" Type="Mot.Shared.Model.Patients.CycleFormat" Nullable="false" />
+        <Property Name="CardDays" Type="Mot.Shared.Model.Patients.CardDays" Nullable="false" />
+        <Property Name="CardCapacity" Type="Mot.Shared.Model.Patients.CardCapacity" Nullable="false" />
+        <Property Name="ChartOnly" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Status" Type="Mot.Shared.Model.Patients.Status" Nullable="false" />
+        <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="AddressId" Type="Edm.Guid" />
+        <Property Name="FacilityId" Type="Edm.Guid" />
+        <Property Name="ImageId" Type="Edm.Guid" />
+        <Property Name="ColorCardId" Type="Edm.Guid" />
+        <Property Name="AlternativePrescriberId" Type="Edm.Guid" />
+        <Property Name="DayCarePackage" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Charting" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="FromTime" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ThroughTime" Type="Edm.Int32" Nullable="false" />
+        <Property Name="DayCarePackageDaysList" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Phones" Type="Collection(Mot.Shared.Model.Phone)" ContainsTarget="true" />
+        <NavigationProperty Name="Address" Type="Mot.Shared.Model.Address">
+          <ReferentialConstraint Property="AddressId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Facility" Type="Mot.Shared.Model.Patients.Facility">
+          <ReferentialConstraint Property="FacilityId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Image" Type="Mot.Shared.Model.Image">
+          <ReferentialConstraint Property="ImageId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="ColorCard" Type="Mot.Shared.Model.Cards.ColorCard">
+          <ReferentialConstraint Property="ColorCardId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="AlternativePrescriber" Type="Mot.Shared.Model.Rxes.Prescriber" />
+        <NavigationProperty Name="PatientPrescribers" Type="Collection(Mot.Shared.Model.Patients.PatientPrescriber)" />
+        <NavigationProperty Name="PatientNotes" Type="Collection(Mot.Shared.Model.Patients.Notes.PatientNote)" />
+        <NavigationProperty Name="PatientCare" Type="Mot.Shared.Model.Patients.Care.PatientCare" />
+        <NavigationProperty Name="Rxes" Type="Collection(Mot.Shared.Model.Rxes.Rx)" />
+      </EntityType>
+      <EnumType Name="CardDays">
+        <Member Name="Day1" Value="1" />
+        <Member Name="Day2" Value="2" />
+        <Member Name="Day3" Value="3" />
+        <Member Name="Day4" Value="4" />
+        <Member Name="Day5" Value="5" />
+        <Member Name="Day6" Value="6" />
+        <Member Name="Day7" Value="7" />
+        <Member Name="Day8" Value="8" />
+        <Member Name="Day9" Value="9" />
+        <Member Name="Day10" Value="10" />
+        <Member Name="Day11" Value="11" />
+        <Member Name="Day12" Value="12" />
+        <Member Name="Day13" Value="13" />
+        <Member Name="Day14" Value="14" />
+        <Member Name="Day15" Value="15" />
+        <Member Name="Day16" Value="16" />
+        <Member Name="Day17" Value="17" />
+        <Member Name="Day18" Value="18" />
+        <Member Name="Day19" Value="19" />
+        <Member Name="Day20" Value="20" />
+        <Member Name="Day21" Value="21" />
+        <Member Name="Day22" Value="22" />
+        <Member Name="Day23" Value="23" />
+        <Member Name="Day24" Value="24" />
+        <Member Name="Day25" Value="25" />
+        <Member Name="Day26" Value="26" />
+        <Member Name="Day27" Value="27" />
+        <Member Name="Day28" Value="28" />
+        <Member Name="Day29" Value="29" />
+        <Member Name="Day30" Value="30" />
+        <Member Name="Day31" Value="31" />
+        <Member Name="Day32" Value="32" />
+        <Member Name="Day33" Value="33" />
+        <Member Name="Day34" Value="34" />
+        <Member Name="Day35" Value="35" />
+        <Member Name="Anniversary" Value="36" />
+      </EnumType>
+      <EnumType Name="CycleFormat">
+        <Member Name="Monthly" Value="0" />
+        <Member Name="Weekly" Value="1" />
+      </EnumType>
+      <EnumType Name="CardCapacity">
+        <Member Name="Standard" Value="0" />
+        <Member Name="High" Value="1" />
+        <Member Name="SmartSize" Value="2" />
+      </EnumType>
+      <EnumType Name="DoseScheduleDefaultState">
+        <Member Name="None" Value="0" />
+        <Member Name="DefaultForFacility" Value="1" />
+        <Member Name="DefaultForSystem" Value="2" />
+      </EnumType>
+      <EnumType Name="Status">
+        <Member Name="Active" Value="0" />
+        <Member Name="Hold" Value="1" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Phone">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Number" Type="Edm.String" Nullable="false" />
+        <Property Name="Extension" Type="Edm.String" />
+        <Property Name="Notes" Type="Edm.String" />
+        <Property Name="IsPrimary" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Type" Type="Mot.Shared.Model.PhoneTypes" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EntityType Name="Store">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Name" Type="Edm.String" Nullable="false" />
+        <Property Name="Dea" Type="Edm.String" />
+        <Property Name="Npi" Type="Edm.String" />
+        <Property Name="RxSystemId" Type="Edm.String" />
+        <Property Name="RxPrnStopDays" Type="Mot.Shared.Model.Rxes.RxPrnStopDays" Nullable="false" />
+        <Property Name="GenericForText" Type="Edm.String" />
+        <Property Name="AddressId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Phones" Type="Collection(Mot.Shared.Model.Phone)" ContainsTarget="true" />
+        <NavigationProperty Name="Address" Type="Mot.Shared.Model.Address">
+          <ReferentialConstraint Property="AddressId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="StoreSettings" Type="Collection(Mot.Shared.Model.StoreSettings.StoreSetting)" />
+      </EntityType>
+      <EntityType Name="Address">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Country" Type="Mot.Shared.Model.Country" Nullable="false" />
+        <Property Name="State" Type="Edm.Int32" />
+        <Property Name="Province" Type="Edm.String" />
+        <Property Name="City" Type="Edm.String" />
+        <Property Name="PostalCode" Type="Edm.String" />
+        <Property Name="PoBox" Type="Edm.String" />
+        <Property Name="Address1" Type="Edm.String" />
+        <Property Name="Address2" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EntityType Name="PatientDefaultSettings">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="DefaultColorCardId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="DefaultColorCard" Type="Mot.Shared.Model.Cards.ColorCard">
+          <ReferentialConstraint Property="DefaultColorCardId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="Image">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Content" Type="Edm.Binary" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EnumType Name="Country">
+        <Member Name="NotSet" Value="0" />
+        <Member Name="Afghanistan" Value="1" />
+        <Member Name="Albania" Value="2" />
+        <Member Name="Algeria" Value="3" />
+        <Member Name="Andorra" Value="4" />
+        <Member Name="Angola" Value="5" />
+        <Member Name="AntiguaAndBarbuda" Value="6" />
+        <Member Name="Argentina" Value="7" />
+        <Member Name="Armenia" Value="8" />
+        <Member Name="Australia" Value="9" />
+        <Member Name="Austria" Value="10" />
+        <Member Name="Azerbaijan" Value="11" />
+        <Member Name="Bahamas" Value="12" />
+        <Member Name="Bahrain" Value="13" />
+        <Member Name="Bangladesh" Value="14" />
+        <Member Name="Barbados" Value="15" />
+        <Member Name="Belarus" Value="16" />
+        <Member Name="Belgium" Value="17" />
+        <Member Name="Belize" Value="18" />
+        <Member Name="Benin" Value="19" />
+        <Member Name="Bhutan" Value="20" />
+        <Member Name="Bolivia" Value="21" />
+        <Member Name="BosniaAndHerzegovina" Value="22" />
+        <Member Name="Botswana" Value="23" />
+        <Member Name="Brazil" Value="24" />
+        <Member Name="Brunei" Value="25" />
+        <Member Name="Bulgaria" Value="26" />
+        <Member Name="BurkinaFaso" Value="27" />
+        <Member Name="Burundi" Value="28" />
+        <Member Name="CaboVerde" Value="29" />
+        <Member Name="Cambodia" Value="30" />
+        <Member Name="Cameroon" Value="31" />
+        <Member Name="Canada" Value="32" />
+        <Member Name="CentralAfricanRepublic" Value="33" />
+        <Member Name="Chad" Value="34" />
+        <Member Name="Chile" Value="35" />
+        <Member Name="China" Value="36" />
+        <Member Name="Colombia" Value="37" />
+        <Member Name="Comoros" Value="38" />
+        <Member Name="CongoRepublicOfThe" Value="39" />
+        <Member Name="CongoDemocraticRepublicOfThe" Value="40" />
+        <Member Name="CostaRica" Value="41" />
+        <Member Name="CoteDIvoire" Value="42" />
+        <Member Name="Croatia" Value="43" />
+        <Member Name="Cuba" Value="44" />
+        <Member Name="Cyprus" Value="45" />
+        <Member Name="CzechRepublic" Value="46" />
+        <Member Name="Denmark" Value="47" />
+        <Member Name="Djibouti" Value="48" />
+        <Member Name="Dominica" Value="49" />
+        <Member Name="DominicanRepublic" Value="50" />
+        <Member Name="Ecuador" Value="51" />
+        <Member Name="Egypt" Value="52" />
+        <Member Name="ElSalvador" Value="53" />
+        <Member Name="EquatorialGuinea" Value="54" />
+        <Member Name="Eritrea" Value="55" />
+        <Member Name="Estonia" Value="56" />
+        <Member Name="Ethiopia" Value="57" />
+        <Member Name="Fiji" Value="58" />
+        <Member Name="Finland" Value="59" />
+        <Member Name="France" Value="60" />
+        <Member Name="Gabon" Value="61" />
+        <Member Name="Gambia" Value="62" />
+        <Member Name="Georgia" Value="63" />
+        <Member Name="Germany" Value="64" />
+        <Member Name="Ghana" Value="65" />
+        <Member Name="Greece" Value="66" />
+        <Member Name="Grenada" Value="67" />
+        <Member Name="Guatemala" Value="68" />
+        <Member Name="Guinea" Value="69" />
+        <Member Name="GuineaBissau" Value="70" />
+        <Member Name="Guyana" Value="71" />
+        <Member Name="Haiti" Value="72" />
+        <Member Name="Honduras" Value="73" />
+        <Member Name="Hungary" Value="74" />
+        <Member Name="Iceland" Value="75" />
+        <Member Name="India" Value="76" />
+        <Member Name="Indonesia" Value="77" />
+        <Member Name="Iran" Value="78" />
+        <Member Name="Iraq" Value="79" />
+        <Member Name="Ireland" Value="80" />
+        <Member Name="Israel" Value="81" />
+        <Member Name="Italy" Value="82" />
+        <Member Name="Jamaica" Value="83" />
+        <Member Name="Japan" Value="84" />
+        <Member Name="Jordan" Value="85" />
+        <Member Name="Kazakhstan" Value="86" />
+        <Member Name="Kenya" Value="87" />
+        <Member Name="Kiribati" Value="88" />
+        <Member Name="Kosovo" Value="89" />
+        <Member Name="Kuwait" Value="90" />
+        <Member Name="Kyrgyzstan" Value="91" />
+        <Member Name="Laos" Value="92" />
+        <Member Name="Latvia" Value="93" />
+        <Member Name="Lebanon" Value="94" />
+        <Member Name="Lesotho" Value="95" />
+        <Member Name="Liberia" Value="96" />
+        <Member Name="Libya" Value="97" />
+        <Member Name="Liechtenstein" Value="98" />
+        <Member Name="Lithuania" Value="99" />
+        <Member Name="Luxembourg" Value="100" />
+        <Member Name="Macedonia" Value="101" />
+        <Member Name="Madagascar" Value="102" />
+        <Member Name="Malawi" Value="103" />
+        <Member Name="Malaysia" Value="104" />
+        <Member Name="Maldives" Value="105" />
+        <Member Name="Mali" Value="106" />
+        <Member Name="Malta" Value="107" />
+        <Member Name="MarshallIslands" Value="108" />
+        <Member Name="Mauritania" Value="109" />
+        <Member Name="Mauritius" Value="110" />
+        <Member Name="Mexico" Value="111" />
+        <Member Name="Micronesia" Value="112" />
+        <Member Name="Moldova" Value="113" />
+        <Member Name="Monaco" Value="114" />
+        <Member Name="Mongolia" Value="115" />
+        <Member Name="Montenegro" Value="116" />
+        <Member Name="Morocco" Value="117" />
+        <Member Name="Mozambique" Value="118" />
+        <Member Name="Myanmar" Value="119" />
+        <Member Name="Namibia" Value="120" />
+        <Member Name="Nauru" Value="121" />
+        <Member Name="Nepal" Value="122" />
+        <Member Name="Netherlands" Value="123" />
+        <Member Name="NewZealand" Value="124" />
+        <Member Name="Nicaragua" Value="125" />
+        <Member Name="Niger" Value="126" />
+        <Member Name="Nigeria" Value="127" />
+        <Member Name="NorthKorea" Value="128" />
+        <Member Name="Norway" Value="129" />
+        <Member Name="Oman" Value="130" />
+        <Member Name="Pakistan" Value="131" />
+        <Member Name="Palau" Value="132" />
+        <Member Name="Palestine" Value="133" />
+        <Member Name="Panama" Value="134" />
+        <Member Name="PapuaNewGuinea" Value="135" />
+        <Member Name="Paraguay" Value="136" />
+        <Member Name="Peru" Value="137" />
+        <Member Name="Philippines" Value="138" />
+        <Member Name="Poland" Value="139" />
+        <Member Name="Portugal" Value="140" />
+        <Member Name="Qatar" Value="141" />
+        <Member Name="Romania" Value="142" />
+        <Member Name="Russia" Value="143" />
+        <Member Name="Rwanda" Value="144" />
+        <Member Name="StKittsAndNevis" Value="145" />
+        <Member Name="StLucia" Value="146" />
+        <Member Name="StVincentAndTheGrenadines" Value="147" />
+        <Member Name="Samoa" Value="148" />
+        <Member Name="SanMarino" Value="149" />
+        <Member Name="SaoTomeAndPrincipe" Value="150" />
+        <Member Name="SaudiArabia" Value="151" />
+        <Member Name="Senegal" Value="152" />
+        <Member Name="Serbia" Value="153" />
+        <Member Name="Seychelles" Value="154" />
+        <Member Name="SierraLeone" Value="155" />
+        <Member Name="Singapore" Value="156" />
+        <Member Name="Slovakia" Value="157" />
+        <Member Name="Slovenia" Value="158" />
+        <Member Name="SolomonIslands" Value="159" />
+        <Member Name="Somalia" Value="160" />
+        <Member Name="SouthAfrica" Value="161" />
+        <Member Name="SouthKorea" Value="162" />
+        <Member Name="SouthSudan" Value="163" />
+        <Member Name="Spain" Value="164" />
+        <Member Name="SriLanka" Value="165" />
+        <Member Name="Sudan" Value="166" />
+        <Member Name="Suriname" Value="167" />
+        <Member Name="Swaziland" Value="168" />
+        <Member Name="Sweden" Value="169" />
+        <Member Name="Switzerland" Value="170" />
+        <Member Name="Syria" Value="171" />
+        <Member Name="Taiwan" Value="172" />
+        <Member Name="Tajikistan" Value="173" />
+        <Member Name="Tanzania" Value="174" />
+        <Member Name="Thailand" Value="175" />
+        <Member Name="TimorLeste" Value="176" />
+        <Member Name="Togo" Value="177" />
+        <Member Name="Tonga" Value="178" />
+        <Member Name="TrinidadAndTobago" Value="179" />
+        <Member Name="Tunisia" Value="180" />
+        <Member Name="Turkey" Value="181" />
+        <Member Name="Turkmenistan" Value="182" />
+        <Member Name="Tuvalu" Value="183" />
+        <Member Name="Uganda" Value="184" />
+        <Member Name="Ukraine" Value="185" />
+        <Member Name="UnitedArabEmirates" Value="186" />
+        <Member Name="UnitedKingdom" Value="187" />
+        <Member Name="UnitedStates" Value="188" />
+        <Member Name="Uruguay" Value="189" />
+        <Member Name="Uzbekistan" Value="190" />
+        <Member Name="Vanuatu" Value="191" />
+        <Member Name="VaticanCity" Value="192" />
+        <Member Name="Venezuela" Value="193" />
+        <Member Name="Vietnam" Value="194" />
+        <Member Name="Yemen" Value="195" />
+        <Member Name="Zambia" Value="196" />
+        <Member Name="Zimbabwe" Value="197" />
+      </EnumType>
+      <EnumType Name="States">
+        <Member Name="Alabama" Value="0" />
+        <Member Name="Alaska" Value="1" />
+        <Member Name="Arizona" Value="2" />
+        <Member Name="Arkansas" Value="3" />
+        <Member Name="California" Value="4" />
+        <Member Name="Colorado" Value="5" />
+        <Member Name="Connecticut" Value="6" />
+        <Member Name="Delaware" Value="7" />
+        <Member Name="DistrictOfColumbia" Value="8" />
+        <Member Name="Florida" Value="9" />
+        <Member Name="Georgia" Value="10" />
+        <Member Name="Hawaii" Value="11" />
+        <Member Name="Idaho" Value="12" />
+        <Member Name="Illinois" Value="13" />
+        <Member Name="Indiana" Value="14" />
+        <Member Name="Iowa" Value="15" />
+        <Member Name="Kansas" Value="16" />
+        <Member Name="Kentucky" Value="17" />
+        <Member Name="Louisiana" Value="18" />
+        <Member Name="Maine" Value="19" />
+        <Member Name="Maryland" Value="20" />
+        <Member Name="Massachusetts" Value="21" />
+        <Member Name="Michigan" Value="22" />
+        <Member Name="Minnesota" Value="23" />
+        <Member Name="Mississippi" Value="24" />
+        <Member Name="Missouri" Value="25" />
+        <Member Name="Montana" Value="26" />
+        <Member Name="Nebraska" Value="27" />
+        <Member Name="Nevada" Value="28" />
+        <Member Name="NewHampshire" Value="29" />
+        <Member Name="NewJersey" Value="30" />
+        <Member Name="NewMexico" Value="31" />
+        <Member Name="NewYork" Value="32" />
+        <Member Name="NorthCarolina" Value="33" />
+        <Member Name="NorthDakota" Value="34" />
+        <Member Name="Ohio" Value="35" />
+        <Member Name="Oklahoma" Value="36" />
+        <Member Name="Oregon" Value="37" />
+        <Member Name="Pennsylvania" Value="38" />
+        <Member Name="RhodeIsland" Value="39" />
+        <Member Name="SouthCarolina" Value="40" />
+        <Member Name="SouthDakota" Value="41" />
+        <Member Name="Tennessee" Value="42" />
+        <Member Name="Texas" Value="43" />
+        <Member Name="Utah" Value="44" />
+        <Member Name="Vermont" Value="45" />
+        <Member Name="Virginia" Value="46" />
+        <Member Name="Washington" Value="47" />
+        <Member Name="WestVirginia" Value="48" />
+        <Member Name="Wisconsin" Value="49" />
+        <Member Name="Wyoming" Value="50" />
+      </EnumType>
+      <EnumType Name="PhoneTypes">
+        <Member Name="Work" Value="0" />
+        <Member Name="Home" Value="1" />
+        <Member Name="Fax" Value="2" />
+        <Member Name="Mobile" Value="3" />
+        <Member Name="Other" Value="4" />
+      </EnumType>
+      <EnumType Name="Gender">
+        <Member Name="Unknown" Value="0" />
+        <Member Name="Male" Value="1" />
+        <Member Name="Female" Value="2" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model.Patients.Notes" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="PatientNote">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="PatientId" Type="Edm.Guid" />
+        <Property Name="Text" Type="Edm.String" Nullable="false" />
+        <Property Name="PatientNoteType" Type="Mot.Shared.Model.Patients.Notes.PatientNoteType" Nullable="false" />
+        <Property Name="User" Type="Edm.String" Nullable="false" />
+        <Property Name="DateAndTime" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="IsDisabled" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Patient" Type="Mot.Shared.Model.Patients.Patient">
+          <ReferentialConstraint Property="PatientId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EnumType Name="PatientNoteType">
+        <Member Name="DiagnosisNotes" Value="0" />
+        <Member Name="DietNeeds" Value="1" />
+        <Member Name="Allergies" Value="2" />
+        <Member Name="TreatmentNotes" Value="3" />
+        <Member Name="PharmacistNotes" Value="4" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model.Rxes" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Prescriber">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="FirstName" Type="Edm.String" Nullable="false" />
+        <Property Name="LastName" Type="Edm.String" Nullable="false" />
+        <Property Name="MiddleInitial" Type="Edm.String" />
+        <Property Name="Dea" Type="Edm.String" />
+        <Property Name="Npi" Type="Edm.String" />
+        <Property Name="Email" Type="Edm.String" />
+        <Property Name="RxSystemId" Type="Edm.String" />
+        <Property Name="RefillRequest" Type="Mot.Shared.Model.Rxes.RefillRequest" Nullable="false" />
+        <Property Name="Notes" Type="Edm.String" />
+        <Property Name="AddressId" Type="Edm.Guid" />
+        <Property Name="SpecialtyId" Type="Edm.Guid" />
+        <Property Name="Title" Type="Mot.Shared.Model.Rxes.PrescriberTitle" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Phones" Type="Collection(Mot.Shared.Model.Phone)" ContainsTarget="true" />
+        <NavigationProperty Name="Address" Type="Mot.Shared.Model.Address">
+          <ReferentialConstraint Property="AddressId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Specialty" Type="Mot.Shared.Model.Rxes.Specialty">
+          <ReferentialConstraint Property="SpecialtyId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="Rx">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="RxSystemId" Type="Edm.String" Nullable="false" />
+        <Property Name="Status" Type="Mot.Shared.Model.Rxes.RxStatus" Nullable="false" />
+        <Property Name="DcDate" Type="Edm.DateTimeOffset" />
+        <Property Name="CardSig" Type="Edm.String" Nullable="false" />
+        <Property Name="ReportSig" Type="Edm.String" Nullable="false" />
+        <Property Name="IsSigFieldsLinked" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="QuantityWritten" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="Refills" Type="Edm.Byte" Nullable="false" />
+        <Property Name="WrittenDate" Type="Edm.DateTimeOffset" />
+        <Property Name="StartDate" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="StopDate" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="DoseScheduleCustomId" Type="Edm.Guid" />
+        <Property Name="DrugId" Type="Edm.Guid" />
+        <Property Name="PrescriberId" Type="Edm.Guid" />
+        <Property Name="PatientId" Type="Edm.Guid" />
+        <Property Name="StoreId" Type="Edm.Guid" />
+        <Property Name="FacilityId" Type="Edm.Guid" Nullable="false" />
+        <Property Name="ChartOnly" Type="Edm.Boolean" />
+        <Property Name="Isolate" Type="Edm.Boolean" />
+        <Property Name="PreviousRxId" Type="Edm.Guid" />
+        <Property Name="MailOrder" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Drug" Type="Mot.Shared.Model.Drugs.Drug">
+          <ReferentialConstraint Property="DrugId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Prescriber" Type="Mot.Shared.Model.Rxes.Prescriber">
+          <ReferentialConstraint Property="PrescriberId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Patient" Type="Mot.Shared.Model.Patients.Patient">
+          <ReferentialConstraint Property="PatientId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Store" Type="Mot.Shared.Model.Store">
+          <ReferentialConstraint Property="StoreId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="RxDosageRegimen" Type="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen" />
+        <NavigationProperty Name="PreviousRx" Type="Mot.Shared.Model.Rxes.Rx" />
+      </EntityType>
+      <EntityType Name="Specialty">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Name" Type="Edm.String" />
+        <Property Name="Abbreviation" Type="Edm.String" />
+        <Property Name="SpecialtyGroupId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="SpecialtyGroup" Type="Mot.Shared.Model.Rxes.SpecialtyGroup">
+          <ReferentialConstraint Property="SpecialtyGroupId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="SpecialtyGroup">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Name" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+      </EntityType>
+      <EnumType Name="RxType">
+        <Member Name="Daily" Value="0" />
+        <Member Name="DayOfMonth" Value="1" />
+        <Member Name="Alternating" Value="2" />
+        <Member Name="DayOfWeek" Value="3" />
+        <Member Name="Prn" Value="4" />
+        <Member Name="Sequential" Value="5" />
+        <Member Name="MonthlyTitrating" Value="6" />
+        <Member Name="WeeklyTitrating" Value="7" />
+      </EnumType>
+      <EnumType Name="PrescriberTitle">
+        <Member Name="Md" Value="0" />
+        <Member Name="Pa" Value="1" />
+        <Member Name="Pac" Value="2" />
+        <Member Name="Rn" Value="3" />
+        <Member Name="Np" Value="4" />
+        <Member Name="Do" Value="5" />
+      </EnumType>
+      <EnumType Name="RxPrnStopDays">
+        <Member Name="Month1" Value="29" />
+        <Member Name="Month2" Value="59" />
+        <Member Name="Month3" Value="89" />
+        <Member Name="Month6" Value="180" />
+        <Member Name="Year" Value="364" />
+      </EnumType>
+      <EnumType Name="RefillRequest">
+        <Member Name="NotSet" Value="0" />
+        <Member Name="Fax" Value="1" />
+        <Member Name="Email" Value="2" />
+      </EnumType>
+      <EnumType Name="RxStatus">
+        <Member Name="Active" Value="0" />
+        <Member Name="Hold" Value="1" />
+        <Member Name="Discountinue" Value="2" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model.Rxes.RxRegimens" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="RxDosageRegimen">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="DoseScheduleId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="DoseSchedule" Type="Mot.Shared.Model.Patients.DoseSchedule">
+          <ReferentialConstraint Property="DoseScheduleId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Rx" Type="Mot.Shared.Model.Rxes.Rx" />
+      </EntityType>
+      <EntityType Name="RxWeeklyTitratingRegimen" BaseType="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen">
+        <NavigationProperty Name="AlternatingItems" Type="Collection(Mot.Shared.Model.Rxes.RxRegimens.RxAlternatingItem)" />
+      </EntityType>
+      <EntityType Name="RxMonthlyTitratingRegimen" BaseType="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen">
+        <NavigationProperty Name="AlternatingItems" Type="Collection(Mot.Shared.Model.Rxes.RxRegimens.RxAlternatingItem)" />
+      </EntityType>
+      <EntityType Name="RxAlternatingRegimen" BaseType="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen">
+        <Property Name="RepeatDays" Type="Edm.Int32" Nullable="false" />
+        <NavigationProperty Name="AlternatingItems" Type="Collection(Mot.Shared.Model.Rxes.RxRegimens.RxAlternatingItem)" />
+      </EntityType>
+      <EntityType Name="RxAlternatingItem">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="DoseScheduleItemId" Type="Edm.Guid" />
+        <Property Name="RxDosageRegimenId" Type="Edm.Guid" />
+        <Property Name="DosesList" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="DoseScheduleItem" Type="Mot.Shared.Model.Patients.DoseScheduleItem">
+          <ReferentialConstraint Property="DoseScheduleItemId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="RxDosageRegimen" Type="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen">
+          <ReferentialConstraint Property="RxDosageRegimenId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="RxDayOfWeekRegimen" BaseType="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen">
+        <Property Name="DayOfWeekList" Type="Edm.String" />
+      </EntityType>
+      <EntityType Name="RxDayOfMonthRegimen" BaseType="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen">
+        <Property Name="DayOfMonthList" Type="Edm.String" />
+      </EntityType>
+      <EntityType Name="RxPrnRegimen" BaseType="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen">
+        <Property Name="Quantity" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="StopDays" Type="Edm.Int32" Nullable="false" />
+      </EntityType>
+      <EntityType Name="RxSequentialRegimen" BaseType="Mot.Shared.Model.Rxes.RxRegimens.RxDosageRegimen" />
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model.StoreSettings" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="StoreSetting">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="StoreId" Type="Edm.Guid" />
+        <Property Name="Key" Type="Mot.Shared.Model.StoreSettings.StoreSettingKey" Nullable="false" />
+        <Property Name="ValuesDictionary" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Store" Type="Mot.Shared.Model.Store">
+          <ReferentialConstraint Property="StoreId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EnumType Name="StoreSettingKey">
+        <Member Name="RxNumber" Value="0" />
+        <Member Name="PatientName" Value="1" />
+        <Member Name="DrugRxLabelName" Value="2" />
+        <Member Name="CardSig" Value="3" />
+        <Member Name="StoreNameAndPhoneNumber" Value="4" />
+        <Member Name="AdministrationTime" Value="5" />
+        <Member Name="DrugDetails" Value="6" />
+        <Member Name="LotNoAndExpDate" Value="7" />
+        <Member Name="CardNotice1" Value="8" />
+        <Member Name="CardNotice2" Value="9" />
+        <Member Name="CardNotice3" Value="10" />
+        <Member Name="RxPrnStopDays" Value="11" />
+        <Member Name="GenericForText" Value="12" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model.Users" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="User">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="LastName" Type="Edm.String" Nullable="false" />
+        <Property Name="FirstName" Type="Edm.String" Nullable="false" />
+        <Property Name="Login" Type="Edm.String" Nullable="false" />
+        <Property Name="Initials" Type="Edm.String" Nullable="false" />
+        <Property Name="Notes" Type="Edm.String" />
+        <Property Name="Role" Type="Mot.Shared.Model.Users.Roles" Nullable="false" />
+        <Property Name="IsExitPrompt" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="IsLinkedToWindowsAccount" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Password" Type="Edm.String" />
+        <Property Name="StoreId" Type="Edm.Guid" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Store" Type="Mot.Shared.Model.Store">
+          <ReferentialConstraint Property="StoreId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EnumType Name="Roles">
+        <Member Name="Supervisor" Value="0" />
+        <Member Name="Pharmacist" Value="1" />
+        <Member Name="Technician" Value="2" />
+        <Member Name="MOT" Value="3" />
+        <Member Name="Accountant" Value="4" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="System.Collections.Generic" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <ComplexType Name="KeyValuePair_2OfGuid_Int32">
+        <Property Name="Key" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Value" Type="Edm.Int32" Nullable="false" />
+      </ComplexType>
+      <ComplexType Name="KeyValuePair_2OfPatientNoteType_Int32" />
+      <ComplexType Name="KeyValuePair_2OfDateTime_Int32">
+        <Property Name="Key" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="Value" Type="Edm.Int32" Nullable="false" />
+      </ComplexType>
+      <ComplexType Name="KeyValuePair_2OfInt32_Int32">
+        <Property Name="Key" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Value" Type="Edm.Int32" Nullable="false" />
+      </ComplexType>
+    </Schema>
+    <Schema Namespace="Mot.Shared.Model.Patients.Care" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="PatientCare">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="SocialSecurityNumber" Type="Edm.String" />
+        <Property Name="MedicareId" Type="Edm.String" />
+        <Property Name="MedicaidId" Type="Edm.String" />
+        <Property Name="PrimaryInsuranceName" Type="Edm.String" />
+        <Property Name="PrimaryPolicyId" Type="Edm.String" />
+        <Property Name="PrimaryGroupId" Type="Edm.String" />
+        <Property Name="AlternateInsuranceName" Type="Edm.String" />
+        <Property Name="AlternativePolicyId" Type="Edm.String" />
+        <Property Name="AlternativeGroupId" Type="Edm.String" />
+        <Property Name="HipaaDataTransmitAuthentication" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="CodeStatus" Type="Mot.Shared.Model.Patients.Care.PatientCareCodeStatus" Nullable="false" />
+        <Property Name="CodeStatusLimitedCodeOptions" Type="Mot.Shared.Model.Patients.Care.PatientCareCodeStatusLimitedCodeOptions" Nullable="false" />
+        <Property Name="HippaChangeAuthorLogin" Type="Edm.String" />
+        <Property Name="HippaChangeDate" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Version" Type="Edm.Int64" Nullable="false" />
+        <NavigationProperty Name="Patient" Type="Mot.Shared.Model.Patients.Patient" />
+      </EntityType>
+      <EnumType Name="PatientCareCodeStatus" UnderlyingType="Edm.Byte">
+        <Member Name="NotSet" Value="0" />
+        <Member Name="Dnr" Value="1" />
+        <Member Name="LimitedCode" Value="2" />
+        <Member Name="FullCode" Value="3" />
+      </EnumType>
+      <EnumType Name="PatientCareCodeStatusLimitedCodeOptions" UnderlyingType="Edm.Byte">
+        <Member Name="NotSet" Value="0" />
+        <Member Name="Chemical" Value="1" />
+        <Member Name="Dni" Value="2" />
+      </EnumType>
+    </Schema>
+    <Schema Namespace="Mot" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Action Name="SetCardsSerialNo" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Cards.Card)" />
+        <Parameter Name="BatchIds" Type="Collection(Edm.Guid)" Nullable="false" />
+        <ReturnType Type="Collection(System.Collections.Generic.KeyValuePair_2OfGuid_Int32)" Nullable="false" />
+      </Action>
+      <Action Name="RemoveNotPrintedCards" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Cards.Card)" />
+        <Parameter Name="BatchIds" Type="Collection(Edm.Guid)" Nullable="false" />
+      </Action>
+      <Function Name="PopulatePatientCards" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Mot.Shared.Model.Patients.Patient" />
+        <ReturnType Type="Collection(Mot.Shared.Model.Cards.Card)" />
+      </Function>
+      <Action Name="PopulatePatientCardsForRxPreviewOnly" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Mot.Shared.Model.Patients.Patient" />
+        <Parameter Name="Rx" Type="Mot.Shared.Model.Rxes.Rx" />
+        <ReturnType Type="Collection(Mot.Shared.Model.Cards.Card)" />
+      </Action>
+      <Action Name="PopulateCardsForRxes" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Patients.Patient)" />
+        <Parameter Name="Rxes" Type="Collection(Mot.Shared.Model.Rxes.Rx)" />
+        <ReturnType Type="Collection(Mot.Shared.Model.Cards.Card)" />
+      </Action>
+      <Function Name="GetPatientNotesSummary" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Patients.Notes.PatientNote)" />
+        <Parameter Name="PatientId" Type="Edm.Guid" Nullable="false" />
+        <ReturnType Type="Collection(System.Collections.Generic.KeyValuePair_2OfPatientNoteType_Int32)" Nullable="false" />
+      </Function>
+      <Function Name="GetPastDuePatientsCount" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Patients.Patient)" />
+        <Parameter Name="StoreId" Type="Edm.Guid" Nullable="false" />
+        <ReturnType Type="Edm.Int32" Nullable="false" />
+      </Function>
+      <Action Name="GetGenericForsStartsWith" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Drugs.GenericFor)" />
+        <Parameter Name="value" Type="Edm.String" Unicode="false" />
+        <ReturnType Type="Collection(Mot.Shared.Model.Drugs.GenericFor)" />
+      </Action>
+      <Function Name="GetDueDates" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Patients.Patient)" />
+        <Parameter Name="FacilityId" Type="Edm.Guid" Nullable="false" />
+        <ReturnType Type="Collection(System.Collections.Generic.KeyValuePair_2OfDateTime_Int32)" Nullable="false" />
+      </Function>
+      <Function Name="GetDueDatesByRange" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Patients.Patient)" />
+        <Parameter Name="StoreId" Type="Edm.Guid" Nullable="false" />
+        <Parameter Name="StartDate" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Parameter Name="EndDate" Type="Edm.DateTimeOffset" Nullable="false" />
+        <ReturnType Type="Collection(System.Collections.Generic.KeyValuePair_2OfDateTime_Int32)" Nullable="false" />
+      </Function>
+      <Function Name="GetDoseInstructionCounts" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Drugs.DoseInstruction)" />
+        <ReturnType Type="Collection(Mot.Shared.Model.Drugs.DoseInstructionUsageCount)" />
+      </Function>
+      <Function Name="GetCurrentUser" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Users.User)" />
+        <ReturnType Type="Mot.Shared.Model.Users.User" />
+      </Function>
+      <Action Name="Search" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Drugs.Drug)" />
+        <Parameter Name="term" Type="Edm.String" Unicode="false" />
+        <ReturnType Type="Collection(Mot.Shared.Model.Drugs.Drug)" />
+      </Action>
+      <Function Name="GetDoseSchedulesUsagesCount" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Patients.DoseSchedule)" />
+        <Parameter Name="FacilityId" Type="Edm.Guid" Nullable="false" />
+        <ReturnType Type="Collection(System.Collections.Generic.KeyValuePair_2OfGuid_Int32)" Nullable="false" />
+      </Function>
+      <Action Name="ChooseStore" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Mot.Shared.Model.Users.User" />
+        <Parameter Name="StoreId" Type="Edm.Guid" Nullable="false" />
+      </Action>
+      <Action Name="ChangePassword" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Mot.Shared.Model.Users.User)" />
+        <Parameter Name="UserId" Type="Edm.Guid" Nullable="false" />
+        <Parameter Name="OldPassword" Type="Edm.String" Unicode="false" />
+        <Parameter Name="Password" Type="Edm.String" Unicode="false" />
+      </Action>
+      <EntityContainer Name="Container">
+        <EntitySet Name="Cards" EntityType="Mot.Shared.Model.Cards.Card">
+          <NavigationPropertyBinding Path="Cups" Target="Cups" />
+        </EntitySet>
+        <EntitySet Name="ColorCards" EntityType="Mot.Shared.Model.Cards.ColorCard" />
+        <EntitySet Name="ConsultMessages" EntityType="Mot.Shared.Model.Drugs.ConsultMessage" />
+        <EntitySet Name="Cups" EntityType="Mot.Shared.Model.Cards.Cup">
+          <NavigationPropertyBinding Path="Drugs" Target="DrugQuantities" />
+        </EntitySet>
+        <EntitySet Name="DoseSchedules" EntityType="Mot.Shared.Model.Patients.DoseSchedule">
+          <NavigationPropertyBinding Path="Facility" Target="Facilities" />
+        </EntitySet>
+        <EntitySet Name="DrugCupCounts" EntityType="Mot.Shared.Model.Drugs.DrugCupCount" />
+        <EntitySet Name="DrugQuantities" EntityType="Mot.Shared.Model.Cards.DrugQuantity" />
+        <EntitySet Name="Drugs" EntityType="Mot.Shared.Model.Drugs.Drug">
+          <NavigationPropertyBinding Path="Manufacturer" Target="Manufacturers" />
+          <NavigationPropertyBinding Path="DrugCupCount" Target="DrugCupCounts" />
+          <NavigationPropertyBinding Path="GenericFor" Target="GenericFors" />
+          <NavigationPropertyBinding Path="ConsultMessages" Target="ConsultMessages" />
+        </EntitySet>
+        <EntitySet Name="FacilityContacts" EntityType="Mot.Shared.Model.Patients.FacilityContact">
+          <NavigationPropertyBinding Path="Facility" Target="Facilities" />
+        </EntitySet>
+        <EntitySet Name="DoseInstructions" EntityType="Mot.Shared.Model.Drugs.DoseInstruction" />
+        <EntitySet Name="GenericFors" EntityType="Mot.Shared.Model.Drugs.GenericFor" />
+        <EntitySet Name="Manufacturers" EntityType="Mot.Shared.Model.Drugs.Manufacturer" />
+        <EntitySet Name="PatientNotes" EntityType="Mot.Shared.Model.Patients.Notes.PatientNote">
+          <NavigationPropertyBinding Path="Patient" Target="Patients" />
+        </EntitySet>
+        <EntitySet Name="PatientPrescribers" EntityType="Mot.Shared.Model.Patients.PatientPrescriber">
+          <NavigationPropertyBinding Path="Patient" Target="Patients" />
+          <NavigationPropertyBinding Path="Prescriber" Target="Prescribers" />
+        </EntitySet>
+        <EntitySet Name="Prescribers" EntityType="Mot.Shared.Model.Rxes.Prescriber">
+          <NavigationPropertyBinding Path="Specialty" Target="Specialties" />
+        </EntitySet>
+        <EntitySet Name="RxWeeklyTitratingRegimens" EntityType="Mot.Shared.Model.Rxes.RxRegimens.RxWeeklyTitratingRegimen">
+          <NavigationPropertyBinding Path="DoseSchedule" Target="DoseSchedules" />
+          <NavigationPropertyBinding Path="Rx" Target="Rxes" />
+        </EntitySet>
+        <EntitySet Name="RxMonthlyTitratingRegimens" EntityType="Mot.Shared.Model.Rxes.RxRegimens.RxMonthlyTitratingRegimen">
+          <NavigationPropertyBinding Path="DoseSchedule" Target="DoseSchedules" />
+          <NavigationPropertyBinding Path="Rx" Target="Rxes" />
+        </EntitySet>
+        <EntitySet Name="RxAlternatingRegimens" EntityType="Mot.Shared.Model.Rxes.RxRegimens.RxAlternatingRegimen">
+          <NavigationPropertyBinding Path="DoseSchedule" Target="DoseSchedules" />
+          <NavigationPropertyBinding Path="Rx" Target="Rxes" />
+        </EntitySet>
+        <EntitySet Name="Rxes" EntityType="Mot.Shared.Model.Rxes.Rx">
+          <NavigationPropertyBinding Path="Drug" Target="Drugs" />
+          <NavigationPropertyBinding Path="Prescriber" Target="Prescribers" />
+          <NavigationPropertyBinding Path="Patient" Target="Patients" />
+          <NavigationPropertyBinding Path="Store" Target="Stores" />
+          <NavigationPropertyBinding Path="PreviousRx" Target="Rxes" />
+        </EntitySet>
+        <EntitySet Name="Specialties" EntityType="Mot.Shared.Model.Rxes.Specialty" />
+        <EntitySet Name="StoreSettings" EntityType="Mot.Shared.Model.StoreSettings.StoreSetting">
+          <NavigationPropertyBinding Path="Store" Target="Stores" />
+        </EntitySet>
+        <EntitySet Name="Facilities" EntityType="Mot.Shared.Model.Patients.Facility">
+          <NavigationPropertyBinding Path="Store" Target="Stores" />
+          <NavigationPropertyBinding Path="FacilityContacts" Target="FacilityContacts" />
+          <NavigationPropertyBinding Path="DoseSchedules" Target="DoseSchedules" />
+        </EntitySet>
+        <EntitySet Name="Patients" EntityType="Mot.Shared.Model.Patients.Patient">
+          <NavigationPropertyBinding Path="Facility" Target="Facilities" />
+          <NavigationPropertyBinding Path="ColorCard" Target="ColorCards" />
+          <NavigationPropertyBinding Path="AlternativePrescriber" Target="Prescribers" />
+          <NavigationPropertyBinding Path="PatientPrescribers" Target="PatientPrescribers" />
+          <NavigationPropertyBinding Path="PatientNotes" Target="PatientNotes" />
+          <NavigationPropertyBinding Path="Rxes" Target="Rxes" />
+        </EntitySet>
+        <EntitySet Name="Stores" EntityType="Mot.Shared.Model.Store">
+          <NavigationPropertyBinding Path="StoreSettings" Target="StoreSettings" />
+        </EntitySet>
+        <EntitySet Name="Users" EntityType="Mot.Shared.Model.Users.User">
+          <NavigationPropertyBinding Path="Store" Target="Stores" />
+        </EntitySet>
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

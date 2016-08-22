@@ -94,6 +94,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specifications", "Specifications", "{F250817F-FC96-4E20-8AED-240C1C0935CC}"
 	ProjectSection(SolutionItems) = preProject
 		Specifications\eSmartPass-mot_model.xml = Specifications\eSmartPass-mot_model.xml
+		MOT Interface Spec.xml = MOT Interface Spec.xml
 		Specifications\PioneerRX Universal Interface.xml = Specifications\PioneerRX Universal Interface.xml
 	EndProjectSection
 EndProject

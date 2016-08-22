@@ -7,6 +7,7 @@ using System.IO;
 
 using motInboundLib;
 using motCommonLib;
+using System.Linq;
 
 namespace HL7Interface
 {
@@ -23,6 +24,8 @@ namespace HL7Interface
         volatile string __source_ip = string.Empty;
         volatile string __source_port = string.Empty;
 
+        motLookupTables __lookup = new motLookupTables();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -38,7 +41,8 @@ namespace HL7Interface
             //
             // __listener.EventHandler += __mumbleEvent;
 
-
+            __source_port = "24042";
+            __target_port = "24041";
 
             __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
 
@@ -53,16 +57,456 @@ namespace HL7Interface
         {
 
         }
-
         public void update_message_list()
         { }
+
+        private string __parse_framework_dose_schedule(string __pattern, int __tq1_record_rx_type, Dictionary<string, string> __fields, motPrescriptionRecord __pr)
+        {
+
+            //  Frameworks repeat patterns are:
+            //
+            //  D (Daily)           QJ# where 1 == Monday - QJ123 = MWF, in MOT QJ123 = STT
+            //  E (Every x Days)    Q#D e.g. Q2D is every 2nd s
+            //  M (Monthly)         QL#,#,... e.g. QL3 QL1,15 QL1,5,10,20
+
+            __pr.DoseScheduleName = __pattern;
+
+            // Brute force the determination
+            if (__pattern.Contains("J"))   // DoW field, Sunday = 1 "XX0XX0"
+            {
+                string __number_pattern, __new_pattern = string.Empty;
+                char[] __bytes = new char[7];
+
+                // Each digit that follows J -- (n-1) to match MoT legacy interface
+                __number_pattern = __pattern.Substring(__pattern.IndexOf("J") + 1);
+
+                foreach (char __n in __number_pattern)
+                {
+                    __bytes[__lookup.__fwk_to_mot_days[ Convert.ToInt16(__n.ToString()) ] ] = 'X';
+                }
+
+                __pr.DoW = __bytes.ToString();
+                __pr.RxType = "5";
+
+                if(__tq1_record_rx_type > 0 && __tq1_record_rx_type != 5)
+                {
+                    // Mixing record types -- invalid scrip, bounce it.
+                    return null;
+                }
+
+                __pr.DoseTimesQtys = string.Format("{0}{1:00.00}", __assign("TQ1-4", __fields), Convert.ToDouble(__assign("TQ1-2-1", __fields)));
+
+            }
+            else if (__pattern.Contains("D"))  // Daily 
+            {
+                if (__tq1_record_rx_type > 0 && __tq1_record_rx_type != 18)
+                {
+                    // Mixing record types -- invalid scrip, bounce it.
+                    return null;
+                }
+
+                __pr.RxType = "18";
+                __pr.MDOMStart = __pattern.Substring(1,1);  // Extact the number 
+                __pr.DoseScheduleName = __assign("TQ1-3-1", __fields);
+                __pr.SpecialDoses += string.Format("{0}{1:00.00}", __assign("TQ1-4", __fields), Convert.ToDouble(__assign("TQ1-2-1", __fields)));
+            }
+            else if (__pattern.Contains("L")) // Monthly TCustom
+            {
+                char[] __toks = { ',' };                
+
+                __pattern = __pattern.Substring(2);
+                string[] __days = __pattern.Split(__toks);
+                string[] __month = new string[31];
+
+                int i = 0;
+                while(i<__month.Length)
+                {
+                    __month[i++] = "0.00";
+                }
+
+                foreach(string __d in __days)
+                {
+                    __month[Convert.ToInt16(__d) - 1] = string.Format("{0:0.00}", Convert.ToDouble(__assign("TQ1-2-1", __fields)));
+                }
+
+                if (__tq1_record_rx_type > 0 && __tq1_record_rx_type != 20)
+                {
+                    // Mixing record types -- invalid scrip, bounce it.
+                    return null;
+                }
+
+                __pr.RxType = "20";
+
+                i = 1;
+                while (i < __month.Length)
+                {
+                    __month[0] +=__month[i++];
+                }
+
+                string __tmp_dose = string.Format("{0}{1:00.00}", __assign("TQ1-4", __fields), Convert.ToDouble(__assign("TQ1-2-1", __fields))); 
+
+                __pr.SpecialDoses += __month[0];  // += as it could be additive (trirating)
+                __pr.DoseTimesQtys = string.Format("{0}{1:00.00}", __assign("TQ1-4", __fields), Convert.ToDouble(__assign("TQ1-2-1", __fields)));
+            }
+
+            // Get the Time/Qtys
+            return string.Format("{0}{1:00.00}", __assign("TQ1-4", __fields), Convert.ToDouble(__assign("TQ1-2-1", __fields)));
+        }
+        bool _is_framework_dose_schedule(string __sched)
+        {
+            bool __has_num = __sched.Any(c => char.IsDigit(c));
+
+            if (__sched.Length == 3 && __sched[0] == 'Q' && __sched[2] == 'D' && __has_num)
+                return true;
+
+            if (__sched.Length == 3 && __sched[0] == 'Q' && __sched[1] == 'J' && __has_num) 
+                return true;
+
+            if (__sched[0] == 'Q' && __sched[1] == 'L' && __has_num) 
+                return true;
+
+
+            return false;
+        }
+
+        public string __process_AL1(Dictionary<string,string> __fields)
+        {
+            return string.Format("Code: {0}\nDesc: {1}\nSeverity: {2}\nReaction: {3}\nID Date: {4}\n******\n",
+                                             __assign("AL1-2", __fields), __assign("AL1-3", __fields), __assign("AL1-4", __fields), __assign("AL1-5", __fields), __assign("AL1-6", __fields));
+        }
+        private string __process_DG1(Dictionary<string,string> __fields)
+        {
+            return string.Format("Coding Method: {0}\nDiag Code: {1}\nDesc: {2}\nDate: {3}\nType: {4}\nMajor Catagory: {5}\nRelated Group: {6}\n******\n",
+                                               __assign("DG1-2", __fields), __assign("DG1-3-1", __fields), __assign("DG1-4", __fields), __assign("DG1-5-1", __fields), __assign("DG1-6", __fields), __assign("DG1-7-1", __fields), __assign("DG1-8-1", __fields));
+        }
+        private string __process_EVN(Dictionary<string, string> __fields)
+        {
+            return  __assign("EVN-1", __fields);
+        }
+        private void __process_IN1(motPatientRecord __pr, Dictionary<string, string> __fields)
+        {
+            __pr.InsName = __assign("IN1-1-4", __fields);
+
+            // No Insurancec Policy Number per se, but there is a group name(1-9) and a group number(1-8) 
+            __pr.InsPNo = __assign("IN1-1-9", __fields) + "-" + __assign("IN1-1-8", __fields);
+        }
+        private void __process_IN2(motPatientRecord __pr, Dictionary<string, string> __fields)
+        {
+            __pr.SSN = __assign("IN2-1", __fields);
+        }
+        private string __process_NK1(Dictionary<string,string>__fields)
+        {
+            return string.Format("{0} {1} {2} [{3}]\n",
+                                    __assign("NK1-2-2", __fields), __assign("NK1-2-3", __fields), __assign("NK1-2-1", __fields), __assign("NK1-3-1", __fields));
+        }
+        private string __process_NTE(Dictionary<string, string> __fields)
+        {
+            return __assign("NTE-3", __fields);
+        }
+        private void __process_OBX(motPatientRecord __pr, Dictionary<string,string>__fields)
+        {
+            if (__assign("OBX-3-2", __fields).ToLower().Contains("weight"))
+            {
+                if (__assign("OBX-6-1", __fields).ToLower().Contains("kg"))
+                {
+                    double __double_tmp = Convert.ToDouble(__assign("OBX-5", __fields));
+                    __double_tmp *= 2.2;
+                    __pr.Weight = Convert.ToInt32(__double_tmp);
+                }
+                else
+                {
+                    __pr.Weight = Convert.ToInt32(__assign("OBX-3-2", __fields));
+                }
+            }
+
+            if (__assign("OBX-3-2", __fields).ToLower().Contains("height"))
+            {
+
+                if (__assign("OBX-6-1", __fields).ToLower().Contains("cm"))
+                {
+                    double __double_tmp = Convert.ToDouble(__assign("OBX-5", __fields));
+                    __double_tmp *= 2.54;
+                    __pr.Height = Convert.ToInt32(__double_tmp);
+                }
+                else
+                {
+                    __pr.Height = Convert.ToInt32(__assign("OBX-3-2", __fields));
+                }
+            }
+        }
+        private void __process_ORC(motLocationRecord __loc, motPrescriberRecord __doc, motPatientRecord __pr, motPrescriptionRecord __scrip, Dictionary<string, string> __fields)
+        {
+            switch (__assign("ORC-1", __fields))
+            {
+                case "NW":
+                    break;
+
+                case "DC":
+                    __scrip.DiscontinueDate = DateTime.Now.ToString();
+                    break;
+
+                case "RF":
+                case "XO":
+                    break;
+
+                case "CA":
+                    __scrip.Status = "0";
+                    break;
+
+                case "RE":
+                default:
+                    break;
+            }
+            __loc.RxSys_LocID = __assign("ORC-2-1", __fields);
+            __loc.LocationName = __assign("ORC-21", __fields);
+            __loc.Address1 = __assign("ORC-22-1", __fields);
+            __loc.Address2 = __assign("ORC-22-2", __fields);
+            __loc.City = __assign("ORC-22-3", __fields);
+            __loc.State = __assign("ORC-22-4", __fields);
+            __loc.PostalCode = __assign("ORC-22-5", __fields);
+            __loc.Phone = __assign("ORC-23", __fields);
+
+            __doc.RxSys_DocID = __assign("ORC-12-1", __fields);
+            __doc.LastName = __assign("ORC-12-2", __fields);
+            __doc.FirstName = __assign("ORC-12-3", __fields);
+            __doc.Address1 = __assign("ORC-24-1", __fields);
+            __doc.Address2 = __assign("ORC-24-2", __fields);
+            __doc.City = __assign("ORC-24-3", __fields);
+            __doc.State = __assign("ORC-24-4", __fields);
+            __doc.PostalCode = __assign("ORC-24-5", __fields);
+
+            __pr.RxSys_DocID = __doc.RxSys_DocID;
+            __scrip.RxSys_DocID = __doc.RxSys_DocID;
+        }
+        private void __process_PID(motPatientRecord __pr, Dictionary<string,string> __fields)
+        {
+            string __tmp = string.Empty;
+
+            //
+            // PID-2-1, PID-3-1, PID-4-1 have the Patient ID. Sample A01 records have a blank PID-2 and populated 
+            // PID-3-1, though the RDE_O11 is the reverse.  Try them both and take what's there.  3-1 wins in a draw
+            // 
+            if (!string.IsNullOrEmpty(__assign("PID-2-1", __fields)))
+            {
+                __pr.RxSys_PatID = __assign("PID-2-1", __fields);
+            }
+            else if (!string.IsNullOrEmpty(__assign("PID-3-1", __fields)))
+            {
+                if (!string.IsNullOrEmpty(__tmp))
+                {
+                    __pr.RxSys_PatID = __assign("PID-3-1", __fields);
+                }
+            }
+            else if (!string.IsNullOrEmpty(__assign("PID-4-1", __fields)))
+            {
+                if (!string.IsNullOrEmpty(__tmp))
+                {
+                    __pr.RxSys_PatID = __assign("PID-4-1", __fields);
+                }
+            }
+            else
+            {
+                __pr.RxSys_PatID = "000000";
+            }
+
+            /*
+            __tmp = __assign("PID-2", __fields);
+            if (!string.IsNullOrEmpty(__tmp))
+            {
+                __pr.RxSys_PatID = __tmp;
+            }
+
+            __tmp = __assign("PID-3-1", __fields);
+            if (!string.IsNullOrEmpty(__tmp))
+            {
+                __pr.RxSys_PatID = __tmp;
+            }
+            */
+
+            __pr.LastName = __assign("PID-5-1", __fields);
+            __pr.FirstName = __assign("PID-5-2", __fields);
+            __pr.MiddleInitial = __assign("PID-5-3", __fields);
+            __pr.DOB = __assign("PID-7", __fields).Substring(0, 8);  // Remove the timestamp
+            __pr.Gender = __assign("PID-8", __fields).Substring(0, 1);
+            __pr.Address1 = __assign("PID-11-1", __fields);
+            __pr.Address2 = __assign("PID-11-2", __fields);
+            __pr.City = __assign("PID-11-3", __fields);
+            __pr.State = __assign("PID-11-4", __fields);
+            __pr.PostalCode = __assign("PID-11-5", __fields);
+            __pr.Phone1 = __assign("PID-13-1", __fields);
+            __pr.WorkPhone = __assign("PID-14-1", __fields);
+            __pr.SSN = __assign("PID-19", __fields);
+
+            //__scrip.RxSys_PatID = __pr.RxSys_PatID;
+        }
+        private void __process_PV1(motPrescriberRecord __doc, motPatientRecord __pr, Dictionary<string, string> __fields)
+        {
+            __doc.RxSys_DocID = __assign("PV1-7-1", __fields);
+            __doc.LastName = __assign("PV1-7-2", __fields);
+            __doc.FirstName = __assign("PV1-7-3", __fields);
+            __doc.MiddleInitial = __assign("PV1-7-4", __fields).Substring(0, 1);
+        }
+        private void __process_RXC(motPrescriptionRecord __scrip, Dictionary<string, string> __fields)  // Process Compound Components
+        {
+            __scrip.Comments += "Compound Order Segment\n__________________\n";
+            __scrip.Comments += "Component Type:  " + __assign("RXC-1", __fields);
+            __scrip.Comments += "Component Amount " + __assign("RXC-3", __fields);
+            __scrip.Comments += "Component Units  " + __assign("RXC-4-1", __fields);
+            __scrip.Comments += "Component Strength" + __assign("RXC-5", __fields);
+            __scrip.Comments += "Component Strngth Units  " + __assign("RXC-6-1", __fields);
+            __scrip.Comments += "Component Drug Strength Volume " + __assign("RXC-8", __fields);
+            __scrip.Comments += "Component Drug Strength Volume Units" + __assign("RXC-9-1", __fields);
+        }
+        private void __process_RXD(motPrescriptionRecord __scrip, motDrugRecord __drug, Dictionary<string,string> __fields)
+        {
+            __scrip.RxSys_DrugID = __assign("RXD-2-1", __fields);
+            __scrip.QtyDispensed = __assign("RXD-4", __fields);
+            __scrip.RxSys_RxNum = __assign("RXD-7", __fields);
+
+            __drug.RxSys_DrugID = __assign("RXD-2-1", __fields);
+            __drug.DrugName = __assign("RXD-2-2", __fields);
+        }
+        private void __process_RXE(motDrugRecord __drug, motPrescriberRecord __doc, motPrescriptionRecord __scrip, motStoreRecord __store, Dictionary<string,string>__fields)
+        {
+            //motLookupTables __lookup = new motLookupTables();
+
+            __doc.DEA_ID = __assign("RXE-13-1", __fields);
+
+            __drug.RxSys_DrugID = __assign("RXE-2-1", __fields);  // TODO: Don't think this is right
+            __drug.NDCNum = __assign("RXE-2-1", __fields);
+            __drug.DrugName = __assign("RXE-2-2", __fields);
+            __drug.Strength = Convert.ToInt32(__assign("RXE-25", __fields));
+            __drug.Unit = __assign("RXE-26", __fields);
+
+            if (__assign("RXE-35-1", __fields) != string.Empty)
+            {
+                __drug.DrugSchedule = Convert.ToInt32(__lookup.__drugSchedules[__assign("RXE-35-1", __fields)]);
+            }
+
+            __scrip.RxSys_DrugID = __drug.NDCNum;
+            __scrip.QtyPerDose = __assign("RXE-3-1", __fields);
+            __scrip.RxSys_RxNum = __assign("RXE-15", __fields);
+            __scrip.DoseScheduleName = __assign("RXE-7-1", __fields);
+            __scrip.Sig = __assign("RXE-7-2", __fields);
+            __scrip.QtyDispensed = __assign("RXE-10", __fields);
+            __scrip.Refills = __assign("RXE-16", __fields);
+
+            __scrip.RxType = "0";
+
+            __store.RxSys_StoreID = __assign("RXE-40-1", __fields);
+            __store.StoreName = __assign("RXE-40-2", __fields);
+            __store.Address1 = __assign("RXE-41-1", __fields);
+            __store.Address2 = __assign("RXE-41-2", __fields);
+            __store.City = __assign("RXE-41-3", __fields);
+            __store.StoreName = __assign("RXE-41-4", __fields);
+            __store.PostalCode = __assign("RXE-41-5", __fields);
+        }
+        private void __process_RXO(motPatientRecord __pr, motDrugRecord __drug, Dictionary<string,string> __fields)
+        {
+            __pr.DxNotes = __assign("RXO-20-2", __fields) + " - " + __assign("RXO-20-5", __fields);
+        }
+        private void __process_RXR(motDrugRecord __drug, Dictionary<string,string> __fields)
+        {
+            __drug.Route = __assign("RXR-1-1", __fields);
+        }
+        private string __process_TQ1(motPrescriptionRecord __scrip, int __tq1_record_rx_type, Dictionary<string, string> __tq1)
+        {
+            string __dose_time_qty = string.Empty;
+            //motLookupTables __look = new motLookupTables();
+
+            string __tq1_3_1 = __assign("TQ1-3-1", __tq1);
+
+            // If there's no repeat pattern (TQ1-3) then the explicit time (TQ1-4) is used 
+            // There are a lot of other codes coming down that aren't documented, HS for example ...
+
+            __scrip.RxStartDate = __assign("TQ1-7-1", __tq1).Substring(0, 8);
+            __scrip.AnchorDate  = __assign("TQ1-7-1", __tq1).Substring(0, 8);
+
+            if (__assign("TQ1-8-1", __tq1) != string.Empty)
+            {
+                __scrip.RxStopDate = __assign("TQ1-8-1", __tq1).Substring(0, 8);
+            }
+            
+
+
+            // Get PRN's out of the way first
+            if (__assign("TQ-9-1", __tq1) == "PRN")
+            {
+                __scrip.RxType = "2";
+                __scrip.QtyPerDose = __assign("TQ1-2-1", __tq1);
+                return __scrip.DoseTimesQtys = string.Format("{0}{1:00.00}", __assign("TQ1-4", __tq1), Convert.ToDouble(__assign("TQ1-2-1", __tq1)));
+            }
+
+            // Explicit named repeat pattern in use
+            if (!string.IsNullOrEmpty(__tq1_3_1))
+            {
+                // Framework specific dose schedule
+                try
+                {
+                    Convert.ToDecimal(__tq1_3_1);
+                    __dose_time_qty = string.Format("{0}{1:00.00}", __assign("TQ1-4", __tq1), Convert.ToDouble(__assign("TQ1-2-1", __tq1)));
+                }
+                catch
+                {
+                    if(_is_framework_dose_schedule(__assign("TQ1-3-1", __tq1)))
+                    {
+                        return __parse_framework_dose_schedule(__tq1_3_1, __tq1_record_rx_type, __tq1, __scrip);
+                    }
+                    else
+                    {
+                        // do the lookup (HS, QHS, ...), Hopefully its something we know about
+                    
+
+                        string __format = __lookup.__doseSchedules[__tq1_3_1];
+                        __scrip.DoseTimesQtys += string.Format(__format,  Convert.ToDouble(__assign("TQ1-2-1", __tq1)));
+                        return __scrip.DoseTimesQtys;
+                    }
+                }
+            }
+            else if (!string.IsNullOrEmpty(__assign("TQ1-4", __tq1)))
+            {
+                __dose_time_qty += string.Format("{0}{1:00.00}", __assign("TQ1-4", __tq1), Convert.ToDouble(__assign("TQ1-2-1", __tq1)));
+            }
+
+            __scrip.QtyPerDose = __assign("TQ1-2-1", __tq1);
+            return __scrip.DoseTimesQtys = string.Format("{0}{1:00.00}", __assign("TQ1-4", __tq1), Convert.ToDouble(__assign("TQ1-2-1", __tq1)));
+        }
+        private void __process_ZAS()
+        {
+            return;
+        }
+        private void __process__ZPI(motPrescriptionRecord __scrip, motStoreRecord __store, Dictionary<string,string> __fields)
+        {
+            //__scrip.RxSys_RxNum = __assign("ZPI-34", __fields);
+            //__scrip.RxSys_DrugID = __assign("ZPI-21", __fields);
+            //__scrip.RxStopDate = __assign("ZPI-26", __fields);
+
+
+            // TODO:  Locate the store DEA Num
+            __store.DEANum = __assign("ZPI-21", __fields).Substring(0, 10);
+        }
+        private void __process_ZFI(motDrugRecord __drug, Dictionary<string,string>__fields)
+        {
+            __drug.RxSys_DrugID = __assign("ZF1-1", __fields);  // Item Id
+            __drug.TradeName = __assign("ZF1-1", __fields);  // Item Id
+            __drug.DrugName = __assign("ZFI-4", __fields);
+            __drug.GenericFor = __assign("ZFI-4", __fields);
+            __drug.DoseForm = __assign("ZFI-5", __fields);
+            __drug.Strength = Convert.ToInt32(__assign("ZFI-6", __fields));
+            __drug.Unit = __assign("ZFI-7", __fields);
+            __drug.NDCNum = __assign("ZFI-8", __fields);
+            __drug.DrugSchedule = Convert.ToInt32(__lookup.__drugSchedules[(__assign("ZFI-10", __fields))]);
+            __drug.Route = __assign("ZFI-11", __fields);
+            __drug.ProductCode = __assign("ZFI-14", __fields);
+        }
+
 
         static string __assign(string __key, Dictionary<string, string> __fields)
         {
             string __tmp = string.Empty;
 
             __fields.TryGetValue(__key, out __tmp);
-   
+
             if (__tmp == null)
             {
                 // There's a really messed up situation where a repeating field's first entry isn't
@@ -75,15 +519,18 @@ namespace HL7Interface
                     __key = __key.Substring(0, __len);
                     return __assign(__key, __fields);
                 }
+
+                __tmp = string.Empty;
             }
-            
-            if(__tmp.Length == 0)
+
+            if (__tmp.Length == 0)
             {
-                __tmp = "Blank";
+                __tmp = string.Empty;
             }
 
             return __tmp;
         }
+     
         void __process_ADT_A01_Event(Object sender, HL7Event7MessageArgs __args)
         {
             Console.WriteLine("*** ADT_A01 Event Received ***");
@@ -92,17 +539,6 @@ namespace HL7Interface
             {
                 lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***ADT_A01 Event Received ***");
             }));
-
-            foreach (Dictionary<string, string> __fields in __args.fields)
-            {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
-                    }
-                }));
-            }
 
             motPatientRecord __pr = new motPatientRecord("Add");
             motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
@@ -116,6 +552,7 @@ namespace HL7Interface
             string __next_of_kin = string.Format("Next Of Kin\n");
             string __allergies = string.Format("Patient Allergies\n");
             string __diagnosis = string.Format("Patient Diagnosis\n");
+            string __event_code = "A01";
 
             try
             {
@@ -126,93 +563,45 @@ namespace HL7Interface
                         switch (__pair.Key)
                         {
                             case "AL1":
-                                __allergies += string.Format("Code: {0} Desc: {1} Severity: {2} Reaction: {3} ID Date: {4}\n", __assign("AL1-2", __fields),
-                                                                                                                               __assign("AL1-3", __fields),
-                                                                                                                               __assign("AL1-4", __fields),
-                                                                                                                               __assign("AL1-5", __fields),
-                                                                                                                               __assign("AL1-6", __fields));
+                                __allergies += __process_AL1(__fields);
                                 break;
 
                             case "EVN":
+                                __event_code = __process_EVN(__fields);
                                 break;
 
                             case "PID":
-
-                                //
-                                // Both PID-2 & PID-3-1 have the Patient ID.  My Sample A01 records have a blank PID-2and populated 
-                                // PID-3-1, though the RDE_O11 is the reverse.  Try them both and take what's there.  3-1 wins in a draw
-                                // 
-                                __tmp = __assign("PID-2", __fields);
-                                if (!string.IsNullOrEmpty(__tmp))
-                                {
-                                    __pr.RxSys_PatID = __tmp;
-                                }
-
-                                __tmp = __assign("PID-3-1", __fields);
-                                if (!string.IsNullOrEmpty(__tmp))
-                                {
-                                    __pr.RxSys_PatID = __tmp;
-                                }
-
-                                __pr.LastName = __assign("PID-5-1", __fields);
-                                __pr.FirstName = __assign("PID-5-2", __fields);
-                                __pr.MiddleInitial = __assign("PID-5-3", __fields);
-                                __pr.DOB = __assign("PID-7", __fields).Substring(0, 8);     // Remove the timestamp
-                                __pr.Gender = __assign("PID-8", __fields).Substring(0, 1);  // There's an M- in the test data
-                                __pr.Address1 = __assign("PID-11-1", __fields);
-                                __pr.Address2 = __assign("PID-11-2", __fields);
-                                __pr.City = __assign("PID-11-3", __fields);
-                                __pr.State = __assign("PID-11-4", __fields);
-                                __pr.PostalCode = __assign("PID-11-5", __fields);
-                                __pr.Phone1 = __assign("PID-13-1", __fields);
-                                __pr.WorkPhone = __assign("PID-14-1", __fields);
-                                __pr.SSN = __assign("PID-19", __fields);
-
-                                //__scrip.RxSys_PatID = __pr.RxSys_PatID;
+                                __process_PID(__pr, __fields);
                                 break;
 
                             case "NK1":
-                                __next_of_kin += string.Format("{0} {1} {2} [{3}]\n", __assign("NK1-2-2", __fields),
-                                                                                      __assign("NK1-2-3", __fields),
-                                                                                      __assign("NK1-2-1", __fields),
-                                                                                      __assign("NK1-3-1", __fields));
+                                __next_of_kin += __process_NK1(__fields);
                                 break;
 
                             case "PV1":
+                                __process_PV1(__doc, __pr, __fields);
                                 break;
-
-                            
 
                             case "DG1":
-                                __diagnosis += string.Format("Coding Method: {0} Diag Code: {1} Desc: {2} Date: {3} Type: {4} Major Catagory: {5} Related Group: {6}\n", __assign("DG1-2", __fields),
-                                                                                                                                                                          __assign("DG1-3-1", __fields),
-                                                                                                                                                                          __assign("DG1-4", __fields),
-                                                                                                                                                                          __assign("DG1-5-1", __fields),
-                                                                                                                                                                          __assign("DG1-6", __fields),
-                                                                                                                                                                          __assign("DG1-7-1", __fields),
-                                                                                                                                                                          __assign("DG1-8-1", __fields));
+                                __diagnosis += __process_DG1(__fields);
                                 break;
 
-                            case "PR1":
-                                break;
-
-                            case "ROL":
-                                break;
-
-                            case "GT1":
+                            case "OBX":
+                                __process_OBX(__pr, __fields);
                                 break;
 
                             case "IN1":
-                                __pr.InsName = __assign("IN1-1-4", __fields);
-
-                                // No Insurancec Policy Number per se, but there is a group name(1-9) and a group number(1-8) 
-                                __pr.InsPNo = __assign("IN1-1-9", __fields) + "-" + __assign("IN1-1-8", __fields);
-
-                                break;
+                                __process_IN1(__pr, __fields);
+                                break; ;
 
                             case "IN2":
-                                __pr.SSN = __assign("IN2-1", __fields);
+                                __process_IN2(__pr, __fields);
+                                break;
 
+                            case "PR1":
+                            case "ROL":
+                            case "GT1":
+                            default:
                                 break;
                         }
                     }
@@ -236,7 +625,7 @@ namespace HL7Interface
                 motPort __p = new motPort(__target_ip, __target_port);
 
                 __pr.Write(__p);
-               
+
             }
             catch (Exception e)
             {
@@ -245,6 +634,11 @@ namespace HL7Interface
                     lbStatus.Items.Insert(0, DateTime.Now.ToString() + e.Message);
                 }));
             }
+
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lbMessages.Items.Add(string.Format("{0} : ADT A01 [Event Code: {1}] Parse Success", DateTime.Now.ToString(), __event_code));
+            }));
         }
         void __process_ADT_A12_Event(Object sender, HL7Event7MessageArgs __args)
         {
@@ -253,17 +647,6 @@ namespace HL7Interface
             {
                 lbStatus.Items.Insert(0, DateTime.Now.ToString() + " *** ADT_A12 Event Received ***");
             }));
-
-            foreach (Dictionary<string, string> __fields in __args.fields)
-            {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
-                    }
-                }));
-            }
 
             motPatientRecord __pr = new motPatientRecord("Add");
             motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
@@ -298,25 +681,11 @@ namespace HL7Interface
         {
             Console.WriteLine("*** OMP_O09 Event Received ***");
 
-
-            foreach (Dictionary<string, string> __fields in __args.fields)
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***OMP_O09_O11 Event Received ***");
+                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***OMP_O09_O11 Event Received ***");
+            }));
 
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
-                    }
-                }));
-
-                foreach (KeyValuePair<string, string> __pair in __fields)
-                {
-                    Console.WriteLine("{0}:{1}", __pair.Key, __pair.Value);
-
-                }
-            }
 
             motPatientRecord __pr = new motPatientRecord("Add");
             motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
@@ -325,7 +694,10 @@ namespace HL7Interface
             motStoreRecord __store = new motStoreRecord("Add");
             motDrugRecord __drug = new motDrugRecord("Add");
 
-            string __time_qty = string.Empty;
+            string __dose_time_qty = string.Empty;
+            string __notes = string.Empty;
+            int __tq1_records_processed = 0;
+            int __tq1_record_rx_type = 0;
 
             try
             {
@@ -335,9 +707,84 @@ namespace HL7Interface
                     {
                         switch (__pair.Key)
                         {
+                            case "PID":
+                                __process_PID(__pr, __fields);
+                                break;
+
+                            case "PV1":
+                                __process_PV1(__doc, __pr, __fields);
+                                break;
+
+                            case "ORC":
+                                __process_ORC(__loc, __doc, __pr, __scrip, __fields);
+                                break;
+
+                            case "TQ1":
+                                __dose_time_qty = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
+
+                                __tq1_records_processed++;                               // > 1 means additive instructions
+                                __tq1_record_rx_type = Convert.ToInt32(__scrip.RxType);  // Non-zero means that its an add to special dose?
+
+                                if(__tq1_records_processed > 1)
+                                {
+                                    __scrip.QtyPerDose = string.Empty;
+                                }
+
+                                break;
+
+                            case "RXC":
+                                break;
+
+                            case "RXD":
+                                __process_RXD(__scrip, __drug, __fields);
+                                break;
+
+                            case "RXE":
+                                __process_RXE(__drug, __doc, __scrip, __store, __fields);
+                                break;
+
+                            case "RXR":
+                                __process_RXR(__drug, __fields);
+                                break;
+
+                            case "RXO":
+                                __process_RXO(__pr, __drug, __fields);
+                                break;
+
+                            case "NTE":
+                                __notes += __process_NTE(__fields);
+                                break;
+
+                            default:
+                                break;
                         }
                     }
                 }
+
+                __scrip.RxSys_PatID = __pr.RxSys_PatID;
+                __scrip.Comments = __notes;
+                __scrip.DoseTimesQtys = __dose_time_qty;
+
+                // Write them all to the gateway
+                try
+                {
+                    motPort __p = new motPort(__target_ip, __target_port);
+
+                    __scrip.Write(__p);
+                    __pr.Write(__p);
+                    __doc.Write(__p);
+                    __loc.Write(__p);
+                    __drug.Write(__p);
+                    __store.Write(__p);
+
+                }
+                catch (Exception e)
+                {
+                    lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        lbStatus.Items.Insert(0, DateTime.Now.ToString() + " " + e.Message);
+                    }));
+                }     
             }
             catch (Exception e)
             {
@@ -346,27 +793,23 @@ namespace HL7Interface
                     lbStatus.Items.Add(string.Format("OMP Parse Error: {0}", e.Message));
                 }));
             }
+
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lbMessages.Items.Add(string.Format("{0} : OMP O09 Parse Success", DateTime.Now.ToString()));
+            }));
         }
         void __process_RDE_O11_Event(Object sender, HL7Event7MessageArgs __args)
         {
             Console.WriteLine("*** RDE_O11 Event Received ***");
 
+            int __tq1_records_processed = 0;
+            int __tq1_record_rx_type = 0;
+
             lbStatus.Dispatcher.BeginInvoke(new Action(() =>
             {
                 lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDE_O11 Event Received ***");
             }));
-
-            foreach (Dictionary<string, string> __fields in __args.fields)
-            {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
-                    }
-                }));
-            }
-
 
             motPatientRecord __pr = new motPatientRecord("Add");
             motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
@@ -376,7 +819,10 @@ namespace HL7Interface
             motDrugRecord __drug = new motDrugRecord("Add");
 
             string __time_qty = string.Empty;
+            string __dose_time_qty = string.Empty;
             string __tmp = string.Empty;
+            bool __had_zpi = false;
+            motPort __p = new motPort(__target_ip, __target_port);
 
             try
             {
@@ -387,125 +833,48 @@ namespace HL7Interface
                         switch (__pair.Key)
                         {
                             case "ORC":
-                                __loc.LocationName = __assign("ORC-21", __fields);
-                                __loc.Address1 = __assign("ORC-22-1", __fields);
-                                __loc.Address2 = __assign("ORC-22-2", __fields);
-                                __loc.City = __assign("ORC-22-3", __fields);
-                                __loc.State = __assign("ORC-22-4", __fields);
-                                __loc.PostalCode = __assign("ORC-22-5", __fields);
-                                __loc.Phone = __assign("ORC-23", __fields);
-
-                                __doc.RxSys_DocID = __assign("ORC-12-1", __fields);
-                                __doc.LastName = __assign("ORC-12-2", __fields);
-                                __doc.FirstName = __assign("ORC-12-3", __fields);
-                                __doc.Address1 = __assign("ORC-24-1", __fields);
-                                __doc.Address2 = __assign("ORC-24-2", __fields);
-                                __doc.City = __assign("ORC-24-3", __fields);
-                                __doc.State = __assign("ORC-24-4", __fields);
-                                __doc.PostalCode = __assign("ORC-24-5", __fields);
-
-                                __pr.RxSys_DocID = __doc.RxSys_DocID;
-                                __scrip.RxSys_DocID = __doc.RxSys_DocID;
-
+                                __process_ORC(__loc, __doc, __pr, __scrip, __fields);
                                 break;
 
                             case "PID":
-                                //
-                                // Both PID-2 & PID-3-1 have the Patient ID.  My Sample A01 records have a blank PID-2and populated 
-                                // PID-3-1, though the RDE_O11 is the reverse.  Try them both and take what's there.  3-1 wins in a draw
-                                // 
-                                __tmp = __assign("PID-2", __fields);
-                                if (!string.IsNullOrEmpty(__tmp))
-                                {
-                                    __pr.RxSys_PatID = __tmp;
-                                }
-
-                                __tmp = __assign("PID-3-1", __fields);
-                                if (!string.IsNullOrEmpty(__tmp))
-                                {
-                                    __pr.RxSys_PatID = __tmp;
-                                }
-
-                                __pr.LastName = __assign("PID-5-1", __fields);
-                                __pr.FirstName = __assign("PID-5-2", __fields);
-                                __pr.MiddleInitial = __assign("PID-5-3", __fields);
-                                __pr.DOB = __assign("PID-7", __fields).Substring(0, 8);  // Remove the timestamp
-                                __pr.Gender = __assign("PID-8", __fields).Substring(0, 1);
-                                __pr.Address1 = __assign("PID-11-1", __fields);
-                                __pr.Address2 = __assign("PID-11-2", __fields);
-                                __pr.City = __assign("PID-11-3", __fields);
-                                __pr.State = __assign("PID-11-4", __fields);
-                                __pr.PostalCode = __assign("PID-11-5", __fields);
-                                __pr.Phone1 = __assign("PID-13-1", __fields);
-                                __pr.WorkPhone = __assign("PID-14-1", __fields);
-                                __pr.SSN = __assign("PID-19", __fields);
-
-                                __scrip.RxSys_PatID = __pr.RxSys_PatID;
+                                __process_PID(__pr, __fields);
                                 break;
 
                             case "RXE":
-                                __doc.DEA_ID = __assign("RXE-13-1", __fields);
-
-                                __drug.NDCNum = __assign("RXE-2-1", __fields);
-                                __drug.DrugName = __assign("RXE-2-2", __fields);
-                                __drug.Strength = Convert.ToInt32(__assign("RXE-25", __fields));
-                                __drug.Unit = __assign("RXE-26", __fields);
-
-                                __scrip.RxSys_DrugID = __drug.NDCNum;
-                                __scrip.RxSys_RxNum = __assign("RXE-15", __fields);
-                                __scrip.DoseScheduleName = __assign("RXE-7-1", __fields);
-                                __scrip.Sig = __assign("RXE-7-2", __fields);
-                                __scrip.QtyDispensed = __assign("RXE-10", __fields);
-                                __scrip.Refills = __assign("RXE-12", __fields);
-
-                                __store.RxSys_StoreID = __assign("RXE-40-1", __fields);
-                                __store.StoreName = __assign("RXE-40-2", __fields);
-                                __store.Address1 = __assign("RXE-41-1", __fields);
-                                __store.Address2 = __assign("RXE-41-2", __fields);
-                                __store.City = __assign("RXE-41-3", __fields);
-                                __store.StoreName = __assign("RXE-41-4", __fields);
-                                __store.PostalCode = __assign("RXE-41-5", __fields);
+                                __process_RXE(__drug, __doc, __scrip, __store, __fields);
                                 break;
 
-
                             case "RXO":
-
-
+                                __process_RXO(__pr, __drug, __fields);
                                 break;
 
                             case "RXR":
                                 __drug.Route = __assign("RXR-1-2", __fields);
+                                break;
+
+                            case "TQ1":                                
+                                __dose_time_qty = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
+
+                                __tq1_records_processed++;                               // > 1 means additive instructions
+                                __tq1_record_rx_type = Convert.ToInt32(__scrip.RxType);  // Non-zero means that its an add to special dose?
+
+                                if (__tq1_records_processed > 1)
+                                {
+                                    __scrip.QtyPerDose = string.Empty;
+                                }
 
                                 break;
 
-                            case "TQ1":
+                            case "ZAS":
+                                break;
 
-                                // If there's no repeat pattern (TQ1-3) then the explicit time (TQ1-4) is used 
-                                //
-                                //  Frameworks repeat patterns are:
-                                //
-                                //  D (Daily)           QJ# where 1 == Monday
-                                //  E (Every x Days)    Q#D e.g. Q2D is every 2nd day
-                                //  M (Monthly)         QL#,#,... e.g. QL3 QL1,15 QL1,5,10,20
-                                //
-                                // There are a lot of other codes coming down that aren't documented, HS for example ...
-
-                                __scrip.RxStartDate = __assign("TQ1-7", __fields).Substring(0, 8);
-                                __scrip.RxStopDate = __assign("TQ1-7", __fields).Substring(0, 8);
-
-                                Double __transform = Convert.ToDouble(__assign("TQ1-2-1", __fields));
-
-                                __time_qty += string.Format("{0:0000}{1:00.00}", __assign("TQ1-4", __fields), __transform);
-
+                            case "ZF1":  // Compounding
+                                __process_ZFI(__drug, __fields);
                                 break;
 
                             case "ZPI":
-
-                                __scrip.RxSys_RxNum = __assign("ZPI-34", __fields);
-
-                                // TODO:  Locate the sore DEA Num
-                                __store.DEANum = __assign("ZPI-21", __fields).Substring(0, 10);
-
+                                __had_zpi = true;
+                                __process__ZPI(__scrip, __store, __fields);
                                 break;
                         }
                     }
@@ -520,7 +889,142 @@ namespace HL7Interface
             }
 
             // Clean up and assign the temp values
+            //__scrip.DoseTimesQtys = __dose_time_qty;
+            __scrip.RxSys_PatID = __pr.RxSys_PatID;
+            __pr.Status = 1;
+
+            // Write them all to the gateway
+            try
+            {   
+               
+
+                __scrip.Write(__p);
+                __pr.Write(__p);
+                __doc.Write(__p);
+                __loc.Write(__p);
+                __drug.Write(__p);
+                __store.Write(__p);
+                
+            }
+            catch (Exception e)
+            {
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lbStatus.Items.Insert(0, DateTime.Now.ToString() + " " + e.Message);
+                }));
+
+                return;
+            }
+
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lbMessages.Items.Add(string.Format("{0} : RDE O11 {1} ZPI Parse Success", DateTime.Now.ToString(), __had_zpi ? "with" : "without"));
+            }));
+        }
+        void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
+        {
+            Console.WriteLine("*** RDS_O13 Event Received ***");
+
+
+            motPatientRecord __pr = new motPatientRecord("Add");
+            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
+            motPrescriberRecord __doc = new motPrescriberRecord("Add");
+            motLocationRecord __loc = new motLocationRecord("Add");
+            motStoreRecord __store = new motStoreRecord("Add");
+            motDrugRecord __drug = new motDrugRecord("Add");
+
+            string __time_qty = string.Empty;
+            string __dose_time_qty = string.Empty;
+            string __tmp = string.Empty;
+            string __patient_notes = string.Empty;
+            bool __had_zpi = false;
+            int __tq1_records_processed = 0;   
+            int __tq1_record_rx_type = 0;
+
+            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDS_O13 Event Received ***");
+            }));
+
+          
+            try
+            {
+                foreach (Dictionary<string, string> __fields in __args.fields)
+                {
+                    foreach (KeyValuePair<string, string> __pair in __fields)
+                    {
+                        switch (__pair.Key)
+                        {
+                            case "PID":
+                                __process_PID(__pr, __fields);
+                                break;
+
+                            case "PV1":
+                                __process_PV1(__doc, __pr, __fields);
+                                break;
+
+                            case "ORC":
+                                __process_ORC(__loc, __doc, __pr, __scrip, __fields);
+                                break;
+
+                            case "RXO":
+                                __process_RXO(__pr, __drug, __fields);
+                                break;
+
+                            case "RXE":
+                                __process_RXE(__drug, __doc, __scrip, __store, __fields);
+                                break;
+
+                            case "NTE":
+                                __patient_notes += __process_NTE(__fields);
+                                break;
+
+                            case "TQ1":
+                                __dose_time_qty = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
+
+                                __tq1_records_processed++;                               // > 1 means additive instructions
+                                __tq1_record_rx_type = Convert.ToInt32(__scrip.RxType);  // Non-zero means that its an add to special dose?
+
+                                if (__tq1_records_processed > 1)
+                                {
+                                    __scrip.QtyPerDose = string.Empty;
+                                }
+
+                                break;
+
+                            case "RXR":
+                                __process_RXR(__drug, __fields);
+                                break;
+
+                            case "RXC":
+                                __process_RXC(__scrip, __fields);
+                                break;
+
+                            case "RXD":
+                               __process_RXD(__scrip, __drug, __fields);
+                                break;
+
+                            case "ZPI":
+                                __had_zpi = true;
+                                __process__ZPI(__scrip, __store, __fields);
+                                break;
+
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lbStatus.Items.Add(string.Format("RDS Parse Error: {0}", e.Message));
+                }));
+            }
+
+            // Clean up and assign the temp values
+            __scrip.Comments = __patient_notes;
             __scrip.DoseTimesQtys = __time_qty;
+            __scrip.RxSys_PatID = __pr.RxSys_PatID;
 
             // Write them all to the gateway
             try
@@ -533,57 +1037,22 @@ namespace HL7Interface
                 __loc.Write(__p);
                 __drug.Write(__p);
                 __store.Write(__p);
+
             }
             catch (Exception e)
             {
                 lbStatus.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    lbStatus.Items.Insert(0, DateTime.Now.ToString() + e.Message);
+                    lbStatus.Items.Insert(0, DateTime.Now.ToString() + " " + e.Message);
                 }));
             }
-        }
-        void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
-        {
-            Console.WriteLine("*** RDS_O13 Event Received ***");
 
             lbStatus.Dispatcher.BeginInvoke(new Action(() =>
             {
-                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDS_O13 Event Received ***");
+                lbMessages.Items.Add(string.Format("{0} : RDS O13 {1} ZPI Parse Success", DateTime.Now.ToString(), __had_zpi ? "with" : "without"));
             }));
-
-            foreach (Dictionary<string, string> __fields in __args.fields)
-            {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        lbMessages.Items.Add(string.Format("{0}:{1}", __pair.Key, __pair.Value));
-                    }
-                }));
-            }
-
-            string __time_qty = string.Empty;
-
-            try
-            {
-                foreach (Dictionary<string, string> __fields in __args.fields)
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        switch (__pair.Key)
-                        {
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbStatus.Items.Add(string.Format("RDS Parse Error: {0}", e.Message));
-                }));
-            }
         }
+    
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             btnStop.IsEnabled = true;
@@ -602,21 +1071,34 @@ namespace HL7Interface
         {
             var textBox = sender as System.Windows.Controls.TextBox;
             __target_port = textBox.Text;
+
+            Properties.Settings.Default.TargetPort = __target_port;
+            Properties.Settings.Default.Save();
         }
         private void tbSourcePort_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             var textBox = sender as System.Windows.Controls.TextBox;
             __source_port = textBox.Text;
+
+            Properties.Settings.Default.SourcePort = __source_port;
+            Properties.Settings.Default.Save();
         }
         private void tbSourceIP_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             var textBox = sender as System.Windows.Controls.TextBox;
             __source_ip = textBox.Text;
+           
+            Properties.Settings.Default.SourceIP = __source_ip;
+            Properties.Settings.Default.Save();
+            
         }
         private void tbTargetIP_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             var textBox = sender as System.Windows.Controls.TextBox;
             __target_ip = textBox.Text;
+
+            Properties.Settings.Default.TargetIP = __target_ip;
+            Properties.Settings.Default.Save();
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

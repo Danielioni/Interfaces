@@ -186,6 +186,9 @@ namespace motCommonLib
                     // Pass through to gateway 
                 }
                 */
+
+                // TODO: Make truncation mechanism more robust
+                __val = __val.Substring(0, f.maxLen);
             }
 
             f.tagData = __val;
@@ -222,6 +225,8 @@ namespace motCommonLib
                     __val = __val.Substring(0, f.maxLen - 1);
                 }
                 */
+
+                __val = __val.Substring(0, f.maxLen);
             }
 
             f.tagData = __val;
@@ -3373,7 +3378,7 @@ namespace motCommonLib
                 {
                     setField(__qualifiedTags, value, "MDOMStart");
                 }
-                catch (Exception e)
+                catch
                 {
                     throw;
                 }
@@ -3400,7 +3405,7 @@ namespace motCommonLib
                 {
                     setField(__qualifiedTags, value, "MDOMStop");
                 }
-                catch (Exception e)
+                catch
                 {
                     throw;
                 }
@@ -3427,7 +3432,7 @@ namespace motCommonLib
                 {
                     setField(__qualifiedTags, value, "QtyPerDose");
                 }
-                catch (Exception e)
+                catch
                 {
                     throw;
                 }
@@ -3454,7 +3459,7 @@ namespace motCommonLib
                 {
                     setField(__qualifiedTags, value, "QtyDispensed");
                 }
-                catch (Exception e)
+                catch
                 {
                     throw;
                 }
@@ -3481,7 +3486,7 @@ namespace motCommonLib
                 {
                     setField(__qualifiedTags, value, "Status");
                 }
-                catch (Exception e)
+                catch
                 {
                     throw;
                 }
@@ -3508,7 +3513,7 @@ namespace motCommonLib
                 {
                     setField(__qualifiedTags, value, "DoW");
                 }
-                catch (Exception e)
+                catch
                 {
                     throw;
                 }
@@ -3547,7 +3552,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("dosetimeqtys")));
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("dosetimesqtys")));
                     return f.tagData;
                 }
                 catch
