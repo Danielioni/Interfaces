@@ -205,82 +205,85 @@ namespace motCommonLib
 
             foreach (string __field in __segments)
             {
-                switch (__field.Substring(0, 3))
+                if (!string.IsNullOrEmpty(__field))
                 {
-                    case "AL1":
-                        AL1 __tmp_al1 = new AL1(__field);
-                        __al1.Add(__tmp_al1);
-                        __message_store.Add(__tmp_al1.__msg_data);
-                        break;
+                    switch (__field.Substring(0, 3))
+                    {
+                        case "AL1":
+                            AL1 __tmp_al1 = new AL1(__field);
+                            __al1.Add(__tmp_al1);
+                            __message_store.Add(__tmp_al1.__msg_data);
+                            break;
 
-                    case "EVN":
-                        __evn = new EVN(__field);
-                        __message_store.Add(__evn.__msg_data);
-                        break;
+                        case "EVN":
+                            __evn = new EVN(__field);
+                            __message_store.Add(__evn.__msg_data);
+                            break;
 
-                    case "DG1":
-                        DG1 __tmp_dg1 = new DG1(__field);
-                        __dg1.Add(__tmp_dg1);
-                        __message_store.Add(__tmp_dg1.__msg_data);
-                        break;
+                        case "DG1":
+                            DG1 __tmp_dg1 = new DG1(__field);
+                            __dg1.Add(__tmp_dg1);
+                            __message_store.Add(__tmp_dg1.__msg_data);
+                            break;
 
-                    case "GT1":
-                        __gt1 = new GT1(__field);
-                        __message_store.Add(__gt1.__msg_data);
-                        break;
+                        case "GT1":
+                            __gt1 = new GT1(__field);
+                            __message_store.Add(__gt1.__msg_data);
+                            break;
 
-                    case "IN1":
-                        IN1 __tmp_in1 = new IN1(__field);
-                        __in1.Add(__tmp_in1);
-                        __message_store.Add(__tmp_in1.__msg_data);
-                        break;
+                        case "IN1":
+                            IN1 __tmp_in1 = new IN1(__field);
+                            __in1.Add(__tmp_in1);
+                            __message_store.Add(__tmp_in1.__msg_data);
+                            break;
 
-                    case "IN2":
-                        IN2 __tmp_in2 = new IN2(__field);
-                        __in2.Add(__tmp_in2);
-                        __message_store.Add(__tmp_in2.__msg_data);
-                        break;
+                        case "IN2":
+                            IN2 __tmp_in2 = new IN2(__field);
+                            __in2.Add(__tmp_in2);
+                            __message_store.Add(__tmp_in2.__msg_data);
+                            break;
 
-                    case "MSH":
-                        __msh = new MSH(__field);
-                        __message_store.Add(__msh.__msg_data);
-                        break;
+                        case "MSH":
+                            __msh = new MSH(__field);
+                            __message_store.Add(__msh.__msg_data);
+                            break;
 
-                    case "NK1":
-                        NK1 __tmp_nk1 = new NK1(__field);
-                        __nk1.Add(__tmp_nk1);
-                        __message_store.Add(__tmp_nk1.__msg_data);
-                        break;
+                        case "NK1":
+                            NK1 __tmp_nk1 = new NK1(__field);
+                            __nk1.Add(__tmp_nk1);
+                            __message_store.Add(__tmp_nk1.__msg_data);
+                            break;
 
-                    case "OBX":
-                        OBX __tmp_obx = new OBX(__field);
-                        __obx.Add(__tmp_obx);
-                        __message_store.Add(__tmp_obx.__msg_data);
-                        break;
+                        case "OBX":
+                            OBX __tmp_obx = new OBX(__field);
+                            __obx.Add(__tmp_obx);
+                            __message_store.Add(__tmp_obx.__msg_data);
+                            break;
 
-                    case "PID":
-                        __pid = new PID(__field);
-                        __message_store.Add(__pid.__msg_data);
-                        break;
+                        case "PID":
+                            __pid = new PID(__field);
+                            __message_store.Add(__pid.__msg_data);
+                            break;
 
-                    case "PR1":
-                        __pr1 = new PR1(__field);
-                        __message_store.Add(__pr1.__msg_data);
-                        break;
+                        case "PR1":
+                            __pr1 = new PR1(__field);
+                            __message_store.Add(__pr1.__msg_data);
+                            break;
 
-                    case "PV1":
-                        __pv1 = new PV1(__field);
-                        __message_store.Add(__pv1.__msg_data);
-                        break;
+                        case "PV1":
+                            __pv1 = new PV1(__field);
+                            __message_store.Add(__pv1.__msg_data);
+                            break;
 
-                    case "ROL":
-                        ROL __tmp_rol = new ROL(__field);
-                        __rol.Add(__tmp_rol);
-                        __message_store.Add(__tmp_rol.__msg_data);
-                        break;
+                        case "ROL":
+                            ROL __tmp_rol = new ROL(__field);
+                            __rol.Add(__tmp_rol);
+                            __message_store.Add(__tmp_rol.__msg_data);
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
@@ -354,54 +357,56 @@ namespace motCommonLib
 
             foreach (string __field in __segments)
             {
-
-                switch (__field.Substring(0, 3))
+                if (!string.IsNullOrEmpty(__field))
                 {
-                    case "MSH":
-                        __msh = new MSH(__field);
-                        __message_store.Add(__msh.__msg_data);
-                        break;
+                    switch (__field.Substring(0, 3))
+                    {
+                        case "MSH":
+                            __msh = new MSH(__field);
+                            __message_store.Add(__msh.__msg_data);
+                            break;
 
-                    case "PID":
-                        __pid = new PID(__field);
-                        __message_store.Add(__pid.__msg_data);
-                        break;
+                        case "PID":
+                            __pid = new PID(__field);
+                            __message_store.Add(__pid.__msg_data);
+                            break;
 
-                    case "PV1":
-                        __pv1 = new PV1(__field);
-                        __message_store.Add(__pv1.__msg_data);
-                        break;
+                        case "PV1":
+                            __pv1 = new PV1(__field);
+                            __message_store.Add(__pv1.__msg_data);
+                            break;
 
-                    case "ORC":
-                        __orc = new ORC(__field);
-                        __message_store.Add(__orc.__msg_data);
-                        break;
+                        case "ORC":
+                            __orc = new ORC(__field);
+                            __message_store.Add(__orc.__msg_data);
+                            break;
 
-                    case "TQ1":
-                        TQ1 __tmp_tq1 = new TQ1(__field);
-                        __tq1.Add(__tmp_tq1);
-                        __message_store.Add(__tmp_tq1.__msg_data);
-                        break;
+                        case "TQ1":
+                            TQ1 __tmp_tq1 = new TQ1(__field);
+                            __tq1.Add(__tmp_tq1);
+                            __message_store.Add(__tmp_tq1.__msg_data);
+                            break;
 
-                    case "RXO":
-                        __rxo = new RXO(__field);
-                        __message_store.Add(__rxo.__msg_data);
-                        break;
+                        case "RXO":
+                            __rxo = new RXO(__field);
+                            __message_store.Add(__rxo.__msg_data);
+                            break;
 
-                    case "RXC":
-                        RXC __tmp_rxc = new RXC(__field);
-                        __rxc.Add(__tmp_rxc);
-                        __message_store.Add(__tmp_rxc.__msg_data);
-                        break;
+                        case "RXC":
+                            RXC __tmp_rxc = new RXC(__field);
+                            __rxc.Add(__tmp_rxc);
+                            __message_store.Add(__tmp_rxc.__msg_data);
+                            break;
 
-                    case "NTE":
-                        NTE __tmp_nte = new NTE(__field);
-                        __nte.Add(__tmp_nte);
-                        __message_store.Add(__tmp_nte.__msg_data);
-                        break;
+                        case "NTE":
+                            NTE __tmp_nte = new NTE(__field);
+                            __nte.Add(__tmp_nte);
+                            __message_store.Add(__tmp_nte.__msg_data);
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
 
@@ -484,74 +489,77 @@ namespace motCommonLib
             
             foreach (string __type in __segments)
             {
-                switch (__type.Substring(0, 3))
+                if (!string.IsNullOrEmpty(__type))
                 {
-                    case "MSH":
-                        __msh = new MSH(__type);
-                        __message_store.Add(__msh.__msg_data);
-                        break;
+                    switch (__type.Substring(0, 3))
+                    {
+                        case "MSH":
+                            __msh = new MSH(__type);
+                            __message_store.Add(__msh.__msg_data);
+                            break;
 
-                    case "PID":
-                        __pid = new PID(__type);
-                        __message_store.Add(__pid.__msg_data);
-                        break;
+                        case "PID":
+                            __pid = new PID(__type);
+                            __message_store.Add(__pid.__msg_data);
+                            break;
 
-                    case "PV1":
-                        __pv1 = new PV1(__type);
-                        __message_store.Add(__pv1.__msg_data);
-                        break;
+                        case "PV1":
+                            __pv1 = new PV1(__type);
+                            __message_store.Add(__pv1.__msg_data);
+                            break;
 
-                    case "TQ1":
-                        TQ1 __tmp_tq1 = new TQ1(__type);
-                        __tq1.Add(__tmp_tq1);
-                        __message_store.Add(__tmp_tq1.__msg_data);
-                        break;
+                        case "TQ1":
+                            TQ1 __tmp_tq1 = new TQ1(__type);
+                            __tq1.Add(__tmp_tq1);
+                            __message_store.Add(__tmp_tq1.__msg_data);
+                            break;
 
-                    case "RXC":
-                        RXC __tmp_rxc = new RXC(__type);
-                        __rxc.Add(__tmp_rxc);
-                        __message_store.Add(__tmp_rxc.__msg_data);
-                        break;
+                        case "RXC":
+                            RXC __tmp_rxc = new RXC(__type);
+                            __rxc.Add(__tmp_rxc);
+                            __message_store.Add(__tmp_rxc.__msg_data);
+                            break;
 
-                    case "RXE":
-                        __rxe = new RXE(__type);
-                        __message_store.Add(__rxe.__msg_data);
-                        break;
+                        case "RXE":
+                            __rxe = new RXE(__type);
+                            __message_store.Add(__rxe.__msg_data);
+                            break;
 
-                    case "RXO":
-                        __rxo = new RXO(__type);
-                        __message_store.Add(__rxo.__msg_data);
-                        break;
+                        case "RXO":
+                            __rxo = new RXO(__type);
+                            __message_store.Add(__rxo.__msg_data);
+                            break;
 
-                    case "RXR":
-                        RXR __tmp_rxr = new RXR(__type);
-                        __rxr.Add(__tmp_rxr);
-                        __message_store.Add(__tmp_rxr.__msg_data);
-                        break;
+                        case "RXR":
+                            RXR __tmp_rxr = new RXR(__type);
+                            __rxr.Add(__tmp_rxr);
+                            __message_store.Add(__tmp_rxr.__msg_data);
+                            break;
 
-                    case "ORC":  // Need to parse the order
-                        __orc = new ORC(__type);
-                        __message_store.Add(__orc.__msg_data);
-                        break;
+                        case "ORC":  // Need to parse the order
+                            __orc = new ORC(__type);
+                            __message_store.Add(__orc.__msg_data);
+                            break;
 
-                    case "ZAS":
-                        __zas = new ZAS(__type);
-                        __message_store.Add(__zas.__msg_data);
-                        break;
+                        case "ZAS":
+                            __zas = new ZAS(__type);
+                            __message_store.Add(__zas.__msg_data);
+                            break;
 
-                    case "ZPI":
-                        __zpi = new ZPI(__type);
-                        __message_store.Add(__zpi.__msg_data);
-                        break;
+                        case "ZPI":
+                            __zpi = new ZPI(__type);
+                            __message_store.Add(__zpi.__msg_data);
+                            break;
 
-                    case "NTE":
-                        NTE __tmp_nte = new NTE(__type);
-                        __nte.Add(__tmp_nte);
-                        __message_store.Add(__tmp_nte.__msg_data);
-                        break;
+                        case "NTE":
+                            NTE __tmp_nte = new NTE(__type);
+                            __nte.Add(__tmp_nte);
+                            __message_store.Add(__tmp_nte.__msg_data);
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
 
@@ -625,76 +633,78 @@ namespace motCommonLib
 
             foreach (string __field in __segments)
             {
-
-                switch (__field.Substring(0, 3))
+                if (!string.IsNullOrEmpty(__field))
                 {
-                    case "MSH":
-                        __msh = new MSH(__field);
-                        __message_store.Add(__msh.__msg_data);
-                        break;
+                    switch (__field.Substring(0, 3))
+                    {
+                        case "MSH":
+                            __msh = new MSH(__field);
+                            __message_store.Add(__msh.__msg_data);
+                            break;
 
-                    case "PID":
-                        __pid = new PID(__field);
-                        __message_store.Add(__pid.__msg_data);
-                        break;
+                        case "PID":
+                            __pid = new PID(__field);
+                            __message_store.Add(__pid.__msg_data);
+                            break;
 
-                    case "PV1":
-                        __pv1 = new PV1(__field);
-                        __message_store.Add(__pv1.__msg_data);
-                        break;
+                        case "PV1":
+                            __pv1 = new PV1(__field);
+                            __message_store.Add(__pv1.__msg_data);
+                            break;
 
-                    case "ORC":
-                        __orc = new ORC(__field);
-                        __message_store.Add(__orc.__msg_data);
-                        break;
+                        case "ORC":
+                            __orc = new ORC(__field);
+                            __message_store.Add(__orc.__msg_data);
+                            break;
 
-                    case "RXO":
-                        __rxo = new RXO(__field);
-                        __message_store.Add(__rxo.__msg_data);
-                        break;
+                        case "RXO":
+                            __rxo = new RXO(__field);
+                            __message_store.Add(__rxo.__msg_data);
+                            break;
 
-                    case "RXE":
-                        __rxe = new RXE(__field);
-                        __message_store.Add(__rxe.__msg_data);
-                        break;
+                        case "RXE":
+                            __rxe = new RXE(__field);
+                            __message_store.Add(__rxe.__msg_data);
+                            break;
 
-                    case "RXD":
-                        __rxd = new RXD(__field);
-                        __message_store.Add(__rxd.__msg_data);
-                        break;
+                        case "RXD":
+                            __rxd = new RXD(__field);
+                            __message_store.Add(__rxd.__msg_data);
+                            break;
 
-                    case "NTE":
-                        NTE __tmp_nte = new NTE(__field);
-                        __nte.Add(__tmp_nte);
-                        __message_store.Add(__tmp_nte.__msg_data);
-                        break;
+                        case "NTE":
+                            NTE __tmp_nte = new NTE(__field);
+                            __nte.Add(__tmp_nte);
+                            __message_store.Add(__tmp_nte.__msg_data);
+                            break;
 
-                    case "TQ1":
-                        TQ1 __tmp_tq1 = new TQ1(__field);
-                        __tq1.Add(__tmp_tq1);
-                        __message_store.Add(__tmp_tq1.__msg_data);
-                        break;
+                        case "TQ1":
+                            TQ1 __tmp_tq1 = new TQ1(__field);
+                            __tq1.Add(__tmp_tq1);
+                            __message_store.Add(__tmp_tq1.__msg_data);
+                            break;
 
-                    case "RXR":
-                        RXR __tmp_rxr = new RXR(__field);
-                        __rxr.Add(__tmp_rxr);
-                        __message_store.Add(__tmp_rxr.__msg_data);
-                        break;
+                        case "RXR":
+                            RXR __tmp_rxr = new RXR(__field);
+                            __rxr.Add(__tmp_rxr);
+                            __message_store.Add(__tmp_rxr.__msg_data);
+                            break;
 
-                    case "RXC":
-                        //__rxc.Add(new RXC(__field));
-                        RXC __tmp_rxc = new RXC(__field);
-                        __rxc.Add(__tmp_rxc);
-                        __message_store.Add(__tmp_rxc.__msg_data);
-                        break;
+                        case "RXC":
+                            //__rxc.Add(new RXC(__field));
+                            RXC __tmp_rxc = new RXC(__field);
+                            __rxc.Add(__tmp_rxc);
+                            __message_store.Add(__tmp_rxc.__msg_data);
+                            break;
 
-                    case "ZPI":
-                        __zpi = new ZPI(__field);
-                        __message_store.Add(__zpi.__msg_data);
-                        break;
+                        case "ZPI":
+                            __zpi = new ZPI(__field);
+                            __message_store.Add(__zpi.__msg_data);
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
 

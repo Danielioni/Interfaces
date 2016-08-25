@@ -62,11 +62,11 @@ namespace motCommonLib
 
 
             // Basic dose schedules with swag default times
-            __doseSchedules.Add("QD",  "0800{0:00.00}");                                // Once a day
-            __doseSchedules.Add("BID", "0800{0:00.00}1800{0:00.00}");                   // Twice a day 
-            __doseSchedules.Add("TID", "0800{0:00.00}1200{0:00.00}1800");               // Three times a day
-            __doseSchedules.Add("QID", "0800{0:00.00}1200{0:00.00}1800{0:00.00}2100");  // Four times a day
-            __doseSchedules.Add("QHS", "2100{0:00.00}");                                // Daily at Bedtime
+            __doseSchedules.Add("QD",  "0800{0:00.00}");                                        // Once a day
+            __doseSchedules.Add("BID", "0800{0:00.00}1800{0:00.00}");                           // Twice a day 
+            __doseSchedules.Add("TID", "0800{0:00.00}1200{0:00.00}1800{0:00.00}");              // Three times a day
+            __doseSchedules.Add("QID", "0800{0:00.00}1200{0:00.00}1800{0:00.00}2100{0:00.00}"); // Four times a day
+            __doseSchedules.Add("QHS", "2100{0:00.00}");                                        // Daily at Bedtime
             __doseSchedules.Add("HS",  "2100{0:00.00}");
 
             // Sometimes DEA drug schedules are represented as roman numerals

@@ -3384,13 +3384,13 @@ namespace motCommonLib
                 }
             }
         }
-        public string MDOMStop
+        public string MDOMEnd
         {
             get
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("mdomstop")));
+                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("mdomend")));
                     return f.tagData;
                 }
                 catch
@@ -3403,7 +3403,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    setField(__qualifiedTags, value, "MDOMStop");
+                    setField(__qualifiedTags, value, "MDOMEnd");
                 }
                 catch
                 {
