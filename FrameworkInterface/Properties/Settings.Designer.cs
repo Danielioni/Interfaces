@@ -25,18 +25,6 @@ namespace HL7Interface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
-        public string TargetIP {
-            get {
-                return ((string)(this["TargetIP"]));
-            }
-            set {
-                this["TargetIP"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("24041")]
         public string TargetPort {
             get {
@@ -50,12 +38,12 @@ namespace HL7Interface.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
-        public string SourceIP {
+        public string TargetIP {
             get {
-                return ((string)(this["SourceIP"]));
+                return ((string)(this["TargetIP"]));
             }
             set {
-                this["SourceIP"] = value;
+                this["TargetIP"] = value;
             }
         }
         
@@ -68,6 +56,18 @@ namespace HL7Interface.Properties {
             }
             set {
                 this["SourcePort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
+        public string SourceIP {
+            get {
+                return ((string)(this["SourceIP"]));
+            }
+            set {
+                this["SourceIP"] = value;
             }
         }
     }

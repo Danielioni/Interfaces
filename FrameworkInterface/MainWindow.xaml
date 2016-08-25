@@ -62,7 +62,7 @@
          HorizontalAlignment="Left"
          Margin="41.981,0,0,110.215"
          VerticalAlignment="Bottom"
-         Text="24042"
+         Text=""
          TextChanged="tbTargetPort_TextChanged"
          TextWrapping="Wrap"/>
         <TextBox
@@ -84,7 +84,7 @@
          HorizontalAlignment="Right"
          Margin="0,0,-27.101,110.215"
          VerticalAlignment="Bottom"
-         Text="21110"
+         Text=""
          TextChanged="tbSourcePort_TextChanged"
          TextWrapping="Wrap"/>
         <Label

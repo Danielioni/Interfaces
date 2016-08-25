@@ -41,6 +41,11 @@ namespace HL7Interface
             __source_ip = Properties.Settings.Default.SourceIP;
             __source_port = Properties.Settings.Default.SourcePort;
 
+            tbSourcePort.Text = __source_port;
+            tbSourceIP.Text =   __source_ip;
+            tbTargetIP.Text =   __target_ip;
+            tbTargetPort.Text = __target_port;
+
             __logging = (bool)chkLogging.IsChecked;
 
             // __listener = new httpListener();
@@ -49,8 +54,8 @@ namespace HL7Interface
             //
             // __listener.EventHandler += __mumbleEvent;
 
-            __source_port = "24042";
-            __target_port = "24041";
+            //__source_port = "24042";
+            //__target_port = "24041";
 
             __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
 

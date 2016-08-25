@@ -2,17 +2,17 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HL7Interface.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="TargetIP" Type="System.String" Scope="User">
-      <Value Profile="(Default)">127.0.0.1</Value>
-    </Setting>
     <Setting Name="TargetPort" Type="System.String" Scope="User">
       <Value Profile="(Default)">24041</Value>
     </Setting>
-    <Setting Name="SourceIP" Type="System.String" Scope="User">
+    <Setting Name="TargetIP" Type="System.String" Scope="User">
       <Value Profile="(Default)">127.0.0.1</Value>
     </Setting>
     <Setting Name="SourcePort" Type="System.String" Scope="User">
       <Value Profile="(Default)">24042</Value>
+    </Setting>
+    <Setting Name="SourceIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">127.0.0.1</Value>
     </Setting>
   </Settings>
 </SettingsFile>
