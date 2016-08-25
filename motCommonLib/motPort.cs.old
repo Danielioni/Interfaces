@@ -41,8 +41,8 @@ namespace motCommonLib
     {
         public int TCP_TIMEOUT { get; set; } = 300000;
 
-        public TcpClient tcpSocket = null;
-        NetworkStream dataStream;
+        private TcpClient tcpSocket = null;
+        private NetworkStream dataStream;
         private Logger logger;
 
         bool __open = false;
@@ -55,47 +55,9 @@ namespace motCommonLib
             logger = LogManager.GetLogger("motInboundLib.Port");
         }
 
-        public motPort(string address, Int32 port)
-        {
-            if (__open)
-            {
-                return;
-            }
-
-            logger = LogManager.GetLogger("motInboundLib.Port");
-
-            tcp_address = address;
-            tcp_port = port.ToString();
-
-            try
-            {
-                Open();
-                __open = true;
-                logger.Info(@"Successfully Opened {0}:{1}", address, port);
-            }
-            catch (SocketException e)
-            {
-                logger.Fatal(@"Failed to open socket: " + address + " / " + port + " " + e.Message);
-                throw new Exception(e.Message);
-            }
-            catch (Exception e)
-            {
-                logger.Fatal(@"Failed to open socket: " + address + " / " + port + " " + e.Message);
-                throw new Exception(@"Failed to open socket: " + address + "/" + port + " " + e.Message);
-            }
-        }
-
         public motPort(string address, string port)
         {
-            IPAddress[] __host = Dns.GetHostAddresses(address);
-
-            foreach (IPAddress __h in __host)
-            {
-                if (__h.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    address = __h.ToString();
-                }
-            }
+            address = motUtils.__normalize_address(address);
 
             if (__open)
             {
