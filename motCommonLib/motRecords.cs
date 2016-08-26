@@ -118,10 +118,13 @@ namespace motCommonLib
         protected string _tableAction;
         protected Logger logger = LogManager.GetLogger("motInboundLib.Record");
         protected motPort __default;
+
         public bool __log_records { get; set; } = false;
+        public bool __auto_truncate { get; set; } = false;
+
         public void checkDependencies(List<Field> __qualifiedTags)
         {
-            Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("action")));
+            Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("action")));
 
             //  There are rules for fields that are required in add/change/delete.  Test them here
             for (int i = 0; i < __qualifiedTags.Count; i++)
@@ -132,13 +135,16 @@ namespace motCommonLib
 
                 if (__qualifiedTags[i].required && __qualifiedTags[i].when == f.tagData.ToLower()[0])
                 {
-                    if (__qualifiedTags[i].tagData.Length == 0)
+                    if (__qualifiedTags[i].tagData != null)
                     {
-                        string __err = string.Format("Field {0} empty but required for {1} operation on {2} table!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
+                        if (__qualifiedTags[i].tagData.Length == 0)
+                        {
+                            string __err = string.Format("Field {0} empty but required for the {1} operation on a {2} record!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
 
-                        logger.Error(__err);
-                        Console.WriteLine(__err);
-                        throw new Exception(__err);
+                            logger.Error(__err);
+                            Console.WriteLine(__err);
+                            throw new Exception(__err);
+                        }
                     }
                 }
             }
@@ -159,12 +165,12 @@ namespace motCommonLib
         }
         public bool setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
-            if (__qualifiedTags == null || __tag == null || __val == null)
+            if (__qualifiedTags == null || __tag == null)
             {
                 return false;
             }
 
-            Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((__tag.ToLower())));
+            Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((__tag.ToLower())));
 
             if (f == null)
             {
@@ -172,23 +178,14 @@ namespace motCommonLib
                 return false;   // Field doesn't exist
             }
 
-            f.__rules();
-
-            if (__val.ToString().Length > f.maxLen)
+            if (__val != null && __val.ToString().Length > f.maxLen)
             {
-                /*
-                if (f.autoTruncate == false)
+                if (!__auto_truncate)
                 {
                     throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
                 }
-                else
-                {
-                    // Pass through to gateway 
-                }
-                */
 
-                // TODO: Make truncation mechanism more robust
-                __val = __val.Substring(0, f.maxLen);
+                __val = __val?.Substring(0, f.maxLen - 1);
             }
 
             f.tagData = __val;
@@ -197,12 +194,12 @@ namespace motCommonLib
         }
         public bool setField(List<Field> __qualifiedTags, string __val, string __tag, bool __override)
         {
-            if (__qualifiedTags == null || __tag == null || __val == null)
+            if (__qualifiedTags == null || __tag == null)
             {
                 return false;
             }
 
-            Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((__tag.ToLower())));
+            Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((__tag.ToLower())));
 
             if (f == null)
             {
@@ -210,23 +207,14 @@ namespace motCommonLib
                 return false;   // Field doesn't exist
             }
 
-            f.__rules();
-
-            if (__val.ToString().Length > f.maxLen)
+            if (__val != null && __val.ToString().Length > f.maxLen)
             {
-                /*
-                if (__override == false)
+                if (__override)
                 {
                     throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
                 }
-                else
-                {
-                    // Truncate and pass through to gateway 
-                    __val = __val.Substring(0, f.maxLen - 1);
-                }
-                */
 
-                __val = __val.Substring(0, f.maxLen);
+                __val = __val?.Substring(0, f.maxLen - 1);
             }
 
             f.tagData = __val;
@@ -260,7 +248,7 @@ namespace motCommonLib
                     logger.Info(__record);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -283,7 +271,7 @@ namespace motCommonLib
                 motPort p = new motPort("127.0.0.1", "24042");
                 Write(p, __tags);
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -295,24 +283,24 @@ namespace motCommonLib
                 motPort p = new motPort("127.0.0.1", "24042");
                 Write(p, __str);
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
         }
 
-        public object writeREST_JSON(string __uri, string __account, string __password, List<Field> __tags, Dictionary<string,string> __map)
+        public object writeREST_JSON(string __uri, string __account, string __password, List<Field> __tags, Dictionary<string, string> __map)
         {
             // Build the JSON structure 
             //Dictionary<string, string>.Enumerator __cursor = __map.GetEnumerator();
             //__cursor.MoveNext();
 
-            var __json_request = "{\n"; 
+            var __json_request = "{\n";
 
-            foreach(Field __tag in __tags)
+            foreach (Field __tag in __tags)
             {
                 string __temp_tag = motUtils.__get_dict_value(__map, __tag.tagName);
-                if(__temp_tag != null && !string.IsNullOrEmpty(__tag.tagData))
+                if (__temp_tag != null && !string.IsNullOrEmpty(__tag.tagData))
                 {
                     __json_request += string.Format("{0} : {1}\n", __tag.tagName, __tag.tagData);
                 }
@@ -329,7 +317,7 @@ namespace motCommonLib
             request.Method = Method.POST;
             request.AddHeader("Content-Type", "application/json");
 
-           
+
 
             //var myContentJson = JsonConvert.SerializeObject(obj, settings);
 
@@ -358,7 +346,7 @@ namespace motCommonLib
 
             var __base_query =
                 string.Format("SELECT * FROM public.\"Facilities\", public.\"Addresses\", public.\"Patients\" WHERE \"Patients\".\"AddressId\" = \"Addresses\".\"Id\" AND \"Patients\".\"FacilityId\" = \"Facilities\".\"Id\"");
- 
+
 
             while (__cursor.MoveNext())
             {
@@ -420,7 +408,7 @@ namespace motCommonLib
                 __qualifiedTags.Add(new Field("ConsultMsg", "", 45, false, 'n'));
                 __qualifiedTags.Add(new Field("GenericFor", "", 40, false, 'n'));
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -465,523 +453,257 @@ namespace motCommonLib
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_drugid")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_drugid")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "RxSys_DrugID", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "RxSys_DrugID", false);
             }
         }
         public string LabelCode
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("lblcode")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("lblcode")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "LblCode", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "LblCode", false);
             }
         }
         public string ProductCode
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("prodcode")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("prodcode")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "ProdCode", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "ProdCode", false);
             }
         }
         public string TradeName
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("tradename")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("tradename")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "TradeName", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "TradeName", false);
             }
         }
         public int Strength
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("strength")));
-                    return Convert.ToInt32(f.tagData);
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("strength")));
+                return Convert.ToInt32(f.tagData);
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, Convert.ToString(value), "Strength", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, Convert.ToString(value), "Strength", false);
             }
         }
         public string Unit
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("unit")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("unit")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "Unit", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "Unit", false);
             }
         }
         public string RxOTC
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxotc")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxotc")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "RxOTC", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "RxOTC", false);
             }
         }
         public string DoseForm
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("doseform")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("doseform")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "DoseForm", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "DoseForm", false);
             }
         }
         public string Route
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("route")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("route")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "Route", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "Route", false);
             }
         }
         public int DrugSchedule
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("drugschedule")));
-                    return Convert.ToInt32(f.tagData);
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("drugschedule")));
+                return Convert.ToInt32(f.tagData);
             }
 
             set
             {
-                try
+                if (value < 2 && value > 7)
                 {
-                    if (value < 2 && value > 7)
-                    {
-                        throw new Exception("Drug Schedule must be 2-7");
-                    }
+                    throw new Exception("Drug Schedule must be 2-7");
+                }
 
-                    setField(__qualifiedTags, Convert.ToString(value), "DrugSchedule", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, Convert.ToString(value), "DrugSchedule", false);
             }
         }
         public string VisualDescription
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("visualdescription")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("visualdescription")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "VisualDescription", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "VisualDescription", false);
             }
         }
         public string DrugName
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("drugname")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("drugname")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "DrugName", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "DrugName", false);
             }
         }
         public string ShortName
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("shortname")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("shortname")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "ShortName", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "ShortName", false);
             }
         }
         public string NDCNum
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("ndcnum")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("ndcnum")));
+                return f.tagData;
             }
 
             set
             {
-                try
+                while (value.Contains("-"))
                 {
-                    while (value.Contains("-"))
-                    {
-                        value = value.Remove(value.IndexOf("-"), 1);
-                    }
+                    value = value.Remove(value.IndexOf("-"), 1);
+                }
 
-                    setField(__qualifiedTags, value, "NDCNum", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "NDCNum", false);
             }
         }
         public int SizeFactor
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("sizefactor")));
-                    return Convert.ToInt32(f.tagData);
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("sizefactor")));
+                return Convert.ToInt32(f.tagData);
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, Convert.ToString(value), "SizeFactor", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, Convert.ToString(value), "SizeFactor", false);
             }
         }
         public string Template
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("template")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("template")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "Template", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "Template", false);
             }
         }
         public int DefaultIsolate
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("defaultisolate")));
-                    return Convert.ToInt32(f.tagData);
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("defaultisolate")));
+                return Convert.ToInt32(f.tagData);
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, Convert.ToString(value), "DefaultIsolate", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, Convert.ToString(value), "DefaultIsolate", false);
             }
         }
         public string ConsultMsg
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("consultmsg")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("consultmsg")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "ConsultMsg", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "ConsultMsg", false);
             }
         }
         public string GenericFor
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("genericfor")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("genericfor")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "GenericFor", false);
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "GenericFor", false);
             }
         }
 
@@ -1013,7 +735,6 @@ namespace motCommonLib
             try
             {
                 Write(p, __qualifiedTags);
-                //Write(p, "<EOF/>");
             }
             catch (Exception e)
             {
@@ -1118,7 +839,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
                     return f.tagData;
                 }
                 catch
@@ -1145,7 +866,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("lastname")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("lastname")));
                     return f.tagData;
                 }
                 catch
@@ -1172,7 +893,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("firstname")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("firstname")));
                     return f.tagData;
                 }
                 catch
@@ -1199,7 +920,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("middleinitial")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("middleinitial")));
                     return f.tagData;
                 }
                 catch
@@ -1226,7 +947,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("address1")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("address1")));
                     return f.tagData;
                 }
                 catch
@@ -1253,7 +974,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("address2")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("address2")));
                     return f.tagData;
                 }
                 catch
@@ -1280,7 +1001,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("city")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("city")));
                     return f.tagData;
                 }
                 catch
@@ -1307,7 +1028,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("state")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("state")));
                     return f.tagData;
                 }
                 catch
@@ -1334,7 +1055,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("postalcode")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("postalcode")));
                     return f.tagData;
                 }
                 catch
@@ -1366,7 +1087,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("phone")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("phone")));
                     return f.tagData;
                 }
                 catch
@@ -1400,7 +1121,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("comments")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
                     return f.tagData;
                 }
                 catch
@@ -1427,7 +1148,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("dea_id")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("dea_id")));
                     return f.tagData;
                 }
                 catch
@@ -1454,7 +1175,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("tpid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("tpid")));
                     return f.tagData;
                 }
                 catch
@@ -1481,7 +1202,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("speciality")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("speciality")));
                     return Convert.ToInt32(f.tagData);
                 }
                 catch
@@ -1508,7 +1229,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("fax")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("fax")));
                     return f.tagData;
                 }
                 catch
@@ -1535,7 +1256,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("pageringfo")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("pageringfo")));
                     return f.tagData;
                 }
                 catch
@@ -1696,7 +1417,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_patid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_patid")));
                     return f.tagData;
                 }
                 catch
@@ -1723,7 +1444,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
                     return f.tagData;
                 }
                 catch
@@ -1750,7 +1471,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("lastname")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("lastname")));
                     return f.tagData;
                 }
                 catch
@@ -1777,7 +1498,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("firstname")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("firstname")));
                     return f.tagData;
                 }
                 catch
@@ -1804,7 +1525,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("middleinitial")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("middleinitial")));
                     return f.tagData;
                 }
                 catch
@@ -1836,7 +1557,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("address1")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("address1")));
                     return f.tagData;
                 }
                 catch
@@ -1863,7 +1584,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("address2")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("address2")));
                     return f.tagData;
                 }
                 catch
@@ -1890,7 +1611,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("city")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("city")));
                     return f.tagData;
                 }
                 catch
@@ -1917,7 +1638,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("state")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("state")));
                     return f.tagData;
                 }
                 catch
@@ -1944,7 +1665,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("postalcode")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("postalcode")));
                     return f.tagData;
                 }
                 catch
@@ -1976,7 +1697,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("phone1")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("phone1")));
                     return f.tagData;
                 }
                 catch
@@ -2010,7 +1731,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("phone2")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("phone2")));
                     return f.tagData;
                 }
                 catch
@@ -2044,7 +1765,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("workphone")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("workphone")));
                     return f.tagData;
                 }
                 catch
@@ -2078,7 +1799,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_licid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_licid")));
                     return f.tagData;
                 }
                 catch
@@ -2105,7 +1826,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("room")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("room")));
                     return f.tagData;
                 }
                 catch
@@ -2132,7 +1853,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((("comments"))));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((("comments"))));
                     return f.tagData;
                 }
                 catch
@@ -2159,7 +1880,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((("cycledate"))));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((("cycledate"))));
                     return f.tagData;
                 }
                 catch
@@ -2186,7 +1907,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((("cycledays"))));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((("cycledays"))));
                     return Convert.ToInt32(f.tagData);
                 }
                 catch
@@ -2218,7 +1939,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((("cycletype"))));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((("cycletype"))));
                     return Convert.ToInt32(f.tagData);
                 }
                 catch
@@ -2252,7 +1973,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains((("status"))));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((("status"))));
                     return Convert.ToInt32(f.tagData);
                 }
                 catch
@@ -2285,7 +2006,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_lastdoc")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_lastdoc")));
                     return f.tagData;
                 }
                 catch
@@ -2312,7 +2033,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_primarydoc")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_primarydoc")));
                     return f.tagData;
                 }
                 catch
@@ -2339,7 +2060,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_altdoc")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_altdoc")));
                     return f.tagData;
                 }
                 catch
@@ -2366,7 +2087,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("ssn")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("ssn")));
                     return f.tagData;
                 }
                 catch
@@ -2398,7 +2119,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("allergies")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("allergies")));
                     return f.tagData;
                 }
                 catch
@@ -2425,7 +2146,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("diet")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("diet")));
                     return f.tagData;
                 }
                 catch
@@ -2452,7 +2173,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("dxnotes")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("dxnotes")));
                     return f.tagData;
                 }
                 catch
@@ -2480,7 +2201,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("treatmentnotes")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("treatmentnotes")));
                     return f.tagData;
                 }
                 catch
@@ -2507,7 +2228,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("dob")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("dob")));
                     return f.tagData;
                 }
                 catch
@@ -2534,7 +2255,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("height")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("height")));
                     return Convert.ToInt32(f.tagData);
                 }
                 catch
@@ -2561,7 +2282,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("weight")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("weight")));
                     return Convert.ToInt32(f.tagData);
                 }
                 catch
@@ -2588,7 +2309,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("responsiblename")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("responsiblename")));
                     return f.tagData;
                 }
                 catch
@@ -2615,7 +2336,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("insname")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("insname")));
                     return f.tagData;
                 }
                 catch
@@ -2642,7 +2363,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("inspno")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("inspno")));
                     return f.tagData;
                 }
                 catch
@@ -2669,7 +2390,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("altinsnum")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("altinsnum")));
                     return f.tagData;
                 }
                 catch
@@ -2696,7 +2417,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("altinspno")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("altinspno")));
                     return f.tagData;
                 }
                 catch
@@ -2723,7 +2444,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("medicarenum")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("medicarenum")));
                     return f.tagData;
                 }
                 catch
@@ -2750,7 +2471,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("medicaidnum")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("medicaidnum")));
                     return f.tagData;
                 }
                 catch
@@ -2777,7 +2498,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("admitdate")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("admitdate")));
                     return f.tagData;
                 }
                 catch
@@ -2804,7 +2525,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("chartonly")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("chartonly")));
                     return f.tagData;
                 }
                 catch
@@ -2831,7 +2552,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("gender")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("gender")));
                     return f.tagData;
                 }
                 catch
@@ -2963,7 +2684,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_rxnum")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_rxnum")));
                     return f.tagData;
                 }
                 catch
@@ -3005,7 +2726,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_patid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_patid")));
                     return f.tagData;
                 }
                 catch
@@ -3032,7 +2753,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
                     return f.tagData;
                 }
                 catch
@@ -3059,7 +2780,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_drugid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_drugid")));
                     return f.tagData;
                 }
                 catch
@@ -3086,7 +2807,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("sig")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("sig")));
                     return f.tagData;
                 }
                 catch
@@ -3113,7 +2834,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxstartdate")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxstartdate")));
                     return f.tagData;
                 }
                 catch
@@ -3140,7 +2861,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxstopdate")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxstopdate")));
                     return f.tagData;
                 }
                 catch
@@ -3167,7 +2888,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("discontinuedate")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("discontinuedate")));
                     return f.tagData;
                 }
                 catch
@@ -3194,7 +2915,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("doseschedulename")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("doseschedulename")));
                     return f.tagData;
                 }
                 catch
@@ -3228,7 +2949,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("comments")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
                     return f.tagData;
                 }
                 catch
@@ -3255,7 +2976,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("refills")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("refills")));
                     return f.tagData;
                 }
                 catch
@@ -3282,7 +3003,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_newrxnum")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_newrxnum")));
                     return f.tagData;
                 }
                 catch
@@ -3309,7 +3030,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("isolate")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("isolate")));
                     return f.tagData;
                 }
                 catch
@@ -3336,7 +3057,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxtype")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxtype")));
                     return f.tagData;
                 }
                 catch
@@ -3363,7 +3084,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("mdomstart")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("mdomstart")));
                     return f.tagData;
                 }
                 catch
@@ -3390,7 +3111,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("mdomend")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("mdomend")));
                     return f.tagData;
                 }
                 catch
@@ -3417,7 +3138,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("qtyperdose")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("qtyperdose")));
                     return f.tagData;
                 }
                 catch
@@ -3444,7 +3165,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("qtydispensed")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("qtydispensed")));
                     return f.tagData;
                 }
                 catch
@@ -3471,7 +3192,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("status")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("status")));
                     return f.tagData;
                 }
                 catch
@@ -3498,7 +3219,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("dow")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("dow")));
                     return f.tagData;
                 }
                 catch
@@ -3525,7 +3246,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("specialdoses")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("specialdoses")));
                     return f.tagData;
                 }
                 catch
@@ -3552,7 +3273,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("dosetimesqtys")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("dosetimesqtys")));
                     return f.tagData;
                 }
                 catch
@@ -3579,7 +3300,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("chartonly")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("chartonly")));
                     return f.tagData;
                 }
                 catch
@@ -3606,7 +3327,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("anchordate")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("anchordate")));
                     return f.tagData;
                 }
                 catch
@@ -3737,7 +3458,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_locid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_locid")));
                     return f.tagData;
                 }
                 catch
@@ -3764,7 +3485,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_storeid")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_storeid")));
                     return f.tagData;
                 }
                 catch
@@ -3791,7 +3512,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("locationname")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("locationname")));
                     return f.tagData;
                 }
                 catch
@@ -3818,7 +3539,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("address1")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("address1")));
                     return f.tagData;
                 }
                 catch
@@ -3846,7 +3567,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("address2")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("address2")));
                     return f.tagData;
                 }
                 catch
@@ -3873,7 +3594,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("city")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("city")));
                     return f.tagData;
                 }
                 catch
@@ -3900,7 +3621,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("state")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("state")));
                     return f.tagData;
                 }
                 catch
@@ -3926,7 +3647,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("postalcode")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("postalcode")));
                     return f.tagData;
                 }
                 catch
@@ -3958,7 +3679,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("phone")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("phone")));
                     return f.tagData;
                 }
                 catch
@@ -3992,7 +3713,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("comments")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
                     return f.tagData;
                 }
                 catch
@@ -4019,7 +3740,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("cycledays")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("cycledays")));
                     return Convert.ToInt32(f.tagData);
                 }
                 catch
@@ -4051,7 +3772,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("cycletype")));
+                    Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("cycletype")));
                     return Convert.ToInt32(f.tagData);
                 }
                 catch
@@ -4184,81 +3905,39 @@ namespace motCommonLib
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_storeid")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_storeid")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "RxSys_StoreID");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "RxSys_StoreID");
             }
         }
         public string StoreName
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("storename")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("storename")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "StoreName");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "StoreName");
             }
         }
         public string Address1
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("address1")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("address1")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "Address1");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "Address1");
             }
         }
         public string Address2
@@ -4266,200 +3945,102 @@ namespace motCommonLib
 
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("address2")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("address2")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "Address2");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "Address2");
             }
         }
         public string City
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("city")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("city")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "City");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "City");
             }
         }
         public string State
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("state")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("state")));
+                return f.tagData;
             }
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value.ToUpper(), "State");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value?.ToUpper(), "State");
             }
         }
-        public string PostalCode
+        public string Zip
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("postalcode")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("zip")));
+                return f.tagData;
             }
 
             set
             {
-                try
+                if (value != null && value.Contains("-"))
                 {
-                    if (value.Contains("-"))
-                    {
-                        value = value.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
-                    }
+                    value = value.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
+                }
 
-                    setField(__qualifiedTags, value, "Zip");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "Zip");
             }
         }
         public string Phone
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("phone")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("phone")));
+                return f.tagData;
             }
 
             set
             {
-                char[] __junk = { '(', ')', '-', '.', ',' };
+                char[] __junk = { '(', ')', '-', '.', ',', ' ' };
 
-                try
+                while (value?.IndexOfAny(__junk) > -1)
                 {
-                    while (value.IndexOfAny(__junk) > -1)
-                    {
-                        value = value.Remove(value.IndexOfAny(__junk), 1);
-                    }
+                    value = value.Remove(value.IndexOfAny(__junk), 1);
+                }
 
-                    setField(__qualifiedTags, value, "Phone");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "Phone");
             }
         }
         public string Fax
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("fax")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("fax")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "Fax");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "Fax");
             }
         }
         public string DEANum
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("deanum")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("deanum")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "DEANum");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "DEANum");
             }
         }
 
@@ -4563,104 +4144,42 @@ namespace motCommonLib
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("rxsys_locid")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_locid")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "RxSys_LocID");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "RxSys_LocID");
             }
         }
         public string DoseScheduleName
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("doseschedulename")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("doseschedulename")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "DoseScheduleName");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "DoseScheduleName");
             }
         }
-
-        /*
-        public List<string> DoseTimeQtys
-        {
-            string val;
-
-            try
-            {
-                foreach (string s in value)
-                {
-                    val += s;
-                }
-
-                setField(__qualifiedTags, val, "DoseTimeQtys");
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
-        }
-*/
         public string DoseTimeQtys
         {
             get
             {
-                try
-                {
-                    Field f = __qualifiedTags.Find(x => x.tagName.ToLower().Contains(("dosetimequtys")));
-                    return f.tagData;
-                }
-                catch
-                {
-                    throw new Exception("Illegal Acess");
-                }
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("dosetimequtys")));
+                return f.tagData;
             }
 
             set
             {
-                try
-                {
-                    setField(__qualifiedTags, value, "DoseTimeQtys");
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
+                setField(__qualifiedTags, value, "DoseTimeQtys");
             }
         }
+
         public void Write(motPort p)
         {
             try

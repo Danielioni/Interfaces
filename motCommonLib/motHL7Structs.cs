@@ -65,7 +65,7 @@ namespace motCommonLib
                     continue;
                 }
 
-                __message_data.Add(__tagname + "-" + __minor.ToString(), __field);
+                __message_data.Add(__tagname + "-" + __minor.ToString(), __field.TrimStart(' ').TrimEnd(' '));
                 __minor++;
             }
 
@@ -81,12 +81,17 @@ namespace motCommonLib
             int __gotone;
 
             string[] __field_names = __message.Split(__delims);
-            string __tagname = __field_names[0];
+            string __tagname = __field_names[0].TrimStart(' ').TrimEnd(' ');
+            int i = 0;
 
-            foreach (string __field in __field_names)
+            while(i < __field_names.Length)
             {
+                // Trim out all the whitespace
+                __field_names[i] = __field_names[i].TrimStart(' ').TrimEnd(' ');
+                string __field = __field_names[i++];
+
                 // Catch the Root Name  {RXE,RXE}
-                if(__major == 0)
+                if (__major == 0)
                 {
                     __message_data.Add(__tagname, __field);
                     __major++;
@@ -94,10 +99,15 @@ namespace motCommonLib
                 }
 
                 // Doah!  MSH requires something special
-                if(__tagname == "MSH" && __major == 1)
+                if(__tagname == "MSH" && __major < 3)
                 {
-                    __message_data.Add(__tagname + "-" + __major.ToString(), "|");
-                    __major++;
+                    if (__major < 3)
+                    {
+                        __message_data.Add("MSH-1", "|");
+                        __message_data.Add("MSH-2", @"^~\&");
+                        __major = 3;
+                        continue;
+                    }
                 }
 
                 __message_data.Add(__tagname + "-" + __major.ToString(), __field);
@@ -1208,12 +1218,12 @@ namespace motCommonLib
                 __msg_data.Add("MSH-9-3", __msg_data["MSH-9-1"] + "_" + __msg_data["MSH-9-2"]);
             }
 
-            Console.WriteLine("Finished parsing MSH");
+            //Console.WriteLine("Finished parsing MSH");
         }
 
         public string __full_message()
         {
-            string __out = @"MSH|^~\&||MOT_HL7Gateway|MOT_HL7Gateway|";
+            //string __out = @"MSH|^~\&||MOT_HL7Gateway|MOT_HL7Gateway|";
             string __whole_thing = string.Empty;
 
             var __enumerator = __msg_data.GetEnumerator();

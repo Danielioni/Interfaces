@@ -29,13 +29,27 @@ using System.Security.Permissions;
 using System.Collections.Generic;
 using System.Threading;
 using motCommonLib;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace motInboundLib
+namespace motCommonLib.Test
 {
-    
-
-    class motMain
+    [TestClass]
+    class testSockets
     {
+        [TestMethod]
+        static void __port_cdtor()
+        { 
+            motPort __p = new motPort();
+            __p.tcp_address = "localhost";
+            __p.tcp_port = 80;
+            __p.Open();
+        }
+    }
+
+    [TestClass]
+    class motDocTypeTests
+    {
+        [TestMethod]
         static void testXMLDoc()
         {
             string __xdoc = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
@@ -68,12 +82,13 @@ namespace motInboundLib
                 motPort p = new motPort("localhost", "24042");
                 motParser __test = new motParser(p, __xdoc, motInputStuctures.__inputXML);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.Write("Failed XML Test - Error {0}", e.Message);
             }
         }
 
+        [TestMethod]
         static void testJSONDoc()
         {
             string __jdoc = @"{
@@ -111,14 +126,21 @@ namespace motInboundLib
             }
         }
 
+        [TestMethod]
         static void testTaggedDoc()
         {
         }
 
+        [TestMethod]
         static void testDelimitedDoc()
         {
         }
+    }
 
+    [TestClass]
+    class recordTypeTests
+    {
+        [TestMethod]
         static void testDrugRecord()
         {
             motDrugRecord r;
@@ -129,110 +151,158 @@ namespace motInboundLib
                 p = new motPort("localhost", "24042");
                 r = new motDrugRecord("Add");
 
-                //for (int i = 0; i < 10; i++)
-                //{
+                // Null is a valid value
+                r.RxSys_DrugID = null;
+                r.LabelCode = null;
+                r.ProductCode = null;
+                r.TradeName = null;
+                r.Strength = 0;
+                r.Unit = null;
+                r.RxOTC = null;
+                r.DoseForm = null;
+                r.Route =null;
+                r.DrugSchedule = 0;
+                r.VisualDescription = null;
+                r.DrugName = null;
+                r.ShortName = null;
+                r.NDCNum = null;
+                r.SizeFactor = 0;
+                r.Template = null;
+                r.DefaultIsolate = 0;
+                r.ConsultMsg = null;
+                r.GenericFor = null;
+                r.Write(p);
 
-                    r.RxSys_DrugID = "ABDC12579";
-                    r.LabelCode = "Mumble";
+                // Now use some actual values
+                r.RxSys_DrugID = "ABDC12579";
+                r.LabelCode = "Mumble";
+                r.ProductCode = "1234";
+                r.TradeName = "ALPHAFROG@ 120 MG Tablet";
+                r.Strength = 12;
+                r.Unit = "MG";
+                r.RxOTC = "R";
+                r.DoseForm = "Tablet";
+                r.Route = "Oral";
+                r.DrugSchedule = 6;
+                r.VisualDescription = "RND/RED/TAB";
+                r.DrugName = "ALPHAFROG@ 120 MG";
+                r.ShortName = "HAL 120MG";
+                r.NDCNum = "00023-0337-01";
+                r.SizeFactor = 5;
+                r.Template = "C";
+                r.DefaultIsolate = 0;
+                r.ConsultMsg = "Don't set your hair on fire";
+                r.GenericFor = "N/A";
+                r.Write(p);
 
+                // Change the record slightly
+                r.setField("Action", "Change");
+                r.setField("TradeName", "BetaDog");
+                r.setField("DrugName", "BETADOG@ 12MG");
+                r.setField("ProductCode", null);
+                r.setField("GenericFor", null);
+                r.Write(p);
 
-                    r.ProductCode = "1234";
-                    r.TradeName = "ALPHAFROG@ 120 MG Tablet";
-                    r.Strength = 12;
-                    r.Unit = "MG";
-
-                  
-
-                    r.RxOTC = "R";
-                    r.DoseForm = "Tablet";
-                    r.Route = "Oral";
-                    r.DrugSchedule = 6;
-
-                    r.VisualDescription = "RND/RED/TAB";
-                    r.DrugName = "ALPHAFROG@ 120 MG";
-                    r.ShortName = "HAL 120MG";
-                    r.NDCNum = "00023-0337-01";
-                    r.SizeFactor = 5;
-                    r.Template = "C";
-                    r.DefaultIsolate = 0;
-                    r.ConsultMsg = "Don't set your hair on fire";
-                    r.GenericFor = "N/A";
-
-
-                    r.Write(p);
-               
-                    r.setField("Action", "Change");
-                    r.setField("TradeName", "BetaDog");
-                    r.setField("DrugName", "BETADOG@ 12MG");
-
-                    r.Write(p);
-
-                    r.setField("Action", "Delete");
-
-                    r.Write(p);
-                    
-               // }              
+                // Delete the ecord
+                r.setField("Action", "Delete");
+                r.Write(p);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.Write("testDrug Record Failure {0}", e.Message);
             }
         }
 
+        [TestMethod]
+        static void testStoreRecord()
+        {
+            motStoreRecord s;
+            motPort p;
+
+            try
+            {
+                p = new motPort("localhost", "24042");
+                s = new motStoreRecord("Add");
+
+                s.RxSys_StoreID = null;
+                s.StoreName = null;
+                s.Address1 = null;
+                s.Address2 = null;
+                s.City = null;
+                s.State = null;
+                s.Zip = null;
+                s.Phone = null;
+                s.Fax = null;
+                s.DEANum = null;
+                s.Write(p);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+    }
+
+    [TestClass]
+    class databaseTests
+    {
+        [TestClass]
         class PharmaServe : databaseInputSource
         {
-          
+       
             public PharmaServe(dbType __type, string DSN) : base(__type, DSN)
             { }
 
-            // Find all new Drug Records and add them to the system
+            // Find all new Drug Records and add them to the 
+            [TestMethod]
             public override motPrescriptionRecord getPrescriptionRecord()
             {
-/*
-                try
-                {
-            
-                    motPrescriberRecord __scrip = new motPrescriberRecord();
-                    List<Field> __stage = new List<Field>();
-                    Dictionary<string, string> __xTable = new Dictionary<string, string>();
-                    Port p = new Port("127.0.0.1", "24042"));
-
-                    // Load the translaton table -- Database Column Name to Gateway Tag Name 
-                    __xTable.Add("Id", "Id"));
-                    // ...
-
-                    DataSet __recordSet = db.executeQuery("SELECT * from Rxes"));
-
-                    foreach(DataTable __table in __recordSet)
+                /*
+                    try
                     {
-                        for(int i = 0; i < __record.FieldCount; i++)
-                        {                            
-                            __scrip.setField(__xTable[__record.GetName(i).ToString()],  // Column
-                                                      __record.GetValue(i).ToString()); // Value
-                        }
 
-                        __scrip.Write(p);                    
+                        motPrescriberRecord __scrip = new motPrescriberRecord();
+                        List<Field> __stage = new List<Field>();
+                        Dictionary<string, string> __xTable = new Dictionary<string, string>();
+                        Port p = new Port("127.0.0.1", "24042"));
+
+                        // Load the translaton table -- Database Column Name to Gateway Tag Name 
+                        __xTable.Add("Id", "Id"));
+                        // ...
+
+                        DataSet __recordSet = db.executeQuery("SELECT * from Rxes"));
+
+                        foreach(DataTable __table in __recordSet)
+                        {
+                            for(int i = 0; i < __record.FieldCount; i++)
+                            {                            
+                                __scrip.setField(__xTable[__record.GetName(i).ToString()],  // Column
+                                                            __record.GetValue(i).ToString()); // Value
+                            }
+
+                            __scrip.Write(p);                    
+                        }
                     }
-                }
-                catch(Exception e)
-                {
-                    throw new Exception("Failed to get Drug Record " + e.Message);
-                }
-*/
+                    catch(Exception e)
+                    {
+                        throw new Exception("Failed to get Drug Record " + e.Message);
+                    }
+                */
                 return base.getPrescriptionRecord();
             }
         }
 
 
-       static void catch_socket_data(string __data)
+        static void catch_socket_data(string __data)
         {
             Console.WriteLine("Got {0}", __data);
         }
 
+        /*
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         static void Run()
         {
-            /*
+            
             //Test Database Connection
             try
             {
@@ -243,8 +313,8 @@ namespace motInboundLib
             {
                 Console.WriteLine("Failed to open Database for input {0}", e.Message);
             }
-            */
             
+
 
             // Testing
             //testDrugRecord();
@@ -253,39 +323,40 @@ namespace motInboundLib
             //testXMLDoc();
             //testJSONDoc();
 
-            motFileSystemListener f = new motFileSystemListener("C:\\MOT_IO", "localhost", "24042");
+            //motFileSystemListener f = new motFileSystemListener("C:\\MOT_IO", "localhost", "24042");
 
-/*
-            try
-            {
-                // create the listener socket on port 50005 and pass a callback function
-                motSocket ms = new motSocket(21110, catch_socket_data);
+            
+                        try
+                        {
+                            // create the listener socket on port 50005 and pass a callback function
+                            motSocket ms = new motSocket(21110, catch_socket_data);
 
-                // This will start the listener and call the callback forever
-                Thread __worker = new Thread(new ThreadStart(ms.listen));
-                __worker.Name = "listener";
-                __worker.Start();
+                            // This will start the listener and call the callback forever
+                            Thread __worker = new Thread(new ThreadStart(ms.listen));
+                            __worker.Name = "listener";
+                            __worker.Start();
 
-                for (int i = 0; i < 100; i++)
-                {
-                    Thread.Sleep(1024);
-                    Console.WriteLine("Still waiting {0}", i);
-                }
+                            for (int i = 0; i < 100; i++)
+                            {
+                                Thread.Sleep(1024);
+                                Console.WriteLine("Still waiting {0}", i);
+                            }
 
-                ms.close();
-                __worker.Join();
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-*/
+                            ms.close();
+                            __worker.Join();
+                        }
+                        catch(Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+            
         }
 
         static void Main(string[] args)
         {
             Run();
         }
+        */
     }
 
 }

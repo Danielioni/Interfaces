@@ -48,83 +48,55 @@ namespace motCommonLib
         bool __open = false;
 
         public string tcp_address { get; set; }
-        public string tcp_port { get; set; }
+        public int tcp_port { get; set; }
 
-        public motPort()
+
+        private void __open_socket(string __address, int __port)
         {
-            logger = LogManager.GetLogger("motInboundLib.Port");
-        }
+            tcp_port = __port;
 
-        public motPort(string address, Int32 port)
-        {
-            if (__open)
-            {
-                return;
-            }
-
-            logger = LogManager.GetLogger("motInboundLib.Port");
-
-            tcp_address = address;
-            tcp_port = port.ToString();
-
-            try
-            {
-                Open();
-                __open = true;
-                logger.Info(@"Successfully Opened {0}:{1}", address, port);
-            }
-            catch (SocketException e)
-            {
-                logger.Fatal(@"Failed to open socket: " + address + " / " + port + " " + e.Message);
-                throw new Exception(e.Message);
-            }
-            catch (Exception e)
-            {
-                logger.Fatal(@"Failed to open socket: " + address + " / " + port + " " + e.Message);
-                throw new Exception(@"Failed to open socket: " + address + "/" + port + " " + e.Message);
-            }
-        }
-
-        public motPort(string address, string port)
-        {
-            IPAddress[] __host = Dns.GetHostAddresses(address);
+            IPAddress[] __host = Dns.GetHostAddresses(__address);
 
             foreach (IPAddress __h in __host)
             {
                 if (__h.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    address = __h.ToString();
+                    tcp_address = __h.ToString();
                 }
             }
 
-            if (__open)
-            {
-                return;
-            }
-
             logger = LogManager.GetLogger("motInboundLib.Port");
-
-            tcp_address = address;
-            tcp_port = port;
 
             try
             {
                 Open();
                 __open = true;
-                logger.Info(@"Successfully Opened {0}:{1}", address, port);
+                logger.Info(@"Successfully Opened {0}:{1}", __address, __port);
             }
             catch (SocketException e)
             {
-                logger.Fatal(@"Failed to open socket: " + address + " / " + port + " " + e.Message);
+                logger.Fatal(@"Failed to open socket: " + __address + " / " + __port + " " + e.Message);
                 throw new Exception(e.Message);
             }
             catch (Exception e)
             {
-                logger.Fatal(@"Failed to open socket: " + address + " / " + port + " " + e.Message);
-                throw new Exception(@"Failed to open socket: " + address + "/" + port + " " + e.Message);
+                logger.Fatal(@"Failed to open socket: " + __address + " / " + __port + " " + e.Message);
+                throw new Exception(@"Failed to open socket: " + __address + "/" + __port + " " + e.Message);
             }
         }
 
+        public motPort()
+        {
+            logger = LogManager.GetLogger("motInboundLib.Port");
+        }
+        public motPort(string address, int port)
+        {
+            __open_socket(address, port);
+        }
+        public motPort(string address, string port)
+        {
+            __open_socket(address, tcp_port = Convert.ToInt32(port));       
+        }
         ~motPort()
         {
             Close();
@@ -132,9 +104,14 @@ namespace motCommonLib
 
         public void Open()
         {
+            if(__open)
+            {
+                return;
+            }
+
             try
             {
-                tcpSocket = new TcpClient(tcp_address, Convert.ToInt32(tcp_port));
+                tcpSocket = new TcpClient(tcp_address, tcp_port);
                 dataStream = tcpSocket.GetStream();
                 dataStream.ReadTimeout = TCP_TIMEOUT;
                 dataStream.WriteTimeout = TCP_TIMEOUT;                        
@@ -154,8 +131,39 @@ namespace motCommonLib
                 logger.Error(@"Gateway SocketException: {0}", e.Message);
                 throw;
             }
+            catch(Exception e)
+            {
+                throw;
+            }
         }
+        public void Open(string __address, int __port)
+        {
+            tcp_address = __address;
+            tcp_port = __port;
 
+            try
+            {
+                Open();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public void Open(string __address, string __port)
+        {
+            tcp_address = __address;
+            tcp_port = Convert.ToInt32(__port);
+
+            try
+            {
+                Open();
+            }
+            catch
+            {
+                throw;
+            }
+        }
         public void Close()
         {
             try
@@ -175,7 +183,6 @@ namespace motCommonLib
                 throw new Exception(__error);
             }
         }
-
         public void Flush()
         {
             try
@@ -193,7 +200,6 @@ namespace motCommonLib
                 throw new Exception(__error);
             }
         }
-
         public bool Write(string __buf, int __len)
         {
             try
@@ -214,7 +220,6 @@ namespace motCommonLib
 
             return false;
         }
-
         public bool Read(ref string __buf)
         {
             try
@@ -240,7 +245,6 @@ namespace motCommonLib
 
             return false;
         }
-
         public string Read()
         {
             if (tcpSocket != null)
@@ -263,7 +267,6 @@ namespace motCommonLib
 
             return null;
         }
-
         public bool Reset()
         {
             if (tcpSocket != null)

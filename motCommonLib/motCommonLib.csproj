@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="motEmail.cs" />
     <Compile Include="motDatabase.cs" />
     <Compile Include="motHL7Structs.cs" />
     <Compile Include="motInputStuctures.cs" />

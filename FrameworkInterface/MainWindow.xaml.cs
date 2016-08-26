@@ -467,7 +467,7 @@ namespace HL7Interface
             __store.Address2 = __assign("RXE-41-2", __fields);
             __store.City = __assign("RXE-41-3", __fields);
             __store.StoreName = __assign("RXE-41-4", __fields);
-            __store.PostalCode = __assign("RXE-41-5", __fields);
+            __store.Zip = __assign("RXE-41-5", __fields);
         }
         private void __process_RXO(motPatientRecord __pr, motDrugRecord __drug, Dictionary<string, string> __fields)
         {
