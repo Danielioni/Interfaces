@@ -133,7 +133,7 @@ namespace motCommonLib
             }
             catch(Exception e)
             {
-                throw;
+                throw e;
             }
         }
         public void Open(string __address, int __port)

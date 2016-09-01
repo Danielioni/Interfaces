@@ -39,5 +39,25 @@ namespace motHL7Tests
             var __pid = new PID(@"PID|1|JS567002|MQNH\F\567675||Smith^Jeremy^A^^^^D||19860103000000|F|||100 Some Street^Apt #10^Pittsburgh^PA^15215||(412)781-0001|||||MR0000004|111-22-3333|||||||||||N|||||||||");
             __pid = new PID(@"PID|||PATID1234^5^M11||JONES^WILLIAM^A^III||19610615|M-||2106-3|1200 N ELM STREET^^GREENSBORO^NC^27401-1020|GL|(919)379-1212|(919)271-3434~(919)277-3114||S||PATID12345001^2^M10|123456789|9-87654^NC");
         }
+
+        [TestMethod]
+        public void testNK1()
+        {
+            var __nk1 = new NK1(@"NK1 | 1 | JONES ^ BARBARA ^ K | SPO ||||| 20011105");
+            __nk1 = new NK1(@"NK1 | 1 | JONES ^ MICHAEL ^ A | FTH");
+        }
+
+        [TestMethod]
+        public void testPV1()
+        {
+            var __pv1 = new PV1(@"PV1|1|I|2000^2012^01||||004777^LEBAUER^SIDNEY^J.|||SUR||-||1|A0-"); 
+        }
+
+        [TestMethod]
+        public void testAL1()
+        {
+            var __al1 = new AL1(@"AL1|1||^PENICILLIN||PRODUCES HIVES~RASH");
+            __al1 = new AL1(@"AL1|2||^CAT DANDER~FLEAS~HAIR~FUR||Produces SNEEZING~RASH~EYE WATERING~EAR PAIN");
+        }
     }
 }

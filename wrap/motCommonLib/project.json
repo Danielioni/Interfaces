@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net451": {
+      "bin": {
+        "assembly": "../../motClassLibrary/bin/Debug/motCommonLib.dll",
+        "pdb": "../../motClassLibrary/bin/Debug/motCommonLib.pdb"
+      },
+      "dependencies": {
+        "Newtonsoft.Json": "1.0.0-*",
+        "NLog": "1.0.0-*",
+        "Npgsql": "1.0.0-*",
+        "RestSharp": "1.0.0-*"
+      }
+    }
+  }
+}

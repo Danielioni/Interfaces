@@ -15,24 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_039D4DB7B0A13188D2F4FA7623D93391"
-        "OwnerKey" = "8:_F05BA7B6E30E4A6781A1BC8F51508D79"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_039D4DB7B0A13188D2F4FA7623D93391"
-        "OwnerKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_039D4DB7B0A13188D2F4FA7623D93391"
-        "OwnerKey" = "8:_29F1516AE5F7FFB789AA7422B62C57F4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_06123C6B50CE02860020027882084C61"
         "OwnerKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
         "MsmSig" = "8:_UNDEFINED"
@@ -40,7 +22,7 @@
         "Entry"
         {
         "MsmKey" = "8:_06123C6B50CE02860020027882084C61"
-        "OwnerKey" = "8:_039D4DB7B0A13188D2F4FA7623D93391"
+        "OwnerKey" = "8:_98ED37DE013F3EB6E7694783769C1616"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -83,6 +65,24 @@
         {
         "MsmKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_98ED37DE013F3EB6E7694783769C1616"
+        "OwnerKey" = "8:_29F1516AE5F7FFB789AA7422B62C57F4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_98ED37DE013F3EB6E7694783769C1616"
+        "OwnerKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_98ED37DE013F3EB6E7694783769C1616"
+        "OwnerKey" = "8:_F05BA7B6E30E4A6781A1BC8F51508D79"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -142,6 +142,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_98ED37DE013F3EB6E7694783769C1616"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_E03E2B3746B3ACAFC9B4FE9702C7CF40"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -155,12 +161,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_680E7094D2D1F07B26B9172FB1D637BA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_039D4DB7B0A13188D2F4FA7623D93391"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -232,6 +232,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.5"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.5 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.5"
+                    }
+                }
             }
         }
     }
@@ -262,37 +270,6 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_039D4DB7B0A13188D2F4FA7623D93391"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_039D4DB7B0A13188D2F4FA7623D93391"
-                    {
-                    "Name" = "8:NLog.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:NLog.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_06123C6B50CE02860020027882084C61"
             {
             "AssemblyRegister" = "3:1"
@@ -400,6 +377,37 @@
                     }
                 }
             "SourcePath" = "8:Newtonsoft.Json.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_98ED37DE013F3EB6E7694783769C1616"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_98ED37DE013F3EB6E7694783769C1616"
+                    {
+                    "Name" = "8:NLog.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:NLog.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
@@ -569,7 +577,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_BBA46988F74E43BCB426D2ED063D21B2"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFilesFolder]Medicine-On-Time\\Interfaces"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
@@ -618,7 +626,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FrameworkInstaller"
         "ProductCode" = "8:{61F5150D-0324-4F95-93CA-33E09D361053}"
-        "PackageCode" = "8:{CD9AD81E-A6FF-49D8-97A4-3DB20618C89B}"
+        "PackageCode" = "8:{21D73DB2-7FFE-4625-9DFF-023F9A160642}"
         "UpgradeCode" = "8:{01804129-2BA5-45E0-AF4D-1AD5FBE090FC}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

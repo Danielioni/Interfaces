@@ -157,6 +157,8 @@ namespace motCommonLib
                 catch (SocketException e)
                 {
                     // Probably shutting down
+                    Console.WriteLine(e.Message);
+
                 }
                 catch (Exception e)
                 {
