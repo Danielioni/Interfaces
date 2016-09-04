@@ -30,6 +30,7 @@ using NLog;
 using RestSharp;
 using RestSharp.Authenticators;
 using RestSharp.Serializers;
+using motCommonLib;
 
 /// <summary>
 /// motRecords - Abstractions for all the record types that the Medicine-On-Time Legacy interface supports.  Classes are constructed 
@@ -110,16 +111,20 @@ namespace motCommonLib
         }
     }
 
+   
     /// <summary>
     /// Basic list processing and rules for record creation - base class for all records
     /// </summary>
     public class motRecordBase
     {
+        protected string __dsn;
+
         protected string _tableAction;
         protected Logger logger = LogManager.GetLogger("motInboundLib.Record");
         protected motPort __default;
 
         public bool __log_records { get; set; } = false;
+        public motErrorlLevel __log_level { get; set; } = motErrorlLevel.Error;  // 0 = off, 1 - Errors Only, 2 - Errors and Warnings,  3 - Errors, Warnings, and Info
         public bool __auto_truncate { get; set; } = false;
 
         public void checkDependencies(List<Field> __qualifiedTags)
@@ -141,7 +146,6 @@ namespace motCommonLib
                         {
                             string __err = string.Format("Field {0} empty but required for the {1} operation on a {2} record!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
 
-                            logger.Error(__err);
                             Console.WriteLine(__err);
                             throw new Exception(__err);
                         }
@@ -163,7 +167,43 @@ namespace motCommonLib
             __qualifiedTags[1].tagData = __action;
 
         }
-        public bool setField(List<Field> __qualifiedTags, string __val, string __tag)
+
+        protected void __write_log(string __data,  motErrorlLevel __el)
+        {
+            if(!__log_records || motErrorlLevel.Off == __log_level)
+            {
+                return;
+            }
+
+            switch(__el)
+            {
+                case motErrorlLevel.Error:
+                    if(__log_level >= motErrorlLevel.Error)
+                    {
+                        logger.Error(__data);
+                    }
+                    break;
+
+                case motErrorlLevel.Warning:
+                    if( __log_level >= motErrorlLevel.Warning)
+                    {
+                        logger.Warn(__data);
+                    }
+                    break;
+
+                case motErrorlLevel.Info:
+                    if (__log_level > motErrorlLevel.Warning)
+                    {
+                        logger.Info(__data);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        protected bool setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
             if (__qualifiedTags == null || __tag == null)
             {
@@ -182,6 +222,8 @@ namespace motCommonLib
             {
                 if (!__auto_truncate)
                 {
+                    string __log_data = string.Format("Field Overflow at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
+                    __write_log(__log_data, motErrorlLevel.Error);
                     throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
                 }
 
@@ -192,7 +234,7 @@ namespace motCommonLib
 
             return true;
         }
-        public bool setField(List<Field> __qualifiedTags, string __val, string __tag, bool __override)
+        protected bool setField(List<Field> __qualifiedTags, string __val, string __tag, bool __truncate)
         {
             if (__qualifiedTags == null || __tag == null)
             {
@@ -209,9 +251,12 @@ namespace motCommonLib
 
             if (__val != null && __val.ToString().Length > f.maxLen)
             {
-                if (__override)
+                if (!__truncate)
                 {
-                    throw new Exception("Field Overflow at: <" + __tag + ">. Maxlen = " + f.maxLen + " but got: " + __val.ToString().Length);
+                    string __log_data = string.Format("Field Overflow at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen,  __val.ToString().Length);
+
+                    __write_log(__log_data, motErrorlLevel.Error);
+                    throw new Exception(__log_data);
                 }
 
                 __val = __val?.Substring(0, f.maxLen - 1);
@@ -220,9 +265,11 @@ namespace motCommonLib
             f.tagData = __val;
             return true;
         }
-        public void Write(motPort p, List<Field> __qualifiedTags)
+        protected void Write(motPort p, List<Field> __qualifiedTags, bool __do_logging)
         {
             string __record = "<Record>";
+            bool __tmp = __log_records;
+            __log_records = __do_logging;
 
             try
             {
@@ -245,8 +292,23 @@ namespace motCommonLib
 
                 if (__log_records == true)
                 {
-                    logger.Info(__record);
+                    __write_log(__record, motErrorlLevel.Info);
                 }
+
+                __log_records = __tmp;
+            }
+            catch(Exception e)
+            {
+                __write_log(e.Message, motErrorlLevel.Error);
+                __log_records = __tmp;
+                throw;
+            }
+        }
+        public void Write(motPort p, List<Field> __qualifiedTags)
+        {
+            try
+            {
+                Write(p, __qualifiedTags, __log_records);
             }
             catch
             {
@@ -288,7 +350,6 @@ namespace motCommonLib
                 throw;
             }
         }
-
         public object writeREST_JSON(string __uri, string __account, string __password, List<Field> __tags, Dictionary<string, string> __map)
         {
             // Build the JSON structure 
@@ -370,7 +431,14 @@ namespace motCommonLib
             }
         }
         public motRecordBase()
-        { }
+        {
+            __dsn = string.Format("server={0};port={1};userid={2};password={3};database={4}",
+                                  Properties.Settings.Default.DB_Address,
+                                  Properties.Settings.Default.DB_Port,
+                                  Properties.Settings.Default.DB_UserName,
+                                  Properties.Settings.Default.DB_Password,
+                                  Properties.Settings.Default.DB_DatabaseName);
+        }
     }
 
     /// <summary>
@@ -428,7 +496,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                string __error = string.Format("Failed to create Drug record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -713,9 +784,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void setField(string __fieldname, string __val, bool __override)
@@ -724,9 +795,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
 
@@ -738,7 +809,26 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                logger.Error(@"DrugRecord Write Failure: {0}", e.Message);
+                string __error = string.Format("Failed to write Drug record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
+                throw;
+            }
+        }
+
+        public void Write(motPort p, bool __log_on)
+        {
+            try
+            {
+                Write(p, __qualifiedTags, __log_on);
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Drug record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -792,7 +882,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                Console.Write(e.Message);
+                string __error = string.Format("Failed to create Prescriber record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -802,9 +895,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void setField(string __fieldname, string __val, bool __override)
@@ -813,9 +906,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void readDatabaseRecord(motDatabase __db, Query __query)
@@ -1053,7 +1146,21 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "PagerInfo");
             }
         }
+        public void Write(motPort p, bool __log_on)
+        {
+            try
+            {
+                Write(p, __qualifiedTags, __log_on);
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Prescriber record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
 
+                throw;
+            }
+        }
         public void Write(motPort p)
         {
             try
@@ -1062,7 +1169,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                logger.Error(@"PrescriberRecord Write Failure: {0}", e.Message);
+                string __error = string.Format("Failed to write Prescriber record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -1139,7 +1249,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                Console.Write(e.Message);
+                string __error = string.Format("Failed to create Patient record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -1149,9 +1262,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void setField(string __fieldname, string __val, bool __override)
@@ -1160,9 +1273,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void Clear()
@@ -1781,6 +1894,21 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "Gender");
             }
         }
+        public void Write(motPort p, bool __log_on)
+        {
+            try
+            {
+                Write(p, __qualifiedTags, __log_on);
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Patient record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
+                throw;
+            }
+        }
         public void Write(motPort p)
         {
             try
@@ -1789,7 +1917,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                logger.Error(@"PatientRecord Write Failure: {0}", e.Message);
+                string __error = string.Format("Failed to write Patient record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -1855,7 +1986,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                Console.Write(e.Message);
+                string __error = string.Format("Failed to create Prescription record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -1865,9 +1999,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void setField(string __fieldname, string __val, bool __override)
@@ -1876,9 +2010,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public string RxSys_RxNum
@@ -2217,8 +2351,21 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "AnchorDate");
             }
         }
+        public void Write(motPort p, bool __log_on)
+        {
+            try
+            {
+                Write(p, __qualifiedTags, __log_on);
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Prescription record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
 
-
+                throw;
+            }
+        }
         public void Write(motPort p)
         {
             try
@@ -2227,7 +2374,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                logger.Error(@"PrescriptionRecord Write Failure: {0}", e.Message);
+                string __error = string.Format("Failed to write Prescription record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -2280,7 +2430,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                Console.Write(e.Message);
+                string __error = string.Format("Failed to create Location record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -2290,9 +2443,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void setField(string __fieldname, string __val, bool __override)
@@ -2301,9 +2454,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void readDatabaseRecord(motDatabase __db, Query __query)
@@ -2506,7 +2659,21 @@ namespace motCommonLib
             }
 
         }
+        public void Write(motPort p, bool __log_on)
+        {
+            try
+            {
+                Write(p, __qualifiedTags, __log_on);
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Location record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
 
+                throw;
+            }
+        }
         public void Write(motPort p)
         {
             try
@@ -2515,7 +2682,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                logger.Error(@"LocationRecord Write Failure: {0}", e.Message);
+                string __error = string.Format("Failed to write Location record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -2566,7 +2736,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                Console.Write(e.Message);
+                string __error = string.Format("Failed to create Store record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -2576,9 +2749,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void setField(string __fieldname, string __val, bool __override)
@@ -2587,9 +2760,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void readDatabaseRecord(motDatabase __db, Query __query)
@@ -2749,7 +2922,21 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "DEANum");
             }
         }
+        public void Write(motPort p, bool __log_on)
+        {
+            try
+            {
+                Write(p, __qualifiedTags, __log_on);
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Store record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
 
+                throw;
+            }
+        }
         public void Write(motPort p)
         {
             try
@@ -2758,7 +2945,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                logger.Error(@"StoreRecord Write Failure: {0}", e.Message);
+                string __error = string.Format("Failed to creawritete Store record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -2804,7 +2994,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                Console.Write(e.Message);
+                string __error = string.Format("Failed to create TimeQtys record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }
@@ -2815,9 +3008,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void setField(string __fieldname, string __val, bool __override)
@@ -2826,9 +3019,9 @@ namespace motCommonLib
             {
                 base.setField(__qualifiedTags, __val, __fieldname, __override);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Failed to insert field. " + e);
+                throw;
             }
         }
         public void readDatabaseRecord(motDatabase __db, Query __query)
@@ -2885,7 +3078,21 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "DoseTimeQtys");
             }
         }
+        public void Write(motPort p, bool __log_on)
+        {
+            try
+            {
+                Write(p, __qualifiedTags, __log_on);
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write TimeQtys record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
 
+                throw;
+            }
+        }
         public void Write(motPort p)
         {
             try
@@ -2894,7 +3101,10 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                logger.Error(@"TimeQtysRecord Write Failure: {0}", e.Message);
+                string __error = string.Format("Failed to write TimeQtys record: {0}", e.Message);
+                __write_log(__error, motErrorlLevel.Error);
+                Console.Write(__error);
+
                 throw;
             }
         }

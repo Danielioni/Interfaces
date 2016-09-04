@@ -33,6 +33,15 @@ using Newtonsoft.Json;
 
 namespace motCommonLib
 {
+    public enum motErrorlLevel
+    {
+        Off = 0,
+        Error,     // Errors Only
+        Warning,   // Errors and Warnings
+        Info       // Errors, Warning, and Info
+    };
+
+
     public class  KeyPair
     { 
         System.TypeCode __type;
@@ -117,7 +126,6 @@ namespace motCommonLib
             }
         }
     }
-
     static public class motUtils
     {
         static public string __normalize_address(string __address)

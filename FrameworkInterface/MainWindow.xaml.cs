@@ -714,7 +714,7 @@ namespace HL7Interface
 
                 motPort __p = new motPort(__target_ip, __target_port);
 
-                __pr.Write(__p);
+                __pr.Write(__p,__logging);
 
                 lbStatus.Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -759,6 +759,8 @@ namespace HL7Interface
                     {
                         switch (__pair.Key)
                         {
+                            default:
+                                break;
                         }
                     }
                 }
@@ -865,12 +867,12 @@ namespace HL7Interface
 
                     motPort __p = new motPort(__target_ip, __target_port);
 
-                    __scrip.Write(__p);
-                    __pr.Write(__p);
-                    __doc.Write(__p);
-                    __loc.Write(__p);
-                    __drug.Write(__p);
-                    __store.Write(__p);
+                    __scrip.Write(__p, __logging);
+                    __pr.Write(__p, __logging);
+                    __doc.Write(__p, __logging);
+                    __loc.Write(__p, __logging);
+                    __drug.Write(__p, __logging);
+                    __store.Write(__p, __logging);
 
                     lbStatus.Dispatcher.BeginInvoke(new Action(() =>
                     {
@@ -1008,12 +1010,12 @@ namespace HL7Interface
             // Write them all to the gateway
             try
             {
-                __scrip.Write(__p);
-                __pr.Write(__p);
-                __doc.Write(__p);
-                __loc.Write(__p);
-                __drug.Write(__p);
-                __store.Write(__p);
+                __scrip.Write(__p, __logging);
+                __pr.Write(__p, __logging);
+                __doc.Write(__p, __logging);
+                __loc.Write(__p, __logging);
+                __drug.Write(__p, __logging);
+                __store.Write(__p, __logging);
 
                 lbStatus.Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -1154,12 +1156,12 @@ namespace HL7Interface
             {
                 motPort __p = new motPort(__target_ip, __target_port);
 
-                __scrip.Write(__p);
-                __pr.Write(__p);
-                __doc.Write(__p);
-                __loc.Write(__p);
-                __drug.Write(__p);
-                __store.Write(__p);
+                __scrip.Write(__p, __logging);
+                __pr.Write(__p, __logging);
+                __doc.Write(__p, __logging);
+                __loc.Write(__p, __logging);
+                __drug.Write(__p, __logging);
+                __store.Write(__p, __logging);
 
                 lbStatus.Dispatcher.BeginInvoke(new Action(() =>
                 {
