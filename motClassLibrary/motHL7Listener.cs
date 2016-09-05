@@ -127,16 +127,26 @@ namespace motInboundLib
 
                 ACK __out = new ACK(__resp);
                 __response = __out.__ack_string;
+                __logger.Info("HL7 ACK: {0}", __response);
 
                 // Fire a new record event ...
                 // 
             }
             catch (Exception e)
             {
-                NAK __out = new NAK(__resp, null);
-                __response = __out.__nak_string;
+                string __error_code = "AP";
 
-                Console.Write(e.StackTrace);
+                // Parse the message, look for REJECTED
+                if(e.Message.Contains("REJECTED"))
+                {
+                    __error_code = "AR";
+                }
+
+                NAK __out = new NAK(__resp, __error_code);
+                __response = __out.__nak_string;
+                __logger.Error("HL7 NAK: {0}", __response);
+
+                Console.Write("NAK:" + e.Message);
             }
 
             __write_message_to_endpoint(__response);

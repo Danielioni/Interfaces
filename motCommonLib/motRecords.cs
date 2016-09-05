@@ -65,6 +65,7 @@ namespace motCommonLib
         public bool __new { get; set; }
         public virtual void __rules() { }
 
+
         public Field(string f, string t, int m, bool r, char w)
         {
             tagName = f;
@@ -111,7 +112,7 @@ namespace motCommonLib
         }
     }
 
-   
+
     /// <summary>
     /// Basic list processing and rules for record creation - base class for all records
     /// </summary>
@@ -129,26 +130,35 @@ namespace motCommonLib
 
         public void checkDependencies(List<Field> __qualifiedTags)
         {
+            //
+            // Legacy MOT Gateway rules (Required Column)
+            //
+            //      'K' - Key Field, required for all actions
+            //      'A' - Required for all Add actions
+            //      'W' - Would like to have but not required
+            //      'C' - Required for all Change actions
+            //
+
             Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("action")));
 
             //  There are rules for fields that are required in add/change/delete.  Test them here
             for (int i = 0; i < __qualifiedTags.Count; i++)
             {
-                // required== true, when == 'a', _table action == 'change'  -> Pass
-                // required== true, when == 'a', _table action == 'add', tagData == live data -> Pass
-                // required== true, when == 'a', _table action == 'add', tagData == empty -> Exception
+                // required == true, when == 'k', _table action == '*', tagData == empty -> Exception
+                // required == true, when == 'a', _table action == 'change'  -> Pass
+                // required == true, when == 'a', _table action == 'add', tagData == live data -> Pass
+                // required == true, when == 'a', _table action == 'add', tagData == empty -> Exception
+                // required == true, when == 'c', _table_action == 'change', tagData == empty -> Exception
 
-                if (__qualifiedTags[i].required && __qualifiedTags[i].when == f.tagData.ToLower()[0])
+                if (__qualifiedTags[i].required && (__qualifiedTags[i].when == f.tagData.ToLower()[0] || __qualifiedTags[i].when == 'k'))  // look for a,c,k
                 {
-                    if (__qualifiedTags[i].tagData != null)
-                    {
-                        if (__qualifiedTags[i].tagData.Length == 0)
-                        {
-                            string __err = string.Format("Field {0} empty but required for the {1} operation on a {2} record!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
 
-                            Console.WriteLine(__err);
-                            throw new Exception(__err);
-                        }
+                    if (__qualifiedTags[i].tagData == null || __qualifiedTags[i].tagData.Length == 0)
+                    {
+                        string __err = string.Format("REJECTED: Field {0} empty but required for the {1} operation on a {2} record!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
+
+                        Console.WriteLine(__err);
+                        throw new Exception(__err);
                     }
                 }
             }
@@ -168,24 +178,24 @@ namespace motCommonLib
 
         }
 
-        protected void __write_log(string __data,  motErrorlLevel __el)
+        protected void __write_log(string __data, motErrorlLevel __el)
         {
-            if(!__log_records || motErrorlLevel.Off == __log_level)
+            if (!__log_records || motErrorlLevel.Off == __log_level)
             {
                 return;
             }
 
-            switch(__el)
+            switch (__el)
             {
                 case motErrorlLevel.Error:
-                    if(__log_level >= motErrorlLevel.Error)
+                    if (__log_level >= motErrorlLevel.Error)
                     {
                         logger.Error(__data);
                     }
                     break;
 
                 case motErrorlLevel.Warning:
-                    if( __log_level >= motErrorlLevel.Warning)
+                    if (__log_level >= motErrorlLevel.Warning)
                     {
                         logger.Warn(__data);
                     }
@@ -253,7 +263,7 @@ namespace motCommonLib
             {
                 if (!__truncate)
                 {
-                    string __log_data = string.Format("Field Overflow at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen,  __val.ToString().Length);
+                    string __log_data = string.Format("Field Overflow at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
 
                     __write_log(__log_data, motErrorlLevel.Error);
                     throw new Exception(__log_data);
@@ -297,7 +307,7 @@ namespace motCommonLib
 
                 __log_records = __tmp;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 __write_log(e.Message, motErrorlLevel.Error);
                 __log_records = __tmp;

@@ -584,6 +584,11 @@ namespace HL7Interface
 
         static string __assign(string __key, Dictionary<string, string> __fields)
         {
+            if(string.IsNullOrEmpty(__key))
+            {
+                return string.Empty;
+            }
+
             string __tmp = string.Empty;
 
             __fields.TryGetValue(__key, out __tmp);
