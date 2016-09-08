@@ -70,7 +70,12 @@ namespace motCommonLib
                 __callback = __callback_p;
                 __portnum = __port;
                 __logger = LogManager.GetLogger("motInboundLib.Socket");
-                __trigger = new TcpListener(IPAddress.Any, __port);
+
+                __trigger = new TcpListener(IPAddress.Any, __port);                
+                __trigger.Start();
+
+                __logger.Info("Listening on port {0}", __portnum);
+
                 __running = true;
             }
             catch (Exception e)
@@ -87,7 +92,13 @@ namespace motCommonLib
             try
             {
                 __portnum = __port;
+                __logger = LogManager.GetLogger("motInboundLib.Socket");
+
                 __trigger = new TcpListener(IPAddress.Any, __port);
+
+                __trigger.Start();
+                __logger.Info("Listening on port {0}", __portnum);
+
                 __running = true;
             }
             catch (Exception e)
@@ -122,8 +133,20 @@ namespace motCommonLib
 
         public void listen()
         {
-            __trigger.Start();
-            __logger.Info("Listening on port {0}", __portnum);
+           // try
+           // {
+           //     __trigger.Start();
+                //__logger.Info("Listening on port {0}", __portnum);
+          /*  }
+            catch (SocketException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            */
 
             while (__running)
             {

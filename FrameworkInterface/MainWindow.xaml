@@ -11,9 +11,9 @@
    Closing="Window_Closing"
    ResizeMode="NoResize"
    SizeToContent="WidthAndHeight"
-   Title="MOT HL7 Gateway"
-   mc:Ignorable="d" Opacity="0.75" Icon="MOT-Logo (256x256).png">
-    <Grid Width="524.8" HorizontalAlignment="Right" Margin="0,0,-6.4,-51">
+   Title="MOT HL7 Proxy"
+   mc:Ignorable="d" Opacity="0.75" Icon="MOT-Logo Black.ico" Background="#FF70A964">
+    <Grid Width="525" HorizontalAlignment="Right" Margin="0,0,-6.6,-51" Height="471" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="63*"/>
@@ -36,12 +36,12 @@
             Height="50"
             Click="btnStart_Click"
             Content="Start Listening"
-            IsDefault="True" Grid.Column="2" Margin="65.324,105,19.8,0" VerticalAlignment="Top" d:LayoutOverrides="Height"/>
+            IsDefault="True" Grid.Column="1" Margin="20.2,360,176,0" VerticalAlignment="Top" ToolTip="Start listening for souce system messages" TabIndex="1"/>
         <Button
             x:Name="btnStop"
             Height="50"
             Click="btnStop_Click"
-            Content="Stop Listening" Grid.Column="2" Margin="65.324,172,19.8,209.214"/>
+            Content="Stop Listening" Grid.Column="1" Margin="215.2,360,184.8,20.4" Grid.ColumnSpan="2" TabIndex="2" ToolTip="Stop listening for source system messasges"/>
 
         <TextBox
          x:Name="tbTargetIP"
@@ -143,12 +143,11 @@
          Content="Port:"/>
         <Border
          Grid.Column="1"
-         Margin="1,103,-41.12,206.215"
+         Margin="1.2,103,9.8,206.4"
          BorderBrush="Black"
          BorderThickness="1"
-         CornerRadius="20"
-         d:LayoutOverrides="LeftMargin, RightMargin">
-            <ListBox x:Name="lbStatus" Margin="9.2,9.2,9.4,9" FontSize="8"/>
+         CornerRadius="20" Grid.ColumnSpan="2">
+            <ListBox x:Name="lbStatus" Margin="9.2,9.2,9.4,9" FontSize="8" Background="#FF70A964" BorderThickness="0"/>
         </Border>
         <Border
          Height="85"
@@ -160,16 +159,20 @@
          BorderThickness="1"
          CornerRadius="20"
          d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
-            <ListBox x:Name="lbMessages" Margin="11.2,9.2,12,9" FontSize="8"/>
+            <ListBox x:Name="lbMessages" Margin="11.2,9.2,12,9" FontSize="8" Background="#FF70A964" BorderThickness="0"/>
         </Border>
         <CheckBox
          x:Name="chkLogging"
-         Height="15.099"
+         Height="15"
          Grid.Column="2"
-         Margin="65.324,0,76.046,165.255"
+         Margin="67,0,19.8,147.4"
          VerticalAlignment="Bottom"
          Click="chkLogging_Click"
-         Content="Logging"
+         Content="Log Transactions"
          IsChecked="True"/>
+        <CheckBox x:Name="chkWarnings" Content="Warnings" Grid.Column="2" HorizontalAlignment="Left" Margin="85,314,0,0" VerticalAlignment="Top" ToolTip="Log Errors and Warnings" Click="chkWarnings_Click"/>
+        <CheckBox x:Name="chkErrors" Content="Errors" Grid.Column="2" HorizontalAlignment="Left" Margin="85,294,0,0" VerticalAlignment="Top" ToolTip="Just log Errors" IsChecked="True" Click="chkErrors_Click"/>
+        <CheckBox x:Name="chkInfo" Content="Infomation" Grid.Column="2" HorizontalAlignment="Left" Margin="85,335,0,0" VerticalAlignment="Top" ToolTip="Log everything" Click="chkInfo_Click"/>
+        <CheckBox x:Name="chkTruncate" Content="Auto Truncate" Grid.Column="2" HorizontalAlignment="Left" Margin="67,360,0,0" VerticalAlignment="Top" Click="chkTruncate_Click"/>
     </Grid>
 </Window>

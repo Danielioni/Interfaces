@@ -54,8 +54,288 @@ namespace motCommonLib
             } 
         }
 
+
+        class __table_converter
+        {
+            Dictionary<char, string> __action = new Dictionary<char, string>()
+            {
+                {'A', "Add" },
+                {'a', "Add" },
+                {'C', "Change" },
+                {'c', "Change" },
+                {'D', "Delete" },
+                {'d', "Delete" }
+            };
+
+            Dictionary<char, string> __type = new Dictionary<char, string>()
+            {
+                {'P', "Physician" },
+                {'p', "Physician" },
+                {'A', "Patient" },
+                {'a', "Patient" },
+                {'D', "Drug" },
+                {'d', "Drug" },
+                {'L', "Location" },
+                {'l', "Location" },
+                {'R', "Rx" },
+                {'r', "Rx" },
+                {'S', "Store" },
+                {'s', "Store" },
+                {'T', "TimeQtys" },
+                {'t', "TimeQtys" }
+            };
+
+            Dictionary<int, string> __prescriber_table = new Dictionary<int, string>()
+           {
+               {1,"LastName" },
+               {2,"FirstName" },
+               {3,"MiddleInitial" },
+               {4,"Address1" },
+               {5,"Address2" },
+               {6,"City" },
+               {7,"State" },
+               {8,"Zip" },
+               {9, "Phone" },
+               {10,"Comments" },
+               {11,"DEA_ID" },
+               {12,"TPID" },
+               {13,"Speciality" },
+               {14,"Fax" },
+               {15,"PagerInfo" },
+               {16,"RxSys_DocID" }
+           };
+
+            Dictionary<int, string> __drug_table = new Dictionary<int, string>()
+           {
+               {1, "LblCode" },
+               {2, "ProdCode" },
+               {3, "TradeName" },
+               {4, "Strength" },
+               {5, "Unit" },
+               {6, "RxOtc" },
+               {7, "DoseForm" },
+               {8, "Route" },
+               {9, "DrugSchedule" },
+               {10, "VisualDescription" },
+               {11, "DrugName" },
+               {12, "ShortName" },
+               {13,"NDCNum" },
+               {14,"SizeFactor" },
+               {15,"Template" },
+               {16,"ConsultMesg" },
+               {17, "GenericFor" },
+               {18, "RxSys_ID" }
+           };
+
+            Dictionary<int, string> __location_table = new Dictionary<int, string>()
+           {
+               {1,"RxSys_LocID" },
+               {2,"LocationName" },
+               {3,"Address1" },
+               {4, "Address2" },
+               {5, "City" },
+               {6, "State" },
+               {7,"Zip" },
+               {8,"Phone" },
+               {9,"Comments" },
+               {10, "RxSys_LocID" },
+               {11, "CycleDays" },
+               {12, "CycleType" }
+           };
+
+            Dictionary<int, string> __patient_table = new Dictionary<int, string>()
+           {
+               {1, "RxSys_PatID" },
+               {2, "LastName" },
+               {3, "FirstName" },
+               {4, "MiddleInitial" },
+               {5, "Address1" },
+               {6, "Address2" },
+               {7, "City" },
+               {8, "State" },
+               {9, "Zip" },
+               {10, "Phone1" },
+               {11, "Phone2" },
+               {12, "WorkPhone" },
+               {13, "RxSys_LocID" },
+               {14, "Room" },
+               {15, "Comments" },
+               {16, "Gender" },
+               {17, "CycleDate" },
+               {18, "CycleType" },
+               {19, "Status" },
+               {20, "RxSys_LastDoc" },
+               {21, "RxSys_PrimaryDoc" },
+               {22, "RxSys_AltDoc" },
+               {23, "SSN" },
+               {24, "Allergies" },
+               {25, "Diet" },
+               {26, "DxNotes" },
+               {27, "TreatmentNotes" },
+               {28, "DOB" },
+               {29, "Height" },
+               {30, "Weight" },
+               {31, "ResponsibleName" },
+               {32, "InsName" },
+               {33, "InsPNo" },
+               {34, "AltInsName" },
+               {35, "AltInsPNo" },
+               {36, "MCareNum" },
+               {37, "MCaidNum" },
+               {38, "AdmitDate" },
+               {39, "ChartOnly" }
+           };
+
+            Dictionary<int, string> __rx_table = new Dictionary<int, string>()
+           {
+               {1, "RxSys_PatID" },
+               {2, "RxSys_RxNum" },
+               {3, "RxSys_DocID" },
+               {4, "Sig" },
+               {5, "RxStartDate" },
+               {6, "RxStopDate" },
+               {7, "DoseScheduleName" },
+               {8, "Comments" },
+               {9, "Refills" },
+               {10, "RxSys_NewRxNum" },
+               {11, "Isolate" },
+               {12, "MDoMStart" },
+               {13, "MDoMEnd" },
+               {14, "NDCNum" },
+               {15, "QtyPerDose" },
+               {16, "QtyDispensed" },
+               {17, "RxType" },
+               {18, "Status" },
+               {19, "DoW" },
+               {20, "SpecialDoses" },
+               {21, "DoseTimesQtys" },
+               {22, "RxSys_DrugID" },              
+            };
+
+            Dictionary<int, string> __store_table = new Dictionary<int, string>()
+           {
+               {1, "RxSys_StoreID" },
+               {2, "StoreName" },
+               {3, "Address1" },
+               {4, "Address2" },
+               {5, "City" },
+               {6, "State" },
+               {7, "Zip" },
+               {8, "Phone" },
+               {9, "Fax" },
+               {10,"DEANum" }
+           };
+
+            Dictionary<int, string> __timeqtys_table = new Dictionary<int, string>()
+           {
+               {1, "RxSys_LocID" },
+               {2, "DoseScheduleName" },
+               {3, "DoseTimesQtys" }
+            };
+
+            public string parse(string[] __items)
+            {
+                StringBuilder __tagged_string = new StringBuilder();
+                int i;
+
+                try
+                {
+                    __tagged_string.Append(string.Format("<Record>"));
+                    __tagged_string.Append(string.Format("\t<Table>{0}</Table>", __type[__items[0][0]]));
+                    __tagged_string.Append(string.Format("\t<Action>{0}</Action>", __action[__items[0][1]]));
+
+
+                    switch (__items[0][0])
+                    {
+                        case 'P':
+                        case 'p':
+                            for (i = 1; i < __items.Length; i++)  // This might be Length - 2
+                            {
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __prescriber_table[i], __items[i]));
+                            }
+                            break;
+
+                        case 'D':
+                        case 'd':
+                            for (i = 1; i < __items.Length; i++)
+                            {
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __drug_table[i], __items[i]));
+                            }
+
+                            break;
+
+                        case 'L':
+                        case 'l':
+                            for (i = 1; i < __items.Length; i++)
+                            {
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __location_table[i], __items[i]));
+                            }
+                            break;
+
+                        case 'A':
+                        case 'a':
+                            for (i = 1; i < __items.Length; i++)
+                            {
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __patient_table[i], __items[i]));
+                            }
+                            break;
+
+                        case 'R':
+                        case 'r':
+                            for (i = 1; i < __items.Length; i++)
+                            {
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __rx_table[i], __items[i]));
+                            }
+                            break;
+
+                        case 'S':
+                        case 's':
+                            for (i = 1; i < __items.Length; i++)
+                            {
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __store_table[i], __items[i]));
+                            }
+                            break;
+
+                        case 'T':
+                        case 't':
+                            for (i = 1; i < __items.Length; i++)
+                            {
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __timeqtys_table[i], __items[i]));
+                            }
+                            break;
+
+                        default:
+                            break;
+
+                    }
+
+                    __tagged_string.Append("</Record>");
+
+                    return __tagged_string.ToString();
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
         private void parseDelimited(string inboundData)
         {
+            __table_converter __tc = new __table_converter();
+            char[] __delimiters = { '\xEE' };
+
+            // Unravel the delimited stream
+            string[] __items = inboundData.Split(__delimiters);
+
+            try
+            {
+                parseTagged(__tc.parse(__items));
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         private void parseJSON(string inboundData)

@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using Newtonsoft.Json;
+using NLog;
 
 namespace motCommonLib
 {
@@ -128,6 +129,35 @@ namespace motCommonLib
     }
     static public class motUtils
     {
+        static public void __write_log(Logger __log, motErrorlLevel __current, motErrorlLevel __this, string __message)
+        {
+            try
+            {
+                if (__this >= __current)
+                {
+                    switch (__this)
+                    {
+                        case motErrorlLevel.Error:
+                            __log.Error(__message);
+                            break;
+
+                        case motErrorlLevel.Warning:
+                            __log.Warn(__message);
+                            break;
+
+                        case motErrorlLevel.Info:
+                            __log.Info(__message);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch
+            { }
+        }
+
         static public string __normalize_address(string __address)
         {
             IPAddress[] __ip_list = Dns.GetHostAddresses(__address);

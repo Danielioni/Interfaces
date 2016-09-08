@@ -70,5 +70,65 @@ namespace HL7Interface.Properties {
                 this["SourceIP"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoTruncate {
+            get {
+                return ((bool)(this["AutoTruncate"]));
+            }
+            set {
+                this["AutoTruncate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Logging {
+            get {
+                return ((bool)(this["Logging"]));
+            }
+            set {
+                this["Logging"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Errors {
+            get {
+                return ((bool)(this["Errors"]));
+            }
+            set {
+                this["Errors"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Warnings {
+            get {
+                return ((bool)(this["Warnings"]));
+            }
+            set {
+                this["Warnings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Info {
+            get {
+                return ((bool)(this["Info"]));
+            }
+            set {
+                this["Info"] = value;
+            }
+        }
     }
 }

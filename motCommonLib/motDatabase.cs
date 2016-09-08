@@ -380,7 +380,7 @@ namespace motCommonLib
         }
     }
 
-    public class motDatabase
+    public class motDatabase : IDisposable
     {
         private dbType __wereA = dbType.NULLServer;
         private motSQLServer sqlServer;
@@ -474,6 +474,11 @@ namespace motCommonLib
             }
 
             return false;
+        }
+
+        public void Dispose()
+        {
+            ((IDisposable)__recordSet).Dispose();
         }
 
         public motDatabase() { }
@@ -598,7 +603,5 @@ namespace motCommonLib
                 throw new Exception("failed to create database object " + e.Message);
             }
         }
-
-        ~databaseInputSource() { }
     }
 }

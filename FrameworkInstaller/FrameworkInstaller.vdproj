@@ -51,6 +51,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_51A9FCD908994E4C9FF66859DEAF6F4A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_680E7094D2D1F07B26B9172FB1D637BA"
         "OwnerKey" = "8:_29F1516AE5F7FFB789AA7422B62C57F4"
         "MsmSig" = "8:_UNDEFINED"
@@ -113,12 +119,6 @@
         {
         "MsmKey" = "8:_F05BA7B6E30E4A6781A1BC8F51508D79"
         "OwnerKey" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FE70C7D88148401F95E6BB25F94D41BB"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -202,10 +202,10 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.5"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6"
                     {
-                    "Name" = "8:Microsoft .NET Framework 4.5 (x86 and x64)"
-                    "ProductCode" = "8:.NETFramework,Version=v4.5"
+                    "Name" = "8:Microsoft .NET Framework 4.6 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6"
                     }
                 }
             }
@@ -262,7 +262,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v4.5"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.6"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=395269"
                 }
@@ -361,6 +361,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_51A9FCD908994E4C9FF66859DEAF6F4A"
+            {
+            "SourcePath" = "8:..\\FrameworkInterface\\MOT-Logo Black.ico"
+            "TargetName" = "8:MOT-Logo Black.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_680E7094D2D1F07B26B9172FB1D637BA"
@@ -538,26 +558,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE70C7D88148401F95E6BB25F94D41BB"
-            {
-            "SourcePath" = "8:..\\FrameworkInterface\\MOT.ico"
-            "TargetName" = "8:MOT.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
         }
         "FileType"
         {
@@ -577,7 +577,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_BBA46988F74E43BCB426D2ED063D21B2"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder]Medicine-On-Time\\Interfaces"
+            "DefaultLocation" = "8:[ProgramFilesFolder]Medicine-On-Time\\Proxy"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
@@ -585,17 +585,6 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_D51AF9070C794682AFA3C901351E78F2"
-                    {
-                    "Name" = "8:Log"
-                    "AlwaysCreate" = "11:TRUE"
-                    "Condition" = "8:"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_0DCE0541A8304B1D9245AF01C4C1CBD1"
-                        "Folders"
-                        {
-                        }
-                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_ED5A97A94C99425EB248EEDBD35ADE03"
@@ -626,7 +615,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FrameworkInstaller"
         "ProductCode" = "8:{61F5150D-0324-4F95-93CA-33E09D361053}"
-        "PackageCode" = "8:{21D73DB2-7FFE-4625-9DFF-023F9A160642}"
+        "PackageCode" = "8:{3E3E82CE-8966-498B-A027-D867626CC115}"
         "UpgradeCode" = "8:{01804129-2BA5-45E0-AF4D-1AD5FBE090FC}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -748,16 +737,16 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C7A5109BA2274325BBACAC24F32D4E6F"
             {
-            "Name" = "8:Framework to MOT HL7"
+            "Name" = "8:MOT HL7 Proxy"
             "Arguments" = "8:"
-            "Description" = "8:HL7 Gateway"
+            "Description" = "8:HL7 2.x Gateway Proxy"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
             "Target" = "8:_84E4D048F6E142EB9FC0F93F18421FCD"
             "Folder" = "8:_ED5A97A94C99425EB248EEDBD35ADE03"
             "WorkingFolder" = "8:_BBA46988F74E43BCB426D2ED063D21B2"
-            "Icon" = "8:_FE70C7D88148401F95E6BB25F94D41BB"
+            "Icon" = "8:_51A9FCD908994E4C9FF66859DEAF6F4A"
             "Feature" = "8:"
             }
         }

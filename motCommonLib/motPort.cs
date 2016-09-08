@@ -37,7 +37,7 @@ using NLog;
 
 namespace motCommonLib
 {
-    public class motPort
+    public class motPort : IDisposable
     {
         public int TCP_TIMEOUT { get; set; } = 300000;
 
@@ -131,9 +131,9 @@ namespace motCommonLib
                 logger.Error(@"Gateway SocketException: {0}", e.Message);
                 throw;
             }
-            catch(Exception e)
+            catch(Exception)
             {
-                throw e;
+                throw;
             }
         }
         public void Open(string __address, int __port)
@@ -288,6 +288,12 @@ namespace motCommonLib
             }
 
             return false;
+        }
+
+        public void Dispose()
+        {
+            ((IDisposable)dataStream).Dispose();
+            ((IDisposable)tcpSocket).Dispose();
         }
     }
 }

@@ -77,7 +77,7 @@ namespace eSmartPassIntegration
                 motESPatient __esp = new motESPatient(__mainData, __secondaryData, Properties.Settings.Default.Secret);
 
             }
-            catch (Exception e)
+            catch
             {
                 //lstMain.Items.Add("Startup Error: " + e.Message);
             }

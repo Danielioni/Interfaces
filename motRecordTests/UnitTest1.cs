@@ -225,7 +225,7 @@ namespace motRecordTests
                 r.GenericFor = null;
                 r.Write(p);
             }
-            catch(Exception e)
+            catch
             {
                 __failed = true;                     
             }
@@ -317,7 +317,7 @@ namespace motRecordTests
             r.GenericFor = "N/A";
             r.Write(p);
             }
-            catch (Exception e)
+            catch
             {
                 __failed = true;
             }

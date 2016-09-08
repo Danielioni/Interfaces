@@ -167,16 +167,24 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                string __err = string.Format("An error occurred while attempting to start the HL7 listener: {0}\nExiting ...", e.Message);
+                string __err = string.Format("An error occurred while attempting to start the HL7 listener: {0}", e.Message);
                 Console.WriteLine(__err);
                 __logger.Error(__err);
+                throw;
             }
         }
 
         public void __stop()
         {
-            __socket.close();
-            __worker.Join();
+            try
+            {
+                __socket.close();
+                __worker.Join();
+            }
+            catch(NullReferenceException)
+            {
+                return;
+            }
         }
 
         public void __write_message_to_endpoint(string __msg)

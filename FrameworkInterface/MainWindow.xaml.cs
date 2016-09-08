@@ -20,6 +20,8 @@ namespace HL7Interface
     {
         HL7SocketListener __listener;
         Logger __logger;
+        motErrorlLevel __error_level = motErrorlLevel.Error;
+        bool __auto_truncate = false;
 
         volatile bool __logging;
         volatile string __target_ip = string.Empty;
@@ -34,29 +36,51 @@ namespace HL7Interface
             InitializeComponent();
 
             __logger = LogManager.GetLogger("motHL7v2Interface.Main");
+            __logger.Info("HL7 Gateway Starting Up");
+
 
             Properties.Settings.Default.Upgrade();
-            __target_ip = Properties.Settings.Default.TargetIP;
+
+            __target_ip = motUtils.__normalize_address(Properties.Settings.Default.TargetIP);
             __target_port = Properties.Settings.Default.TargetPort;
-            __source_ip = Properties.Settings.Default.SourceIP;
+            __source_ip = motUtils.__normalize_address(Properties.Settings.Default.SourceIP);
             __source_port = Properties.Settings.Default.SourcePort;
 
+            // Set up IO
             tbSourcePort.Text = __source_port;
             tbSourceIP.Text =   __source_ip;
             tbTargetIP.Text =   __target_ip;
             tbTargetPort.Text = __target_port;
 
+            // Set up logging
+            chkTruncate.IsChecked = Properties.Settings.Default.AutoTruncate;
+            chkLogging.IsChecked = Properties.Settings.Default.Logging;
+            chkErrors.IsChecked = Properties.Settings.Default.Errors;
+            chkWarnings.IsChecked = Properties.Settings.Default.Warnings;
+            chkInfo.IsChecked = Properties.Settings.Default.Info;
+
+            if(chkInfo.IsChecked == true)
+            {
+                __error_level = motErrorlLevel.Info;
+            }
+            else if(chkWarnings.IsChecked == true)
+            {
+                __error_level = motErrorlLevel.Warning;
+            }
+            else if(chkErrors.IsChecked == true)
+            {
+                __error_level = motErrorlLevel.Error;
+            }
+            else
+            {
+                __error_level = motErrorlLevel.Off;
+            }
+
             __logging = (bool)chkLogging.IsChecked;
+            __auto_truncate = (bool)chkTruncate.IsChecked;
 
-            // __listener = new httpListener();
-            // __listener = new fileSystemListener();
-            // __listener = new mumbleListener()
-            //
-            // __listener.EventHandler += __mumbleEvent;
 
-            //__source_port = "24042";
-            //__target_port = "24041";
-
+            // Set up listener and event handlers
             __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
 
             __listener.ADT_A01MessageEventReceived += __process_ADT_A01_Event;
@@ -396,8 +420,8 @@ namespace HL7Interface
             __pr.LastName = __assign("PID-5-1", __fields);
             __pr.FirstName = __assign("PID-5-2", __fields);
             __pr.MiddleInitial = __assign("PID-5-3", __fields);
-            __pr.DOB = __assign("PID-7", __fields).Substring(0, 8);  // Remove the timestamp
-            __pr.Gender = __assign("PID-8", __fields).Substring(0, 1);
+            __pr.DOB = __assign("PID-7", __fields)?.Substring(0, 8);  // Remove the timestamp
+            __pr.Gender = __assign("PID-8", __fields)?.Substring(0, 1);
             __pr.Address1 = __assign("PID-11-1", __fields);
             __pr.Address2 = __assign("PID-11-2", __fields);
             __pr.City = __assign("PID-11-3", __fields);
@@ -485,12 +509,12 @@ namespace HL7Interface
             // If there's no repeat pattern (TQ1-3) then the explicit time (TQ1-4) is used 
             // There are a lot of other codes coming down that aren't documented, HS for example ...
 
-            __scrip.RxStartDate = __assign("TQ1-7-1", __tq1).Substring(0, 8);
-            __scrip.AnchorDate = __assign("TQ1-7-1", __tq1).Substring(0, 8);
+            __scrip.RxStartDate = __assign("TQ1-7-1", __tq1)?.Substring(0, 8);
+            __scrip.AnchorDate = __assign("TQ1-7-1", __tq1)?.Substring(0, 8);
 
             if (__assign("TQ1-8-1", __tq1) != string.Empty)
             {
-                __scrip.RxStopDate = __assign("TQ1-8-1", __tq1).Substring(0, 8);
+                __scrip.RxStopDate = __assign("TQ1-8-1", __tq1)?.Substring(0, 8);
             }
 
             // Get PRN's out of the way first
@@ -564,7 +588,7 @@ namespace HL7Interface
 
 
             // TODO:  Locate the store DEA Num
-            __store.DEANum = __assign("ZPI-21", __fields).Substring(0, 10);
+            __store.DEANum = __assign("ZPI-21", __fields)?.Substring(0, 10);
         }
         private void __process_ZFI(motDrugRecord __drug, Dictionary<string, string> __fields)
         {
@@ -626,12 +650,12 @@ namespace HL7Interface
                 lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***ADT_A01 Event Received ***");
             }));
 
-            motPatientRecord __pr = new motPatientRecord("Add");
-            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
-            motPrescriberRecord __doc = new motPrescriberRecord("Add");
-            motLocationRecord __loc = new motLocationRecord("Add");
-            motStoreRecord __store = new motStoreRecord("Add");
-            motDrugRecord __drug = new motDrugRecord("Add");
+            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
+            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
+            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
+            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
+            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
 
             string __time_qty = string.Empty;
             string __tmp = string.Empty;
@@ -703,8 +727,10 @@ namespace HL7Interface
 
                 if (__logging)
                 {
-                    __logger.Error("ADT General Processing Failure: {0}\n{1}", e.Message, e.StackTrace);
+                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT General Processing Failure: {0}", e.Message));
                 }
+
+                throw;
             }
 
             // Write it all out
@@ -735,8 +761,10 @@ namespace HL7Interface
 
                 if (__logging)
                 {
-                    __logger.Error("ADT A01 Processing Failure: {0}\n{1}", e.Message, e.StackTrace);
+                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT A01 Processing Failure: {0}", e.Message));
                 }
+
+                throw;
             }
         }
         void __process_ADT_A12_Event(Object sender, HL7Event7MessageArgs __args)
@@ -747,12 +775,12 @@ namespace HL7Interface
                 lbStatus.Items.Insert(0, DateTime.Now.ToString() + " *** ADT_A12 Event Received ***");
             }));
 
-            motPatientRecord __pr = new motPatientRecord("Add");
-            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
-            motPrescriberRecord __doc = new motPrescriberRecord("Add");
-            motLocationRecord __loc = new motLocationRecord("Add");
-            motStoreRecord __store = new motStoreRecord("Add");
-            motDrugRecord __drug = new motDrugRecord("Add");
+            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
+            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
+            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
+            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
+            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
 
             string __time_qty = string.Empty;
 
@@ -776,6 +804,8 @@ namespace HL7Interface
                 {
                     lbStatus.Items.Add(string.Format("ADT Parse Error: {0}", e.Message));
                 }));
+
+                throw;
             }
         }
         void __process_OMP_O09_Event(Object sender, HL7Event7MessageArgs __args)
@@ -787,12 +817,12 @@ namespace HL7Interface
                 lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***OMP_O09_O11 Event Received ***");
             }));
 
-            motPatientRecord __pr = new motPatientRecord("Add");
-            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
-            motPrescriberRecord __doc = new motPrescriberRecord("Add");
-            motLocationRecord __loc = new motLocationRecord("Add");
-            motStoreRecord __store = new motStoreRecord("Add");
-            motDrugRecord __drug = new motDrugRecord("Add");
+            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
+            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
+            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
+            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
+            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
 
             string __dose_time_qty = string.Empty;
             string __notes = string.Empty;
@@ -894,8 +924,10 @@ namespace HL7Interface
 
                     if (__logging)
                     {
-                        __logger.Error("OMP O09 Processing Failure: {0}\n{1}", e.Message, e.StackTrace);
+                        motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP O09 Processing Failure: {0}", e.Message));
                     }
+
+                    throw;
                 }
             }
             catch (Exception e)
@@ -907,8 +939,10 @@ namespace HL7Interface
 
                 if (__logging)
                 {
-                    __logger.Error("OMP General Processing Failure: {0}\n{1}", e.Message, e.StackTrace);
+                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP General Processing Failure: {0}", e.Message));
                 }
+
+                throw;
             }
         }
         void __process_RDE_O11_Event(Object sender, HL7Event7MessageArgs __args)
@@ -923,12 +957,12 @@ namespace HL7Interface
                 lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDE_O11 Event Received ***");
             }));
 
-            motPatientRecord __pr = new motPatientRecord("Add");
-            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
-            motPrescriberRecord __doc = new motPrescriberRecord("Add");
-            motLocationRecord __loc = new motLocationRecord("Add");
-            motStoreRecord __store = new motStoreRecord("Add");
-            motDrugRecord __drug = new motDrugRecord("Add");
+            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
+            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
+            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
+            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
+            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
 
             string __time_qty = string.Empty;
             string __dose_time_qty = string.Empty;
@@ -1001,8 +1035,10 @@ namespace HL7Interface
 
                 if (__logging)
                 {
-                    __logger.Error("RDE General Processing Failure: {0}\n{1}", e.Message, e.StackTrace);
+                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDE General Processing Failure: {0}", e.Message));
                 }
+
+                throw;
             }
 
             __clean_up();
@@ -1015,12 +1051,12 @@ namespace HL7Interface
             // Write them all to the gateway
             try
             {
-                __scrip.Write(__p, __logging);
-                __pr.Write(__p, __logging);
-                __doc.Write(__p, __logging);
-                __loc.Write(__p, __logging);
-                __drug.Write(__p, __logging);
-                __store.Write(__p, __logging);
+                __scrip.Write(__p);
+                __pr.Write(__p);
+                __doc.Write(__p);
+                __loc.Write(__p);
+                __drug.Write(__p);
+                __store.Write(__p);
 
                 lbStatus.Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -1036,20 +1072,22 @@ namespace HL7Interface
 
                 if (__logging)
                 {
-                    __logger.Error("RDE O11 Processing Failure: {0}\n{1}", e.Message, e.StackTrace);
+                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDEs O11 Processing Failure: {0}", e.Message));
                 }
+
+                throw;
             }
         }
         void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
         {
             Console.WriteLine("*** RDS_O13 Event Received ***");
 
-            motPatientRecord __pr = new motPatientRecord("Add");
-            motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
-            motPrescriberRecord __doc = new motPrescriberRecord("Add");
-            motLocationRecord __loc = new motLocationRecord("Add");
-            motStoreRecord __store = new motStoreRecord("Add");
-            motDrugRecord __drug = new motDrugRecord("Add");
+            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
+            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
+            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
+            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
+            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
 
             string __time_qty = string.Empty;
             string __dose_time_qty = string.Empty;
@@ -1140,8 +1178,10 @@ namespace HL7Interface
 
                 if (__logging)
                 {
-                    __logger.Error("RDS Genneral Processing Failure: {0}\n{1}", e.Message, e.StackTrace);
+                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS General Processing Failure: {0}", e.Message));
                 }
+
+                throw;
             }
 
             // Clean up and assign the temp values
@@ -1183,17 +1223,28 @@ namespace HL7Interface
 
                 if (__logging)
                 {
-                    __logger.Error("RDS O13 Processing Failure: {0}\n{1}", e.Message, e.StackTrace);
+                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS O13 Processing Failure: {0}", e.Message));
                 }
+
+                throw;
             }
         }
 
-        private void btnStart_Click(object sender, RoutedEventArgs e)
-        {
-            btnStop.IsEnabled = true;
-            btnStart.IsEnabled = false;
-
-            __listener.__start();
+        private void btnStart_Click(object sender, RoutedEventArgs __args)
+        {           
+            try
+            {
+                __listener.__start();
+                btnStop.IsEnabled = true;
+                btnStart.IsEnabled = false;
+            }
+            catch(Exception e)
+            {
+                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    lbMessages.Items.Insert(0, DateTime.Now.ToString() + "Startup Failure: " + e.Message);
+                }));
+            }
         }
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
@@ -1245,7 +1296,110 @@ namespace HL7Interface
         }
         private void chkLogging_Click(object sender, RoutedEventArgs e)
         {
-            __logging = (bool)chkLogging.IsChecked;
+            try
+            {
+                __logging = (bool)chkLogging.IsChecked;
+                chkErrors.IsEnabled = chkWarnings.IsEnabled = chkInfo.IsEnabled = chkInfo.IsEnabled = __logging;
+            }
+            catch
+            { }
+        }
+
+        private void chkLogging_Checked(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void chkErrors_Checked(object sender, RoutedEventArgs e)
+        {  
+        }
+
+        private void chkWarnings_Checked(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void chkInfo_Checked(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void chkErrors_Click(object sender, RoutedEventArgs e)
+        {
+            if (chkErrors.IsChecked == true)
+            {
+                if (__error_level <= motErrorlLevel.Error)  // If its Off or Error Already, Set it to Error
+                {
+                    __error_level = motErrorlLevel.Error;
+                }
+            }
+            else
+            {
+                if (__error_level == motErrorlLevel.Error)
+                {
+                    __error_level = motErrorlLevel.Off;
+                }
+            }
+
+            Properties.Settings.Default.Errors = (bool)chkErrors.IsChecked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chkWarnings_Click(object sender, RoutedEventArgs e)
+        {
+            if (chkWarnings.IsChecked == true)
+            {
+                if (__error_level <= motErrorlLevel.Warning)  // If its Off or Error Already, Set it to Error
+                {
+                    __error_level = motErrorlLevel.Warning;
+                }
+            }
+            else
+            {
+                if (__error_level == motErrorlLevel.Warning && chkInfo.IsChecked == false)
+                {
+                    if (chkInfo.IsChecked == true)
+                    {
+                        __error_level = motErrorlLevel.Error;
+                    }
+                }
+            }
+
+            Properties.Settings.Default.Warnings = (bool)chkWarnings.IsChecked;
+            Properties.Settings.Default.Save();
+
+        }
+
+        private void chkInfo_Click(object sender, RoutedEventArgs e)
+        {
+            if (chkInfo.IsChecked == true)
+            {
+                if (__error_level <= motErrorlLevel.Info)  // If its Off or Error Already, Set it to Error
+                {
+                    __error_level = motErrorlLevel.Info;
+                }
+            }
+            else
+            {
+                if (__error_level == motErrorlLevel.Info)
+                {
+                    if (chkWarnings.IsChecked == true)
+                    {
+                        __error_level = motErrorlLevel.Warning;
+                    }
+                    else if (chkErrors.IsChecked == true)
+                    {
+                        __error_level = motErrorlLevel.Error;
+                    }
+                }
+            }
+
+            Properties.Settings.Default.Info = (bool)chkInfo.IsChecked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chkTruncate_Click(object sender, RoutedEventArgs e)
+        {
+            __auto_truncate = (bool)chkTruncate.IsChecked;
+            Properties.Settings.Default.AutoTruncate = __auto_truncate;
+            Properties.Settings.Default.Save();
         }
     }
 }
