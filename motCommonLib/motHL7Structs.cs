@@ -1779,8 +1779,18 @@ namespace motCommonLib
     {
         public string __ack_string { get; set; } = string.Empty;
 
-        public ACK(MSH __msh)
+        public void Build(MSH __msh, string __org, string __proc)
         {
+            if (string.IsNullOrEmpty(__org))
+            {
+                __org = "Unknown";
+            }
+
+            if (string.IsNullOrEmpty(__proc))
+            {
+                __proc = "Unknown";
+            }
+
             MSH __tmp_msh = __msh;
 
             string __time_stamp = DateTime.Now.Year.ToString() +
@@ -1791,9 +1801,9 @@ namespace motCommonLib
 
             __tmp_msh.__msg_data["MSH-5"] = __tmp_msh.__msg_data["MSH-3"];
             __tmp_msh.__msg_data["MSH-6"] = __tmp_msh.__msg_data["MSH-4"];
-
-            __tmp_msh.__msg_data["MSH-3"] = "MOT_HL7Gateway";
-            __tmp_msh.__msg_data["MSH-4"] = "Medicine-On-Time";
+    
+            __tmp_msh.__msg_data["MSH-3"] = __proc;
+            __tmp_msh.__msg_data["MSH-4"] = __org;
 
             __ack_string = '\x0B' +
                            @"MSH|^~\&|" +
@@ -1812,13 +1822,41 @@ namespace motCommonLib
                            '\x1C' +
                            '\x0D';
         }
+
+        public ACK(MSH __msh)
+        {
+            Build(__msh, "MOT-II HL7 Proxy", "Medicine-On-Time");
+        }
+        public ACK(MSH __msh, string __org)
+        {
+            Build(__msh, __org, "MOT-II HL7 Proxy");
+        }
+        public ACK(MSH __msh, string __org, string __proc)
+        {
+            Build(__msh, __org, __proc);
+        }
     }
     public class NAK
     {
         public string __nak_string { get; set; } = string.Empty;
 
-        public NAK(MSH __msh, string __error_code)
+        public void Build(MSH __msh, string __error_code, string __org, string __proc)
         {
+            if(string.IsNullOrEmpty(__org))
+            {
+                __org = "Unknown";
+            }
+
+            if (string.IsNullOrEmpty(__proc))
+            {
+                __proc = "Unknown";
+            }
+
+            if (string.IsNullOrEmpty(__error_code))
+            {
+                __error_code = "AF";
+            }
+
             MSH __tmp_msh = __msh;
 
             string __time_stamp = DateTime.Now.Year.ToString() +
@@ -1827,16 +1865,16 @@ namespace motCommonLib
                                   DateTime.Now.Hour.ToString() +
                                   DateTime.Now.Minute.ToString();
 
-            if (string.IsNullOrEmpty(__error_code))
-            {
-                __error_code = "AF";
-            }
+            
 
             __tmp_msh.__msg_data["MSH-5"] = __tmp_msh.__msg_data["MSH-3"];
             __tmp_msh.__msg_data["MSH-6"] = __tmp_msh.__msg_data["MSH-4"];
 
-            __tmp_msh.__msg_data["MSH-3"] = "MOT_HL7Gateway";
-            __tmp_msh.__msg_data["MSH-4"] = "Medicine-On-Time";
+            //__tmp_msh.__msg_data["MSH-3"] = "MOT_HL7Gateway";
+            //__tmp_msh.__msg_data["MSH-4"] = "Medicine-On-Time";
+
+            __tmp_msh.__msg_data["MSH-3"] = __proc;
+            __tmp_msh.__msg_data["MSH-4"] = __org;
 
             __nak_string = '\x0B' +
                            @"MSH|^~\&|" +
@@ -1855,6 +1893,19 @@ namespace motCommonLib
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            '\x1C' +
                            '\x0D';
+        }
+
+        public NAK(MSH __msh, string __error_code)
+        {
+            Build(__msh, __error_code, "Medicine-On-Time", "MOT-II HL7 Proxy");
+        }
+        public NAK(MSH __msh, string __error_code, string __org)
+        {
+            Build(__msh, __error_code, __org, "MOT-II HL7 Proxy");
+        }
+        public NAK(MSH __msh, string __error_code, string __org, string __proc)
+        {
+            Build(__msh, __error_code, __org, __proc);
         }
     }
 };

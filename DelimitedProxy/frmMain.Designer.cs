@@ -33,12 +33,13 @@
             this.tbpRun = new System.Windows.Forms.TabPage();
             this.grpErrors = new System.Windows.Forms.GroupBox();
             this.rtbErrors = new System.Windows.Forms.RichTextBox();
-            this.sgrpStatus = new System.Windows.Forms.GroupBox();
+            this.grpStatus = new System.Windows.Forms.GroupBox();
             this.rtbEvents = new System.Windows.Forms.RichTextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.tbpConfig = new System.Windows.Forms.TabPage();
             this.grpLogging = new System.Windows.Forms.GroupBox();
+            this.cmbErrorLevel = new System.Windows.Forms.ComboBox();
             this.grpTarget = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -57,11 +58,10 @@
             this.txtSourceUname = new System.Windows.Forms.TextBox();
             this.txtSourcePort = new System.Windows.Forms.TextBox();
             this.txtSourceIP = new System.Windows.Forms.TextBox();
-            this.cmbErrorLevel = new System.Windows.Forms.ComboBox();
             this.tbcMain.SuspendLayout();
             this.tbpRun.SuspendLayout();
             this.grpErrors.SuspendLayout();
-            this.sgrpStatus.SuspendLayout();
+            this.grpStatus.SuspendLayout();
             this.tbpConfig.SuspendLayout();
             this.grpLogging.SuspendLayout();
             this.grpTarget.SuspendLayout();
@@ -75,24 +75,26 @@
             this.tbcMain.Location = new System.Drawing.Point(0, 0);
             this.tbcMain.Name = "tbcMain";
             this.tbcMain.SelectedIndex = 0;
-            this.tbcMain.Size = new System.Drawing.Size(661, 509);
+            this.tbcMain.Size = new System.Drawing.Size(1136, 509);
             this.tbcMain.TabIndex = 0;
             this.tbcMain.Click += new System.EventHandler(this.tabControl1_Click);
             // 
             // tbpRun
             // 
+            this.tbpRun.BackColor = System.Drawing.SystemColors.Control;
+            this.tbpRun.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.tbpRun.Controls.Add(this.grpErrors);
-            this.tbpRun.Controls.Add(this.sgrpStatus);
-            this.tbpRun.Controls.Add(this.button1);
+            this.tbpRun.Controls.Add(this.grpStatus);
+            this.tbpRun.Controls.Add(this.btnStop);
             this.tbpRun.Controls.Add(this.btnStart);
+            this.tbpRun.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tbpRun.Location = new System.Drawing.Point(4, 25);
             this.tbpRun.Name = "tbpRun";
             this.tbpRun.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpRun.Size = new System.Drawing.Size(653, 480);
+            this.tbpRun.Size = new System.Drawing.Size(1128, 480);
             this.tbpRun.TabIndex = 0;
             this.tbpRun.Text = "Run";
             this.tbpRun.ToolTipText = "Runtime Control";
-            this.tbpRun.UseVisualStyleBackColor = true;
             // 
             // grpErrors
             // 
@@ -100,51 +102,55 @@
             this.grpErrors.Cursor = System.Windows.Forms.Cursors.WaitCursor;
             this.grpErrors.Location = new System.Drawing.Point(21, 196);
             this.grpErrors.Name = "grpErrors";
-            this.grpErrors.Size = new System.Drawing.Size(607, 151);
+            this.grpErrors.Size = new System.Drawing.Size(1091, 158);
             this.grpErrors.TabIndex = 3;
             this.grpErrors.TabStop = false;
             this.grpErrors.Text = "[ Errors ]";
             // 
             // rtbErrors
             // 
-            this.rtbErrors.Location = new System.Drawing.Point(8, 26);
+            this.rtbErrors.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbErrors.Location = new System.Drawing.Point(3, 18);
             this.rtbErrors.Name = "rtbErrors";
-            this.rtbErrors.Size = new System.Drawing.Size(591, 111);
+            this.rtbErrors.Size = new System.Drawing.Size(1085, 137);
             this.rtbErrors.TabIndex = 0;
             this.rtbErrors.Text = "";
             // 
-            // sgrpStatus
+            // grpStatus
             // 
-            this.sgrpStatus.Controls.Add(this.rtbEvents);
-            this.sgrpStatus.Location = new System.Drawing.Point(21, 16);
-            this.sgrpStatus.Name = "sgrpStatus";
-            this.sgrpStatus.Size = new System.Drawing.Size(607, 151);
-            this.sgrpStatus.TabIndex = 2;
-            this.sgrpStatus.TabStop = false;
-            this.sgrpStatus.Text = "[ Events ]";
+            this.grpStatus.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.grpStatus.Controls.Add(this.rtbEvents);
+            this.grpStatus.Location = new System.Drawing.Point(21, 16);
+            this.grpStatus.Name = "grpStatus";
+            this.grpStatus.Size = new System.Drawing.Size(1091, 159);
+            this.grpStatus.TabIndex = 2;
+            this.grpStatus.TabStop = false;
+            this.grpStatus.Text = "[ Events ]";
             // 
             // rtbEvents
             // 
-            this.rtbEvents.Location = new System.Drawing.Point(6, 27);
+            this.rtbEvents.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbEvents.Location = new System.Drawing.Point(3, 18);
             this.rtbEvents.Name = "rtbEvents";
-            this.rtbEvents.Size = new System.Drawing.Size(591, 111);
+            this.rtbEvents.Size = new System.Drawing.Size(1085, 138);
             this.rtbEvents.TabIndex = 0;
             this.rtbEvents.Text = "";
             // 
-            // button1
+            // btnStop
             // 
-            this.button1.Location = new System.Drawing.Point(348, 391);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(179, 65);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Stop Listening";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnStop.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnStop.Location = new System.Drawing.Point(216, 391);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(179, 65);
+            this.btnStop.TabIndex = 1;
+            this.btnStop.Text = "Stop Listening";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnStart
             // 
             this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnStart.Location = new System.Drawing.Point(77, 391);
+            this.btnStart.Location = new System.Drawing.Point(21, 391);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(179, 65);
             this.btnStart.TabIndex = 0;
@@ -154,17 +160,17 @@
             // 
             // tbpConfig
             // 
+            this.tbpConfig.BackColor = System.Drawing.SystemColors.Control;
             this.tbpConfig.Controls.Add(this.grpLogging);
             this.tbpConfig.Controls.Add(this.grpTarget);
             this.tbpConfig.Controls.Add(this.grpSource);
             this.tbpConfig.Location = new System.Drawing.Point(4, 25);
             this.tbpConfig.Name = "tbpConfig";
             this.tbpConfig.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpConfig.Size = new System.Drawing.Size(653, 480);
+            this.tbpConfig.Size = new System.Drawing.Size(1128, 480);
             this.tbpConfig.TabIndex = 1;
             this.tbpConfig.Text = "Config";
             this.tbpConfig.ToolTipText = "Configure System";
-            this.tbpConfig.UseVisualStyleBackColor = true;
             // 
             // grpLogging
             // 
@@ -175,6 +181,20 @@
             this.grpLogging.TabIndex = 0;
             this.grpLogging.TabStop = false;
             this.grpLogging.Text = "[ Logging ]";
+            // 
+            // cmbErrorLevel
+            // 
+            this.cmbErrorLevel.FormattingEnabled = true;
+            this.cmbErrorLevel.Items.AddRange(new object[] {
+            "Off",
+            "Errors Only",
+            "Errors & Warnings",
+            "All Entries"});
+            this.cmbErrorLevel.Location = new System.Drawing.Point(6, 38);
+            this.cmbErrorLevel.Name = "cmbErrorLevel";
+            this.cmbErrorLevel.Size = new System.Drawing.Size(155, 24);
+            this.cmbErrorLevel.TabIndex = 9;
+            this.cmbErrorLevel.SelectedIndexChanged += new System.EventHandler(this.cmbErrorLevel_SelectedIndexChanged);
             // 
             // grpTarget
             // 
@@ -348,34 +368,24 @@
             this.txtSourceIP.TabIndex = 0;
             this.txtSourceIP.WordWrap = false;
             // 
-            // cmbErrorLevel
-            // 
-            this.cmbErrorLevel.FormattingEnabled = true;
-            this.cmbErrorLevel.Items.AddRange(new object[] {
-            "Off",
-            "Errors Only",
-            "Errors & Warnings",
-            "All Entries"});
-            this.cmbErrorLevel.Location = new System.Drawing.Point(6, 38);
-            this.cmbErrorLevel.Name = "cmbErrorLevel";
-            this.cmbErrorLevel.Size = new System.Drawing.Size(155, 24);
-            this.cmbErrorLevel.TabIndex = 9;
-            this.cmbErrorLevel.SelectedIndexChanged += new System.EventHandler(this.cmbErrorLevel_SelectedIndexChanged);
-            // 
             // frmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AcceptButton = this.btnStart;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            this.AutoScroll = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(655, 505);
+            this.CancelButton = this.btnStop;
+            this.ClientSize = new System.Drawing.Size(1161, 526);
             this.Controls.Add(this.tbcMain);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
+            this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.Text = "MOT Default Proxy UI";
             this.tbcMain.ResumeLayout(false);
             this.tbpRun.ResumeLayout(false);
             this.grpErrors.ResumeLayout(false);
-            this.sgrpStatus.ResumeLayout(false);
+            this.grpStatus.ResumeLayout(false);
             this.tbpConfig.ResumeLayout(false);
             this.grpLogging.ResumeLayout(false);
             this.grpTarget.ResumeLayout(false);
@@ -392,9 +402,9 @@
         private System.Windows.Forms.TabPage tbpRun;
         private System.Windows.Forms.GroupBox grpErrors;
         private System.Windows.Forms.RichTextBox rtbErrors;
-        private System.Windows.Forms.GroupBox sgrpStatus;
+        private System.Windows.Forms.GroupBox grpStatus;
         private System.Windows.Forms.RichTextBox rtbEvents;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.TabPage tbpConfig;
         private System.Windows.Forms.GroupBox grpTarget;

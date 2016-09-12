@@ -37,6 +37,17 @@ namespace DelimitedProxy
             __execute = new Execute();
             __execute.__event_ui_handler += __update_event_pane;
             __execute.__error_ui_handler += __update_error_pane;
+
+            txtTargetIP.Text = Properties.Settings.Default.GatewayIP;
+            txtTargetPort.Text = Properties.Settings.Default.GatewayPort;
+            txtTargetUname.Text = Properties.Settings.Default.GatewayUname;
+            txtTargetPwd.Text = Properties.Settings.Default.GatewayPwd;
+            txtSourceIP.Text = Properties.Settings.Default.ListenIP;
+            txtSourcePort.Text = Properties.Settings.Default.ListenPort;
+            txtSourceUname.Text = Properties.Settings.Default.ListenUname;
+            txtSourcePwd.Text = Properties.Settings.Default.ListenPwd;
+            cmbErrorLevel.SelectedIndex = Properties.Settings.Default.LogLevel;
+
         }
 
 
@@ -78,18 +89,21 @@ namespace DelimitedProxy
         private void btnStart_Click(object sender, EventArgs e)
         {
             // Start Runtime
-            var __args = new ExecuteArgs();
-            __args.__gateway_address = txtTargetIP.Text;
-            __args.__gateway_port = txtTargetPort.Text;
-            __args.__gateway_uname = txtTargetUname.Text;
-            __args.__gateway_pwd = txtTargetPwd.Text;
-            __args.__listen_address = txtSourceIP.Text;
-            __args.__listen_port = txtSourcePort.Text;
-            __args.__listen_uname = txtSourceUname.Text;
-            __args.__listen_pwd = txtSourcePwd.Text;
+            try
+            {
+                var __args = new ExecuteArgs();
+                __args.__gateway_address = txtTargetIP.Text;
+                __args.__gateway_port = txtTargetPort.Text;
+                __args.__gateway_uname = txtTargetUname.Text;
+                __args.__gateway_pwd = txtTargetPwd.Text;
+                __args.__listen_address = txtSourceIP.Text;
+                __args.__listen_port = txtSourcePort.Text;
+                __args.__listen_uname = txtSourceUname.Text;
+                __args.__listen_pwd = txtSourcePwd.Text;
 
-            __execute.__start_up(__args);
-
+                __execute.__start_up(__args);
+            }
+            catch { }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -102,7 +116,7 @@ namespace DelimitedProxy
         {
             rtbEvents.BeginInvoke(new Action(() =>
             {
-                rtbEvents.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                rtbEvents.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message + '\n'));
             }));
         }
 
@@ -110,7 +124,7 @@ namespace DelimitedProxy
         {
             rtbErrors.BeginInvoke(new Action(() =>
             {
-                rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message + '\n'));
             }));
         }
 

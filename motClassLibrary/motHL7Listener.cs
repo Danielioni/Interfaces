@@ -49,6 +49,9 @@ namespace motInboundLib
     {
         const int TCP_TIMEOUT = 300000;
 
+        public string __organization { get; set; }
+        public string __processor { get; set; }
+
         private Logger __logger;
         public motSocket __socket;
         private Thread  __worker;
@@ -125,7 +128,7 @@ namespace motInboundLib
                         break;
                 }
 
-                ACK __out = new ACK(__resp);
+                ACK __out = new ACK(__resp, __organization, __processor);
                 __response = __out.__ack_string;
                 __logger.Info("HL7 ACK: {0}", __response);
 
@@ -142,7 +145,7 @@ namespace motInboundLib
                     __error_code = "AR";
                 }
 
-                NAK __out = new NAK(__resp, __error_code);
+                NAK __out = new NAK(__resp, __error_code, __organization, __processor);
                 __response = __out.__nak_string;
                 __logger.Error("HL7 NAK: {0}", __response);
 
@@ -253,6 +256,9 @@ namespace motInboundLib
             {
                 __listener_port = __port;
                 __logger = LogManager.GetLogger("motInboundLib.HL7Listener");
+
+                __organization = Properties.Settings.Default.Organization;
+                __processor = Properties.Settings.Default.Processor;
             }
             catch
             {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace motDefaultProxyUI
+namespace HL7Proxy
 {
     static class Program
     {

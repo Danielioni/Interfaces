@@ -841,7 +841,7 @@ namespace CPRPlusInterface
                 try
                 {
                     motPrescriberRecord __prescriber = new motPrescriberRecord("Add");
-                    __prescriber.__log_records = __log_records;
+                    //__prescriber.__log_records = __log_records;
 
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     List<string> __exception = new List<string>();
@@ -941,7 +941,7 @@ namespace CPRPlusInterface
                 try
                 {
                     motPatientRecord __patient = new motPatientRecord("Add");
-                    __patient.__log_records = __log_records;
+                    //__patient.__log_records = __log_records;
 
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
@@ -1079,7 +1079,7 @@ namespace CPRPlusInterface
                 try
                 {
                     motPrescriptionRecord __scrip = new motPrescriptionRecord("Add");
-                    __scrip.__log_records = __log_records;
+                    //__scrip.__log_records = __log_records;
 
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
@@ -1175,7 +1175,7 @@ namespace CPRPlusInterface
                 try
                 {
                     motLocationRecord __location = new motLocationRecord("Add");
-                    __location.__log_records = __log_records;
+                    //__location.__log_records = __log_records;
 
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
@@ -1260,7 +1260,7 @@ namespace CPRPlusInterface
                 try
                 {
                     motStoreRecord __store = new motStoreRecord("Add");
-                    __store.__log_records = __log_records;
+                    //__store.__log_records = __log_records;
 
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;
@@ -1424,7 +1424,7 @@ namespace CPRPlusInterface
                 try
                 {
                     motDrugRecord __drug = new motDrugRecord("Add");
-                    __drug.__log_records = __log_records;
+                   // __drug.__log_records = __log_records;
 
                     Dictionary<string, string> __xTable = new Dictionary<string, string>();
                     int __counter = 0;

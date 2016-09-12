@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="motInboundLib.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Organization" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Medicine-On-Time</Value>
+    </Setting>
+    <Setting Name="Processor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">MOT HL7 Inteface Proxy</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

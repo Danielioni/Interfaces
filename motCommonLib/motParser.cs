@@ -37,11 +37,13 @@ namespace motCommonLib
 {
     public class motParser
     {
-        motInputStuctures __type { get; set; }
-        protected motPort p;
+        public motInputStuctures __type { get; set; }
+
+        public motPort p { get; set; } = null;
+
         private Logger logger;
-        
-        private void parseTagged(string inboundData)
+
+        public void parseTagged(string inboundData)
         {
             try
             {
@@ -51,11 +53,12 @@ namespace motCommonLib
             {
                 logger.Error(@"Tagged Parser Error: {0}", e.Message);
                 throw new Exception(@"[MOT Tagged Parser] Failed to write: " + e.Message);
-            } 
+            }
         }
 
-
-        class __table_converter
+        //string __test_prescriber = @"AP\xEELastName\xEEFirstName\xEEMiddleInitial\xEEAddress1\xEEAddress2\xEECity\xEEState\xEEZip\xEEComments\xEEDEA_ID\xEETPID\xEESpeciality\xEEFax\xEEPagerInfo\xEE1025143\xE2\
+        // AP\xEEpLastName\xEEpFirstName\xEEpMiddleInitial\xEEpAddress1\xEEpAddress2\xEEpCity\xEEpState\xEEpZip\xEEpComments\xEEpDEA_ID\xEEpTPID\xEEpSpeciality\xEEpFax\xEEpPagerInfo\xEE1972834\xE2";
+        public class __table_converter
         {
             Dictionary<char, string> __action = new Dictionary<char, string>()
             {
@@ -69,8 +72,8 @@ namespace motCommonLib
 
             Dictionary<char, string> __type = new Dictionary<char, string>()
             {
-                {'P', "Physician" },
-                {'p', "Physician" },
+                {'P', "Prescriber" },
+                {'p', "Prescriber" },
                 {'A', "Patient" },
                 {'a', "Patient" },
                 {'D', "Drug" },
@@ -209,7 +212,7 @@ namespace motCommonLib
                {19, "DoW" },
                {20, "SpecialDoses" },
                {21, "DoseTimesQtys" },
-               {22, "RxSys_DrugID" },              
+               {22, "RxSys_DrugID" },
             };
 
             Dictionary<int, string> __store_table = new Dictionary<int, string>()
@@ -238,18 +241,25 @@ namespace motCommonLib
                 StringBuilder __tagged_string = new StringBuilder();
                 int i;
 
+                if(string.IsNullOrEmpty(__items[0]))
+                {
+                    throw new ArgumentNullException();
+                }
+
                 try
                 {
+                    __items[0] = __items[0].Trim();
+
                     __tagged_string.Append(string.Format("<Record>"));
-                    __tagged_string.Append(string.Format("\t<Table>{0}</Table>", __type[__items[0][0]]));
-                    __tagged_string.Append(string.Format("\t<Action>{0}</Action>", __action[__items[0][1]]));
+                    __tagged_string.Append(string.Format("\t<Table>{0}</Table>", __type[__items[0][1]]));
+                    __tagged_string.Append(string.Format("\t<Action>{0}</Action>", __action[__items[0][0]]));
 
 
-                    switch (__items[0][0])
+                    switch (__items[0][1])
                     {
                         case 'P':
                         case 'p':
-                            for (i = 1; i < __items.Length; i++)  // This might be Length - 2
+                            for (i = 1; i < __items.Length - 1; i++)  // Length - 1 to compensate for the checksum
                             {
                                 __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __prescriber_table[i], __items[i]));
                             }
@@ -257,7 +267,7 @@ namespace motCommonLib
 
                         case 'D':
                         case 'd':
-                            for (i = 1; i < __items.Length; i++)
+                            for (i = 1; i < __items.Length - 1; i++)
                             {
                                 __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __drug_table[i], __items[i]));
                             }
@@ -266,7 +276,7 @@ namespace motCommonLib
 
                         case 'L':
                         case 'l':
-                            for (i = 1; i < __items.Length; i++)
+                            for (i = 1; i < __items.Length - 1; i++)
                             {
                                 __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __location_table[i], __items[i]));
                             }
@@ -274,7 +284,7 @@ namespace motCommonLib
 
                         case 'A':
                         case 'a':
-                            for (i = 1; i < __items.Length; i++)
+                            for (i = 1; i < __items.Length - 1; i++)
                             {
                                 __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __patient_table[i], __items[i]));
                             }
@@ -282,7 +292,7 @@ namespace motCommonLib
 
                         case 'R':
                         case 'r':
-                            for (i = 1; i < __items.Length; i++)
+                            for (i = 1; i < __items.Length - 1; i++)
                             {
                                 __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __rx_table[i], __items[i]));
                             }
@@ -290,7 +300,7 @@ namespace motCommonLib
 
                         case 'S':
                         case 's':
-                            for (i = 1; i < __items.Length; i++)
+                            for (i = 1; i < __items.Length - 1; i++)
                             {
                                 __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __store_table[i], __items[i]));
                             }
@@ -298,7 +308,7 @@ namespace motCommonLib
 
                         case 'T':
                         case 't':
-                            for (i = 1; i < __items.Length; i++)
+                            for (i = 1; i < __items.Length - 1; i++)
                             {
                                 __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __timeqtys_table[i], __items[i]));
                             }
@@ -320,26 +330,38 @@ namespace motCommonLib
             }
         }
 
-        private void parseDelimited(string inboundData)
+        //
+        // AA\xEEData\xEE...\xEENN\xE2  
+        //  A = Table and Action Identifiers
+        //  N = Checksum
+        //  \xEE = field delimiter
+        //  \xE2 = record delimiter
+        //
+        public void parseDelimited(string inboundData)
         {
             __table_converter __tc = new __table_converter();
-            char[] __delimiters = { '\xEE' };
+            char[] __field_delimiter = { '\xEE' };
+            char[] __record_delimiter = { '\xE2' };
 
             // Unravel the delimited stream
-            string[] __items = inboundData.Split(__delimiters);
+            string[] __items = inboundData.Split(__record_delimiter);
 
-            try
+            foreach (string __item in __items)
             {
-                parseTagged(__tc.parse(__items));
-            }
-            catch
-            {
-                throw;
+                try
+                {
+                    string[] __fields = __item.Split(__field_delimiter); 
+                    parseTagged(__tc.parse(__fields));
+                }
+                catch
+                {
+                    throw;
+                }
             }
         }
 
-        private void parseJSON(string inboundData)
-        {       
+        public void parseJSON(string inboundData)
+        {
             // Look for JSON
             try
             {
@@ -367,8 +389,7 @@ namespace motCommonLib
                 throw new System.Exception("[MOT Parser] JSON Serialization error " + e.Message);
             }
         }
-
-        private void parseXML(string inputData)
+        public void parseXML(string inputData)
         {
             XmlDocument __xmldoc = new XmlDocument();
 
@@ -403,7 +424,7 @@ namespace motCommonLib
                         if (node.InnerText.Length == 0)
                         {
                             logger.Error(@"XML Missing Require Element Content {0} in {1}", node.Name, __xmldoc.Name);
-                            throw new ArgumentException(@"[MOT XML Parser] XML Missing Require Element Content " + node.Name  + "in " + __xmldoc.Name);
+                            throw new ArgumentException(@"[MOT XML Parser] XML Missing Require Element Content " + node.Name + "in " + __xmldoc.Name);
                         }
 
                         node.Attributes.RemoveNamedItem("required");
@@ -480,26 +501,22 @@ namespace motCommonLib
                 throw;
             }
         }
-   
-
         public void Write(string inboundData)
         {
-            if (!p.Write(inboundData, inboundData.Length))
+            if (p == null || !p.Write(inboundData, inboundData.Length))
             {
                 // Need to do better than this, need to retrieve the error code at least     
                 logger.Error(@"Failed to write to gateway");
                 throw new Exception(@"[MOT Parser] Failed to write to gateway");
             }
         }
-
         public motParser()
         {
             logger = LogManager.GetLogger("motInboundLib.Parser");
         }
-
         public motParser(motPort _p, string inputStream)
         {
-            
+
             p = _p;
 
             try
@@ -510,7 +527,7 @@ namespace motCommonLib
                 if (inputStream.Contains("<?") && inputStream.ToLower().Contains("xml"))
                 {
                     // Pretty sure its a live XML file
-                    parseXML(inputStream);     
+                    parseXML(inputStream);
                     return;
                 }
 
@@ -531,14 +548,12 @@ namespace motCommonLib
                 logger.Error("[MOT Parser] Unidentified file type");
                 throw new Exception("[MOT Parser] Unidentified file type");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.Error("[MOT Gateway] Parse failure: {0}", e.Message);
                 throw new Exception("[MOT Gateway] Parse failure: {0}" + e.Message);
             }
         }
-
-      
         public motParser(motPort _p, string inputStream, motInputStuctures __type)
         {
             p = _p;

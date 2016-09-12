@@ -1,90 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
-
-using System.Data;
-using System.IO;
-
-using motInboundLib;
-using motCommonLib;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using motCommonLib;
+using motInboundLib;
 using NLog;
 
-namespace HL7Interface
+namespace HL7Proxy
 {
-
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public class Execute
     {
+
+
+        public __update_event_box_handler __event_ui_handler;
+        public __update_error_box_handler __error_ui_handler;
+
+
         HL7SocketListener __listener;
-        Logger __logger;
+        public motErrorlLevel __error_level { get; set; } = motErrorlLevel.Error;
 
-        motErrorlLevel __error_level = motErrorlLevel.Error;
-        motErrorlLevel __save_error_level = motErrorlLevel.Error;
+        //motErrorlLevel __save_error_level = motErrorlLevel.Error;
+        motLookupTables __lookup = new motLookupTables();
 
-        volatile bool __auto_truncate = false;
-        volatile bool __logging;
+        Logger __logger = null;
+
+        public  bool __auto_truncate { get; set; } = false;
+        volatile bool __logging = false;
+
         volatile string __target_ip = string.Empty;
         volatile string __target_port = string.Empty;
         volatile string __source_ip = string.Empty;
         volatile string __source_port = string.Empty;
 
-        motLookupTables __lookup = new motLookupTables();
-
-        public MainWindow()
+        public void __update_event_ui(string __message)
         {
-            InitializeComponent();
+            UIupdateArgs __args = new UIupdateArgs();
 
-            __logger = LogManager.GetLogger("motHL7v2Interface.Main");
-            __logger.Info("HL7 Gateway Starting Up");
+            __args.timestamp = DateTime.Now.ToString();
+            __args.__message = __message + "\n";
+            __event_ui_handler(this, __args);
+        }
 
+        public void __update_error_ui(string __message)
+        {
+            UIupdateArgs __args = new UIupdateArgs();
 
-            Properties.Settings.Default.Upgrade();
+            __args.timestamp = DateTime.Now.ToString();
+            __args.__message = __message + "\n";
+            __error_ui_handler(this, __args);
 
-            __target_ip = motUtils.__normalize_address(Properties.Settings.Default.TargetIP);
-            __target_port = Properties.Settings.Default.TargetPort;
-            __source_ip = motUtils.__normalize_address(Properties.Settings.Default.SourceIP);
-            __source_port = Properties.Settings.Default.SourcePort;
+        }
 
-            // Set up IO
-            tbSourcePort.Text = __source_port;
-            tbSourceIP.Text =   __source_ip;
-            tbTargetIP.Text =   __target_ip;
-            tbTargetPort.Text = __target_port;
+        // Do the real work here - call delegates to update UI
 
-            // Set up logging
-            chkTruncate.IsChecked = Properties.Settings.Default.AutoTruncate;
-            chkLogging.IsChecked = Properties.Settings.Default.Logging;
-            chkErrors.IsChecked = Properties.Settings.Default.Errors;
-            chkWarnings.IsChecked = Properties.Settings.Default.Warnings;
-            chkInfo.IsChecked = Properties.Settings.Default.Info;
+        public void __start_up(ExecuteArgs __args)
+        {
+            __update_event_ui("HL7 Proxy Starting up");
 
-            if(chkInfo.IsChecked == true)
-            {
-                __error_level = motErrorlLevel.Info;
-            }
-            else if(chkWarnings.IsChecked == true)
-            {
-                __error_level = motErrorlLevel.Warning;
-            }
-            else if(chkErrors.IsChecked == true)
-            {
-                __error_level = motErrorlLevel.Error;
-            }
-            else
-            {
-                __error_level = motErrorlLevel.Off;
-            }
+            __target_ip = __args.__gateway_address;
+            __target_port = __args.__gateway_port;
+            __source_ip = __args.__listen_address;
+            __source_port = __args.__listen_port;
 
-            __save_error_level = __error_level;
-            __logging = (bool)chkLogging.IsChecked;
-            __auto_truncate = (bool)chkTruncate.IsChecked;
+            __error_level = __args.__error_level;
+            __auto_truncate = __args.__auto_truncate;
 
 
             // Set up listener and event handlers
             __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
+
+            __listener.__organization = __args.__organization;
+            __listener.__processor = __args.__processor;
 
             __listener.ADT_A01MessageEventReceived += __process_ADT_A01_Event;
             __listener.ADT_A12MessageEventReceived += __process_ADT_A12_Event;
@@ -92,22 +80,27 @@ namespace HL7Interface
             __listener.RDE_O11MessageEventReceived += __process_RDE_O11_Event;
             __listener.RDS_O13MessageEventReceived += __process_RDS_O13_Event;
 
-            if(__logging)
-            {
-                __logger.Info("Started up listening on port {0} and sending to port {1}", __source_port, __target_port);
-            }
+            __listener.__start();
         }
 
-        public void update_tree()
+        public void __shut_down()
+        {
+            __update_event_ui("HL7 Proxy Shutting down");
+            __listener.__stop();
+        }
+
+        public Execute()
         {
 
         }
-        public void update_message_list()
+
+        ~Execute()
         { }
 
-        // Global for large special does schedules
+        // ------------  Start Processing Code ---------------------
+
         string[] __global_month = null;
-        
+
         public void __clean_up()
         {
             if (__global_month != null)
@@ -608,10 +601,9 @@ namespace HL7Interface
             __drug.ProductCode = __assign("ZFI-14", __fields);
         }
 
-
         static string __assign(string __key, Dictionary<string, string> __fields)
         {
-            if(string.IsNullOrEmpty(__key))
+            if (string.IsNullOrEmpty(__key))
             {
                 return string.Empty;
             }
@@ -646,12 +638,8 @@ namespace HL7Interface
 
         void __process_ADT_A01_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            Console.WriteLine("*** ADT_A01 Event Received ***");
 
-            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***ADT_A01 Event Received ***");
-            }));
+            __update_event_ui("Received ADT_A01 Event");
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -667,6 +655,8 @@ namespace HL7Interface
             string __diagnosis = string.Format("Patient Diagnosis\n");
             string __event_code = "A01";
 
+            string __problem_segment = string.Empty;
+
             try
             {
                 foreach (Dictionary<string, string> __fields in __args.fields)
@@ -676,44 +666,56 @@ namespace HL7Interface
                         switch (__pair.Key)
                         {
                             case "AL1":
+                                __problem_segment = "AL1";
                                 __allergies += __process_AL1(__fields);
                                 break;
 
                             case "EVN":
+                                __problem_segment = "EVN";
                                 __event_code = __process_EVN(__fields);
                                 break;
 
                             case "PID":
+                                __problem_segment = "PID";
                                 __process_PID(__pr, __fields);
                                 break;
 
                             case "NK1":
+                                __problem_segment = "NK1";
                                 __next_of_kin += __process_NK1(__fields);
                                 break;
 
                             case "PV1":
+                                __problem_segment = "PV1";
                                 __process_PV1(__doc, __pr, __fields);
                                 break;
 
                             case "DG1":
+                                __problem_segment = "DG1";
                                 __diagnosis += __process_DG1(__fields);
                                 break;
 
                             case "OBX":
+                                __problem_segment = "OBX";
                                 __process_OBX(__pr, __fields);
                                 break;
 
                             case "IN1":
+                                __problem_segment = "IN1";
                                 __process_IN1(__pr, __fields);
                                 break; ;
 
                             case "IN2":
+                                __problem_segment = "IN2";
                                 __process_IN2(__pr, __fields);
                                 break;
 
                             case "PR1":
                             case "ROL":
                             case "GT1":
+                                __problem_segment = "PR1 or ROL or GT1";
+                                break;
+
                             default:
                                 break;
                         }
@@ -722,16 +724,8 @@ namespace HL7Interface
             }
             catch (Exception e)
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbStatus.Items.Add(string.Format("ADT Parse Error: {0}", e.Message));
-                }));
-
-
-                if (__logging)
-                {
-                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT General Processing Failure: {0}", e.Message));
-                }
+                __update_error_ui(string.Format("ADT_A01 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT General Parse Failure at ({0}): {0}", __problem_segment, e.Message));
 
                 throw;
             }
@@ -739,7 +733,6 @@ namespace HL7Interface
             // Write it all out
             try
             {
-
                 __clean_up();
 
                 __pr.ResponisbleName = __next_of_kin;
@@ -748,35 +741,19 @@ namespace HL7Interface
 
                 motPort __p = new motPort(__target_ip, __target_port);
 
-                __pr.Write(__p,__logging);
-
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbMessages.Items.Add(string.Format("{0} : ADT A01 [Event Code: {1}] Parse Success", DateTime.Now.ToString(), __event_code));
-                }));
+                __pr.Write(__p, __logging);
             }
             catch (Exception e)
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbMessages.Items.Insert(0, DateTime.Now.ToString() + "ADT A01 Processing Failure: " + e.Message);
-                }));
-
-                if (__logging)
-                {
-                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT A01 Processing Failure: {0}", e.Message));
-                }
+                __update_error_ui(string.Format("ADT_A01 Processing Failure: {0}", e.Message));
+                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT A01 Processing Failure: {0}", e.Message));
 
                 throw;
             }
         }
         void __process_ADT_A12_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            Console.WriteLine("*** ADT_A12 Event Received ***");
-            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " *** ADT_A12 Event Received ***");
-            }));
+            __update_event_ui("Received ADT_A12 Event");
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -786,6 +763,7 @@ namespace HL7Interface
             var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
 
             string __time_qty = string.Empty;
+            string __problem_segment = string.Empty;
 
             try
             {
@@ -803,22 +781,15 @@ namespace HL7Interface
             }
             catch (Exception e)
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbStatus.Items.Add(string.Format("ADT Parse Error: {0}", e.Message));
-                }));
-
+                __update_error_ui(string.Format("ADT_A12 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
                 throw;
             }
+
+            // Write records ...
         }
         void __process_OMP_O09_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            Console.WriteLine("*** OMP_O09 Event Received ***");
-
-            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***OMP_O09_O11 Event Received ***");
-            }));
+            __update_event_ui(string.Format("{0} - Received OMP_O09 Event", DateTime.Now));
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -832,6 +803,8 @@ namespace HL7Interface
             int __tq1_records_processed = 0;
             int __tq1_record_rx_type = 0;
 
+            string __problem_segment = string.Empty;
+
             try
             {
                 foreach (Dictionary<string, string> __fields in __args.fields)
@@ -841,18 +814,22 @@ namespace HL7Interface
                         switch (__pair.Key)
                         {
                             case "PID":
+                                __problem_segment = "PID";
                                 __process_PID(__pr, __fields);
                                 break;
 
                             case "PV1":
+                                __problem_segment = "PV1";
                                 __process_PV1(__doc, __pr, __fields);
                                 break;
 
                             case "ORC":
+                                __problem_segment = "ORC";
                                 __process_ORC(__loc, __doc, __pr, __scrip, __fields);
                                 break;
 
                             case "TQ1":
+                                __problem_segment = "TQ1";
                                 __dose_time_qty = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
 
                                 __tq1_records_processed++;                               // > 1 means additive instructions
@@ -866,25 +843,31 @@ namespace HL7Interface
                                 break;
 
                             case "RXC":
+                                __problem_segment = "RXC";
                                 break;
 
                             case "RXD":
+                                __problem_segment = "RXD";
                                 __process_RXD(__scrip, __drug, __fields);
                                 break;
 
                             case "RXE":
+                                __problem_segment = "RXE";
                                 __process_RXE(__drug, __doc, __scrip, __store, __fields);
                                 break;
 
                             case "RXR":
+                                __problem_segment = "RXR";
                                 __process_RXR(__drug, __fields);
                                 break;
 
                             case "RXO":
+                                __problem_segment = "RXO";
                                 __process_RXO(__pr, __drug, __fields);
                                 break;
 
                             case "NTE":
+                                __problem_segment = "NTE";
                                 __notes += __process_NTE(__fields);
                                 break;
 
@@ -897,68 +880,47 @@ namespace HL7Interface
                 __scrip.RxSys_PatID = __pr.RxSys_PatID;
                 __scrip.Comments = __notes;
                 __scrip.DoseTimesQtys = __dose_time_qty;
-
-                // Write them all to the gateway
-                try
-                {
-                    __clean_up();
-
-                    motPort __p = new motPort(__target_ip, __target_port);
-
-                    __scrip.Write(__p, __logging);
-                    __pr.Write(__p, __logging);
-                    __doc.Write(__p, __logging);
-                    __loc.Write(__p, __logging);
-                    __drug.Write(__p, __logging);
-                    __store.Write(__p, __logging);
-
-                    lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        lbMessages.Items.Add(string.Format("{0} : OMP O09 Parse Success", DateTime.Now.ToString()));
-                    }));
-
-                }
-                catch (Exception e)
-                {
-                    lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        lbMessages.Items.Insert(0, DateTime.Now.ToString() + " OMP O09 Processing Failure: " + e.Message);
-                    }));
-
-                    if (__logging)
-                    {
-                        motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP O09 Processing Failure: {0}", e.Message));
-                    }
-
-                    throw;
-                }
             }
             catch (Exception e)
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbStatus.Items.Add(string.Format("OMP Parse Error: {0}", e.Message));
-                }));
-
-                if (__logging)
-                {
-                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP General Processing Failure: {0}", e.Message));
-                }
+                __update_error_ui(string.Format("OMP_O09 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP General Processing Failure: {0}", e.Message));
 
                 throw;
             }
+
+           
+            // Write them all to the gateway
+            try
+            {
+                __clean_up();
+
+                motPort __p = new motPort(__target_ip, __target_port);
+
+                __scrip.Write(__p, __logging);
+                __pr.Write(__p, __logging);
+                __doc.Write(__p, __logging);
+                __loc.Write(__p, __logging);
+                __drug.Write(__p, __logging);
+                __store.Write(__p, __logging);
+
+            }
+            catch (Exception e)
+            {
+                __update_error_ui(string.Format("OMP_O09 Processing Failure: {0}", e.Message));
+                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP O09 Processing Failure: {0}", e.Message));
+
+                throw;
+            }
+
+
         }
         void __process_RDE_O11_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            Console.WriteLine("*** RDE_O11 Event Received ***");
-
             int __tq1_records_processed = 0;
             int __tq1_record_rx_type = 0;
 
-            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDE_O11 Event Received ***");
-            }));
+            __update_event_ui("Received RDE_O11 Event");
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -973,6 +935,8 @@ namespace HL7Interface
             bool __had_zpi = false;
             motPort __p = new motPort(__target_ip, __target_port);
 
+            string __problem_segment = string.Empty;
+
             try
             {
                 foreach (Dictionary<string, string> __fields in __args.fields)
@@ -982,26 +946,32 @@ namespace HL7Interface
                         switch (__pair.Key)
                         {
                             case "ORC":
+                                __problem_segment = "ORC";
                                 __process_ORC(__loc, __doc, __pr, __scrip, __fields);
                                 break;
 
                             case "PID":
+                                __problem_segment = "PID";
                                 __process_PID(__pr, __fields);
                                 break;
 
                             case "RXE":
+                                __problem_segment = "RXE";
                                 __process_RXE(__drug, __doc, __scrip, __store, __fields);
                                 break;
 
                             case "RXO":
+                                __problem_segment = "RXO";
                                 __process_RXO(__pr, __drug, __fields);
                                 break;
 
                             case "RXR":
+                                __problem_segment = "RXR";
                                 __drug.Route = __assign("RXR-1-2", __fields);
                                 break;
 
                             case "TQ1":
+                                __problem_segment = "TQ1";
                                 __dose_time_qty += __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
 
                                 __tq1_records_processed++;                               // > 1 means additive instructions
@@ -1015,13 +985,16 @@ namespace HL7Interface
                                 break;
 
                             case "ZAS":
+                                __problem_segment = "ZAS";
                                 break;
 
                             case "ZF1":  // Compounding
+                                __problem_segment = "ZF1";
                                 __process_ZFI(__drug, __fields);
                                 break;
 
                             case "ZPI":
+                                __problem_segment = "ZPI";
                                 __had_zpi = true;
                                 __process__ZPI(__scrip, __store, __fields);
                                 break;
@@ -1031,15 +1004,8 @@ namespace HL7Interface
             }
             catch (Exception e)
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbStatus.Items.Add(string.Format("RDE Parse Error: {0}", e.Message));
-                }));
-
-                if (__logging)
-                {
-                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDE General Processing Failure: {0}", e.Message));
-                }
+                __update_error_ui(string.Format("RDE_O11 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDE General Processing Failure: {0}", e.Message));
 
                 throw;
             }
@@ -1061,29 +1027,18 @@ namespace HL7Interface
                 __drug.Write(__p);
                 __store.Write(__p);
 
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbMessages.Items.Add(string.Format("{0} : RDE O11 {1} ZPI Parse Success", DateTime.Now.ToString(), __had_zpi ? "with" : "without"));
-                }));
             }
             catch (Exception e)
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbMessages.Items.Insert(0, DateTime.Now.ToString() + " RDE O11 Processing Failure: " + e.Message);
-                }));
-
-                if (__logging)
-                {
-                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDEs O11 Processing Failure: {0}", e.Message));
-                }
+                __update_error_ui(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
+                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDEs O11 Processing Failure: {0}", e.Message));
 
                 throw;
             }
         }
         void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            Console.WriteLine("*** RDS_O13 Event Received ***");
+            __update_event_ui("Received RDS_O13 Event");
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -1100,11 +1055,7 @@ namespace HL7Interface
             int __tq1_records_processed = 0;
             int __tq1_record_rx_type = 0;
 
-            lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                lbStatus.Items.Insert(0, DateTime.Now.ToString() + " ***RDS_O13 Event Received ***");
-            }));
-
+            string __problem_segment = string.Empty;
 
             try
             {
@@ -1115,30 +1066,37 @@ namespace HL7Interface
                         switch (__pair.Key)
                         {
                             case "PID":
+                                __problem_segment = "PID";
                                 __process_PID(__pr, __fields);
                                 break;
 
                             case "PV1":
+                                __problem_segment = "PV1";
                                 __process_PV1(__doc, __pr, __fields);
                                 break;
 
                             case "ORC":
+                                __problem_segment = "ORC";
                                 __process_ORC(__loc, __doc, __pr, __scrip, __fields);
                                 break;
 
                             case "RXO":
+                                __problem_segment = "RXO";
                                 __process_RXO(__pr, __drug, __fields);
                                 break;
 
                             case "RXE":
+                                __problem_segment = "RXE";
                                 __process_RXE(__drug, __doc, __scrip, __store, __fields);
                                 break;
 
                             case "NTE":
+                                __problem_segment = "NTE";
                                 __patient_notes += __process_NTE(__fields);
                                 break;
 
                             case "TQ1":
+                                __problem_segment = "TQ1";
                                 __dose_time_qty = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
 
                                 __tq1_records_processed++;                               // > 1 means additive instructions
@@ -1152,18 +1110,22 @@ namespace HL7Interface
                                 break;
 
                             case "RXR":
+                                __problem_segment = "RXR";
                                 __process_RXR(__drug, __fields);
                                 break;
 
                             case "RXC":
+                                __problem_segment = "RXC";
                                 __process_RXC(__scrip, __fields);
                                 break;
 
                             case "RXD":
+                                __problem_segment = "RXD";
                                 __process_RXD(__scrip, __drug, __fields);
                                 break;
 
                             case "ZPI":
+                                __problem_segment = "ZPI";
                                 __had_zpi = true;
                                 __process__ZPI(__scrip, __store, __fields);
                                 break;
@@ -1174,15 +1136,8 @@ namespace HL7Interface
             }
             catch (Exception e)
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbStatus.Items.Add(string.Format("RDS Parse Error: {0}", e.Message));
-                }));
-
-                if (__logging)
-                {
-                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS General Processing Failure: {0}", e.Message));
-                }
+                __update_error_ui(string.Format("RDS_O13 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS General Processing Failure: {0}", e.Message));
 
                 throw;
             }
@@ -1210,206 +1165,14 @@ namespace HL7Interface
                 __loc.Write(__p, __logging);
                 __drug.Write(__p, __logging);
                 __store.Write(__p, __logging);
-
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbMessages.Items.Add(string.Format("{0} : RDS O13 {1} ZPI Parse Success", DateTime.Now.ToString(), __had_zpi ? "with" : "without"));
-                }));
             }
             catch (Exception e)
             {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbMessages.Items.Insert(0, DateTime.Now.ToString() + " RDS O13 Processing Failure: " + e.Message);
-                }));
-
-
-                if (__logging)
-                {
-                    motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS O13 Processing Failure: {0}", e.Message));
-                }
+                __update_error_ui(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
+                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS O13 Processing Failure: {0}", e.Message));
 
                 throw;
             }
-        }
-
-        private void btnStart_Click(object sender, RoutedEventArgs __args)
-        {           
-            try
-            {
-                __listener.__start();
-                btnStop.IsEnabled = true;
-                btnStart.IsEnabled = false;
-            }
-            catch(Exception e)
-            {
-                lbStatus.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    lbMessages.Items.Insert(0, DateTime.Now.ToString() + "Startup Failure: " + e.Message);
-                }));
-            }
-        }
-        private void btnStop_Click(object sender, RoutedEventArgs e)
-        {
-            btnStop.IsEnabled = false;
-            btnStart.IsEnabled = true;
-
-            __listener.__stop();
-        }
-        private void tbTargetPort_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            var textBox = sender as System.Windows.Controls.TextBox;
-            __target_port = textBox.Text;
-
-            Properties.Settings.Default.TargetPort = __target_port;
-            Properties.Settings.Default.Save();
-        }
-        private void tbSourcePort_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            var textBox = sender as System.Windows.Controls.TextBox;
-            __source_port = textBox.Text;
-
-            Properties.Settings.Default.SourcePort = __source_port;
-            Properties.Settings.Default.Save();
-        }
-        private void tbSourceIP_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            var textBox = sender as System.Windows.Controls.TextBox;
-            __source_ip = textBox.Text;
-
-            Properties.Settings.Default.SourceIP = __source_ip;
-            Properties.Settings.Default.Save();
-
-        }
-        private void tbTargetIP_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            var textBox = sender as System.Windows.Controls.TextBox;
-            __target_ip = textBox.Text;
-
-            Properties.Settings.Default.TargetIP = __target_ip;
-            Properties.Settings.Default.Save();
-        }
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Console.WriteLine("Buh Bye!");
-        }
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            Environment.Exit(0);
-        }
-        private void chkLogging_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                __logging = (bool)chkLogging.IsChecked;
-                chkErrors.IsEnabled = chkWarnings.IsEnabled = chkInfo.IsEnabled = chkInfo.IsEnabled = __logging;
-
-                if(!__logging)
-                {
-                    __save_error_level = __error_level;
-                    __error_level = motErrorlLevel.Off;
-                }
-                else
-                {
-                    __error_level = __save_error_level;
-                }
-            }
-            catch
-            { }
-        }
-
-        private void chkLogging_Checked(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void chkErrors_Checked(object sender, RoutedEventArgs e)
-        {  
-        }
-
-        private void chkWarnings_Checked(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void chkInfo_Checked(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void chkErrors_Click(object sender, RoutedEventArgs e)
-        {
-            if (chkErrors.IsChecked == true)
-            {
-                if (__error_level <= motErrorlLevel.Error)  // If its Off or Error Already, Set it to Error
-                {
-                    __error_level = motErrorlLevel.Error;
-                }
-            }
-            else
-            {
-                if (__error_level == motErrorlLevel.Error)
-                {
-                    __error_level = motErrorlLevel.Off;
-                }
-            }
-
-            Properties.Settings.Default.Errors = (bool)chkErrors.IsChecked;
-            Properties.Settings.Default.Save();
-        }
-        private void chkWarnings_Click(object sender, RoutedEventArgs e)
-        {
-            if (chkWarnings.IsChecked == true)
-            {
-                if (__error_level <= motErrorlLevel.Warning)  // If its Off or Error Already, Set it to Error
-                {
-                    __error_level = motErrorlLevel.Warning;
-                }
-            }
-            else
-            {
-                if (__error_level == motErrorlLevel.Warning && chkInfo.IsChecked == false)
-                {
-                    if (chkInfo.IsChecked == true)
-                    {
-                        __error_level = motErrorlLevel.Error;
-                    }
-                }
-            }
-
-            Properties.Settings.Default.Warnings = (bool)chkWarnings.IsChecked;
-            Properties.Settings.Default.Save();
-
-        }
-        private void chkInfo_Click(object sender, RoutedEventArgs e)
-        {
-            if (chkInfo.IsChecked == true)
-            {
-                if (__error_level <= motErrorlLevel.Info)  // If its Off or Error Already, Set it to Error
-                {
-                    __error_level = motErrorlLevel.Info;
-                }
-            }
-            else
-            {
-                if (__error_level == motErrorlLevel.Info)
-                {
-                    if (chkWarnings.IsChecked == true)
-                    {
-                        __error_level = motErrorlLevel.Warning;
-                    }
-                    else if (chkErrors.IsChecked == true)
-                    {
-                        __error_level = motErrorlLevel.Error;
-                    }
-                }
-            }
-
-            Properties.Settings.Default.Info = (bool)chkInfo.IsChecked;
-            Properties.Settings.Default.Save();
-        }
-        private void chkTruncate_Click(object sender, RoutedEventArgs e)
-        {
-            __auto_truncate = (bool)chkTruncate.IsChecked;
-            Properties.Settings.Default.AutoTruncate = __auto_truncate;
-            Properties.Settings.Default.Save();
         }
     }
 }

@@ -19,14 +19,14 @@ namespace motDefaultProxyUI
     public delegate void __update_event_box_handler(Object __sender, UIupdateArgs __args);
     public delegate void __update_error_box_handler(Object __sender, UIupdateArgs __args);
 
-    public partial class frmMain : Form
+    public partial class frmMainDefault : Form
     {      
         Logger __logger;
         Execute __execute;
         motErrorlLevel __error_level = motErrorlLevel.Error;
 
 
-        public frmMain()
+        public frmMainDefault()
         {
             InitializeComponent();
 
@@ -117,6 +117,16 @@ namespace motDefaultProxyUI
         private void cmbErrorLevel_SelectedIndexChanged(object sender, EventArgs e)
         {
             __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+        }
+
+        private void gbSourceDB_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rtbErrors_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
