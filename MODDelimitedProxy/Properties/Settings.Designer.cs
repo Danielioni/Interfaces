@@ -130,5 +130,41 @@ namespace motDefaultProxyUI.Properties {
                 this["LogLevel"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Off")]
+        public global::motCommonLib.motErrorlLevel ErrorLevel {
+            get {
+                return ((global::motCommonLib.motErrorlLevel)(this["ErrorLevel"]));
+            }
+            set {
+                this["ErrorLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
+        public int MaxLogLines {
+            get {
+                return ((int)(this["MaxLogLines"]));
+            }
+            set {
+                this["MaxLogLines"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoTruncate {
+            get {
+                return ((bool)(this["AutoTruncate"]));
+            }
+            set {
+                this["AutoTruncate"] = value;
+            }
+        }
     }
 }

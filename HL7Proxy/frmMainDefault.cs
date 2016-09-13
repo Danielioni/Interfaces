@@ -52,6 +52,7 @@ namespace HL7Proxy
             txtSourcePwd.Text = Properties.Settings.Default.ListenPwd;
             cmbErrorLevel.SelectedIndex = (int)Properties.Settings.Default.ErrorLevel;
             __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+            chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
 
             txtOrganization.Text = Properties.Settings.Default.Organization;
             txtProcessor.Text = Properties.Settings.Default.Processor;
@@ -77,6 +78,7 @@ namespace HL7Proxy
                 Properties.Settings.Default.Organization = txtOrganization.Text;
                 Properties.Settings.Default.Processor = txtProcessor.Text;
                 Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
+                Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
                 Properties.Settings.Default.Save();
             }
             else if (tbcMain.SelectedIndex == 1)
@@ -94,6 +96,7 @@ namespace HL7Proxy
                 txtOrganization.Text = Properties.Settings.Default.Organization;
                 txtProcessor.Text = Properties.Settings.Default.Processor;
                 txtMaxLogLen.Text = Properties.Settings.Default.MaxLogLines.ToString();
+                chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
             }
             else  // Reserved for future use
             {
@@ -210,6 +213,7 @@ namespace HL7Proxy
             Properties.Settings.Default.Organization = txtOrganization.Text;
             Properties.Settings.Default.Processor = txtProcessor.Text;
             Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
+            Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
             Properties.Settings.Default.Save();
 
             Environment.Exit(0);
@@ -272,18 +276,20 @@ namespace HL7Proxy
 
         private void btnPrint_Click(object sender, EventArgs e)
         {
-            PrintDialog printDialog = new PrintDialog();
-            PrintDocument documentToPrint = new PrintDocument();
-            printDialog.Document = documentToPrint;
-
-            if (printDialog.ShowDialog() == DialogResult.OK)
+            if (rtbErrors.TextLength > 0)
             {
-                StringReader reader = new StringReader(rtbErrors.Text);
-                documentToPrint.PrintPage += new PrintPageEventHandler(DocumentToPrint_PrintPage);
-                documentToPrint.Print();
+                PrintDialog printDialog = new PrintDialog();
+                PrintDocument documentToPrint = new PrintDocument();
+                printDialog.Document = documentToPrint;
+
+                if (printDialog.ShowDialog() == DialogResult.OK)
+                {
+                    StringReader reader = new StringReader(rtbErrors.Text);
+                    documentToPrint.PrintPage += new PrintPageEventHandler(DocumentToPrint_PrintPage);
+                    documentToPrint.Print();
+                }
             }
         }
-
     }
 
     public class UIupdateArgs : EventArgs

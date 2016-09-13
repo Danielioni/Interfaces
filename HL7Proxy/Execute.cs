@@ -12,8 +12,6 @@ namespace HL7Proxy
 {
     public class Execute
     {
-
-
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
 
@@ -59,28 +57,37 @@ namespace HL7Proxy
         {
             __update_event_ui("HL7 Proxy Starting up");
 
-            __target_ip = __args.__gateway_address;
-            __target_port = __args.__gateway_port;
-            __source_ip = __args.__listen_address;
-            __source_port = __args.__listen_port;
+            try
+            {
+                __target_ip = __args.__gateway_address;
+                __target_port = __args.__gateway_port;
+                __source_ip = __args.__listen_address;
+                __source_port = __args.__listen_port;
 
-            __error_level = __args.__error_level;
-            __auto_truncate = __args.__auto_truncate;
+                __error_level = __args.__error_level;
+                __auto_truncate = __args.__auto_truncate;
 
 
-            // Set up listener and event handlers
-            __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
+                // Set up listener and event handlers
+                __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
 
-            __listener.__organization = __args.__organization;
-            __listener.__processor = __args.__processor;
+                __listener.__organization = __args.__organization;
+                __listener.__processor = __args.__processor;
 
-            __listener.ADT_A01MessageEventReceived += __process_ADT_A01_Event;
-            __listener.ADT_A12MessageEventReceived += __process_ADT_A12_Event;
-            __listener.OMP_O09MessageEventReceived += __process_OMP_O09_Event;
-            __listener.RDE_O11MessageEventReceived += __process_RDE_O11_Event;
-            __listener.RDS_O13MessageEventReceived += __process_RDS_O13_Event;
+                __listener.ADT_A01MessageEventReceived += __process_ADT_A01_Event;
+                __listener.ADT_A12MessageEventReceived += __process_ADT_A12_Event;
+                __listener.OMP_O09MessageEventReceived += __process_OMP_O09_Event;
+                __listener.RDE_O11MessageEventReceived += __process_RDE_O11_Event;
+                __listener.RDS_O13MessageEventReceived += __process_RDS_O13_Event;
 
-            __listener.__start();
+                __listener.__start();
+
+                __update_event_ui(string.Format("Listening on: {0}:{1}, Sending to: {2}:{3}", __args.__listen_address, __args.__listen_port, __args.__gateway_address, __args.__gateway_port));
+            }
+            catch(Exception e)
+            {
+                __update_error_ui(string.Format("Failed to start on {0}:{1}, Error: {2}", __args.__listen_address, __args.__listen_port, e.Message));
+            }
         }
 
         public void __shut_down()

@@ -132,7 +132,24 @@ namespace DelimitedProxy
         {
             __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
         }
+
+        private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Properties.Settings.Default.GatewayIP = txtTargetIP.Text;
+            Properties.Settings.Default.GatewayPort = txtTargetPort.Text;
+            Properties.Settings.Default.GatewayUname = txtTargetUname.Text;
+            Properties.Settings.Default.GatewayPwd = txtTargetPwd.Text;
+            Properties.Settings.Default.ListenIP = txtSourceIP.Text;
+            Properties.Settings.Default.ListenPort = txtSourcePort.Text;
+            Properties.Settings.Default.ListenUname = txtSourceUname.Text;
+            Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
+            Properties.Settings.Default.Save();
+
+            Environment.Exit(0);
+        }
     }
+
+   
 
     public class UIupdateArgs : EventArgs
     {

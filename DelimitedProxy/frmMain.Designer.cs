@@ -381,7 +381,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.Text = "MOT Default Proxy UI";
+            this.Text = "MOT Delimited Proxy";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMain_FormClosed);
             this.tbcMain.ResumeLayout(false);
             this.tbpRun.ResumeLayout(false);
             this.grpErrors.ResumeLayout(false);
