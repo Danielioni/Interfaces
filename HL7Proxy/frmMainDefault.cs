@@ -24,7 +24,7 @@ namespace HL7Proxy
     public partial class frmMainDefault : Form
     {
         Logger __logger;
-        Execute __execute;
+        public Execute __execute;
         motErrorlLevel __error_level = motErrorlLevel.Error;
         bool __listening = false;
         int __max_log_len;
@@ -59,6 +59,9 @@ namespace HL7Proxy
 
             __max_log_len = Properties.Settings.Default.MaxLogLines;
             txtMaxLogLen.Text = __max_log_len.ToString();
+
+            btnStop.Enabled = false;
+            btnStart.Enabled = true;
         }
 
 

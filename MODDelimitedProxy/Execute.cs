@@ -19,6 +19,7 @@ namespace motDefaultProxyUI
 
         motLookupTables __lookup = new motLookupTables();
         Logger __logger = null;
+        LogLevel __log_level { get; set; } = LogLevel.Error;
 
         public void __update_event_ui(string __message)
         {
@@ -51,6 +52,7 @@ namespace motDefaultProxyUI
             catch (Exception e)
             {
                 __update_error_ui(string.Format("Failed to start on {0}:{1}, Error: {2}", __args.__listen_address, __args.__listen_port, e.Message));
+                __logger.Log(__log_level, "Failed to start on {0}:{1}, Error: {2}", __args.__listen_address, __args.__listen_port, e.Message);
             }
         }
 
@@ -61,7 +63,7 @@ namespace motDefaultProxyUI
 
         public Execute()
         {
-
+            __logger = LogManager.GetLogger("motDefaultProxyUI");
         }
 
         ~Execute()

@@ -1816,7 +1816,7 @@ namespace motCommonLib
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            __tmp_msh.__msg_data["MSH-11"] + "|" +
                            __tmp_msh.__msg_data["MSH-12"] + "|" +
-                           @"\r" +
+                           "\r" +
                            @"MSA|AA|" +
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            '\x1C' +
@@ -1887,7 +1887,7 @@ namespace motCommonLib
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            __tmp_msh.__msg_data["MSH-11"] + "|" +
                            __tmp_msh.__msg_data["MSH-12"] + "|" +
-                           @"\r" +
+                           "\r" +
                            @"MSA|" +
                            __error_code + "|" +
                            __tmp_msh.__msg_data["MSH-10"] + "|" +

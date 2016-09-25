@@ -34,6 +34,12 @@
   <PropertyGroup>
     <ApplicationIcon>MOT.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>mot-certificate.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -66,6 +72,7 @@
   <ItemGroup>
     <Content Include="MOT.ico" />
     <None Include="app.config" />
+    <None Include="mot-certificate.snk" />
     <None Include="NLog.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

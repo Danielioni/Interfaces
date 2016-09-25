@@ -298,6 +298,8 @@ namespace motDefaultProxyUI
         public string __gateway_pwd { get; set; }
 
         public motErrorlLevel __error_level { get; set; }
+        public LogLevel __log_level { get; set; }
+
         public bool __auto_truncate { get; set; }
     }
 }

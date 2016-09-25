@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MOTDefaultProxyUserInterface")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Medicine-On-Time HL7 Proxy")]
+[assembly: AssemblyDescription("Proxy Interface for HL7 Based RxSystems")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MOTDefaultProxyUI")]
+[assembly: AssemblyCompany("Medicine-On-Time, LLC")]
+[assembly: AssemblyProduct("HL7 Proxy")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

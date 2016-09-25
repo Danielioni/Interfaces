@@ -52,6 +52,7 @@ namespace motInboundLib
         public string __organization { get; set; }
         public string __processor { get; set; }
 
+        public LogLevel __log_level { get; set; } = LogLevel.Error;
         private Logger __logger;
         public motSocket __socket;
         private Thread  __worker;
@@ -130,7 +131,7 @@ namespace motInboundLib
 
                 ACK __out = new ACK(__resp, __organization, __processor);
                 __response = __out.__ack_string;
-                __logger.Info("HL7 ACK: {0}", __response);
+                __logger.Log(__log_level, "HL7 ACK: {0}", __response);
 
                 // Fire a new record event ...
                 // 
@@ -147,8 +148,9 @@ namespace motInboundLib
 
                 NAK __out = new NAK(__resp, __error_code, __organization, __processor);
                 __response = __out.__nak_string;
-                __logger.Error("HL7 NAK: {0}", __response);
-
+                __logger.Log(__log_level, "HL7 NAK: {0}", __response);
+                __logger.Log(__log_level, "Failed Messasge: {0}", __data);
+                    
                 Console.Write("NAK:" + e.Message);
             }
 
@@ -172,7 +174,7 @@ namespace motInboundLib
             {
                 string __err = string.Format("An error occurred while attempting to start the HL7 listener: {0}", e.Message);
                 Console.WriteLine(__err);
-                __logger.Error(__err);
+                __logger.Log(__log_level, __err);
                 throw;
             }
         }
@@ -202,7 +204,7 @@ namespace motInboundLib
                 string __err = string.Format("Port I/O error sending ACK to {0}.  {1}", __socket.remoteEndPoint, e.Message);
 
                 Console.WriteLine(__err);
-                __logger.Error(__err);
+                __logger.Log(__log_level, __err);
             }
         }
 
@@ -221,7 +223,7 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                __logger.Warn("Failed to write file {0}, {1}", __filename, e.Message);
+                __logger.Log(__log_level, "Failed to write file {0}, {1}", __filename, e.Message);
             }
         }
 
@@ -230,13 +232,13 @@ namespace motInboundLib
             try
             {
                 __start_listener(__listener_port, __callback);
-                __logger.Info("HL7 Listener waiting on port: {0}", __listener_port);
+                __logger.Log(__log_level, "HL7 Listener waiting on port: {0}", __listener_port);
             }
             catch (Exception e)
             {
                 string __err = string.Format("HL7 Listener failed to start on port {0}: {1} ", __listener_port, e.Message);
 
-                __logger.Info(__err);
+                __logger.Log(__log_level,__err);
                 throw new Exception(__err);
             }
         }

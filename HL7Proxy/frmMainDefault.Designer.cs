@@ -50,6 +50,7 @@
             this.gbSwitches = new System.Windows.Forms.GroupBox();
             this.chkAutoTruncate = new System.Windows.Forms.CheckBox();
             this.grpLogging = new System.Windows.Forms.GroupBox();
+            this.txtMaxLogLen = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.cmbErrorLevel = new System.Windows.Forms.ComboBox();
             this.grpTarget = new System.Windows.Forms.GroupBox();
@@ -72,7 +73,6 @@
             this.txtSourceIP = new System.Windows.Forms.TextBox();
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.txtMaxLogLen = new System.Windows.Forms.TextBox();
             this.pnlMain.SuspendLayout();
             this.tbcMain.SuspendLayout();
             this.tbpRun.SuspendLayout();
@@ -152,7 +152,7 @@
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(916, 376);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(142, 122);
+            this.pictureBox2.Size = new System.Drawing.Size(118, 115);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 13;
             this.pictureBox2.TabStop = false;
@@ -247,7 +247,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(692, 63);
+            this.pictureBox1.Location = new System.Drawing.Point(719, 63);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(296, 277);
             this.pictureBox1.TabIndex = 11;
@@ -317,6 +317,16 @@
             this.grpLogging.TabIndex = 0;
             this.grpLogging.TabStop = false;
             this.grpLogging.Text = "[ Logging ]";
+            // 
+            // txtMaxLogLen
+            // 
+            this.txtMaxLogLen.Location = new System.Drawing.Point(94, 61);
+            this.txtMaxLogLen.MaxLength = 25;
+            this.txtMaxLogLen.Name = "txtMaxLogLen";
+            this.txtMaxLogLen.Size = new System.Drawing.Size(100, 22);
+            this.txtMaxLogLen.TabIndex = 13;
+            this.txtMaxLogLen.Text = "10000";
+            this.txtMaxLogLen.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label9
             // 
@@ -522,16 +532,6 @@
             this.saveFileDialog.Filter = "Log Files|*.log|Text Files|*.txt";
             this.saveFileDialog.InitialDirectory = "\"My Documents\"";
             this.saveFileDialog.Title = "Save Error Log";
-            // 
-            // txtMaxLogLen
-            // 
-            this.txtMaxLogLen.Location = new System.Drawing.Point(94, 61);
-            this.txtMaxLogLen.MaxLength = 25;
-            this.txtMaxLogLen.Name = "txtMaxLogLen";
-            this.txtMaxLogLen.Size = new System.Drawing.Size(100, 22);
-            this.txtMaxLogLen.TabIndex = 13;
-            this.txtMaxLogLen.Text = "10000";
-            this.txtMaxLogLen.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // frmMainDefault
             // 

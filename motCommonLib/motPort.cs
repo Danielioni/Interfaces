@@ -43,7 +43,9 @@ namespace motCommonLib
 
         public TcpClient tcpSocket = null;
         NetworkStream dataStream;
+
         private Logger logger;
+        public LogLevel __log_level { get; set; } = LogLevel.Error;
 
         bool __open = false;
 
@@ -71,7 +73,7 @@ namespace motCommonLib
             {
                 Open();
                 __open = true;
-                logger.Info(@"Successfully Opened {0}:{1}", __address, __port);
+                logger.Log(__log_level, @"Successfully Opened {0}:{1}", __address, __port);
             }
             catch (SocketException e)
             {
@@ -121,14 +123,14 @@ namespace motCommonLib
                 string __error = string.Format(@"Gateway ArgumentNullException: {0}", e.Message);
 
                 Console.WriteLine(__error);
-                logger.Error(__error);
+                logger.Log(__log_level, __error);
 
                 throw new Exception(@"Invalid Argument");
             }
             catch (SocketException e)
             {
                 Console.WriteLine(@"Gateway SocketException: {0}", e.Message);
-                logger.Error(@"Gateway SocketException: {0}", e.Message);
+                logger.Log(__log_level, @"Gateway SocketException: {0}", e.Message);
                 throw;
             }
             catch(Exception)
@@ -179,7 +181,7 @@ namespace motCommonLib
             {
                 string __error = string.Format(@"Error closing port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
                 Console.WriteLine(__error);
-                logger.Error(__error);
+                logger.Log(__log_level, __error);
                 throw new Exception(__error);
             }
         }
@@ -196,7 +198,7 @@ namespace motCommonLib
             {
                 string __error = string.Format(@"Error flushing port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
                 Console.WriteLine(__error);
-                logger.Error(__error);
+                logger.Log(__log_level, __error);
                 throw new Exception(__error);
             }
         }
@@ -214,7 +216,7 @@ namespace motCommonLib
             {
                 string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
                 Console.WriteLine(__error);
-                logger.Error(__error);
+                logger.Log(__log_level, __error);
                 throw new Exception(__error);
             }
 
@@ -239,7 +241,7 @@ namespace motCommonLib
             {
                 string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
                 Console.WriteLine(__error);
-                logger.Error(__error);
+                logger.Log(__log_level, __error);
                 throw new Exception(__error);
             }
 
@@ -260,7 +262,7 @@ namespace motCommonLib
                 {
                     string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
                     Console.WriteLine(__error);
-                    logger.Error(__error);
+                    logger.Log(__log_level, __error);
                     throw new Exception(__error);
                 }
             }
@@ -280,7 +282,7 @@ namespace motCommonLib
                 {
                     string __error = string.Format(@"Error resetting port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
                     Console.WriteLine(__error);
-                    logger.Error(__error);
+                    logger.Log(__log_level, __error);
                     throw new Exception(__error);
                 }
 

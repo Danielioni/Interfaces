@@ -31,6 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.tbcMain = new System.Windows.Forms.TabControl();
             this.tbpRun = new System.Windows.Forms.TabPage();
+            this.btnPrint = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.grpErrors = new System.Windows.Forms.GroupBox();
             this.rtbErrors = new System.Windows.Forms.RichTextBox();
             this.grpStatus = new System.Windows.Forms.GroupBox();
@@ -38,7 +41,12 @@
             this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.tbpConfig = new System.Windows.Forms.TabPage();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.gbSwitches = new System.Windows.Forms.GroupBox();
+            this.chkAutoTruncate = new System.Windows.Forms.CheckBox();
             this.grpLogging = new System.Windows.Forms.GroupBox();
+            this.txtMaxLogLen = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.cmbErrorLevel = new System.Windows.Forms.ComboBox();
             this.grpTarget = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -60,9 +68,12 @@
             this.txtSourceIP = new System.Windows.Forms.TextBox();
             this.tbcMain.SuspendLayout();
             this.tbpRun.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.grpErrors.SuspendLayout();
             this.grpStatus.SuspendLayout();
             this.tbpConfig.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.gbSwitches.SuspendLayout();
             this.grpLogging.SuspendLayout();
             this.grpTarget.SuspendLayout();
             this.grpSource.SuspendLayout();
@@ -83,6 +94,9 @@
             // 
             this.tbpRun.BackColor = System.Drawing.SystemColors.Control;
             this.tbpRun.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tbpRun.Controls.Add(this.btnPrint);
+            this.tbpRun.Controls.Add(this.btnSave);
+            this.tbpRun.Controls.Add(this.pictureBox2);
             this.tbpRun.Controls.Add(this.grpErrors);
             this.tbpRun.Controls.Add(this.grpStatus);
             this.tbpRun.Controls.Add(this.btnStop);
@@ -95,6 +109,36 @@
             this.tbpRun.TabIndex = 0;
             this.tbpRun.Text = "Run";
             this.tbpRun.ToolTipText = "Runtime Control";
+            // 
+            // btnPrint
+            // 
+            this.btnPrint.Location = new System.Drawing.Point(741, 419);
+            this.btnPrint.Name = "btnPrint";
+            this.btnPrint.Size = new System.Drawing.Size(167, 45);
+            this.btnPrint.TabIndex = 17;
+            this.btnPrint.Text = "Print Error Log";
+            this.btnPrint.UseVisualStyleBackColor = true;
+            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
+            // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(741, 366);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(167, 45);
+            this.btnSave.TabIndex = 16;
+            this.btnSave.Text = "Save Error Log";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(991, 360);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(118, 115);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox2.TabIndex = 14;
+            this.pictureBox2.TabStop = false;
             // 
             // grpErrors
             // 
@@ -139,20 +183,20 @@
             // btnStop
             // 
             this.btnStop.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnStop.Location = new System.Drawing.Point(216, 391);
+            this.btnStop.Location = new System.Drawing.Point(335, 368);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(179, 65);
+            this.btnStop.Size = new System.Drawing.Size(273, 96);
             this.btnStop.TabIndex = 1;
             this.btnStop.Text = "Stop Listening";
             this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.button1_Click);
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // btnStart
             // 
             this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnStart.Location = new System.Drawing.Point(21, 391);
+            this.btnStart.Location = new System.Drawing.Point(43, 368);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(179, 65);
+            this.btnStart.Size = new System.Drawing.Size(273, 96);
             this.btnStart.TabIndex = 0;
             this.btnStart.Text = "Start Listening";
             this.btnStart.UseVisualStyleBackColor = true;
@@ -161,6 +205,8 @@
             // tbpConfig
             // 
             this.tbpConfig.BackColor = System.Drawing.SystemColors.Control;
+            this.tbpConfig.Controls.Add(this.pictureBox1);
+            this.tbpConfig.Controls.Add(this.gbSwitches);
             this.tbpConfig.Controls.Add(this.grpLogging);
             this.tbpConfig.Controls.Add(this.grpTarget);
             this.tbpConfig.Controls.Add(this.grpSource);
@@ -171,16 +217,68 @@
             this.tbpConfig.TabIndex = 1;
             this.tbpConfig.Text = "Config";
             this.tbpConfig.ToolTipText = "Configure System";
+            this.tbpConfig.Click += new System.EventHandler(this.tbpConfig_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(755, 75);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(296, 277);
+            this.pictureBox1.TabIndex = 12;
+            this.pictureBox1.TabStop = false;
+            // 
+            // gbSwitches
+            // 
+            this.gbSwitches.Controls.Add(this.chkAutoTruncate);
+            this.gbSwitches.Location = new System.Drawing.Point(447, 178);
+            this.gbSwitches.Name = "gbSwitches";
+            this.gbSwitches.Size = new System.Drawing.Size(258, 87);
+            this.gbSwitches.TabIndex = 14;
+            this.gbSwitches.TabStop = false;
+            this.gbSwitches.Text = "[ Options ]";
+            // 
+            // chkAutoTruncate
+            // 
+            this.chkAutoTruncate.AutoSize = true;
+            this.chkAutoTruncate.Location = new System.Drawing.Point(18, 29);
+            this.chkAutoTruncate.Name = "chkAutoTruncate";
+            this.chkAutoTruncate.Size = new System.Drawing.Size(120, 21);
+            this.chkAutoTruncate.TabIndex = 0;
+            this.chkAutoTruncate.Text = "Auto Truncate";
+            this.chkAutoTruncate.UseVisualStyleBackColor = true;
+            this.chkAutoTruncate.Click += new System.EventHandler(this.chkAutoTruncate_CheckedChanged);
             // 
             // grpLogging
             // 
+            this.grpLogging.Controls.Add(this.txtMaxLogLen);
+            this.grpLogging.Controls.Add(this.label9);
             this.grpLogging.Controls.Add(this.cmbErrorLevel);
             this.grpLogging.Location = new System.Drawing.Point(447, 37);
             this.grpLogging.Name = "grpLogging";
-            this.grpLogging.Size = new System.Drawing.Size(178, 87);
+            this.grpLogging.Size = new System.Drawing.Size(245, 115);
             this.grpLogging.TabIndex = 0;
             this.grpLogging.TabStop = false;
             this.grpLogging.Text = "[ Logging ]";
+            // 
+            // txtMaxLogLen
+            // 
+            this.txtMaxLogLen.Location = new System.Drawing.Point(94, 70);
+            this.txtMaxLogLen.MaxLength = 25;
+            this.txtMaxLogLen.Name = "txtMaxLogLen";
+            this.txtMaxLogLen.Size = new System.Drawing.Size(100, 22);
+            this.txtMaxLogLen.TabIndex = 18;
+            this.txtMaxLogLen.Text = "10000";
+            this.txtMaxLogLen.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 70);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(81, 17);
+            this.label9.TabIndex = 17;
+            this.label9.Text = "Max Length";
             // 
             // cmbErrorLevel
             // 
@@ -195,6 +293,7 @@
             this.cmbErrorLevel.Size = new System.Drawing.Size(155, 24);
             this.cmbErrorLevel.TabIndex = 9;
             this.cmbErrorLevel.SelectedIndexChanged += new System.EventHandler(this.cmbErrorLevel_SelectedIndexChanged);
+            this.cmbErrorLevel.Click += new System.EventHandler(this.cmbErrorLevel_SelectedIndexChanged);
             // 
             // grpTarget
             // 
@@ -385,10 +484,15 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMain_FormClosed);
             this.tbcMain.ResumeLayout(false);
             this.tbpRun.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.grpErrors.ResumeLayout(false);
             this.grpStatus.ResumeLayout(false);
             this.tbpConfig.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.gbSwitches.ResumeLayout(false);
+            this.gbSwitches.PerformLayout();
             this.grpLogging.ResumeLayout(false);
+            this.grpLogging.PerformLayout();
             this.grpTarget.ResumeLayout(false);
             this.grpTarget.PerformLayout();
             this.grpSource.ResumeLayout(false);
@@ -428,6 +532,14 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.GroupBox grpLogging;
         private System.Windows.Forms.ComboBox cmbErrorLevel;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Button btnPrint;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.TextBox txtMaxLogLen;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.GroupBox gbSwitches;
+        private System.Windows.Forms.CheckBox chkAutoTruncate;
     }
 }
 

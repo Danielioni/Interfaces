@@ -129,6 +129,19 @@ namespace motCommonLib
 
         public bool __auto_truncate { get; set; } = false;
 
+        protected string __normalize_date(string __date)
+        {
+            // Convert 19990102 to 1999-01-02
+            if(!string.IsNullOrEmpty(__date) && !__date.Contains("-"))
+            {
+                var __year = __date.Substring(0, 4);
+                var __month = __date.Substring(4, 2);
+                var __day = __date.Substring(6, 2);
+                return __year + "-" + __month + "-" + __day;
+            }
+
+            return __date;
+        }
         public void checkDependencies(List<Field> __qualifiedTags)
         {
             //
@@ -1676,7 +1689,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "CycleDate");
+                setField(__qualifiedTags, __normalize_date(value), "CycleDate");
             }
         }
         public int CycleDays
@@ -1857,8 +1870,8 @@ namespace motCommonLib
             }
 
             set
-            {
-                setField(__qualifiedTags, value, "DOB");
+            {            
+                setField(__qualifiedTags, __normalize_date(value), "DOB");
             }
         }
         public int Height
@@ -1988,7 +2001,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "AdmitDate");
+                setField(__qualifiedTags, __normalize_date(value), "AdmitDate");
             }
         }
         public string ChartOnly
@@ -2273,7 +2286,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "RxStartDate");
+                setField(__qualifiedTags, __normalize_date(value), "RxStartDate");
             }
         }
         public string RxStopDate
@@ -2286,7 +2299,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "RxStopDate");
+                setField(__qualifiedTags, __normalize_date(value), "RxStopDate");
             }
         }
         public string DiscontinueDate
@@ -2299,7 +2312,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "DiscontinueDate");
+                setField(__qualifiedTags, __normalize_date(value), "DiscontinueDate");
             }
         }
         public string DoseScheduleName
@@ -2514,7 +2527,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "AnchorDate");
+                setField(__qualifiedTags, __normalize_date(value), "AnchorDate");
             }
         }
         public void Write(motPort p, bool __log_on)

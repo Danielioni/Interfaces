@@ -22,7 +22,8 @@ namespace HL7Proxy
         //motErrorlLevel __save_error_level = motErrorlLevel.Error;
         motLookupTables __lookup = new motLookupTables();
 
-        Logger __logger = null;
+        private Logger __logger = null;
+        public LogLevel __log_level { get;set; } = LogLevel.Info;   // For debugging. Set to Error for production
 
         public  bool __auto_truncate { get; set; } = false;
         volatile bool __logging = false;
@@ -71,6 +72,7 @@ namespace HL7Proxy
                 // Set up listener and event handlers
                 __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
 
+                __listener.__log_level = __log_level;
                 __listener.__organization = __args.__organization;
                 __listener.__processor = __args.__processor;
 
@@ -98,7 +100,7 @@ namespace HL7Proxy
 
         public Execute()
         {
-
+            __logger = LogManager.GetLogger("motHL7Proxy");
         }
 
         ~Execute()
@@ -244,7 +246,7 @@ namespace HL7Proxy
 
                 if (__logging)
                 {
-                    __logger.Info("Logging QLX record with new values: Special Doses {0}, DoseTimeQtys {1}", __pr.SpecialDoses, __pr.DoseTimesQtys);
+                    __logger.Log(__log_level, "Logging QLX record with new values: Special Doses {0}, DoseTimeQtys {1}", __pr.SpecialDoses, __pr.DoseTimesQtys);
                 }
             }
 
@@ -732,7 +734,9 @@ namespace HL7Proxy
             catch (Exception e)
             {
                 __update_error_ui(string.Format("ADT_A01 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
-                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT General Parse Failure at ({0}): {0}", __problem_segment, e.Message));
+                __logger.Log(__log_level, "ADT General Parse Failure at ({0}): {1}", __problem_segment, e.Message);
+
+                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT General Parse Failure at ({0}): {1}", __problem_segment, e.Message));
 
                 throw;
             }
@@ -753,7 +757,9 @@ namespace HL7Proxy
             catch (Exception e)
             {
                 __update_error_ui(string.Format("ADT_A01 Processing Failure: {0}", e.Message));
-                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT A01 Processing Failure: {0}", e.Message));
+                __logger.Log(__log_level, "ADT A01 Processing Failure: {0}", e.Message);
+
+                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT A01 Processing Failure: {0}", e.Message));
 
                 throw;
             }
@@ -891,7 +897,9 @@ namespace HL7Proxy
             catch (Exception e)
             {
                 __update_error_ui(string.Format("OMP_O09 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
-                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP General Processing Failure: {0}", e.Message));
+                __logger.Log(__log_level, "OMP General Processing Failure: {0}", e.Message);
+
+                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP General Processing Failure: {0}", e.Message));
 
                 throw;
             }
@@ -915,8 +923,10 @@ namespace HL7Proxy
             catch (Exception e)
             {
                 __update_error_ui(string.Format("OMP_O09 Processing Failure: {0}", e.Message));
-                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP O09 Processing Failure: {0}", e.Message));
+                __logger.Log(__log_level, "OMP O09 Processing Failure: {0}", e.Message);
 
+                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP O09 Processing Failure: {0}", e.Message));
+                
                 throw;
             }
 
@@ -1012,7 +1022,9 @@ namespace HL7Proxy
             catch (Exception e)
             {
                 __update_error_ui(string.Format("RDE_O11 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
-                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDE General Processing Failure: {0}", e.Message));
+                __logger.Log(__log_level, "RDE_O11 General Processing Failure: {0}", e.Message);
+
+                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDE General Processing Failure: {0}", e.Message));
 
                 throw;
             }
@@ -1038,7 +1050,9 @@ namespace HL7Proxy
             catch (Exception e)
             {
                 __update_error_ui(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
-                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDEs O11 Processing Failure: {0}", e.Message));
+                __logger.Log(__log_level, "RDE_O11  Processing Failure: {0}", e.Message);
+
+                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDEs O11 Processing Failure: {0}", e.Message));
 
                 throw;
             }
@@ -1144,7 +1158,9 @@ namespace HL7Proxy
             catch (Exception e)
             {
                 __update_error_ui(string.Format("RDS_O13 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
-                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS General Processing Failure: {0}", e.Message));
+                __logger.Log(__log_level, "RDS_O13 Processing Failure: {0}", e.Message);
+
+                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS General Processing Failure: {0}", e.Message));
 
                 throw;
             }
@@ -1176,7 +1192,9 @@ namespace HL7Proxy
             catch (Exception e)
             {
                 __update_error_ui(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
-                motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS O13 Processing Failure: {0}", e.Message));
+                __logger.Log(__log_level, "RDS_O13 Processing Failure: {0}", e.Message);
+                
+                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS O13 Processing Failure: {0}", e.Message));
 
                 throw;
             }

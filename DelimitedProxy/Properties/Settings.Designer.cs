@@ -8,157 +8,162 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DelimitedProxy.Properties
-{
-
-
+namespace DelimitedProxy.Properties {
+    
+    
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
-    {
-
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-
-        public static Settings Default
-        {
-            get
-            {
+        
+        public static Settings Default {
+            get {
                 return defaultInstance;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
-        public string ListenIP
-        {
-            get
-            {
+        public string ListenIP {
+            get {
                 return ((string)(this["ListenIP"]));
             }
-            set
-            {
+            set {
                 this["ListenIP"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("24042")]
-        public string ListenPort
-        {
-            get
-            {
+        [global::System.Configuration.DefaultSettingValueAttribute("24044")]
+        public string ListenPort {
+            get {
                 return ((string)(this["ListenPort"]));
             }
-            set
-            {
+            set {
                 this["ListenPort"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
-        public string GatewayIP
-        {
-            get
-            {
+        public string GatewayIP {
+            get {
                 return ((string)(this["GatewayIP"]));
             }
-            set
-            {
+            set {
                 this["GatewayIP"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("24041")]
-        public string GatewayPort
-        {
-            get
-            {
+        public string GatewayPort {
+            get {
                 return ((string)(this["GatewayPort"]));
             }
-            set
-            {
+            set {
                 this["GatewayPort"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ListenUname
-        {
-            get
-            {
+        public string ListenUname {
+            get {
                 return ((string)(this["ListenUname"]));
             }
-            set
-            {
+            set {
                 this["ListenUname"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ListenPwd
-        {
-            get
-            {
+        public string ListenPwd {
+            get {
                 return ((string)(this["ListenPwd"]));
             }
-            set
-            {
+            set {
                 this["ListenPwd"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string GatewayUname
-        {
-            get
-            {
+        public string GatewayUname {
+            get {
                 return ((string)(this["GatewayUname"]));
             }
-            set
-            {
+            set {
                 this["GatewayUname"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string GatewayPwd
-        {
-            get
-            {
+        public string GatewayPwd {
+            get {
                 return ((string)(this["GatewayPwd"]));
             }
-            set
-            {
+            set {
                 this["GatewayPwd"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int LogLevel
-        {
-            get
-            {
+        public int LogLevel {
+            get {
                 return ((int)(this["LogLevel"]));
             }
-            set
-            {
+            set {
                 this["LogLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
+        public int MaxLogLines {
+            get {
+                return ((int)(this["MaxLogLines"]));
+            }
+            set {
+                this["MaxLogLines"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Off")]
+        public global::motCommonLib.motErrorlLevel ErrorLevel {
+            get {
+                return ((global::motCommonLib.motErrorlLevel)(this["ErrorLevel"]));
+            }
+            set {
+                this["ErrorLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoTruncate {
+            get {
+                return ((bool)(this["AutoTruncate"]));
+            }
+            set {
+                this["AutoTruncate"] = value;
             }
         }
     }

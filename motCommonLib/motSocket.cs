@@ -37,8 +37,9 @@ namespace motCommonLib
         //private Port __p;
         private static bool __running = false;
 
-        private string __s_iobuffer = "";
-        private byte[] __b_iobuffer;
+        public string __s_iobuffer { get; set; } = string.Empty;
+        public byte[] __b_iobuffer { get; set; }
+
         private int __portnum;
 
         private static TcpClient __client;
@@ -49,6 +50,7 @@ namespace motCommonLib
         private static EndPoint __localEndPoint;
 
         private Logger __logger;
+        public LogLevel __log_level { get; set; } = LogLevel.Error;
 
         //private Thread __working_thread;
         //private Thread __client_thread;
@@ -71,10 +73,10 @@ namespace motCommonLib
                 __portnum = __port;
                 __logger = LogManager.GetLogger("motInboundLib.Socket");
 
-                __trigger = new TcpListener(IPAddress.Any, __port);                
+                __trigger = new TcpListener(IPAddress.Any, __port);
                 __trigger.Start();
 
-                __logger.Info("Listening on port {0}", __portnum);
+                __logger.Log(__log_level, "Listening on port {0}", __portnum);
 
                 __running = true;
             }
@@ -97,7 +99,7 @@ namespace motCommonLib
                 __trigger = new TcpListener(IPAddress.Any, __port);
 
                 __trigger.Start();
-                __logger.Info("Listening on port {0}", __portnum);
+                __logger.Log(__log_level, "Listening on port {0}", __portnum);
 
                 __running = true;
             }
@@ -133,20 +135,20 @@ namespace motCommonLib
 
         public void listen()
         {
-           // try
-           // {
-           //     __trigger.Start();
-                //__logger.Info("Listening on port {0}", __portnum);
-          /*  }
-            catch (SocketException)
-            {
-                throw;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            */
+            // try
+            // {
+            //     __trigger.Start();
+            //__logger.Info("Listening on port {0}", __portnum);
+            /*  }
+              catch (SocketException)
+              {
+                  throw;
+              }
+              catch (Exception)
+              {
+                  throw;
+              }
+              */
 
             while (__running)
             {
@@ -160,7 +162,7 @@ namespace motCommonLib
                     __localEndPoint = __client.Client.LocalEndPoint;
 
                     Console.WriteLine("Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
-                    __logger.Info("Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
+                    __logger.Log(__log_level, "Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
 
                     /*Task.Run(() =>
                      {
@@ -174,19 +176,24 @@ namespace motCommonLib
                         __callback(__s_iobuffer);
                     }
 
+                    write("ACK");
+
                     __stream.Close();
                     __client.Close();
                 }
                 catch (SocketException e)
                 {
+                    // write("NAK");
                     // Probably shutting down
                     Console.WriteLine(e.Message);
 
                 }
                 catch (Exception e)
                 {
+                    //write("NAK");
                     Console.WriteLine(e.Message);
                     // throw new Exception("Failed waiting for trigger " + e.Message); 
+                    //throw;
                 }
             }
 
@@ -202,14 +209,34 @@ namespace motCommonLib
             __b_iobuffer = new byte[8192];
             __s_iobuffer = "";
 
+
+            __logger.Info("Reading data ...");
+            __stream.ReadTimeout = 300;
             try
             {
-                __logger.Info("Reading data ...");
-                __stream.ReadTimeout = 300;
 
                 do
                 {
                     __inbytes = __stream.Read(__b_iobuffer, 0, __b_iobuffer.Length);
+
+                    if(__b_iobuffer[0] == '\x1A')
+                    {
+                        return 1;
+                    }
+
+                    for (int i = 0; i < __b_iobuffer.Length; i++)
+                    {
+                        // Ugly hack to get around UTF9 Normalization failing to convert properly
+                        if (__b_iobuffer[i] == '\xEE')
+                        {
+                            __b_iobuffer[i] = (byte)'|';
+                        }
+                        if (__b_iobuffer[i] == '\xE2')
+                        {
+                            __b_iobuffer[i] = (byte)'^';
+                        }
+                    }
+
                     __s_iobuffer += Encoding.UTF8.GetString(__b_iobuffer);
                     __total_bytes += __inbytes;
 
@@ -218,39 +245,67 @@ namespace motCommonLib
             catch (Exception e)
             {
                 Console.WriteLine("read() failed: {0}", e.Message);
+                throw new Exception("read() failed: " + e.Message);
             }
 
             return __total_bytes; ;
         }
 
-        public void write(string __data)
+        public bool write(string __data)
         {
             if (__running)
             {
+                byte[] __buffer = new byte[256];
                 try
                 {
                     __stream.Write(Encoding.UTF8.GetBytes(__data), 0, __data.Length);
+
+                    // Get a return value
+                    __stream.Read(__buffer, 0, __buffer.Length);
+                    if(__buffer[0] != '\x06' && __buffer[0] != 'O')
+                    {
+                        return false;
+                    }
+
+                    return true;
                 }
                 catch (Exception e)
                 {
-                    throw new Exception("Socket write failure " + e.Message);
+                    Console.WriteLine("write() failed: {0}", e.Message);
+                    throw new Exception("write() failed: " + e.Message);
                 }
             }
+
+            return false;
         }
 
-        public void write(byte[] __data)
+        public bool write(byte[] __data)
         {
             if (__running)
             {
+                byte[] __buffer = new byte[256];
+
                 try
                 {
                     __stream.Write(__data, 0, __data.Length);
+
+                    // Get a return value
+                    __stream.Read(__buffer, 0, __buffer.Length);
+                    if (__buffer[0] != '\x06' && __buffer[0] != 'O')
+                    {
+                        return false;
+                    }
+
+                    return true;
                 }
                 catch (Exception e)
                 {
-                    throw new Exception("Socket write failure " + e.Message);
+                    Console.WriteLine("write() failed: {0}", e.Message);
+                    throw new Exception("write() failed: " + e.Message);
                 }
             }
+
+            return false;
         }
 
         public void flush()
