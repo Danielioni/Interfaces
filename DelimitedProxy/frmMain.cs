@@ -24,7 +24,7 @@ namespace DelimitedProxy
     {
         Logger __logger;
         Execute __execute;
-        motErrorlLevel __error_level = motErrorlLevel.Error;
+        motErrorlLevel __error_level = motErrorlLevel.Info;
         bool __listening = false;
         int __max_log_len;
         int __log_len = 0;
@@ -51,7 +51,12 @@ namespace DelimitedProxy
             txtSourcePwd.Text = Properties.Settings.Default.ListenPwd;
             cmbErrorLevel.SelectedIndex = Properties.Settings.Default.LogLevel;
 
-            __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+            cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
+            cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
+
+            //__error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+            __error_level = motErrorlLevel.Info;
+
             chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
 
             __max_log_len = Properties.Settings.Default.MaxLogLines;
@@ -76,9 +81,11 @@ namespace DelimitedProxy
                 Properties.Settings.Default.ListenPort = txtSourcePort.Text;
                 Properties.Settings.Default.ListenUname = txtSourceUname.Text;
                 Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
-                Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+                Properties.Settings.Default.LogLevel = cmbErrorLevel.SelectedIndex;
                 Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
                 Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+                Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
+                Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
                 Properties.Settings.Default.Save();
             }
             else if (tbcMain.SelectedIndex == 1)
@@ -92,9 +99,11 @@ namespace DelimitedProxy
                 txtSourceUname.Text = Properties.Settings.Default.ListenUname;
                 txtSourcePwd.Text = Properties.Settings.Default.ListenPwd;
                 cmbErrorLevel.SelectedIndex = Properties.Settings.Default.LogLevel;
-                __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
                 txtMaxLogLen.Text = Properties.Settings.Default.MaxLogLines.ToString();
                 chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
+                cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
+                cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
+
             }
             else  // Reserved for future use
             {
@@ -119,6 +128,9 @@ namespace DelimitedProxy
 
                 __args.__error_level = __error_level;
                 __args.__auto_truncate = chkAutoTruncate.Checked;
+
+                __args.__mot_first_day_of_week = cmbFDOW_RxSys.Text;
+                __args.__rxsys_first_day_of_week = cmbFDOW_MOT.Text;
 
                 btnStop.Enabled = true;
                 btnStart.Enabled = false;
@@ -184,9 +196,11 @@ namespace DelimitedProxy
             Properties.Settings.Default.ListenPort = txtSourcePort.Text;
             Properties.Settings.Default.ListenUname = txtSourceUname.Text;
             Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
-            Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+            Properties.Settings.Default.LogLevel = cmbErrorLevel.SelectedIndex;
             Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
             Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+            Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
+            Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
             Properties.Settings.Default.Save();
 
             Environment.Exit(0);
@@ -283,6 +297,9 @@ namespace DelimitedProxy
 
     public class ExecuteArgs : EventArgs
     {
+        public string __mot_first_day_of_week { get; set; }
+        public string __rxsys_first_day_of_week { get; set; }
+
         public string __listen_address { get; set; }
         public string __listen_port { get; set; }
         public string __listen_uname { get; set; }

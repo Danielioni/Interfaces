@@ -14,9 +14,11 @@ namespace DelimitedProxy
         motSocket __listener;
         motPort __gateway;
         Thread __worker;
+        string __gateway_address;
+        string __gateway_port;
 
         Logger __logger = null;
-        LogLevel __log_level { get; set; } = LogLevel.Error;
+        LogLevel __log_level { get; set; } = LogLevel.Info;
 
         public bool __auto_truncate { get; set; } = false;
 
@@ -54,13 +56,21 @@ namespace DelimitedProxy
             __update_event_ui(string.Format("Received Request from {0}", __listener.remoteEndPoint.ToString()));
             __logger.Info("Data: {0}", __data);
 
-            var __parser = new motParser();
+            try
+            {
+                var __parser = new motParser();
 
-            __parser.__log_level = __log_level;
-            __parser.p = __gateway;
-            __parser.parseDelimited(__data);
+                __parser.__log_level = __log_level;
+                __parser.p = new motPort(__gateway_address, __gateway_port);
+                __parser.parseDelimited(__data);
+                __parser.p.Close();
+            }
+            catch(Exception ex)
+            {
+                __update_error_ui("Failed at __parse: " + ex.Message);
+                __logger.Error("Failed at __parse: {0}", ex.Message);
+            }
             
-
         }
 
         //string __test_prescriber = "AP\xEE LastName\xEE FirstName\xEE MiddleInitial\xEE Address1\xEE Address2\xEE City\xEE State\xEE Zip\xEE Phone\xEE Comments\xEE DEA_ID\xEE TPID\xEE Speciality\xEE Fax\xEE PagerInfo\xEERxSysDoc1\xEE 1025143\xE2 AP\xEEpLastName\xEEpFirstName\xEEpMiddleInitial\xEEpAddress1\xEEpAddress2\xEEpCity\xEEpState\xEEpZip\xEEPhone\xEEpComments\xEEpDEA_ID\xEEpTPID\xEEpSpeciality\xEEpFax\xEEpPagerInfo\xEERxSysDoc2\xEE 1972834\xE2";
@@ -71,9 +81,13 @@ namespace DelimitedProxy
             {
                 Console.WriteLine("__start_listener: {0}", Thread.CurrentThread.ManagedThreadId);
 
+                __gateway_address = __args.__gateway_address;
+                __gateway_port = __args.__gateway_port;
+
                 int __lp = Convert.ToInt32(__args.__listen_port);
                 __listener = new motSocket(__lp, __parse);
-                __gateway = new motPort(__args.__gateway_address, __args.__gateway_port);
+                __listener.__log_level = LogLevel.Info;
+               
 
                 // This will start the listener and call the callback 
                 __worker = new Thread(new ThreadStart(__listener.listen));
@@ -98,7 +112,7 @@ namespace DelimitedProxy
         public void __shut_down()
         {
             __listener.close();
-            __gateway.Close();
+            //__gateway.Close();
             __worker.Join();
         }
 

@@ -66,6 +66,13 @@
             this.txtSourceUname = new System.Windows.Forms.TextBox();
             this.txtSourcePort = new System.Windows.Forms.TextBox();
             this.txtSourceIP = new System.Windows.Forms.TextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cmbFDOW_MOT = new System.Windows.Forms.ComboBox();
+            this.cmbFDOW_RxSys = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.tbcMain.SuspendLayout();
             this.tbpRun.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -77,6 +84,7 @@
             this.grpLogging.SuspendLayout();
             this.grpTarget.SuspendLayout();
             this.grpSource.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbcMain
@@ -205,6 +213,7 @@
             // tbpConfig
             // 
             this.tbpConfig.BackColor = System.Drawing.SystemColors.Control;
+            this.tbpConfig.Controls.Add(this.groupBox2);
             this.tbpConfig.Controls.Add(this.pictureBox1);
             this.tbpConfig.Controls.Add(this.gbSwitches);
             this.tbpConfig.Controls.Add(this.grpLogging);
@@ -222,9 +231,10 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(755, 75);
+            this.pictureBox1.Location = new System.Drawing.Point(957, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(296, 277);
+            this.pictureBox1.Size = new System.Drawing.Size(156, 138);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 12;
             this.pictureBox1.TabStop = false;
             // 
@@ -233,7 +243,7 @@
             this.gbSwitches.Controls.Add(this.chkAutoTruncate);
             this.gbSwitches.Location = new System.Drawing.Point(447, 178);
             this.gbSwitches.Name = "gbSwitches";
-            this.gbSwitches.Size = new System.Drawing.Size(258, 87);
+            this.gbSwitches.Size = new System.Drawing.Size(245, 87);
             this.gbSwitches.TabIndex = 14;
             this.gbSwitches.TabStop = false;
             this.gbSwitches.Text = "[ Options ]";
@@ -292,6 +302,7 @@
             this.cmbErrorLevel.Name = "cmbErrorLevel";
             this.cmbErrorLevel.Size = new System.Drawing.Size(155, 24);
             this.cmbErrorLevel.TabIndex = 9;
+            this.cmbErrorLevel.Text = "All Entries";
             this.cmbErrorLevel.SelectedIndexChanged += new System.EventHandler(this.cmbErrorLevel_SelectedIndexChanged);
             this.cmbErrorLevel.Click += new System.EventHandler(this.cmbErrorLevel_SelectedIndexChanged);
             // 
@@ -467,6 +478,90 @@
             this.txtSourceIP.TabIndex = 0;
             this.txtSourceIP.WordWrap = false;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.cmbFDOW_MOT);
+            this.groupBox2.Controls.Add(this.cmbFDOW_RxSys);
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Location = new System.Drawing.Point(711, 37);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(200, 208);
+            this.groupBox2.TabIndex = 15;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "[ Sync/Timing ]";
+            // 
+            // cmbFDOW_MOT
+            // 
+            this.cmbFDOW_MOT.FormattingEnabled = true;
+            this.cmbFDOW_MOT.Items.AddRange(new object[] {
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday"});
+            this.cmbFDOW_MOT.Location = new System.Drawing.Point(31, 170);
+            this.cmbFDOW_MOT.Name = "cmbFDOW_MOT";
+            this.cmbFDOW_MOT.Size = new System.Drawing.Size(121, 24);
+            this.cmbFDOW_MOT.TabIndex = 5;
+            this.cmbFDOW_MOT.Text = "Sunday";
+            // 
+            // cmbFDOW_RxSys
+            // 
+            this.cmbFDOW_RxSys.ForeColor = System.Drawing.Color.Black;
+            this.cmbFDOW_RxSys.FormattingEnabled = true;
+            this.cmbFDOW_RxSys.Items.AddRange(new object[] {
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday"});
+            this.cmbFDOW_RxSys.Location = new System.Drawing.Point(31, 88);
+            this.cmbFDOW_RxSys.Name = "cmbFDOW_RxSys";
+            this.cmbFDOW_RxSys.Size = new System.Drawing.Size(121, 24);
+            this.cmbFDOW_RxSys.TabIndex = 4;
+            this.cmbFDOW_RxSys.Text = "Sunday";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(28, 150);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(120, 17);
+            this.label13.TabIndex = 3;
+            this.label13.Text = "First Day of Week";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(28, 68);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(120, 17);
+            this.label12.TabIndex = 2;
+            this.label12.Text = "First Day of Week";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(10, 123);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(63, 17);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Gateway";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(7, 47);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(64, 17);
+            this.label10.TabIndex = 0;
+            this.label10.Text = "Incoming";
+            // 
             // frmMain
             // 
             this.AcceptButton = this.btnStart;
@@ -497,6 +592,8 @@
             this.grpTarget.PerformLayout();
             this.grpSource.ResumeLayout(false);
             this.grpSource.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -540,6 +637,13 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.GroupBox gbSwitches;
         private System.Windows.Forms.CheckBox chkAutoTruncate;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ComboBox cmbFDOW_MOT;
+        private System.Windows.Forms.ComboBox cmbFDOW_RxSys;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
     }
 }
 

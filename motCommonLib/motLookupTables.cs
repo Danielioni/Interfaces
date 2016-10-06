@@ -37,6 +37,7 @@ namespace motCommonLib
         public volatile Dictionary<string, int> __rxType;
         public volatile Dictionary<int, int> __fwk_to_mot_days;
         public volatile Dictionary<string, string> __fwk_zpi_origin_code;
+        public volatile Dictionary<string, int> __start_day_of_week_num;
 
         public motLookupTables()
         {
@@ -44,30 +45,38 @@ namespace motCommonLib
             __doseSchedules = new Dictionary<string, string>();
             __drugSchedules = new Dictionary<string, string>();
             __rxType = new Dictionary<string, int>();
-            __fwk_to_mot_days = new Dictionary<int, int>();
-            __fwk_zpi_origin_code = new Dictionary<string, string>();
 
-            __fwk_zpi_origin_code.Add("0", "Not Specified");
-            __fwk_zpi_origin_code.Add("1", "Written");
-            __fwk_zpi_origin_code.Add("2", "Telephone");
-            __fwk_zpi_origin_code.Add("3", "Electronic");
-            __fwk_zpi_origin_code.Add("4", "Facsimilie");
+            __start_day_of_week_num = new Dictionary<string, int>()
+            {
+                { "Sunday",    1 },
+                { "Monday",    2 },
+                { "Tuesday",   3 },
+                { "Wednesday", 4 },
+                { "Thursday",  5 },
+                { "Friday",    6 },
+                { "Saturday",  7 }
+            };
 
-            __fwk_to_mot_days.Add(1, 2); // FWK Day 1 = Mon, MOT Day 1 = Sun
-            __fwk_to_mot_days.Add(2, 3);
-            __fwk_to_mot_days.Add(3, 4);
-            __fwk_to_mot_days.Add(4, 5);
-            __fwk_to_mot_days.Add(5, 6);
-            __fwk_to_mot_days.Add(6, 7);
+            __fwk_zpi_origin_code = new Dictionary<string, string>()
+            {
+                { "0", "Not Specified" },
+                { "1", "Written"       },
+                { "2", "Telephone"     },
+                { "3", "Electronic"    },
+                { "4", "Facsimilie"    }
+            };
 
-
+           
             // Basic dose schedules with swag default times
             __doseSchedules.Add("QD",  "0800{0:00.00}");                                        // Once a day
+            __doseSchedules.Add("Q2D", "0800{0:00.00}");                                        // Every 2 days
             __doseSchedules.Add("BID", "0800{0:00.00}1800{0:00.00}");                           // Twice a day 
             __doseSchedules.Add("TID", "0800{0:00.00}1200{0:00.00}1800{0:00.00}");              // Three times a day
             __doseSchedules.Add("QID", "0800{0:00.00}1200{0:00.00}1800{0:00.00}2100{0:00.00}"); // Four times a day
             __doseSchedules.Add("QHS", "2100{0:00.00}");                                        // Daily at Bedtime
             __doseSchedules.Add("HS",  "2100{0:00.00}");
+            __doseSchedules.Add("t1poqd", "0800{0:00.00}");                                     // Take One By Mouth Daily
+            __doseSchedules.Add("t1pohs", "1400{0:00.00}");
 
             // Sometimes DEA drug schedules are represented as roman numerals
             __drugSchedules.Add("I", "1");
@@ -79,6 +88,33 @@ namespace motCommonLib
             __drugSchedules.Add("VII", "7");
 
             __rxType.Add("P", 2);
+         
+        }
+
+        public int __first_day_of_week_adj(string inbound, string gateway)
+        {
+            int __in = 0, __mot = 0;
+
+            try
+            {
+                // Adjust so the inbound matches gateway  e.g.
+                //      Gateway FDOW == Sunday (1)
+                //      Inbound FDOW == Monday (2)
+                
+                __start_day_of_week_num.TryGetValue(inbound, out __in);
+                __start_day_of_week_num.TryGetValue(gateway, out __mot);
+
+                if (__in != 0 && __mot != 0)
+                {
+                    return (__in == __mot) ? __mot : __in;
+                }
+
+                return 0;
+            }
+            catch
+            {
+                return 0; // Error
+            }
         }
     }
 }

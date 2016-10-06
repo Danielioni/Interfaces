@@ -1,6 +1,6 @@
 ﻿namespace motWell
 {
-    partial class Form1
+    partial class frmDataWell
     {
         /// <summary>
         /// Required designer variable.
@@ -68,7 +68,7 @@
             this.label1.Text = "Drop files in C:\\MOT_IO";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
-            // Form1
+            // frmDataWell
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -76,7 +76,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
-            this.Name = "Form1";
+            this.Name = "frmDataWell";
             this.Text = "motDataWell";
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -44,5 +44,11 @@
     <Setting Name="MaxLogLines" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10000</Value>
     </Setting>
+    <Setting Name="FirstDayOfWeek_RxSys" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Sunday</Value>
+    </Setting>
+    <Setting Name="FirstDayOfWeek_MOT" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Sunday</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

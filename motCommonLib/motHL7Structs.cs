@@ -424,8 +424,6 @@ namespace motCommonLib
             Console.WriteLine("Done Processing OMP_O09, now what ...");
         }
     }
-
-
     public class RDE_O11 : HL7_Message_dictionary  // Pharmacy/Treatment Encoded Order Message
     {
         // Drug Order       MSH, [ PID, [PV1] ], { ORC, [RXO, {RXR}, RXE, [{NTE}], {TQ1}, {RXR}, [{RXC}] }, [ZPI]
@@ -441,8 +439,10 @@ namespace motCommonLib
         public List<RXC> __rxc;
         public List<NTE> __nte;
         public List<TQ1> __tq1;
-        public ZAS __zas;
-        public ZPI __zpi;
+        public List<OBX> __obx;
+        public ZAS __zas;           // FrameworksLTC
+        public ZLB __zlb;           // Epic
+        public ZPI __zpi;           // FrameworksLTC
 
         public List<Dictionary<string, string>> __message_store;
 
@@ -494,6 +494,7 @@ namespace motCommonLib
             __rxc = new List<RXC>();
             __nte = new List<NTE>();
             __tq1 = new List<TQ1>();
+            __obx = new List<OBX>();
 
             __message_store = new List<Dictionary<string, string>>();
             
@@ -506,6 +507,12 @@ namespace motCommonLib
                         case "MSH":
                             __msh = new MSH(__type);
                             __message_store.Add(__msh.__msg_data);
+                            break;
+
+                        case "OBX":
+                            OBX __tmp_obx = new OBX(__type);
+                            __obx.Add(__tmp_obx);
+                            __message_store.Add(__tmp_obx.__msg_data);
                             break;
 
                         case "PID":
@@ -554,6 +561,11 @@ namespace motCommonLib
                         case "ZAS":
                             __zas = new ZAS(__type);
                             __message_store.Add(__zas.__msg_data);
+                            break;
+
+                        case "ZLB":
+                            __zlb = new ZLB(__type);
+                            __message_store.Add(__zlb.__msg_data);
                             break;
 
                         case "ZPI":
@@ -1756,7 +1768,24 @@ namespace motCommonLib
             __parser.__parse(__message, __msg_data);
         }
     }
-    public class ZPI : HL7_Message_dictionary
+    public class ZLB : HL7_Message_dictionary   // Epic Specific
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        {
+        }
+
+        public ZLB() : base()
+        {
+        }
+
+        public ZLB(string __message) : base()
+        {
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class ZPI : HL7_Message_dictionary  // FrameworksLTC  Specific
     {
         HL7MessageParser __parser = new HL7MessageParser();
 

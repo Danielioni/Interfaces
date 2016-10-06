@@ -190,5 +190,29 @@ namespace HL7Proxy.Properties {
                 this["MaxLogLines"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Sunday")]
+        public string FirstDayOfWeek_RxSys {
+            get {
+                return ((string)(this["FirstDayOfWeek_RxSys"]));
+            }
+            set {
+                this["FirstDayOfWeek_RxSys"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Sunday")]
+        public string FirstDayOfWeek_MOT {
+            get {
+                return ((string)(this["FirstDayOfWeek_MOT"]));
+            }
+            set {
+                this["FirstDayOfWeek_MOT"] = value;
+            }
+        }
     }
 }

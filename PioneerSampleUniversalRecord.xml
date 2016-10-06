@@ -1,0 +1,488 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Message>
+
+  <!--
+  Current events
+  - - - - - - - - - - - - - -
+  Accept Reversal
+  Cancelled
+  Checked
+  Complete Rx
+  Delete Rx
+  Discontinue Rx
+  Edit On Removed From Inventory
+  Edit On/After Waiting for Fill
+  Inventory Changed On/After Waiting for Fill
+  Inventory Changed On/After Waiting for Print
+  IVR Notify
+  Manual Send
+  On Hold
+  Print Label
+  Put Back In Inventory
+  Put In Will Call Bin
+  Rejected Reversal
+  Removed From Inventory
+  Saved Changed
+  Status Change
+  Transfer Rx
+  Waiting for Fill
+  Waiting For Print
+  -->
+
+  <!-- 
+  New Events
+  - - - - - -
+  Claim Paid
+  Claim Reversed
+  Claim Rejected
+  Sold At point of Sale 
+  -->
+
+  <MessageHeader>
+    <Version>1</Version>
+    <MessageID>3</MessageID>
+    <SentOnUTC>
+      <DateTime>2016-09-30</DateTime>
+    </SentOnUTC>
+    <Workstation>Fred</Workstation>
+    <InitiatingEventID>ID-1</InitiatingEventID>
+    <InitiatingEventText>Test Universal Record</InitiatingEventText>
+  </MessageHeader>
+  <Body>
+    <Pharmacy>
+      <Identification>
+        <PioneerRxID>PRX-2341123</PioneerRxID>
+        <NCPDP></NCPDP>
+        <NPI>12345678</NPI>
+        <DEA>AA-1234567</DEA>
+        <DPS></DPS>
+        <FederalTaxID></FederalTaxID>
+        <StateLicenseNumber></StateLicenseNumber>
+      </Identification>
+      <PharmacyName>John's Pharmacy</PharmacyName>
+      <StoreNumber>239</StoreNumber>
+      <Addresses>
+        <Address>
+          <SequenceNumber>1</SequenceNumber>
+          <AddressLine1>123 South North St.</AddressLine1>
+          <AddressLine2>PO Box 9</AddressLine2>
+          <City>Memphis</City>
+          <StateCode>TN</StateCode>
+          <ZipCode>32123</ZipCode>
+          <Type>1</Type>
+        </Address>
+      </Addresses>
+      <PhoneNumbers>
+        <PhoneNumber>
+          <SequenceNumber>1</SequenceNumber>
+          <AreaCode>612</AreaCode>
+          <Number>2350987</Number>
+          <Extension></Extension>
+          <Type>Main</Type>
+        </PhoneNumber>
+        <PhoneNumber>
+          <SequenceNumber>2</SequenceNumber>
+          <AreaCode>612</AreaCode>
+          <Number>9213212</Number>
+          <Extension></Extension>
+          <Type>Fax</Type>
+        </PhoneNumber>
+      </PhoneNumbers>
+      <PrimaryPhoneSequenceNumber>1</PrimaryPhoneSequenceNumber>
+      <PrimaryFaxSequenceNumber>2</PrimaryFaxSequenceNumber>
+      <Email>john@jp.net</Email>
+      <WebAddress></WebAddress>
+      <PharmacistInChargeEmployeeID></PharmacistInChargeEmployeeID>
+    </Pharmacy>
+    <Employees>
+      <Employee>
+        <Identification>
+          <EmployeeID></EmployeeID>
+          <EmployeePioneerRxID></EmployeePioneerRxID>
+          <NPI></NPI>
+          <License></License>
+        </Identification>
+        <EmployeeTypeID>1/2/3/4/5</EmployeeTypeID>
+        <EmployeeTypeText>Pharmacist/Employee/Pharmacy Tech/Pharmacy Tech Candidate/Pharmacist Intern</EmployeeTypeText>
+        <ChangedOnUTC>
+          <DateTime/>
+        </ChangedOnUTC>
+        <Name>
+          <FirstName></FirstName>
+          <LastName></LastName>
+          <MiddleName></MiddleName>
+          <Suffix></Suffix>
+          <Prefix></Prefix>
+        </Name>
+      </Employee>
+    </Employees>
+    <Prescribers>
+      <Prescriber>
+        <Identification>
+          <PrescriberID>
+            <GUID/>40DE86C9-FD69-44D7-9DA4-4D2A3194DE49
+          </PrescriberID>
+          <NPI></NPI>
+          <DEA>AG-121654</DEA>
+          <DPS></DPS>
+          <StateLicense>TN</StateLicense>
+          <SerialNumberPerson>12</SerialNumberPerson>
+        </Identification>
+        <Name>
+          <FirstName>Freddie</FirstName>
+          <LastName>Fishman</LastName>
+          <MiddleName></MiddleName>
+          <Suffix>MD</Suffix>
+          <Prefix>DR</Prefix>
+        </Name>
+        <Addresses>
+          <Address>
+            <SequenceNumber></SequenceNumber>
+            <AddressLine1>19 Surgeon St</AddressLine1>
+            <AddressLine2></AddressLine2>
+            <City>Nashville</City>
+            <StateCode>TN</StateCode>
+            <ZipCode>02315</ZipCode>
+            <Type>3</Type>
+          </Address>
+        </Addresses>
+        <PhoneNumbers>
+          <PhoneNumber>
+            <SequenceNumber>1</SequenceNumber>
+            <AreaCode>612</AreaCode>
+            <Number>2223333</Number>
+            <Extension></Extension>
+            <Type>Main</Type>
+            <SequenceNumber>2</SequenceNumber>
+            <AreaCode>612</AreaCode>
+            <Number>3332222</Number>
+            <Extension></Extension>
+            <Type>Fax</Type>
+          </PhoneNumber>
+        </PhoneNumbers>
+        <PrimaryPhoneSequenceNumber>1</PrimaryPhoneSequenceNumber>
+        <Email>freddie@fishman.com</Email>
+        <PrescriberTypeID>3</PrescriberTypeID>
+        <PrescriberTypeText>Family Practice</PrescriberTypeText>
+        <ClassificationID></ClassificationID>
+        <ClassificationText></ClassificationText>
+        <PrimarySpecializationID>29</PrimarySpecializationID>
+        <PrimarySpecializationText>Endocrinology</PrimarySpecializationText>
+        <IsSupervisor></IsSupervisor>
+        <Comments>
+          <Informational></Informational>
+          <Critical></Critical>
+          <PointOfSale></PointOfSale>
+        </Comments>
+        <MarketerEmployeeID></MarketerEmployeeID>
+        <ChangedOnUTC>
+          <DateTime/>
+        </ChangedOnUTC>
+      </Prescriber>
+    </Prescribers>
+    <Patient>
+      <Identification>
+        <PatientID>
+          <Guid>A1F2F8BB-096D-4D8F-92F6-AD0A82CE1C24</Guid>
+        </PatientID>
+        <SSN>111-9081-1222</SSN>
+        <DriversLicenseNumber>N/A</DriversLicenseNumber>
+        <DriversLicenseStateCode></DriversLicenseStateCode>
+        <AlternateID></AlternateID>
+        <AlternateIDType></AlternateIDType>
+        <AlternateIDTypeText></AlternateIDTypeText>
+        <ExternalID></ExternalID>
+        <CentralKey></CentralKey>
+        <SerialNumberPerson></SerialNumberPerson>
+      </Identification>
+      <Name>
+        <FirstName>Paul</FirstName>
+        <LastName>Patient</LastName>
+        <MiddleName></MiddleName>
+        <Suffix></Suffix>
+        <Prefix></Prefix>
+      </Name>
+      <Addresses>
+        <Address>
+          <SequenceNumber>1</SequenceNumber>
+          <AddressLine1>982315 West East St</AddressLine1>
+          <AddressLine2></AddressLine2>
+          <City>Somewhere</City>
+          <StateCode>TN</StateCode>
+          <ZipCode>021312</ZipCode>
+          <Type>1</Type>
+        </Address>
+      </Addresses>
+      <PhoneNumbers>
+        <PhoneNumber>
+          <SequenceNumber>1</SequenceNumber>
+          <AreaCode>612</AreaCode>
+          <Number>4445555</Number>
+          <Extension></Extension>
+          <Type>Home</Type>
+        </PhoneNumber>
+      </PhoneNumbers>
+      <PrimaryPhoneSequenceNumber>1</PrimaryPhoneSequenceNumber>
+      <RxNotifyPhoneSequenceNumber>1</RxNotifyPhoneSequenceNumber>
+      <RxNotifyProviderTypeID></RxNotifyProviderTypeID>
+      <RxNotifyProviderTypeText></RxNotifyProviderTypeText>
+      <EZOpenRequested/>
+      <HasPatientReceivedNopp/>
+      <HeightInches/>87
+      <WeightOz/>18000
+      <IsAnimal/>Y
+      <HipaaStatusTypeID/>2
+      <HipaaStatusTypeText/>1
+      <Email/>paul@patient.com
+      <Gender/>M
+      <LanguageText/>E
+      <LanguageCode/>E
+      <DateOfBirth>
+        <Date>19341021</Date>
+      </DateOfBirth>
+      <AutoFillMode/>
+      <AutoFillModeText/>
+      <DeliveryMethodText/>
+      <PatientPrimaryPrescriberID>40DE86C9-FD69-44D7-9DA4-4D2A3194DE49</PatientPrimaryPrescriberID>
+      <HealthCoachEmployeeID></HealthCoachEmployeeID>
+      <SyncStatusTypeID/>
+      <SyncStatusTypeText/>
+      <CallDate>
+        <Date></Date>
+      </CallDate>
+      <NextPickupDate>
+        <Date>20161001</Date>
+      </NextPickupDate>
+      <Comments>
+        <Informational></Informational>
+        <Critical></Critical>
+        <PointOfSale></PointOfSale>
+        <LastMTMComment/>
+      </Comments>
+      <Categories>
+        <Category></Category>
+      </Categories>
+      <PrimaryCategory></PrimaryCategory>
+      <Allergies>
+        <Allergy>
+          <Description>Cat Dander</Description>
+          <MedicationID></MedicationID>
+          <MedicationIDType>FDB/GoldStandard/RxNorm if exists?</MedicationIDType>
+        </Allergy>
+      </Allergies>
+      <OtherMedications>
+        <Medication>
+          <RxNumber></RxNumber>
+          <LastDateFilled></LastDateFilled>
+          <RefillsRemaining></RefillsRemaining>
+          <DaysSupply></DaysSupply>
+          <Pharmacy></Pharmacy>
+          <Prescriber></Prescriber>
+          <DrugName></DrugName>
+          <DrugNDC></DrugNDC>
+        </Medication>
+      </OtherMedications>
+      <ChangedOnUTC></ChangedOnUTC>
+    </Patient>
+    <Facility>
+      <Identification>
+        <GroupCode>1</GroupCode>
+        <SystemID>2718632</SystemID>
+      </Identification>
+      <Name>The Wave</Name>
+      <Addresses>
+        <Address>
+          <SequenceNumber>1</SequenceNumber>
+          <AddressLine1>241587 First Last St</AddressLine1>
+          <AddressLine2></AddressLine2>
+          <City>Greenville</City>
+          <StateCode>TN</StateCode>
+          <ZipCode>029183</ZipCode>
+          <Type>1</Type>
+        </Address>
+      </Addresses>
+      <PhoneNumbers>
+        <PhoneNumber>
+          <SequenceNumber>1</SequenceNumber>
+          <AreaCode>612</AreaCode>
+          <Number>9990001</Number>
+          <Extension></Extension>
+          <Type>Main</Type>
+        </PhoneNumber>
+        <PhoneNumber>
+          <SequenceNumber>1</SequenceNumber>
+          <AreaCode>612</AreaCode>
+          <Number>9990002</Number>
+          <Extension></Extension>
+          <Type>Main</Type>
+        </PhoneNumber>
+      </PhoneNumbers>
+      <PrimaryPhoneSequenceNumber>1</PrimaryPhoneSequenceNumber>
+      <PatientAdmittedOn>
+        <DateTime>19991001</DateTime>
+      </PatientAdmittedOn>
+      <PatientDischargedOn>
+        <DateTime></DateTime>
+      </PatientDischargedOn>
+      <WingID></WingID>
+      <WingName></WingName>
+      <RoomNumber>271672</RoomNumber>
+      <Bed></Bed>
+      <Email></Email>
+      <Comments>
+        <Critcial></Critcial>
+        <Informational></Informational>
+        <PointOfSale></PointOfSale>
+      </Comments>
+      <ChangedOnUTC></ChangedOnUTC>
+    </Facility>
+    <Rx>
+      <WrittenByPrescriberID>40DE86C9-FD69-44D7-9DA4-4D2A3194DE49</WrittenByPrescriberID>
+      <WrittenBySupervisorPrescriberID></WrittenBySupervisorPrescriberID>
+      <RxNumber>9703617231</RxNumber>
+      <RefillNumber>3</RefillNumber>
+      <RxID>123456778</RxID>
+      <RxFillTransactionID>C8B5F6D8-17CF-4122-9F46-DEDC0A9035FC</RxFillTransactionID>
+      <ScriptType>New</ScriptType>
+      <PreviousRxNumber></PreviousRxNumber>
+      <PrescriberOrderNumber>123456778</PrescriberOrderNumber>
+      <MedicationPrescribed>
+        <DrugDescription>White Round Pill</DrugDescription>
+        <DrugStrength>10</DrugStrength>
+        <DrugCoded>
+          <ProductCode>13411-0137-03</ProductCode>
+          <ProductCodeQualifier>NDC</ProductCodeQualifier>
+        </DrugCoded>
+        <DeaSchedule>6</DeaSchedule>
+        <Quantity>
+          <Value>30</Value>
+          <Qualifier>Tablets</Qualifier>
+        </Quantity>
+        <LabelType>Brand</LabelType>
+        <BrandName>Zyprexa</BrandName>
+      </MedicationPrescribed>
+      <MedicationDispensed>
+        <DrugDescription>Olanzapine</DrugDescription>
+        <DrugStrength>10</DrugStrength>
+        <DrugCoded>
+          <ProductCode>13411-0137-03</ProductCode>
+          <ProductCodeQualifier>NDC</ProductCodeQualifier>
+        </DrugCoded>
+        <DeaSchedule>6</DeaSchedule>
+        <Quantity>
+          <Value>30</Value>
+          <Qualifier>Tablet</Qualifier>
+        </Quantity>
+        <SubstitutionsAllowed>Y</SubstitutionsAllowed>
+        <DaysSupply>30</DaysSupply>
+        <LastFillDate>
+          <Date>20160901</Date>
+        </LastFillDate>
+        <LabelType>Generic</LabelType>
+        <BrandName>Olanzapine</BrandName>
+        <ImprintText>Olanzapine</ImprintText>
+        <Manufacturer></Manufacturer>
+        <LotNumber></LotNumber>
+        <LotExpirationDate></LotExpirationDate>
+        <DispensedItemAlternateID/>
+        <Group/>
+        <SubstitutionText/>
+        <UnitText/>MG
+        <DosageFormText/>Tablet
+        <DrugClassID></DrugClassID>
+        <DrugClassText>RX</DrugClassText>
+      </MedicationDispensed>
+      <CurrentRxStatusID></CurrentRxStatusID>
+      <CurrentRxStatusText></CurrentRxStatusText>
+      <RxStatusChangeOn>
+        <DateTime></DateTime>
+      </RxStatusChangeOn>
+      <CurrentRxTransactionStatusID></CurrentRxTransactionStatusID>
+      <CurrentRxTransactionStatusText></CurrentRxTransactionStatusText>
+      <RxTransactionStatusChangeOn>
+        <DateTime></DateTime>
+      </RxTransactionStatusChangeOn>
+      <PreviousDateFilled>
+        <Date></Date>
+      </PreviousDateFilled>
+      <OriginTypeID></OriginTypeID>
+      <OriginTypeText></OriginTypeText>
+      <DateFilled>
+        <Date></Date>
+      </DateFilled>
+      <ExpirationDate>
+        <Date></Date>
+      </ExpirationDate>
+      <DawCodeID></DawCodeID>
+      <DawCodeText></DawCodeText>
+      <DaysSupply></DaysSupply>
+      <QuantityRemaining></QuantityRemaining>
+      <NumberOfRefillsAllowed></NumberOfRefillsAllowed>
+      <NumberofRefillsFilled></NumberofRefillsFilled>
+      <RefillsRemaining></RefillsRemaining>
+      <FutureFill></FutureFill>
+      <DiagnosisCodes>
+        <Diagnosis>
+          <SequenceNumber>1</SequenceNumber>
+          <Qualifier>DIX</Qualifier>
+          <Value>2312</Value>
+        </Diagnosis>
+      </DiagnosisCodes>
+      <PrimaryDiagnosisSequenceNumber>1</PrimaryDiagnosisSequenceNumber>
+      <SecondaryDiagnosisSequenceNumber></SecondaryDiagnosisSequenceNumber>
+      <SigCode>22</SigCode>
+      <DirectionsTranslatedEnglish></DirectionsTranslatedEnglish>
+      <DirectionsTranslatedOtherLanguage></DirectionsTranslatedOtherLanguage>
+      <HOA>Future feature placeholder</HOA>
+      <PriorityTypeID></PriorityTypeID>
+      <PriorityTypeText></PriorityTypeText>
+      <Comments>
+        <RxComments>
+          <Informational>Take as prescribed</Informational>
+          <Critical>Don't take too much</Critical>
+          <PointOfSale></PointOfSale>
+        </RxComments>
+        <FillComments>
+          <Informational></Informational>
+          <Critical></Critical>
+          <PointOfSale></PointOfSale>
+        </FillComments>
+      </Comments>
+      <CompletedDate>
+        <DateTime></DateTime>
+      </CompletedDate>
+      <TrackingNumber></TrackingNumber>
+      <PharmacistEmployeeID></PharmacistEmployeeID>
+      <CheckedByPharmacistEmployeeID></CheckedByPharmacistEmployeeID>
+      <ChangedOnUTC></ChangedOnUTC>
+    </Rx>
+    <Claims>
+      <Claim>
+        <SequenceNumber></SequenceNumber>
+        <Type>Paid/Rejected/Reversed</Type>
+        <PayorName/>
+        <ClaimEdiSent/>
+        <ClaimEdiReceived/>
+        <BinNumber/>
+        <PCN/>
+        <AcquisitionCost/>
+        <Price/>
+        <TaxAmountSubmitted/>
+        <TaxAmountPaid/>
+        <TaxRateSubmitted/>
+        <TaxRatePaid/>
+        <UsualCustomerPrice/>
+        <TotalPriceSubmitted/>
+        <TotalPricePaidByAll/>
+        <PatientPayAmount/>
+      </Claim>
+      <PrimaryClaimSequenceNumber></PrimaryClaimSequenceNumber>
+      <SecondaryClaimSequenceNumber></SecondaryClaimSequenceNumber>
+      <TertiaryClaimSequenceNumber></TertiaryClaimSequenceNumber>
+      <QuaternaryClaimSequenceNumber></QuaternaryClaimSequenceNumber>
+      <QuinaryClaimSequenceNumber></QuinaryClaimSequenceNumber>
+    </Claims>
+  </Body>
+</Message>
+
+

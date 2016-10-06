@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DelimitedProxy.Properties {
+namespace XMLProxy.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -37,7 +37,7 @@ namespace DelimitedProxy.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("24044")]
+        [global::System.Configuration.DefaultSettingValueAttribute("24045")]
         public string ListenPort {
             get {
                 return ((string)(this["ListenPort"]));
@@ -133,18 +133,6 @@ namespace DelimitedProxy.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
-        public int MaxLogLines {
-            get {
-                return ((int)(this["MaxLogLines"]));
-            }
-            set {
-                this["MaxLogLines"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Info")]
         public global::motCommonLib.motErrorlLevel ErrorLevel {
             get {
@@ -157,6 +145,18 @@ namespace DelimitedProxy.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
+        public int MaxLogLines {
+            get {
+                return ((int)(this["MaxLogLines"]));
+            }
+            set {
+                this["MaxLogLines"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AutoTruncate {
             get {
@@ -164,30 +164,6 @@ namespace DelimitedProxy.Properties {
             }
             set {
                 this["AutoTruncate"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Sunday")]
-        public string FirstDayOfWeek_RxSys {
-            get {
-                return ((string)(this["FirstDayOfWeek_RxSys"]));
-            }
-            set {
-                this["FirstDayOfWeek_RxSys"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Sunday")]
-        public string FirstDayOfWeek_MOT {
-            get {
-                return ((string)(this["FirstDayOfWeek_MOT"]));
-            }
-            set {
-                this["FirstDayOfWeek_MOT"] = value;
             }
         }
     }

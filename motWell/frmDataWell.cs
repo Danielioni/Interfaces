@@ -11,18 +11,18 @@ using motInboundLib;
 
 namespace motWell
 {
-    public partial class Form1 : Form
+    public partial class frmDataWell : Form
     {
         motFileSystemListener __fsw;
 
-        public Form1()
+        public frmDataWell()
         {
             InitializeComponent();
         }
 
         public void startWatching()
         {
-            __fsw = new motFileSystemListener("C:/MOT_IO", "127.0.0.1", "24042");
+            __fsw = new motFileSystemListener("C:/MOT_IO", "127.0.0.1", "24041");
         }
 
         public void stopWatching()

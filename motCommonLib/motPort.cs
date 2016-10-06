@@ -97,7 +97,7 @@ namespace motCommonLib
         }
         public motPort(string address, string port)
         {
-            __open_socket(address, tcp_port = Convert.ToInt32(port));       
+            __open_socket(address, tcp_port = Convert.ToInt32(port));
         }
         ~motPort()
         {
@@ -106,7 +106,7 @@ namespace motCommonLib
 
         public void Open()
         {
-            if(__open)
+            if (__open)
             {
                 return;
             }
@@ -116,7 +116,7 @@ namespace motCommonLib
                 tcpSocket = new TcpClient(tcp_address, tcp_port);
                 dataStream = tcpSocket.GetStream();
                 dataStream.ReadTimeout = TCP_TIMEOUT;
-                dataStream.WriteTimeout = TCP_TIMEOUT;                        
+                dataStream.WriteTimeout = TCP_TIMEOUT;
             }
             catch (ArgumentNullException e)
             {
@@ -133,7 +133,7 @@ namespace motCommonLib
                 logger.Log(__log_level, @"Gateway SocketException: {0}", e.Message);
                 throw;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
@@ -202,6 +202,25 @@ namespace motCommonLib
                 throw new Exception(__error);
             }
         }
+
+        public bool ProcessRetVal()
+        {
+            byte[] __retval = new byte[64];
+
+            int __retlen = dataStream.Read(__retval, 0, __retval.Length);
+
+            if (__retval[0] == '\x06')   // ACK
+            {
+                return true;
+            }
+
+            string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, __retval);
+            Console.WriteLine(__error);
+            logger.Log(__log_level, __error);
+
+            return false;
+        }
+
         public bool Write(string __buf, int __len)
         {
             try
@@ -209,7 +228,7 @@ namespace motCommonLib
                 if (tcpSocket != null)
                 {
                     dataStream.Write(Encoding.ASCII.GetBytes(__buf), 0, __len);
-                    return true;
+                    return ProcessRetVal();
                 }
             }
             catch (Exception e)
@@ -237,7 +256,7 @@ namespace motCommonLib
                     return (__retval == 0);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
                 Console.WriteLine(__error);
@@ -278,7 +297,7 @@ namespace motCommonLib
                     Close();
                     Open();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     string __error = string.Format(@"Error resetting port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
                     Console.WriteLine(__error);

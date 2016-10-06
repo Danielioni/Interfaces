@@ -14,28 +14,29 @@ using motCommonLib;
 using motInboundLib;
 
 
-namespace HL7Proxy
+namespace XMLProxy
 {
 
 
     public delegate void __update_event_box_handler(Object __sender, UIupdateArgs __args);
     public delegate void __update_error_box_handler(Object __sender, UIupdateArgs __args);
 
-    public partial class frmMainDefault : Form
+    public partial class frmXmlProxyMain : Form
     {
         Logger __logger;
-        public Execute __execute;
+        Execute __execute;
         motErrorlLevel __error_level = motErrorlLevel.Error;
         bool __listening = false;
         int __max_log_len;
-        int __log_len = 0; 
+        int __log_len = 0;
 
-        public frmMainDefault()
+
+        public frmXmlProxyMain()
         {
             InitializeComponent();
 
-            __logger = LogManager.GetLogger("motHL7Proxy.Main");
-            __logger.Info("MOT HL7 Proxy Starting Up");
+            __logger = LogManager.GetLogger("motXmlProxyUI.Main");
+            __logger.Info("XML Proxy UI Starting Up");
 
             // Start the fun
             __execute = new Execute();
@@ -54,17 +55,8 @@ namespace HL7Proxy
             __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
             chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
 
-            cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
-            cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
-
-            txtOrganization.Text = Properties.Settings.Default.Organization;
-            txtProcessor.Text = Properties.Settings.Default.Processor;
-
             __max_log_len = Properties.Settings.Default.MaxLogLines;
             txtMaxLogLen.Text = __max_log_len.ToString();
-
-            btnStop.Enabled = false;
-            btnStart.Enabled = true;
         }
 
 
@@ -81,12 +73,10 @@ namespace HL7Proxy
                 Properties.Settings.Default.ListenUname = txtSourceUname.Text;
                 Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
                 Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
-                Properties.Settings.Default.Organization = txtOrganization.Text;
-                Properties.Settings.Default.Processor = txtProcessor.Text;
                 Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
                 Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
-                Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
-                Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
+                Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
+
                 Properties.Settings.Default.Save();
             }
             else if (tbcMain.SelectedIndex == 1)
@@ -99,20 +89,17 @@ namespace HL7Proxy
                 txtSourcePort.Text = Properties.Settings.Default.ListenPort;
                 txtSourceUname.Text = Properties.Settings.Default.ListenUname;
                 txtSourcePwd.Text = Properties.Settings.Default.ListenPwd;
-                cmbErrorLevel.SelectedIndex = (int)Properties.Settings.Default.ErrorLevel;
+                cmbErrorLevel.SelectedIndex = Properties.Settings.Default.LogLevel;
                 __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
-                txtOrganization.Text = Properties.Settings.Default.Organization;
-                txtProcessor.Text = Properties.Settings.Default.Processor;
                 txtMaxLogLen.Text = Properties.Settings.Default.MaxLogLines.ToString();
                 chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
-
-                cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
-                cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
+                txtMaxLogLen.Text = Properties.Settings.Default.MaxLogLines.ToString();
             }
             else  // Reserved for future use
             {
                 return;
             }
+
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -131,16 +118,10 @@ namespace HL7Proxy
             __args.__error_level = __error_level;
             __args.__auto_truncate = chkAutoTruncate.Checked;
 
-            __args.__organization = txtOrganization.Text;
-            __args.__processor = txtProcessor.Text;
-
-            __args.__rxsys_first_day_of_week = cmbFDOW_RxSys.Text;
-            __args.__mot_first_day_of_week = cmbFDOW_MOT.Text;
+            __execute.__start_up(__args);
 
             btnStop.Enabled = true;
             btnStart.Enabled = false;
-
-            __execute.__start_up(__args);
 
             __listening = true;
         }
@@ -154,6 +135,7 @@ namespace HL7Proxy
             btnStart.Enabled = true;
 
             __listening = false;
+
         }
 
         void __update_event_pane(Object __sender, UIupdateArgs __args)
@@ -169,14 +151,14 @@ namespace HL7Proxy
             rtbErrors.BeginInvoke(new Action(() =>
             {
                 rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
-                __log_len++;
-
-                if(__log_len > __max_log_len)
-                {
-                    // delete the first line of the log ...
-                }
-
             }));
+
+            __log_len++;
+
+            if (__log_len > __max_log_len)
+            {
+                // delete the first line of the log ...
+            }
         }
 
         private void cmbErrorLevel_SelectedIndexChanged(object sender, EventArgs e)
@@ -201,7 +183,6 @@ namespace HL7Proxy
 
         }
 
-
         private void chkAutoTruncate_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
@@ -211,34 +192,6 @@ namespace HL7Proxy
             {
                 __execute.__auto_truncate = chkAutoTruncate.Checked;
             }
-        }
-
-        private void frmMainDefault_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Properties.Settings.Default.GatewayIP = txtTargetIP.Text;
-            Properties.Settings.Default.GatewayPort = txtTargetPort.Text;
-            Properties.Settings.Default.GatewayUname = txtTargetUname.Text;
-            Properties.Settings.Default.GatewayPwd = txtTargetPwd.Text;
-            Properties.Settings.Default.ListenIP = txtSourceIP.Text;
-            Properties.Settings.Default.ListenPort = txtSourcePort.Text;
-            Properties.Settings.Default.ListenUname = txtSourceUname.Text;
-            Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
-            Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
-            Properties.Settings.Default.Organization = txtOrganization.Text;
-            Properties.Settings.Default.Processor = txtProcessor.Text;
-            Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
-            Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
-            Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
-            Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
-            Properties.Settings.Default.Save();
-
-            Environment.Exit(0);
-        }
-
-        private void rtbEvents_DoubleClick(object sender, EventArgs e)
-        {
-            // Figure out which line we're on, get the data stamp and find it in the error window
-
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -306,6 +259,24 @@ namespace HL7Proxy
                 }
             }
         }
+
+        private void frmMainDefault_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Properties.Settings.Default.GatewayIP = txtTargetIP.Text;
+            Properties.Settings.Default.GatewayPort = txtTargetPort.Text;
+            Properties.Settings.Default.GatewayUname = txtTargetUname.Text;
+            Properties.Settings.Default.GatewayPwd = txtTargetPwd.Text;
+            Properties.Settings.Default.ListenIP = txtSourceIP.Text;
+            Properties.Settings.Default.ListenPort = txtSourcePort.Text;
+            Properties.Settings.Default.ListenUname = txtSourceUname.Text;
+            Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
+            Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+            Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
+            Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+            Properties.Settings.Default.Save();
+
+            Environment.Exit(0);
+        }
     }
 
     public class UIupdateArgs : EventArgs
@@ -316,9 +287,6 @@ namespace HL7Proxy
 
     public class ExecuteArgs : EventArgs
     {
-        public string __mot_first_day_of_week { get; set; }
-        public string __rxsys_first_day_of_week { get; set; }
-
         public string __listen_address { get; set; }
         public string __listen_port { get; set; }
         public string __listen_uname { get; set; }
@@ -330,9 +298,8 @@ namespace HL7Proxy
         public string __gateway_pwd { get; set; }
 
         public motErrorlLevel __error_level { get; set; }
-        public bool __auto_truncate { get; set; }
+        public LogLevel __log_level { get; set; }
 
-        public string __organization { get; set; }
-        public string __processor { get; set; }
+        public bool __auto_truncate { get; set; }
     }
 }

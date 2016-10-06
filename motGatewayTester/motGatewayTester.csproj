@@ -76,6 +76,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Execute.cs" />
+    <Compile Include="frmDrugRecord.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmDrugRecord.Designer.cs">
+      <DependentUpon>frmDrugRecord.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmMainRecordTester.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,8 +100,17 @@
     <Compile Include="frmPatientRecord.Designer.cs">
       <DependentUpon>frmPatientRecord.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmStoreRecord.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmStoreRecord.Designer.cs">
+      <DependentUpon>frmStoreRecord.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmDrugRecord.resx">
+      <DependentUpon>frmDrugRecord.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMainRecordTester.resx">
       <DependentUpon>frmMainRecordTester.cs</DependentUpon>
     </EmbeddedResource>
@@ -104,6 +119,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmPatientRecord.resx">
       <DependentUpon>frmPatientRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmStoreRecord.resx">
+      <DependentUpon>frmStoreRecord.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -115,8 +133,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="medicineontime.snk" />
-    <None Include="medicineontime.snk.pfx" />
     <None Include="mot-certificate.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -317,6 +317,18 @@ namespace motGatewayTester
             var __scrip_record = new frmRxRecord();
             __scrip_record.Show();
         }
+
+        private void btnDrug_Click(object sender, EventArgs e)
+        {
+            var __drug_record = new frmDrugRecord();
+            __drug_record.Show();
+        }
+
+        private void btnStore_Click(object sender, EventArgs e)
+        {
+            var __store_record = new frmStoreRecord();
+            __store_record.Show();
+        }
     }
 
     public class UIupdateArgs : EventArgs
