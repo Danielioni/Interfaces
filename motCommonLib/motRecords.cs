@@ -166,13 +166,19 @@ namespace motCommonLib
 
                 if (__qualifiedTags[i].required && (__qualifiedTags[i].when == f.tagData.ToLower()[0] || __qualifiedTags[i].when == 'k'))  // look for a,c,k
                 {
-
                     if (__qualifiedTags[i].tagData == null || __qualifiedTags[i].tagData.Length == 0)
-                    {
-                        string __err = string.Format("REJECTED: Field {0} empty but required for the {1} operation on a {2} record!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
+                    { 
+                        if (!__auto_truncate)
+                        {
+                            string __err = string.Format("REJECTED: Field {0} empty but required for the {1} operation on a {2} record!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
 
-                        Console.WriteLine(__err);
-                        throw new Exception(__err);
+                            Console.WriteLine(__err);
+                            throw new Exception(__err);
+                        }
+                        else
+                        {
+                            string.Format("Attention: Empty {0}", __qualifiedTags[i].tagName);
+                        }
                     }
                 }
             }
@@ -323,7 +329,6 @@ namespace motCommonLib
                 // Push it to the port
                 p.Write(__record, __record.Length);
 
-
                 __write_log(__record, motErrorlLevel.Info);
 
             }
@@ -331,7 +336,6 @@ namespace motCommonLib
             {
                 __write_log(e.Message, motErrorlLevel.Error);
                 __write_log(__record, motErrorlLevel.Error);
-
  
                 throw;
             }
@@ -744,6 +748,12 @@ namespace motCommonLib
 
             set
             {
+                if (string.IsNullOrEmpty(value) && __auto_truncate)
+                {
+                    setField(__qualifiedTags, "Pharmacist Attention - Missing Drug Name", "DrugName");
+                    return;
+                }
+
                 setField(__qualifiedTags, value, "DrugName", false);
             }
         }
@@ -2583,7 +2593,7 @@ namespace motCommonLib
                 __qualifiedTags.Add(new Field("RxSys_StoreID", "", 11, false, 'n'));
                 __qualifiedTags.Add(new Field("LocationName", "", 60, true, 'a'));
                 __qualifiedTags.Add(new Field("Address1", "", 40, true, 'w'));
-                __qualifiedTags.Add(new Field("Address2", "", 40, true, 'w'));
+                __qualifiedTags.Add(new Field("Address2", "", 40, false, 'w'));
                 __qualifiedTags.Add(new Field("City", "", 30, true, 'w'));
                 __qualifiedTags.Add(new Field("State", "", 10, true, 'w'));
                 __qualifiedTags.Add(new Field("Zip", "", 9, true, 'w'));
@@ -2727,6 +2737,12 @@ namespace motCommonLib
 
             set
             {
+                if (string.IsNullOrEmpty(value) && __auto_truncate)
+                {
+                    setField(__qualifiedTags, "Pharmacist Attention - Missing Location Name", "LocationName");
+                    return;
+                }
+
                 setField(__qualifiedTags, value, "LocationName");
             }
         }

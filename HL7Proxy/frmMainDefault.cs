@@ -29,6 +29,17 @@ namespace HL7Proxy
         bool __listening = false;
         int __max_log_len;
         int __log_len = 0; 
+        List<string> lstEvent = new List<string>();
+
+        protected readonly int __defult_list_width = 1040;
+        protected readonly int __default_list_height = 160;
+        protected readonly int __default_form_height = 640;
+        protected readonly int __default_form_width = 1120;
+
+        protected  int __last_list_width = 1040;
+        protected  int __last_list_height = 160;
+        protected  int __last_form_height = 640;
+        protected  int __last_form_width = 1120;
 
         public frmMainDefault()
         {
@@ -67,6 +78,15 @@ namespace HL7Proxy
             btnStart.Enabled = true;
         }
 
+        private void RtEvents_Resize(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RtErrors_Resize(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
         private void tabControl1_Click(object sender, EventArgs e)
         {
@@ -158,9 +178,12 @@ namespace HL7Proxy
 
         void __update_event_pane(Object __sender, UIupdateArgs __args)
         {
+            
+            string[] __data = { __args.timestamp, __args.__event_message };
+
             rtbEvents.BeginInvoke(new Action(() =>
             {
-                rtbEvents.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                rtbEvents.Text = rtbEvents.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__event_message));
             }));
         }
 
@@ -168,7 +191,7 @@ namespace HL7Proxy
         {
             rtbErrors.BeginInvoke(new Action(() =>
             {
-                rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                rtbErrors.Text = rtbErrors.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__event_message));
                 __log_len++;
 
                 if(__log_len > __max_log_len)
@@ -181,26 +204,8 @@ namespace HL7Proxy
 
         private void cmbErrorLevel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
-            Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
-            Properties.Settings.Default.Save();
-
-            if (__listening)
-            {
-                __execute.__error_level = __error_level;
-            }
-        }
-
-        private void gbSourceDB_Enter(object sender, EventArgs e)
-        {
 
         }
-
-        private void rtbErrors_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
 
         private void chkAutoTruncate_CheckedChanged(object sender, EventArgs e)
         {
@@ -235,11 +240,92 @@ namespace HL7Proxy
             Environment.Exit(0);
         }
 
+#region PopupExpansionWindows 
+        private void rtbEvents_TextChanged(object sender, EventArgs e)
+        {
+            if (frmEvents != null)
+            {
+                rtEvents.Text = rtbEvents.Text;
+            }
+        }
+
+   // ---------------------------------------------------------------
+        Form frmEvents;
+        RichTextBox rtEvents;
+
+        private void frmEvents_Resize(object sender, EventArgs e)
+        {
+            rtEvents.Height = ActiveForm.Height;
+            rtEvents.Width = ActiveForm.Width;
+        }
+
         private void rtbEvents_DoubleClick(object sender, EventArgs e)
         {
             // Figure out which line we're on, get the data stamp and find it in the error window
+            frmEvents = new Form();
+            frmEvents.Icon = ActiveForm.Icon;
 
+            frmEvents.Resize += new EventHandler(frmEvents_Resize);
+
+            rtEvents = new RichTextBox();
+
+            frmEvents.Size = ActiveForm.Size;
+            frmEvents.Location = ActiveForm.Location;
+            frmEvents.Text = "System Events";
+
+            rtEvents.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            rtEvents.AutoSize = true;
+            rtEvents.Text = rtbEvents.Text;
+            rtEvents.Height = ActiveForm.Height;
+            rtEvents.Width = ActiveForm.Width;
+
+            frmEvents.Controls.Add(rtEvents);
+            frmEvents.Show();
         }
+
+    //---------------------------------------------------------------------------
+        Form frmErrors;
+        RichTextBox rtErrors;
+
+        private void rtbErrors_TextChanged(object sender, EventArgs e)
+        {
+            if (frmErrors != null)
+            {
+                rtErrors.Text = rtbErrors.Text;
+            }
+        }
+
+        private void frmErrors_Resize(object sender, EventArgs e)
+        {
+            rtErrors.Height = ActiveForm.Height;
+            rtErrors.Width = ActiveForm.Width;
+        }
+
+        private void rtbErrors_DoubleClick(object sender, EventArgs e)
+        {
+            // Figure out which line we're on, get the data stamp and find it in the error window
+            frmErrors = new Form();
+            frmErrors.Icon = ActiveForm.Icon;
+            frmErrors.Resize += new EventHandler(frmEvents_Resize);
+
+            rtErrors = new RichTextBox();
+
+            frmErrors.Size = ActiveForm.Size;
+            frmErrors.Location = ActiveForm.Location;
+            frmErrors.Text = "System Errors";
+
+            rtErrors.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            rtErrors.AutoSize = true;
+            rtErrors.Text = rtErrors.Text;
+            rtErrors.Height = ActiveForm.Height;
+            rtErrors.Width = ActiveForm.Width;
+
+            frmErrors.Controls.Add(rtErrors);
+            frmErrors.Show();
+        }
+
+        //---------------------------------------------------------------
+#endregion
 
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -306,13 +392,39 @@ namespace HL7Proxy
                 }
             }
         }
+
+        private void frmMainDefault_ResizeBegin(object sender, EventArgs e)
+        {
+            __last_list_width = sgrpStatus.Width;
+            __last_list_height = sgrpStatus.Height;
+            __last_form_width = frmMainDefault.ActiveForm.Width;
+            __last_form_width = frmMainDefault.ActiveForm.Height;
+        }
+
+        private void frmMainDefault_Resize(object sender, EventArgs e)
+        {
+            /*
+            if(ActiveForm.Height > __last_form_height)
+            {
+                grpErrors.Height = sgrpStatus.Height += (ActiveForm.Height - __last_form_height);               
+            }
+            else
+            {
+                grpErrors.Height = sgrpStatus.Height -= (__last_form_height - ActiveForm.Height);
+            }
+
+            if (ActiveForm.Width > __last_form_width)
+            {
+                grpErrors.Width = sgrpStatus.Width += (ActiveForm.Width - __last_form_width);
+            }
+            else
+            {
+                grpErrors.Width = sgrpStatus.Width -= (__last_form_width - ActiveForm.Width);
+            }
+            */
+        }
     }
 
-    public class UIupdateArgs : EventArgs
-    {
-        public string __message { get; set; }
-        public string timestamp { get; set; }
-    }
 
     public class ExecuteArgs : EventArgs
     {

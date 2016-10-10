@@ -500,7 +500,7 @@ namespace motCommonLib
             
             foreach (string __type in __segments)
             {
-                if (!string.IsNullOrEmpty(__type))
+                if (!string.IsNullOrEmpty(__type) && __type.Length > 1)
                 {
                     switch (__type.Substring(0, 3))
                     {
@@ -1807,6 +1807,7 @@ namespace motCommonLib
     public class ACK
     {
         public string __ack_string { get; set; } = string.Empty;
+        public string __clean_ack_string { get; set; } = string.Empty;
 
         public void Build(MSH __msh, string __org, string __proc)
         {
@@ -1850,6 +1851,19 @@ namespace motCommonLib
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            '\x1C' +
                            '\x0D';
+
+            __clean_ack_string = @"MSH | ^~\& | " +
+                           __tmp_msh.__msg_data["MSH-3"] + " | " +
+                           __tmp_msh.__msg_data["MSH-4"] + " | " +
+                           __tmp_msh.__msg_data["MSH-5"] + " | " +
+                           __tmp_msh.__msg_data["MSH-6"] + " | " +
+                           __time_stamp + "|| ACK^" +
+                           __tmp_msh.__msg_data["MSH-9-2"] + " | " +
+                           __tmp_msh.__msg_data["MSH-10"] + " | " +
+                           __tmp_msh.__msg_data["MSH-11"] + " | " +
+                           __tmp_msh.__msg_data["MSH-12"] + " | " +
+                           "\n\tMSA | AA | " +
+                           __tmp_msh.__msg_data["MSH-10"] + "|\n";
         }
 
         public ACK(MSH __msh)
@@ -1868,6 +1882,7 @@ namespace motCommonLib
     public class NAK
     {
         public string __nak_string { get; set; } = string.Empty;
+        public string __clean_nak_string { get; set; } = string.Empty;
 
         public void Build(MSH __msh, string __error_code, string __org, string __proc)
         {
@@ -1898,10 +1913,6 @@ namespace motCommonLib
 
             __tmp_msh.__msg_data["MSH-5"] = __tmp_msh.__msg_data["MSH-3"];
             __tmp_msh.__msg_data["MSH-6"] = __tmp_msh.__msg_data["MSH-4"];
-
-            //__tmp_msh.__msg_data["MSH-3"] = "MOT_HL7Gateway";
-            //__tmp_msh.__msg_data["MSH-4"] = "Medicine-On-Time";
-
             __tmp_msh.__msg_data["MSH-3"] = __proc;
             __tmp_msh.__msg_data["MSH-4"] = __org;
 
@@ -1922,6 +1933,20 @@ namespace motCommonLib
                            __tmp_msh.__msg_data["MSH-10"] + "|" +
                            '\x1C' +
                            '\x0D';
+
+            __clean_nak_string = @"MSH | ^~\& |" +
+                           __tmp_msh.__msg_data["MSH-3"] + " | " +
+                           __tmp_msh.__msg_data["MSH-4"] + " | " +
+                           __tmp_msh.__msg_data["MSH-5"] + " | " +
+                           __tmp_msh.__msg_data["MSH-6"] + " | " +
+                           __time_stamp + "| | NAK^" +
+                           __tmp_msh.__msg_data["MSH-9-2"] + " | " +
+                           __tmp_msh.__msg_data["MSH-10"] + " | " +
+                           __tmp_msh.__msg_data["MSH-11"] + " | " +
+                           __tmp_msh.__msg_data["MSH-12"] + " | " +
+                           "\n\tMSA | " +
+                           __error_code + "| " +
+                           __tmp_msh.__msg_data["MSH-10"] + " |\n";
         }
 
         public NAK(MSH __msh, string __error_code)

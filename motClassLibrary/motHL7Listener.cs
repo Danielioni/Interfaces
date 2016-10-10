@@ -45,12 +45,26 @@ namespace motInboundLib
     public delegate void RDE_O11EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
     public delegate void RDS_013EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
 
+    public class UIupdateArgs : EventArgs
+    {
+        public string __event_message { get; set; }
+        public string __msh_in { get; set; }
+        public string __msh_out { get; set; }
+        public string timestamp { get; set; }
+    }
+
+    public delegate void UpdateUIEventHandler(Object __sender, UIupdateArgs __args);
+    public delegate void UpdateUIErrorHandler(Object __sender, UIupdateArgs __args);
+
     public class HL7SocketListener
     {
         const int TCP_TIMEOUT = 300000;
 
         public string __organization { get; set; }
         public string __processor { get; set; }
+        public string __last_msh { get; set; } = string.Empty;
+        public string __last_retval { get; set; } = string.Empty;
+        public string __last_event { get; set; } = string.Empty;
 
         public LogLevel __log_level { get; set; } = LogLevel.Error;
         private Logger __logger;
@@ -66,18 +80,51 @@ namespace motInboundLib
         public RDE_O11EventReceivedHandler RDE_O11MessageEventReceived;
         public RDS_013EventReceivedHandler RDS_O13MessageEventReceived;
 
+        public UpdateUIEventHandler UpdateEventUI;
+        public UpdateUIErrorHandler UpdateErrorUI;
+
         public void __parse_message(string __data)
         {
             HL7Event7MessageArgs __args = new HL7Event7MessageArgs();
-
-            // Clean delivery marks
-            __data = __data.Remove(__data.IndexOf('\v'), 1);
-            __data = __data.Remove(__data.IndexOf('\x1C'), 1);
-
-            string[] __segments = __data.Split('\r');
-            MSH __resp = new MSH(__segments[0]);
-
+            UIupdateArgs __ui_args = new UIupdateArgs();
+            
+            string[] __segments;
+            MSH __resp = null;
             string __response = string.Empty;
+
+            try
+            {
+                // Clean delivery marks
+                __data = __data.Remove(__data.IndexOf('\v'), 1);
+                __data = __data.Remove(__data.IndexOf('\x1C'), 1);
+                __segments = __data.Split('\r');
+                __resp = new MSH(__segments[0]);
+                __ui_args.__msh_in = __segments[0];
+              
+            }
+            catch
+            {
+                string __error_code = "AR";
+                __resp = new MSH(@"MSH |^ ~\&| MOT | MOT | MALFORMED MESSAGE | BAD MESSAGE | 20161007120518 | 637300 | RDE ^ O11 | 2 | T | 2.6 |||||| UNICODE UTF - 8 |||||");
+
+                NAK __out = new NAK(__resp, __error_code, __organization, __processor);
+                __response = __out.__nak_string;
+
+                __ui_args.__event_message = "Fatal:  Malormed Message";
+                __ui_args.__msh_out = __out.__clean_nak_string;
+
+                __logger.Log(__log_level, "HL7 NAK: {0}", __response);
+                __logger.Log(__log_level, "Failed Messasge: {0}", __data);
+
+                Console.Write("NAK: Malformed Message: {0}", __response);
+
+                __write_message_to_endpoint(__response);
+
+                UpdateErrorUI(this, __ui_args);
+
+                throw new Exception("FATAL: Malformed Message");
+            }
+          
 
             try
             {
@@ -85,6 +132,7 @@ namespace motInboundLib
                 switch (__resp.__msg_data["MSH-9-3"])
                 {
                     case "RDE_O11":
+                        __ui_args.__event_message = "RDE_011 Message Event";
                         RDE_O11 __rde_o11 = new RDE_O11(__data);
                         __message_data = __rde_o11.__message_store;
 
@@ -96,6 +144,7 @@ namespace motInboundLib
                         break;
 
                     case "OMP_O09":
+                        __ui_args.__event_message = "OMP_O09 Message Event";
                         OMP_O09 __omp_o09 = new OMP_O09(__data);
                         __message_data = __omp_o09.__message_store;
 
@@ -107,6 +156,7 @@ namespace motInboundLib
                         break;
 
                     case "RDS_O13":
+                        __ui_args.__event_message = "RDS_013 Message Event";
                         RDS_O13 __rds_o13 = new RDS_O13(__data);
                         __message_data = __rds_o13.__message_store;
 
@@ -118,6 +168,7 @@ namespace motInboundLib
                         break;
 
                     case "ADT_A01":
+                        __ui_args.__event_message = "ADT_A01 Message Event";
                         ADT_A01 __adt_a01 = new ADT_A01(__data);
                         __message_data = __adt_a01.__message_store;
 
@@ -131,10 +182,11 @@ namespace motInboundLib
 
                 ACK __out = new ACK(__resp, __organization, __processor);
                 __response = __out.__ack_string;
+                __ui_args.__msh_out = __out.__clean_ack_string;
+
                 __logger.Log(__log_level, "HL7 ACK: {0}", __response);
 
-                // Fire a new record event ...
-                // 
+                UpdateEventUI(this, __ui_args);
             }
             catch (Exception e)
             {
@@ -148,9 +200,15 @@ namespace motInboundLib
 
                 NAK __out = new NAK(__resp, __error_code, __organization, __processor);
                 __response = __out.__nak_string;
+                __ui_args.__msh_out = __out.__clean_nak_string;
+                __ui_args.__event_message = "REJECTED";
+
                 __logger.Log(__log_level, "HL7 NAK: {0}", __response);
                 __logger.Log(__log_level, "Failed Messasge: {0}", __data);
-                    
+
+                
+                UpdateErrorUI(this, __ui_args);
+
                 Console.Write("NAK:" + e.Message);
             }
 

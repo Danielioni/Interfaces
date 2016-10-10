@@ -103,7 +103,7 @@
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(1104, 526);
+            this.pnlMain.Size = new System.Drawing.Size(1098, 589);
             this.pnlMain.TabIndex = 0;
             // 
             // tbcMain
@@ -114,7 +114,7 @@
             this.tbcMain.Location = new System.Drawing.Point(0, 0);
             this.tbcMain.Name = "tbcMain";
             this.tbcMain.SelectedIndex = 0;
-            this.tbcMain.Size = new System.Drawing.Size(1104, 526);
+            this.tbcMain.Size = new System.Drawing.Size(1098, 589);
             this.tbcMain.TabIndex = 1;
             this.tbcMain.Click += new System.EventHandler(this.tabControl1_Click);
             // 
@@ -131,14 +131,14 @@
             this.tbpRun.Location = new System.Drawing.Point(4, 25);
             this.tbpRun.Name = "tbpRun";
             this.tbpRun.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpRun.Size = new System.Drawing.Size(1096, 497);
+            this.tbpRun.Size = new System.Drawing.Size(1090, 560);
             this.tbpRun.TabIndex = 0;
             this.tbpRun.Text = "Run";
             this.tbpRun.ToolTipText = "Runtime Control";
             // 
             // btnPrint
             // 
-            this.btnPrint.Location = new System.Drawing.Point(670, 433);
+            this.btnPrint.Location = new System.Drawing.Point(664, 454);
             this.btnPrint.Name = "btnPrint";
             this.btnPrint.Size = new System.Drawing.Size(167, 45);
             this.btnPrint.TabIndex = 15;
@@ -148,7 +148,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(670, 380);
+            this.btnSave.Location = new System.Drawing.Point(664, 401);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(167, 45);
             this.btnSave.TabIndex = 14;
@@ -159,7 +159,7 @@
             // pictureBox2
             // 
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(916, 376);
+            this.pictureBox2.Location = new System.Drawing.Point(859, 401);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(118, 115);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -171,23 +171,25 @@
             this.grpErrors.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.grpErrors.Controls.Add(this.rtbErrors);
             this.grpErrors.Cursor = System.Windows.Forms.Cursors.WaitCursor;
-            this.grpErrors.Location = new System.Drawing.Point(21, 191);
+            this.grpErrors.Location = new System.Drawing.Point(24, 200);
             this.grpErrors.Name = "grpErrors";
-            this.grpErrors.Size = new System.Drawing.Size(1037, 179);
+            this.grpErrors.Size = new System.Drawing.Size(1040, 160);
             this.grpErrors.TabIndex = 3;
             this.grpErrors.TabStop = false;
             this.grpErrors.Text = "[ Errors ]";
             // 
             // rtbErrors
             // 
+            this.rtbErrors.BackColor = System.Drawing.SystemColors.Window;
             this.rtbErrors.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbErrors.Location = new System.Drawing.Point(3, 18);
             this.rtbErrors.Name = "rtbErrors";
             this.rtbErrors.ReadOnly = true;
-            this.rtbErrors.Size = new System.Drawing.Size(1031, 158);
+            this.rtbErrors.Size = new System.Drawing.Size(1034, 139);
             this.rtbErrors.TabIndex = 0;
             this.rtbErrors.Text = "";
             this.rtbErrors.TextChanged += new System.EventHandler(this.rtbErrors_TextChanged);
+            this.rtbErrors.DoubleClick += new System.EventHandler(this.rtbErrors_DoubleClick);
             // 
             // sgrpStatus
             // 
@@ -195,26 +197,28 @@
             this.sgrpStatus.Controls.Add(this.rtbEvents);
             this.sgrpStatus.Location = new System.Drawing.Point(21, 16);
             this.sgrpStatus.Name = "sgrpStatus";
-            this.sgrpStatus.Size = new System.Drawing.Size(1037, 163);
+            this.sgrpStatus.Size = new System.Drawing.Size(1040, 160);
             this.sgrpStatus.TabIndex = 2;
             this.sgrpStatus.TabStop = false;
             this.sgrpStatus.Text = "[ Events ]";
             // 
             // rtbEvents
             // 
+            this.rtbEvents.BackColor = System.Drawing.SystemColors.Window;
             this.rtbEvents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbEvents.Location = new System.Drawing.Point(3, 18);
             this.rtbEvents.Name = "rtbEvents";
             this.rtbEvents.ReadOnly = true;
-            this.rtbEvents.Size = new System.Drawing.Size(1031, 142);
+            this.rtbEvents.Size = new System.Drawing.Size(1034, 139);
             this.rtbEvents.TabIndex = 0;
             this.rtbEvents.Text = "";
+            this.rtbEvents.TextChanged += new System.EventHandler(this.rtbEvents_TextChanged);
             this.rtbEvents.DoubleClick += new System.EventHandler(this.rtbEvents_DoubleClick);
             // 
             // btnStop
             // 
             this.btnStop.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnStop.Location = new System.Drawing.Point(342, 380);
+            this.btnStop.Location = new System.Drawing.Point(336, 401);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(285, 98);
             this.btnStop.TabIndex = 1;
@@ -225,7 +229,7 @@
             // btnStart
             // 
             this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnStart.Location = new System.Drawing.Point(33, 380);
+            this.btnStart.Location = new System.Drawing.Point(27, 401);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(285, 98);
             this.btnStart.TabIndex = 0;
@@ -250,7 +254,7 @@
             this.tbpConfig.Location = new System.Drawing.Point(4, 25);
             this.tbpConfig.Name = "tbpConfig";
             this.tbpConfig.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpConfig.Size = new System.Drawing.Size(1096, 497);
+            this.tbpConfig.Size = new System.Drawing.Size(1090, 560);
             this.tbpConfig.TabIndex = 1;
             this.tbpConfig.Text = "Config";
             this.tbpConfig.ToolTipText = "Configure System";
@@ -645,14 +649,17 @@
             this.AutoScroll = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.CancelButton = this.btnStop;
-            this.ClientSize = new System.Drawing.Size(1104, 526);
+            this.ClientSize = new System.Drawing.Size(1098, 589);
             this.Controls.Add(this.pnlMain);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "frmMainDefault";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "MOT HL7 Proxy";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMainDefault_FormClosed);
+            this.ResizeBegin += new System.EventHandler(this.frmMainDefault_ResizeBegin);
+            this.Resize += new System.EventHandler(this.frmMainDefault_Resize);
             this.pnlMain.ResumeLayout(false);
             this.tbcMain.ResumeLayout(false);
             this.tbpRun.ResumeLayout(false);

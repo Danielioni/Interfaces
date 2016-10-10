@@ -10,10 +10,12 @@ using NLog;
 
 namespace HL7Proxy
 {
+
     public class Execute
     {
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
+       
 
         int __first_day_of_week = 0;
 
@@ -34,31 +36,55 @@ namespace HL7Proxy
         volatile string __source_ip = string.Empty;
         volatile string __source_port = string.Empty;
 
-        public void __update_event_ui(string __message)
-        {
-            UIupdateArgs __args = new UIupdateArgs();
+      //  public void __update_event_ui(string __message)
 
+           void __update_ui_event(Object __sender, UIupdateArgs __args)
+            {
+     
             __args.timestamp = DateTime.Now.ToString();
-            __args.__message = __message + "\n";
+            __args.__event_message = string.Format("{0}{1}{2}", !string.IsNullOrEmpty(__args.__event_message) ? __args.__event_message + Environment.NewLine : string.Empty,
+                                                                !string.IsNullOrEmpty(__args.__msh_in) ? "In:\t" + __args.__msh_in + Environment.NewLine : string.Empty,
+                                                                !string.IsNullOrEmpty(__args.__msh_out) ? "Out:\t" + __args.__msh_out + Environment.NewLine : string.Empty);
+
             __event_ui_handler(this, __args);
         }
 
-        public void __update_error_ui(string __message)
+        void __update_ui_error(Object __sender, UIupdateArgs __args)
         {
-            UIupdateArgs __args = new UIupdateArgs();
+            //UIupdateArgs __args = new UIupdateArgs();
 
             __args.timestamp = DateTime.Now.ToString();
-            __args.__message = __message + "\n";
+            __args.__event_message = string.Format("{0}{1}{2}",!string.IsNullOrEmpty(__args.__event_message) ? __args.__event_message + Environment.NewLine : string.Empty,
+                                                               !string.IsNullOrEmpty(__args.__msh_in) ? "In:\t" + __args.__msh_in + Environment.NewLine : string.Empty,
+                                                               !string.IsNullOrEmpty(__args.__msh_out) ? "Out:\t" + __args.__msh_out + Environment.NewLine : string.Empty);
+
             __error_ui_handler(this, __args);
 
+        }
+
+        public void __show_common_event(string __message)
+        {
+            UIupdateArgs __args = new UIupdateArgs();
+            __args.timestamp = DateTime.Now.ToString();
+            __args.__event_message = __message + "\n";
+
+            __event_ui_handler(this, __args);
+        }
+
+        public void __show_error_event(string __message)
+        {
+
+            UIupdateArgs __args = new UIupdateArgs();
+            __args.timestamp = DateTime.Now.ToString();
+            __args.__event_message = __message + "\n";
+
+            __error_ui_handler(this, __args);
         }
 
         // Do the real work here - call delegates to update UI
 
         public void __start_up(ExecuteArgs __args)
         {
-            __update_event_ui("HL7 Proxy Starting up");
-
             try
             {
                 __target_ip = __args.__gateway_address;
@@ -76,6 +102,8 @@ namespace HL7Proxy
                 // Set up listener and event handlers
                 __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
 
+                //__update_event_ui("HL7 Proxy Starting up");
+
                 __listener.__log_level = __log_level;
                 __listener.__organization = __args.__organization;
                 __listener.__processor = __args.__processor;
@@ -86,19 +114,22 @@ namespace HL7Proxy
                 __listener.RDE_O11MessageEventReceived += __process_RDE_O11_Event;
                 __listener.RDS_O13MessageEventReceived += __process_RDS_O13_Event;
 
+                __listener.UpdateEventUI += __update_ui_event;
+                __listener.UpdateErrorUI += __update_ui_error;
+
                 __listener.__start();
 
-                __update_event_ui(string.Format("Listening on: {0}:{1}, Sending to: {2}:{3}", __args.__listen_address, __args.__listen_port, __args.__gateway_address, __args.__gateway_port));
+                __show_common_event(string.Format("Listening on: {0}:{1}, Sending to: {2}:{3}", __args.__listen_address, __args.__listen_port, __args.__gateway_address, __args.__gateway_port));
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("Failed to start on {0}:{1}, Error: {2}", __args.__listen_address, __args.__listen_port, e.Message));
+                __show_error_event(string.Format("Failed to start on {0}:{1}, Error: {2}", __args.__listen_address, __args.__listen_port, e.Message));
             }
         }
 
         public void __shut_down()
         {
-            __update_event_ui("HL7 Proxy Shutting down");
+            __show_common_event("HL7 Proxy Shutting down");
             __listener.__stop();
         }
 
@@ -520,7 +551,12 @@ namespace HL7Proxy
             __drug.NDCNum =       __assign("RXE-2-1", __fields);
             __drug.DrugName =     __assign("RXE-2-2", __fields);
             __drug.TradeName =    __drug.DrugName;
-            __drug.Strength =     Convert.ToInt32(__assign("RXE-25", __fields));
+
+            if(__assign("RXE-25", __fields) != string.Empty)
+            { 
+                __drug.Strength = Convert.ToInt32(__assign("RXE-25", __fields));
+            }
+
             __drug.Unit =         __assign("RXE-26", __fields);
             __drug.DoseForm =     __assign("RXE-6-1", __fields);
 
@@ -533,10 +569,18 @@ namespace HL7Proxy
             __scrip.QtyPerDose =   __assign("RXE-3-1", __fields);
             __scrip.RxSys_RxNum =  __assign("RXE-15", __fields);
             __scrip.DoseScheduleName = __assign("RXE-7-1", __fields);
-            __scrip.Sig =          __assign("RXE-7-2", __fields);
+
+            if (!string.IsNullOrEmpty(__assign("RXE-7-2", __fields)))
+            {
+                __scrip.Sig = __assign("RXE-7-2", __fields);
+            }
+            else
+            {
+                __scrip.Sig = "Pharmacist Attention - Missing Sig";
+            }
+            
             __scrip.QtyDispensed = __assign("RXE-10", __fields);
             __scrip.Refills =      __assign("RXE-16", __fields);
-
             __scrip.RxType = "0";
 
             __store.RxSys_StoreID = __assign("RXE-40-1", __fields);
@@ -605,10 +649,14 @@ namespace HL7Proxy
                 // See if its a dose schedule we know about
                 try
                 {
-                    string __format = string.Empty;
-                    __format = __lookup?.__doseSchedules[__tq1_3_1];
-                    __scrip.RxType = "0";
-                    return __scrip.DoseTimesQtys += string.Format(__format, Convert.ToDouble(__assign("TQ1-2-1", __tq1)));
+                    string __format = string.Empty;                   
+                    __lookup.__doseSchedules.TryGetValue(__tq1_3_1, out __format);
+
+                    if (!string.IsNullOrEmpty(__format))
+                    {
+                        __scrip.RxType = "0";
+                        return __scrip.DoseTimesQtys += string.Format(__format, Convert.ToDouble(__assign("TQ1-2-1", __tq1)));
+                    }
                 }
                 catch
                 {
@@ -713,8 +761,7 @@ namespace HL7Proxy
 
         void __process_ADT_A01_Event(Object sender, HL7Event7MessageArgs __args)
         {
-
-            __update_event_ui("Received ADT_A01 Event");
+            //__update_event_ui("Received ADT_A01 Event");
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -802,11 +849,8 @@ namespace HL7Proxy
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("ADT_A01 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                __show_error_event(string.Format("ADT_A01 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
                 __logger.Log(__log_level, "ADT General Parse Failure at ({0}): {1}", __problem_segment, e.Message);
-
-                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT General Parse Failure at ({0}): {1}", __problem_segment, e.Message));
-
                 throw;
             }
 
@@ -825,17 +869,14 @@ namespace HL7Proxy
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("ADT_A01 Processing Failure: {0}", e.Message));
+                __show_error_event(string.Format("ADT_A01 Processing Failure: {0}", e.Message));
                 __logger.Log(__log_level, "ADT A01 Processing Failure: {0}", e.Message);
-
-                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("ADT A01 Processing Failure: {0}", e.Message));
-
                 throw;
             }
         }
         void __process_ADT_A12_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            __update_event_ui("Received ADT_A12 Event");
+            //__update_event_ui("Received ADT_A12 Event");
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -863,7 +904,7 @@ namespace HL7Proxy
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("ADT_A12 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                __show_error_event(string.Format("ADT_A12 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
                 throw;
             }
 
@@ -871,7 +912,7 @@ namespace HL7Proxy
         }
         void __process_OMP_O09_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            __update_event_ui(string.Format("{0} - Received OMP_O09 Event", DateTime.Now));
+            //__update_event_ui(string.Format("{0} - Received OMP_O09 Event", DateTime.Now));
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -968,11 +1009,8 @@ namespace HL7Proxy
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("OMP_O09 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                __show_error_event(string.Format("OMP_O09 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
                 __logger.Log(__log_level, "OMP General Processing Failure: {0}", e.Message);
-
-                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP General Processing Failure: {0}", e.Message));
-
                 throw;
             }
 
@@ -996,11 +1034,8 @@ namespace HL7Proxy
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("OMP_O09 Processing Failure: {0}", e.Message));
+                __show_error_event(string.Format("OMP_O09 Processing Failure: {0}", e.Message));
                 __logger.Log(__log_level, "OMP O09 Processing Failure: {0}", e.Message);
-
-                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("OMP O09 Processing Failure: {0}", e.Message));
-
                 throw;
             }
 
@@ -1011,7 +1046,7 @@ namespace HL7Proxy
             int __tq1_records_processed = 0;
             int __tq1_record_rx_type = 0;
 
-            __update_event_ui("Received RDE_O11 Event");
+            //__update_event_ui("Received RDE_O11 Event");
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -1108,11 +1143,8 @@ namespace HL7Proxy
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("RDE_O11 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                __show_error_event(string.Format("RDE_O11 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
                 __logger.Log(__log_level, "RDE_O11 General Processing Failure: {0}", e.Message);
-
-                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDE General Processing Failure: {0}", e.Message));
-
                 throw;
             }
 
@@ -1144,17 +1176,14 @@ namespace HL7Proxy
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
+                __show_error_event(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
                 __logger.Log(__log_level, "RDE_O11  Processing Failure: {0}", e.Message);
-
-                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDEs O11 Processing Failure: {0}", e.Message));
-
                 throw;
             }
         }
         void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            __update_event_ui("Received RDS_O13 Event");
+            //__update_event_ui("Received RDS_O13 Event");
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -1248,18 +1277,14 @@ namespace HL7Proxy
                                 __had_zpi = true;
                                 __process__ZPI(__scrip, __store, __fields);
                                 break;
-
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("RDS_O13 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
+                __show_error_event(string.Format("RDS_O13 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
                 __logger.Log(__log_level, "RDS_O13 Processing Failure: {0}", e.Message);
-
-                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS General Processing Failure: {0}", e.Message));
-
                 throw;
             }
 
@@ -1291,11 +1316,8 @@ namespace HL7Proxy
             }
             catch (Exception e)
             {
-                __update_error_ui(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
+                __show_error_event(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
                 __logger.Log(__log_level, "RDS_O13 Processing Failure: {0}", e.Message);
-
-                //motUtils.__write_log(__logger, __error_level, motErrorlLevel.Error, string.Format("RDS O13 Processing Failure: {0}", e.Message));
-
                 throw;
             }
         }
