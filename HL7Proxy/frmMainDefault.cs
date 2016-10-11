@@ -306,7 +306,7 @@ namespace HL7Proxy
             // Figure out which line we're on, get the data stamp and find it in the error window
             frmErrors = new Form();
             frmErrors.Icon = ActiveForm.Icon;
-            frmErrors.Resize += new EventHandler(frmEvents_Resize);
+            frmErrors.Resize += new EventHandler(frmErrors_Resize);
 
             rtErrors = new RichTextBox();
 
@@ -316,7 +316,7 @@ namespace HL7Proxy
 
             rtErrors.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             rtErrors.AutoSize = true;
-            rtErrors.Text = rtErrors.Text;
+            rtErrors.Text = rtbErrors.Text;
             rtErrors.Height = ActiveForm.Height;
             rtErrors.Width = ActiveForm.Width;
 

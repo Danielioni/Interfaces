@@ -133,50 +133,45 @@ namespace motInboundLib
                 {
                     case "RDE_O11":
                         __ui_args.__event_message = "RDE_011 Message Event";
+
                         RDE_O11 __rde_o11 = new RDE_O11(__data);
                         __message_data = __rde_o11.__message_store;
-
-                        RDE_O11EventReceivedHandler __rde_handler = RDE_O11MessageEventReceived;
                         __args.fields = __message_data;
                         __args.timestamp = DateTime.Now;
-                        __rde_handler(this, __args);
 
+                        RDE_O11MessageEventReceived(this, __args);
                         break;
 
                     case "OMP_O09":
                         __ui_args.__event_message = "OMP_O09 Message Event";
+
                         OMP_O09 __omp_o09 = new OMP_O09(__data);
                         __message_data = __omp_o09.__message_store;
-
-                        OMP_O09EventReceivedHandler __omp_handler = OMP_O09MessageEventReceived;
                         __args.fields = __message_data;
                         __args.timestamp = DateTime.Now;
-                        __omp_handler(this, __args);
 
+                        OMP_O09MessageEventReceived(this, __args);
                         break;
 
                     case "RDS_O13":
                         __ui_args.__event_message = "RDS_013 Message Event";
+
                         RDS_O13 __rds_o13 = new RDS_O13(__data);
                         __message_data = __rds_o13.__message_store;
-
-                        RDS_013EventReceivedHandler __rds_handler = RDS_O13MessageEventReceived;
                         __args.fields = __message_data;
                         __args.timestamp = DateTime.Now;
-                        __rds_handler(this, __args);
-
+                        RDS_O13MessageEventReceived(this, __args);
                         break;
 
                     case "ADT_A01":
                         __ui_args.__event_message = "ADT_A01 Message Event";
+
                         ADT_A01 __adt_a01 = new ADT_A01(__data);
                         __message_data = __adt_a01.__message_store;
-
-                        ADT_A01EventReceivedHandler __a01_handler = ADT_A01MessageEventReceived;
                         __args.fields = __message_data;
                         __args.timestamp = DateTime.Now;
-                        __a01_handler(this, __args);
 
+                        ADT_A01MessageEventReceived(this, __args);
                         break;
                 }
 
