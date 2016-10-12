@@ -202,6 +202,8 @@
             this.rtbErrors.TabIndex = 0;
             this.rtbErrors.Text = "";
             this.rtbErrors.TextChanged += new System.EventHandler(this.rtbErrors_TextChanged);
+            this.rtbErrors.DoubleClick += new System.EventHandler(this.rtbErrors_DoubleClick);
+
             // 
             // sgrpStatus
             // 
@@ -222,6 +224,9 @@
             this.rtbEvents.Size = new System.Drawing.Size(1031, 142);
             this.rtbEvents.TabIndex = 0;
             this.rtbEvents.Text = "";
+            this.rtbEvents.TextChanged += new System.EventHandler(this.rtbEvents_TextChanged);
+            this.rtbEvents.DoubleClick += new System.EventHandler(this.rtbEvents_DoubleClick);
+
             // 
             // btnStop
             // 

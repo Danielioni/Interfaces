@@ -13,10 +13,8 @@ using NLog;
 using motCommonLib;
 using motInboundLib;
 
-
 namespace HL7Proxy
 {
-
 
     public delegate void __update_event_box_handler(Object __sender, UIupdateArgs __args);
     public delegate void __update_error_box_handler(Object __sender, UIupdateArgs __args);
@@ -179,8 +177,6 @@ namespace HL7Proxy
         void __update_event_pane(Object __sender, UIupdateArgs __args)
         {
             
-            string[] __data = { __args.timestamp, __args.__event_message };
-
             rtbEvents.BeginInvoke(new Action(() =>
             {
                 rtbEvents.Text = rtbEvents.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__event_message));
@@ -268,6 +264,7 @@ namespace HL7Proxy
             frmEvents.Resize += new EventHandler(frmEvents_Resize);
 
             rtEvents = new RichTextBox();
+            rtEvents.Font = new Font("Lucida Console", 7.8F);
 
             frmEvents.Size = ActiveForm.Size;
             frmEvents.Location = ActiveForm.Location;
@@ -309,6 +306,7 @@ namespace HL7Proxy
             frmErrors.Resize += new EventHandler(frmErrors_Resize);
 
             rtErrors = new RichTextBox();
+            rtErrors.Font = new Font("Lucida Console", 7.8F);
 
             frmErrors.Size = ActiveForm.Size;
             frmErrors.Location = ActiveForm.Location;

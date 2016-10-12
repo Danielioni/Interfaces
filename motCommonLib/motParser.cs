@@ -247,7 +247,6 @@ namespace motCommonLib
                 StringBuilder __tagged_string = new StringBuilder();
                 int i;
 
-             
                 try
                 {
                     if (__items[0][0] == '\0' || __items[0][0] == '\n')
@@ -256,6 +255,14 @@ namespace motCommonLib
                     }
 
                     __items[0] = __items[0].Trim();
+
+                    string __table_type;
+                    __type.TryGetValue(__items[0][0], out __table_type);
+
+                    if(string.IsNullOrEmpty(__table_type))
+                    {
+                        return null;
+                    }
 
                     __tagged_string.Append(string.Format("<Record>"));
                     __tagged_string.Append(string.Format("\t<Table>{0}</Table>", __type[__items[0][0]]));

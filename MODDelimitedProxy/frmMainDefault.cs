@@ -16,8 +16,6 @@ using motInboundLib;
 
 namespace motDefaultProxyUI
 {
-   
-
     public delegate void __update_event_box_handler(Object __sender, UIupdateArgs __args);
     public delegate void __update_error_box_handler(Object __sender, UIupdateArgs __args);
 
@@ -35,13 +33,16 @@ namespace motDefaultProxyUI
         {
             InitializeComponent();
 
-            __logger = LogManager.GetLogger("motProxyUI.Main");
-            __logger.Info("MOT Proxy UI Starting Up");
+            __logger = LogManager.GetLogger("motProxy.Main");
+            __logger.Info("MOT Proxy Starting Up");
 
             // Start the fun
             __execute = new Execute();
             __execute.__event_ui_handler += __update_event_pane;
             __execute.__error_ui_handler += __update_error_pane;
+
+            rtbEvents.Font = new Font("Lucida Console", 7.8F);
+            rtbErrors.Font = new Font("Lucida Console", 7.8F);
 
             txtTargetIP.Text = Properties.Settings.Default.GatewayIP;
             txtTargetPort.Text = Properties.Settings.Default.GatewayPort;
@@ -59,7 +60,25 @@ namespace motDefaultProxyUI
             txtMaxLogLen.Text = __max_log_len.ToString();
         }
 
+        private void frmMainDefault_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Properties.Settings.Default.GatewayIP = txtTargetIP.Text;
+            Properties.Settings.Default.GatewayPort = txtTargetPort.Text;
+            Properties.Settings.Default.GatewayUname = txtTargetUname.Text;
+            Properties.Settings.Default.GatewayPwd = txtTargetPwd.Text;
+            Properties.Settings.Default.ListenIP = txtSourceIP.Text;
+            Properties.Settings.Default.ListenPort = txtSourcePort.Text;
+            Properties.Settings.Default.ListenUname = txtSourceUname.Text;
+            Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
+            Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+            Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
+            Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+            Properties.Settings.Default.Save();
 
+            Environment.Exit(0);
+        }
+
+#region ManageConfiguration
         private void tabControl1_Click(object sender, EventArgs e)
         {
             if (tbcMain.SelectedIndex == 0)
@@ -99,9 +118,148 @@ namespace motDefaultProxyUI
             {
                 return;
             }
-
         }
 
+
+        private void cmbErrorLevel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+            Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+            Properties.Settings.Default.Save();
+
+            if (__listening)
+            {
+                __execute.__error_level = __error_level;
+            }
+        }
+
+        private void chkAutoTruncate_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+            Properties.Settings.Default.Save();
+
+            if (__listening)
+            {
+                __execute.__auto_truncate = chkAutoTruncate.Checked;
+            }
+        }
+#endregion
+
+#region UpdateUI        
+        void __update_event_pane(Object __sender, UIupdateArgs __args)
+        {
+            rtbEvents.BeginInvoke(new Action(() =>
+            {
+                rtbEvents.Text = rtbEvents.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__event_message));
+            }));
+        }
+
+        void __update_error_pane(Object __sender, UIupdateArgs __args)
+        {
+            rtbErrors.BeginInvoke(new Action(() =>
+            {
+                rtbErrors.Text = rtbErrors.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__event_message));
+            }));
+
+            __log_len++;
+
+            if (__log_len > __max_log_len)
+            {
+                // delete the first line of the log ...
+            }
+        }
+#endregion
+
+#region PopupExpansionWindows 
+        private void rtbEvents_TextChanged(object sender, EventArgs e)
+        {
+            if (frmEvents != null)
+            {
+                rtEvents.Text = rtbEvents.Text;
+            }
+        }
+
+        // ---------------------------------------------------------------
+        Form frmEvents;
+        RichTextBox rtEvents;
+
+        private void frmEvents_Resize(object sender, EventArgs e)
+        {
+            rtEvents.Height = ActiveForm.Height;
+            rtEvents.Width = ActiveForm.Width;
+        }
+
+        private void rtbEvents_DoubleClick(object sender, EventArgs e)
+        {
+            // Figure out which line we're on, get the data stamp and find it in the error window
+            frmEvents = new Form();
+            frmEvents.Icon = ActiveForm.Icon;
+
+            frmEvents.Resize += new EventHandler(frmEvents_Resize);
+
+            rtEvents = new RichTextBox();
+            rtEvents.Font = new Font("Lucida Console", 7.8F);
+
+            frmEvents.Size = ActiveForm.Size;
+            frmEvents.Location = ActiveForm.Location;
+            frmEvents.Text = "System Events";
+
+            rtEvents.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            rtEvents.AutoSize = true;
+            rtEvents.Text = rtbEvents.Text;
+            rtEvents.Height = ActiveForm.Height;
+            rtEvents.Width = ActiveForm.Width;
+
+            frmEvents.Controls.Add(rtEvents);
+            frmEvents.Show();
+        }
+
+        //---------------------------------------------------------------------------
+        Form frmErrors;
+        RichTextBox rtErrors;
+
+        private void rtbErrors_TextChanged(object sender, EventArgs e)
+        {
+            if (frmErrors != null)
+            {
+                rtErrors.Text = rtbErrors.Text;
+            }
+        }
+
+        private void frmErrors_Resize(object sender, EventArgs e)
+        {
+            rtErrors.Height = ActiveForm.Height;
+            rtErrors.Width = ActiveForm.Width;
+        }
+
+        private void rtbErrors_DoubleClick(object sender, EventArgs e)
+        {
+            // Figure out which line we're on, get the data stamp and find it in the error window
+            frmErrors = new Form();
+            frmErrors.Icon = ActiveForm.Icon;
+            frmErrors.Resize += new EventHandler(frmErrors_Resize);
+
+            rtErrors = new RichTextBox();
+            rtErrors.Font = new Font("Lucida Console", 7.8F);
+
+            frmErrors.Size = ActiveForm.Size;
+            frmErrors.Location = ActiveForm.Location;
+            frmErrors.Text = "System Errors";
+
+            rtErrors.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            rtErrors.AutoSize = true;
+            rtErrors.Text = rtbErrors.Text;
+            rtErrors.Height = ActiveForm.Height;
+            rtErrors.Width = ActiveForm.Width;
+
+            frmErrors.Controls.Add(rtErrors);
+            frmErrors.Show();
+        }
+
+        //---------------------------------------------------------------
+        #endregion
+
+#region StartStop
         private void btnStart_Click(object sender, EventArgs e)
         {
             // Start Runtime
@@ -137,79 +295,9 @@ namespace motDefaultProxyUI
             __listening = false;
 
         }
+        #endregion
 
-        void __update_event_pane(Object __sender, UIupdateArgs __args)
-        {
-            rtbEvents.BeginInvoke(new Action(() =>
-            {
-                rtbEvents.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
-            }));
-        }
-
-        void __update_error_pane(Object __sender, UIupdateArgs __args)
-        {
-            rtbErrors.BeginInvoke(new Action(() =>
-            {
-                rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
-            }));
-
-            __log_len++;
-
-            if (__log_len > __max_log_len)
-            {
-                // delete the first line of the log ...
-            }
-        }
-
-        private void cmbErrorLevel_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
-            Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
-            Properties.Settings.Default.Save();
-
-            if (__listening)
-            {
-                __execute.__error_level = __error_level;
-            }
-        }
-
-        private void gbSourceDB_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void rtbErrors_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void chkAutoTruncate_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
-            Properties.Settings.Default.Save();
-
-            if (__listening)
-            {
-                __execute.__auto_truncate = chkAutoTruncate.Checked;
-            }
-        }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            if (rtbErrors.TextLength > 0)
-            {
-                SaveFileDialog saveFile1 = new SaveFileDialog();
-                saveFile1.Filter = "Log Files|*.log";
-                saveFile1.DefaultExt = "*.log";
-
-                if (saveFile1.ShowDialog() == DialogResult.OK && saveFile1.FileName.Length > 0)
-                {
-                    // Save the contents of the RichTextBox into the file.
-                    rtbErrors.SaveFile(saveFile1.FileName, RichTextBoxStreamType.PlainText);
-                }
-            }
-        }
-
+#region OutputData
         private void DocumentToPrint_PrintPage(object sender, PrintPageEventArgs e)
         {
             StringReader reader = new StringReader(rtbErrors.Text);
@@ -259,29 +347,28 @@ namespace motDefaultProxyUI
                 }
             }
         }
-
-        private void frmMainDefault_FormClosed(object sender, FormClosedEventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.GatewayIP = txtTargetIP.Text;
-            Properties.Settings.Default.GatewayPort = txtTargetPort.Text;
-            Properties.Settings.Default.GatewayUname = txtTargetUname.Text;
-            Properties.Settings.Default.GatewayPwd = txtTargetPwd.Text;
-            Properties.Settings.Default.ListenIP = txtSourceIP.Text;
-            Properties.Settings.Default.ListenPort = txtSourcePort.Text;
-            Properties.Settings.Default.ListenUname = txtSourceUname.Text;
-            Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
-            Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
-            Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
-            Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
-            Properties.Settings.Default.Save();
+            if (rtbErrors.TextLength > 0)
+            {
+                SaveFileDialog saveFile1 = new SaveFileDialog();
+                saveFile1.Filter = "Log Files|*.log";
+                saveFile1.DefaultExt = "*.log";
 
-            Environment.Exit(0);
+                if (saveFile1.ShowDialog() == DialogResult.OK && saveFile1.FileName.Length > 0)
+                {
+                    // Save the contents of the RichTextBox into the file.
+                    rtbErrors.SaveFile(saveFile1.FileName, RichTextBoxStreamType.PlainText);
+                }
+            }
         }
+        #endregion
+
     }
 
     public class UIupdateArgs : EventArgs
     {
-        public string __message { get; set; }
+        public string __event_message { get; set; }
         public string timestamp { get; set; }
     }
 

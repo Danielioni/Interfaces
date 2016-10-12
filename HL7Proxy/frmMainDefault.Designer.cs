@@ -182,6 +182,7 @@
             // 
             this.rtbErrors.BackColor = System.Drawing.SystemColors.Window;
             this.rtbErrors.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbErrors.Font = new System.Drawing.Font("Lucida Console", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbErrors.Location = new System.Drawing.Point(3, 18);
             this.rtbErrors.Name = "rtbErrors";
             this.rtbErrors.ReadOnly = true;
@@ -206,6 +207,7 @@
             // 
             this.rtbEvents.BackColor = System.Drawing.SystemColors.Window;
             this.rtbEvents.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbEvents.Font = new System.Drawing.Font("Lucida Console", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbEvents.Location = new System.Drawing.Point(3, 18);
             this.rtbEvents.Name = "rtbEvents";
             this.rtbEvents.ReadOnly = true;
