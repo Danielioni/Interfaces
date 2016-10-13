@@ -36,6 +36,9 @@ namespace motDefaultProxyUI
     /// 
     public class Execute
     {
+        motSocket __listener;
+        Thread __worker;
+
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
 
@@ -83,9 +86,14 @@ namespace motDefaultProxyUI
         }
 
         // Do the real work here - call delegates to update UI
+        void __parse_data(string __data)
+        {
+
+        }
 
         public void __start_up(ExecuteArgs __args)
         {
+            // Test cross thread communication
             Task.Run(() =>
             {
                 try
@@ -99,6 +107,27 @@ namespace motDefaultProxyUI
                     __logger.Log(__log_level, "Failed to start on {0}:{1}, Error: {2}", __args.__listen_address, __args.__listen_port, e.Message);
                 }
             });
+
+            // Generic listener setup
+            try
+            {
+                Console.WriteLine("__start_listener: {0}", Thread.CurrentThread.ManagedThreadId);
+
+                int __lp = Convert.ToInt32(__args.__listen_port);
+                __listener = new motSocket(__lp, __parse_data);
+
+                __worker = new Thread(new ThreadStart(__listener.listen));
+                __worker.Name = "listener";
+                __worker.Start();
+
+                __show_common_event("Started listening to on port: " + __args.__listen_port);
+                __show_common_event(string.Format("Sending data to: {0}:{1}", __args.__gateway_address, __args.__gateway_port));
+            }
+            catch (Exception e)
+            {
+                __show_error_event(string.Format("Failed to start on {0}:{1}, Error: {2}", __args.__listen_address, __args.__listen_port, e.Message));
+                __logger.Log(__log_level, "Failed to start on {0}:{1}, Error: {2}", __args.__listen_address, __args.__listen_port, e.Message);
+            }
         }
 
         public void __shut_down()
