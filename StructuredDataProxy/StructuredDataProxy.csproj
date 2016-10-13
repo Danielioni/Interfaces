@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5C5F4A7F-A9AB-44D1-A13B-5757627010EC}</ProjectGuid>
+    <ProjectGuid>{D955ABDC-64DC-44E2-BB7C-9F7FA2CB8E17}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>XMLProxy</RootNamespace>
-    <AssemblyName>MOTXMLProxyInterface</AssemblyName>
+    <RootNamespace>StructuredDataProxy</RootNamespace>
+    <AssemblyName>MOTProxyUserInterface</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -34,16 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>MOT Proxy.ico</ApplicationIcon>
+    <ApplicationIcon>MOT-Proxy ICON.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>XMLProxy.Program</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>mot-certificate.snk</AssemblyOriginatorKeyFile>
+    <StartupObject>StructuredDataProxy.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="motCommonLib">
@@ -70,16 +64,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Execute.cs" />
-    <Compile Include="frmXmlProxyMain.cs">
+    <Compile Include="frmMainStructuredData.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmXmlProxyMain.Designer.cs">
-      <DependentUpon>frmXmlProxyMain.cs</DependentUpon>
+    <Compile Include="frmMainStructuredData.Designer.cs">
+      <DependentUpon>frmMainStructuredData.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="frmXmlProxyMain.resx">
-      <DependentUpon>frmXmlProxyMain.cs</DependentUpon>
+    <EmbeddedResource Include="frmMainStructuredData.resx">
+      <DependentUpon>frmMainStructuredData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -91,7 +85,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="mot-certificate.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -107,8 +100,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MOT Proxy.ico" />
-    <Content Include="MOT-Logo Black.ico" />
     <Content Include="MOT-Proxy ICON.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

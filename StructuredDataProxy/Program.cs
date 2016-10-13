@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace XMLProxy
+namespace StructuredDataProxy
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace XMLProxy
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmXmlProxyMain());
+            Application.Run(new frmMainStructuredData());
         }
     }
 }

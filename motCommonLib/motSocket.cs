@@ -69,16 +69,19 @@ namespace motCommonLib
         {
             try
             {
-                __callback = __callback_p;
-                __portnum = __port;
-                __logger = LogManager.GetLogger("motInboundLib.Socket");
+                if (!__running)
+                {
+                    __callback = __callback_p;
+                    __portnum = __port;
+                    __logger = LogManager.GetLogger("motInboundLib.Socket");
 
-                __trigger = new TcpListener(IPAddress.Any, __port);
-                __trigger.Start();
+                    __trigger = new TcpListener(IPAddress.Any, __port);
+                    __trigger.Start();
 
-                __logger.Log(__log_level, "Listening on port {0}", __portnum);
+                    __logger.Log(__log_level, "Listening on port {0}", __portnum);
 
-                __running = true;
+                    __running = true;
+                }
             }
             catch (Exception e)
             {
@@ -205,13 +208,14 @@ namespace motCommonLib
         {
             int __inbytes = 0;
             int __total_bytes = 0;
+            StringBuilder __sb = new StringBuilder();
 
-            __b_iobuffer = new byte[8192];
+            __b_iobuffer = new byte[0xFFFF];
             __s_iobuffer = "";
 
-
             __logger.Info("Reading data ...");
-            __stream.ReadTimeout = 300;
+            __stream.ReadTimeout = 3000;
+
             try
             {
 
@@ -226,7 +230,7 @@ namespace motCommonLib
 
                     for (int i = 0; i < __b_iobuffer.Length; i++)
                     {
-                        // Ugly hack to get around UTF9 Normalization failing to convert properly
+                        // Ugly hack to get around UTF8 Normalization failing to convert properly
                         if (__b_iobuffer[i] == '\xEE')
                         {
                             __b_iobuffer[i] = (byte)'|';
@@ -237,8 +241,10 @@ namespace motCommonLib
                         }
                     }
 
-                    __s_iobuffer += Encoding.UTF8.GetString(__b_iobuffer);
+                    __sb.Append(Encoding.UTF8.GetString(__b_iobuffer));
                     __total_bytes += __inbytes;
+
+                    Array.Clear(__b_iobuffer, 0, __b_iobuffer.Length);
 
                 } while (__stream.DataAvailable);
             }
@@ -248,7 +254,9 @@ namespace motCommonLib
                 throw new Exception("read() failed: " + e.Message);
             }
 
-            return __total_bytes; ;
+            __s_iobuffer = __sb.ToString();
+
+            return __total_bytes; 
         }
 
         public bool write(string __data)
