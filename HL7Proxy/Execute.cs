@@ -15,7 +15,7 @@ namespace HL7Proxy
     {
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
-       
+
 
         int __first_day_of_week = 0;
 
@@ -36,11 +36,11 @@ namespace HL7Proxy
         volatile string __source_ip = string.Empty;
         volatile string __source_port = string.Empty;
 
-      //  public void __update_event_ui(string __message)
+        //  public void __update_event_ui(string __message)
 
-           void __update_ui_event(Object __sender, UIupdateArgs __args)
-            {
-     
+        void __update_ui_event(Object __sender, UIupdateArgs __args)
+        {
+
             __args.timestamp = DateTime.Now.ToString();
             __args.__event_message = string.Format("{0}{1}{2}", !string.IsNullOrEmpty(__args.__event_message) ? __args.__event_message + Environment.NewLine : string.Empty,
                                                                 !string.IsNullOrEmpty(__args.__msh_in) ? "In:\t" + __args.__msh_in + Environment.NewLine : string.Empty,
@@ -54,7 +54,7 @@ namespace HL7Proxy
             //UIupdateArgs __args = new UIupdateArgs();
 
             __args.timestamp = DateTime.Now.ToString();
-            __args.__event_message = string.Format("{0}{1}{2}",!string.IsNullOrEmpty(__args.__event_message) ? __args.__event_message + Environment.NewLine : string.Empty,
+            __args.__event_message = string.Format("{0}{1}{2}", !string.IsNullOrEmpty(__args.__event_message) ? __args.__event_message + Environment.NewLine : string.Empty,
                                                                !string.IsNullOrEmpty(__args.__msh_in) ? "In:\t" + __args.__msh_in + Environment.NewLine : string.Empty,
                                                                !string.IsNullOrEmpty(__args.__msh_out) ? "Out:\t" + __args.__msh_out + Environment.NewLine : string.Empty);
 
@@ -176,19 +176,21 @@ namespace HL7Proxy
             int __start_dow = (int)__dt.DayOfWeek;  // Ordinal First DoW == 0 == Sunday
 
             __pr.RxStartDate = __assign("TQ1-7-1", __fields)?.Substring(0, 8);
-            __pr.DoseScheduleName = __pattern;
+            __pattern = __assign("TQ1-3-1", __fields);
+
+            //__pr.DoseScheduleName = __pattern;
 
             // Brute force the determination
-            if (__pattern.Contains("J"))   // DoW field, Sunday = 1 "XX0XX0"
+            if (__pattern[1] == 'J')   // Ex: QJ135 DoW field, Sunday = 1 "XX0XX0"
             {
                 string __number_pattern, __new_pattern = string.Empty;
                 char[] __bytes = { 'O', 'O', 'O', 'O', 'O', 'O', 'O' };
                 int __index = 0;
-                
+
                 // Each digit that follows J is an adjusted offset into the array
                 __number_pattern = __pattern.Substring(__pattern.IndexOf("J") + 1);
 
-                int[,] __array = new int[7,7] 
+                int[,] __array = new int[7, 7]
                 { // Dose Day
                   // S M T W T F S
                     {1,2,3,4,5,6,7 }, // S - First Day of Week
@@ -200,7 +202,7 @@ namespace HL7Proxy
                     {2,1,0,6,5,4,3 }  // S
                  };
 
-                __first_day_of_week -= 1; // Adjust for array indexing  
+                __first_day_of_week = (__first_day_of_week == 0) ? 0 : __first_day_of_week - 1; // Adjust for array indexing  
 
                 foreach (char __n in __number_pattern)
                 {
@@ -211,12 +213,12 @@ namespace HL7Proxy
                     {
                         if (__array[__first_day_of_week, j] == __index)
                         {
-                            __bytes[__array[0, j]-1] = 'X';
+                            __bytes[__array[0, j] - 1] = 'X';
                             break;
                         }
 
                         j++;
-                    }                    
+                    }
                 }
 
                 int i = 0;
@@ -230,7 +232,7 @@ namespace HL7Proxy
 
                 __pr.DoseTimesQtys = string.Format("{0}{1:00.00}", __assign("TQ1-4", __fields), Convert.ToDouble(__assign("TQ1-2-1", __fields)));
             }
-            else if (__pattern.Contains("D"))  // Daily 
+            else if (__pattern[0] == 'Q' && __pattern.Contains("D"))  // Daily, need to qualify with the Q
             {
                 string[] __month = new string[31];
                 int __day = Convert.ToInt32(__pattern.Substring(1, 1));
@@ -259,7 +261,7 @@ namespace HL7Proxy
                 __pr.SpecialDoses = __month[0];
                 __pr.DoseTimesQtys += string.Format("{0}{1:00.00}", __assign("TQ1-4", __fields), Convert.ToDouble(__assign("TQ1-2-1", __fields)));
             }
-            else if (__pattern.Contains("L")) // Monthly TCustom (Unsupported by MOTALL)
+            else if (__pattern[1] == 'L') // Monthly TCustom (Unsupported by MOTALL)
             {
                 char[] __toks = { ',' };
                 int i = 0;
@@ -442,23 +444,23 @@ namespace HL7Proxy
             }
 
             __loc.LocationName = __assign("ORC-21", __fields);
-            __loc.Address1 =     __assign("ORC-22-1", __fields);
-            __loc.Address2 =     __assign("ORC-22-2", __fields);
-            __loc.City =         __assign("ORC-22-3", __fields);
-            __loc.State =        __assign("ORC-22-4", __fields);
-            __loc.PostalCode =   __assign("ORC-22-5", __fields);
-            __loc.Phone =        __assign("ORC-23", __fields);
+            __loc.Address1 = __assign("ORC-22-1", __fields);
+            __loc.Address2 = __assign("ORC-22-2", __fields);
+            __loc.City = __assign("ORC-22-3", __fields);
+            __loc.State = __assign("ORC-22-4", __fields);
+            __loc.PostalCode = __assign("ORC-22-5", __fields);
+            __loc.Phone = __assign("ORC-23", __fields);
 
-            __doc.RxSys_DocID =  __assign("ORC-12-1", __fields);
-            __doc.LastName =     __assign("ORC-12-2", __fields);
-            __doc.FirstName =    __assign("ORC-12-3", __fields);
-            __doc.Address1 =     __assign("ORC-24-1", __fields);
-            __doc.Address2 =     __assign("ORC-24-2", __fields);
-            __doc.City =         __assign("ORC-24-3", __fields);
-            __doc.State =        __assign("ORC-24-4", __fields);
-            __doc.PostalCode =   __assign("ORC-24-5", __fields);
+            __doc.RxSys_DocID = __assign("ORC-12-1", __fields);
+            __doc.LastName = __assign("ORC-12-2", __fields);
+            __doc.FirstName = __assign("ORC-12-3", __fields);
+            __doc.Address1 = __assign("ORC-24-1", __fields);
+            __doc.Address2 = __assign("ORC-24-2", __fields);
+            __doc.City = __assign("ORC-24-3", __fields);
+            __doc.State = __assign("ORC-24-4", __fields);
+            __doc.PostalCode = __assign("ORC-24-5", __fields);
 
-            __pr.RxSys_DocID =    __doc.RxSys_DocID;
+            __pr.RxSys_DocID = __doc.RxSys_DocID;
             __scrip.RxSys_DocID = __doc.RxSys_DocID;
         }
         private void __process_PID(motPatientRecord __pr, Dictionary<string, string> __fields)
@@ -500,19 +502,19 @@ namespace HL7Proxy
             }
             */
 
-            __pr.LastName =      __assign("PID-5-1", __fields);
-            __pr.FirstName =     __assign("PID-5-2", __fields);
+            __pr.LastName = __assign("PID-5-1", __fields);
+            __pr.FirstName = __assign("PID-5-2", __fields);
             __pr.MiddleInitial = __assign("PID-5-3", __fields);
-            __pr.DOB =           __assign("PID-7", __fields)?.Substring(0, 8);  // Remove the timestamp
-            __pr.Gender =        __assign("PID-8", __fields)?.Substring(0, 1);
-            __pr.Address1 =      __assign("PID-11-1", __fields);
-            __pr.Address2 =      __assign("PID-11-2", __fields);
-            __pr.City =          __assign("PID-11-3", __fields);
-            __pr.State =         __assign("PID-11-4", __fields);
-            __pr.PostalCode =    __assign("PID-11-5", __fields);
-            __pr.Phone1 =        __assign("PID-13-1", __fields);
-            __pr.WorkPhone =     __assign("PID-14-1", __fields);
-            __pr.SSN =           __assign("PID-19", __fields);
+            __pr.DOB = __assign("PID-7", __fields)?.Substring(0, 8);  // Remove the timestamp
+            __pr.Gender = __assign("PID-8", __fields)?.Substring(0, 1);
+            __pr.Address1 = __assign("PID-11-1", __fields);
+            __pr.Address2 = __assign("PID-11-2", __fields);
+            __pr.City = __assign("PID-11-3", __fields);
+            __pr.State = __assign("PID-11-4", __fields);
+            __pr.PostalCode = __assign("PID-11-5", __fields);
+            __pr.Phone1 = __assign("PID-13-1", __fields);
+            __pr.WorkPhone = __assign("PID-14-1", __fields);
+            __pr.SSN = __assign("PID-19", __fields);
 
             //__scrip.RxSys_PatID = __pr.RxSys_PatID;
         }
@@ -545,20 +547,20 @@ namespace HL7Proxy
         }
         private void __process_RXE(motDrugRecord __drug, motPrescriberRecord __doc, motPrescriptionRecord __scrip, motStoreRecord __store, Dictionary<string, string> __fields)
         {
-            __doc.DEA_ID =        __assign("RXE-13-1", __fields);
+            __doc.DEA_ID = __assign("RXE-13-1", __fields);
 
             __drug.RxSys_DrugID = __assign("RXE-2-1", __fields);  // TODO: Don't think this is right
-            __drug.NDCNum =       __assign("RXE-2-1", __fields);
-            __drug.DrugName =     __assign("RXE-2-2", __fields);
-            __drug.TradeName =    __drug.DrugName;
+            __drug.NDCNum = __assign("RXE-2-1", __fields);
+            __drug.DrugName = __assign("RXE-2-2", __fields);
+            __drug.TradeName = __drug.DrugName;
 
-            if(__assign("RXE-25", __fields) != string.Empty)
-            { 
+            if (__assign("RXE-25", __fields) != string.Empty)
+            {
                 __drug.Strength = Convert.ToInt32(__assign("RXE-25", __fields));
             }
 
-            __drug.Unit =         __assign("RXE-26", __fields);
-            __drug.DoseForm =     __assign("RXE-6-1", __fields);
+            __drug.Unit = __assign("RXE-26", __fields);
+            __drug.DoseForm = __assign("RXE-6-1", __fields);
 
             if (__assign("RXE-35-1", __fields) != string.Empty)
             {
@@ -566,8 +568,8 @@ namespace HL7Proxy
             }
 
             __scrip.RxSys_DrugID = __drug.NDCNum;
-            __scrip.QtyPerDose =   __assign("RXE-3-1", __fields);
-            __scrip.RxSys_RxNum =  __assign("RXE-15", __fields);
+            __scrip.QtyPerDose = __assign("RXE-3-1", __fields);
+            __scrip.RxSys_RxNum = __assign("RXE-15", __fields);
             __scrip.DoseScheduleName = __assign("RXE-7-1", __fields);
 
             if (!string.IsNullOrEmpty(__assign("RXE-7-2", __fields)))
@@ -578,9 +580,9 @@ namespace HL7Proxy
             {
                 __scrip.Sig = "Pharmacist Attention - Missing Sig";
             }
-            
+
             __scrip.QtyDispensed = __assign("RXE-10", __fields);
-            __scrip.Refills =      __assign("RXE-16", __fields);
+            __scrip.Refills = __assign("RXE-16", __fields);
             __scrip.RxType = "0";
 
             __store.RxSys_StoreID = __assign("RXE-40-1", __fields);
@@ -590,11 +592,11 @@ namespace HL7Proxy
             }
 
             __store.StoreName = __assign("RXE-40-2", __fields);
-            __store.Address1 =  __assign("RXE-41-1", __fields);
-            __store.Address2 =  __assign("RXE-41-2", __fields);
-            __store.City =      __assign("RXE-41-3", __fields);
-            __store.State =     __assign("RXE-41-4", __fields);
-            __store.Zip =       __assign("RXE-41-5", __fields);
+            __store.Address1 = __assign("RXE-41-1", __fields);
+            __store.Address2 = __assign("RXE-41-2", __fields);
+            __store.City = __assign("RXE-41-3", __fields);
+            __store.State = __assign("RXE-41-4", __fields);
+            __store.Zip = __assign("RXE-41-5", __fields);
         }
         private void __process_RXO(motPatientRecord __pr, motDrugRecord __drug, Dictionary<string, string> __fields)
         {
@@ -607,7 +609,12 @@ namespace HL7Proxy
         private string __process_TQ1(motPrescriptionRecord __scrip, int __tq1_record_rx_type, Dictionary<string, string> __tq1)
         {
             string __dose_time_qty = string.Empty;
-            string __tq1_3_1 = __assign("TQ1-3-1", __tq1);
+            string __tq1_3_1 = __assign("TQ1-3-1", __tq1);  // Repeat pattern
+
+            if (string.IsNullOrEmpty(__tq1_3_1) || __tq1_3_1.Length > 10)
+            {
+                __tq1_3_1 = __assign("TQ1-11", __tq1);      // Text Instruction
+            }
 
             // If there's no repeat pattern (TQ1-3) then the explicit time (TQ1-4) is used 
             // There are a lot of other codes coming down that aren't documented, HS for example ...
@@ -636,7 +643,7 @@ namespace HL7Proxy
 
             // Explicit named repeat pattern in use
             if (!string.IsNullOrEmpty(__tq1_3_1))
-            {
+            {               
                 __scrip.DoseScheduleName = __tq1_3_1;
                 __scrip.QtyPerDose = __assign("TQ1-2-1", __tq1);
 
@@ -1054,6 +1061,8 @@ namespace HL7Proxy
             var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
             var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
             var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
+            
+            List<motTimeQtysRecord> __tq1_list = new List<motTimeQtysRecord>();
 
             string __time_qty = string.Empty;
             string __dose_time_qty = string.Empty;
@@ -1106,15 +1115,31 @@ namespace HL7Proxy
 
                             case "TQ1":
                                 __problem_segment = "TQ1";
-                                __dose_time_qty += __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
+
+                                motTimeQtysRecord __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
+
+                                __tmp_tq.RxSys_LocID = "0";
+                                if(!string.IsNullOrEmpty(__loc.RxSys_LocID))
+                                {
+                                    __tmp_tq.RxSys_LocID = __loc.RxSys_LocID;
+                                }
+
+                                __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
+                                __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
+
+                                __tq1_list.Add(__tmp_tq);
+
+                                //__dose_time_qty += __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
 
                                 __tq1_records_processed++;                               // > 1 means additive instructions
+                                __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed, __scrip.DoseScheduleName);
+
                                 __tq1_record_rx_type = Convert.ToInt32(__scrip.RxType);  // Non-zero means that its an add to special dose?
 
-                                if (__tq1_records_processed > 1)
-                                {
-                                    __scrip.QtyPerDose = string.Empty;
-                                }
+                                //if (__tq1_records_processed > 1)
+                                //{
+                                //    __scrip.QtyPerDose = string.Empty;
+                                //}
 
                                 break;
 
@@ -1165,6 +1190,12 @@ namespace HL7Proxy
             try
             {
                 motPort __p = new motPort(__target_ip, __target_port);
+
+                foreach(motTimeQtysRecord __tq in __tq1_list)
+                {
+                    __tq.Write(__p);
+                }
+
                 __scrip.Write(__p);
                 __pr.Write(__p);
                 __doc.Write(__p);

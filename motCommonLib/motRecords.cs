@@ -3242,7 +3242,7 @@ namespace motCommonLib
                 __qualifiedTags.Add(new Field("Action", tableAction, 10, true, 'a'));
                 __qualifiedTags.Add(new Field("RxSys_LocID", "", 10, true, 'k'));
                 __qualifiedTags.Add(new Field("DoseScheduleName", "", 10, true, 'k'));
-                __qualifiedTags.Add(new Field("DoseTimeQtys", "", 192, true, 'a'));
+                __qualifiedTags.Add(new Field("DoseTimesQtys", "", 192, true, 'a'));
             }
             catch
             {
@@ -3370,17 +3370,17 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "DoseScheduleName");
             }
         }
-        public string DoseTimeQtys
+        public string DoseTimesQtys
         {
             get
             {
-                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("dosetimequtys")));
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("dosetimesqtys")));
                 return f.tagData;
             }
 
             set
             {
-                setField(__qualifiedTags, value, "DoseTimeQtys");
+                setField(__qualifiedTags, value, "DoseTimesQtys");
             }
         }
         public void Write(motPort p, bool __log_on)
