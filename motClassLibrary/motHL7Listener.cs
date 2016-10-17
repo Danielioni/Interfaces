@@ -92,6 +92,13 @@ namespace motInboundLib
             MSH __resp = null;
             string __response = string.Empty;
 
+            if(!__data.Contains("\x0B") &&
+               !__data.Contains("\x1C"))
+            {
+                // Not our data
+                return;
+            }
+
             try
             {
                 // Clean delivery marks
