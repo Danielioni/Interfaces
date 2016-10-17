@@ -40,6 +40,16 @@ namespace motCommonLib
         public string __s_iobuffer { get; set; } = string.Empty;
         public byte[] __b_iobuffer { get; set; }
 
+        // NetworkStream.Read has a problem. If a moderate chunk of data is sent, say 64K, accross the internet
+        // the complete block is read and life is good.  If that same chunk of data is sent over the LAN the 
+        // results are non-deterministic and 90% of the time the complete block isn't read and life is bad.
+        // Looking around the net we see lots of complaints and the blame falls to a registry setting, but
+        // its probably not such a good idea to change it programatically.  The only way I've managed
+        // to get the system to behave consistently is with a Thread.Sleep to slow down the read and let 
+        // the stream catch up.  It's wicked ugly and I can't believe I have to do it. Maybe someday I'll
+        // find the real answer ...
+        public int __sleep_ms { get; set; } = 50;
+
         private int __portnum;
 
         private static TcpClient __client;
@@ -138,28 +148,12 @@ namespace motCommonLib
 
         public void listen()
         {
-            // try
-            // {
-            //     __trigger.Start();
-            //__logger.Info("Listening on port {0}", __portnum);
-            /*  }
-              catch (SocketException)
-              {
-                  throw;
-              }
-              catch (Exception)
-              {
-                  throw;
-              }
-              */
-
             while (__running)
             {
                 try
                 {
                     __client = __trigger.AcceptTcpClient();
                     __stream = __client.GetStream();
-
 
                     __remoteEndPoint = __client.Client.RemoteEndPoint;
                     __localEndPoint = __client.Client.LocalEndPoint;
@@ -179,7 +173,7 @@ namespace motCommonLib
                         __callback(__s_iobuffer);
                     }
 
-                    write("ACK");
+                    //write("ACK");
 
                     __stream.Close();
                     __client.Close();
@@ -204,13 +198,33 @@ namespace motCommonLib
             return;
         }
 
+        private void __clean_buffer()
+        {
+            //if (__b_iobuffer[0] == '\x1A')
+           // {
+           //     return 1;
+           // }
+
+            for (int i = 0; i < __b_iobuffer.Length; i++)
+            {
+                // Ugly hack to get around UTF8 Normalization failing to convert properly
+                if (__b_iobuffer[i] == '\xEE')
+                {
+                    __b_iobuffer[i] = (byte)'|';
+                }
+                if (__b_iobuffer[i] == '\xE2')
+                {
+                    __b_iobuffer[i] = (byte)'^';
+                }
+            }
+        }
+
         public int read()
         {
             int __inbytes = 0;
             int __total_bytes = 0;
-            StringBuilder __sb = new StringBuilder();
 
-            __b_iobuffer = new byte[0xFFFF];
+            __b_iobuffer = new byte[1024];
             __s_iobuffer = "";
 
             __logger.Info("Reading data ...");
@@ -218,33 +232,18 @@ namespace motCommonLib
 
             try
             {
-
                 do
                 {
+                    Array.Clear(__b_iobuffer, 0, __b_iobuffer.Length);
+
                     __inbytes = __stream.Read(__b_iobuffer, 0, __b_iobuffer.Length);
 
-                    if(__b_iobuffer[0] == '\x1A')
-                    {
-                        return 1;
-                    }
+                    __clean_buffer();
 
-                    for (int i = 0; i < __b_iobuffer.Length; i++)
-                    {
-                        // Ugly hack to get around UTF8 Normalization failing to convert properly
-                        if (__b_iobuffer[i] == '\xEE')
-                        {
-                            __b_iobuffer[i] = (byte)'|';
-                        }
-                        if (__b_iobuffer[i] == '\xE2')
-                        {
-                            __b_iobuffer[i] = (byte)'^';
-                        }
-                    }
-
-                    __sb.Append(Encoding.UTF8.GetString(__b_iobuffer));
+                    __s_iobuffer += Encoding.UTF8.GetString(__b_iobuffer, 0, __inbytes);
                     __total_bytes += __inbytes;
 
-                    Array.Clear(__b_iobuffer, 0, __b_iobuffer.Length);
+                    Thread.Sleep(__sleep_ms);
 
                 } while (__stream.DataAvailable);
             }
@@ -253,8 +252,6 @@ namespace motCommonLib
                 Console.WriteLine("read() failed: {0}", e.Message);
                 throw new Exception("read() failed: " + e.Message);
             }
-
-            __s_iobuffer = __sb.ToString();
 
             return __total_bytes; 
         }

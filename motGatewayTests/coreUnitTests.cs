@@ -40,8 +40,8 @@ namespace motCommonLib.Test
         static void __port_cdtor()
         { 
             motPort __p = new motPort();
-            __p.tcp_address = "localhost";
-            __p.tcp_port = 80;
+            __p.__tcp_address = "localhost";
+            __p.__tcp_port = 80;
             __p.Open();
         }
     }

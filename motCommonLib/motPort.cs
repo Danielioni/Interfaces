@@ -29,7 +29,7 @@ using System.Net;
 using NLog;
 
 /// <summary>
-/// Port is the bas class that talcs to the TCP/IP port that MOT uses.  The system will layer up from there
+/// Port is the bas class that talks to the TCP/IP port that the MOT gateway uses. The system will layer up from there
 /// to encompass parsers to transform XML, JSON, MOT Markup and Delimited text to MOT Markup, and then up to 
 /// collection methods including the pit, a monitored directory into which one throws files to import, a Web API,
 /// a RESTful/JSON interface and anything else that's needed
@@ -41,21 +41,21 @@ namespace motCommonLib
     {
         public int TCP_TIMEOUT { get; set; } = 300000;
 
-        public TcpClient tcpSocket = null;
-        NetworkStream dataStream;
+        public TcpClient __tcp_socket = null;
+        NetworkStream __data_stream;
 
         private Logger logger;
         public LogLevel __log_level { get; set; } = LogLevel.Error;
 
         bool __open = false;
 
-        public string tcp_address { get; set; }
-        public int tcp_port { get; set; }
+        public string __tcp_address { get; set; }
+        public int __tcp_port { get; set; }
 
 
         private void __open_socket(string __address, int __port)
         {
-            tcp_port = __port;
+            __tcp_port = __port;
 
             IPAddress[] __host = Dns.GetHostAddresses(__address);
 
@@ -63,7 +63,7 @@ namespace motCommonLib
             {
                 if (__h.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    tcp_address = __h.ToString();
+                    __tcp_address = __h.ToString();
                 }
             }
 
@@ -91,17 +91,30 @@ namespace motCommonLib
         {
             logger = LogManager.GetLogger("motInboundLib.Port");
         }
-        public motPort(string address, int port)
+        public motPort(string address, int port, bool __stay_open = true)
         {
             __open_socket(address, port);
+
+            // Just tested to see if we could get it,  now free it up and open it when we need it
+            if (!__stay_open)
+            {
+                this.Close();
+            }
         }
-        public motPort(string address, string port)
+        public motPort(string address, string port, bool __stay_open = true)
         {
-            __open_socket(address, tcp_port = Convert.ToInt32(port));
+            __open_socket(address, __tcp_port = Convert.ToInt32(port));
+
+            // Just tested to see if we could get it,  now free it up and open it when we need it
+            if(!__stay_open)
+            {
+                this.Close();
+            }
         }
         ~motPort()
         {
             Close();
+            Dispose();
         }
 
         public void Open()
@@ -113,10 +126,10 @@ namespace motCommonLib
 
             try
             {
-                tcpSocket = new TcpClient(tcp_address, tcp_port);
-                dataStream = tcpSocket.GetStream();
-                dataStream.ReadTimeout = TCP_TIMEOUT;
-                dataStream.WriteTimeout = TCP_TIMEOUT;
+                __tcp_socket = new TcpClient(__tcp_address, __tcp_port);
+                __data_stream = __tcp_socket.GetStream();
+                __data_stream.ReadTimeout = TCP_TIMEOUT;
+                __data_stream.WriteTimeout = TCP_TIMEOUT;
             }
             catch (ArgumentNullException e)
             {
@@ -140,8 +153,8 @@ namespace motCommonLib
         }
         public void Open(string __address, int __port)
         {
-            tcp_address = __address;
-            tcp_port = __port;
+            __tcp_address = __address;
+            __tcp_port = __port;
 
             try
             {
@@ -154,8 +167,8 @@ namespace motCommonLib
         }
         public void Open(string __address, string __port)
         {
-            tcp_address = __address;
-            tcp_port = Convert.ToInt32(__port);
+            __tcp_address = __address;
+            __tcp_port = Convert.ToInt32(__port);
 
             try
             {
@@ -170,16 +183,16 @@ namespace motCommonLib
         {
             try
             {
-                if (tcpSocket != null)
+                if (__open && __tcp_socket != null)
                 {
                     __open = false;
-                    dataStream.Close();
-                    tcpSocket.Close();
+                    __data_stream.Close();
+                    __tcp_socket.Close();
                 }
             }
             catch (Exception e)
             {
-                string __error = string.Format(@"Error closing port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                string __error = string.Format(@"Error closing port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, e.Message);
                 Console.WriteLine(__error);
                 logger.Log(__log_level, __error);
                 throw new Exception(__error);
@@ -189,14 +202,14 @@ namespace motCommonLib
         {
             try
             {
-                if (tcpSocket != null)
+                if (__open && __tcp_socket != null)
                 {
-                    dataStream.Flush();
+                    __data_stream.Flush();
                 }
             }
             catch (Exception e)
             {
-                string __error = string.Format(@"Error flushing port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                string __error = string.Format(@"Error flushing port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, e.Message);
                 Console.WriteLine(__error);
                 logger.Log(__log_level, __error);
                 throw new Exception(__error);
@@ -207,14 +220,14 @@ namespace motCommonLib
         {
             byte[] __retval = new byte[64];
 
-            int __retlen = dataStream.Read(__retval, 0, __retval.Length);
+            int __retlen = __data_stream.Read(__retval, 0, __retval.Length);
 
-            if (__retval[0] == '\x06')   // ACK
+            if (__retval[0] == '\x06')   // MOT Gateway ACK
             {
                 return true;
             }
 
-            string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, __retval);
+            string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, __retval);
             Console.WriteLine(__error);
             logger.Log(__log_level, __error);
 
@@ -225,15 +238,15 @@ namespace motCommonLib
         {
             try
             {
-                if (tcpSocket != null)
+                if (__open && __tcp_socket != null)
                 {
-                    dataStream.Write(Encoding.ASCII.GetBytes(__buf), 0, __len);
+                    __data_stream.Write(Encoding.ASCII.GetBytes(__buf), 0, __len);
                     return ProcessRetVal();
                 }
             }
             catch (Exception e)
             {
-                string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, e.Message);
                 Console.WriteLine(__error);
                 logger.Log(__log_level, __error);
                 throw new Exception(__error);
@@ -245,12 +258,12 @@ namespace motCommonLib
         {
             try
             {
-                if (tcpSocket != null)
+                if (__open && __tcp_socket != null)
                 {
                     byte[] __readbuf = new byte[256];
                     int __retval = 0;
 
-                    __retval = dataStream.Read(__readbuf, 0, 256);
+                    __retval = __data_stream.Read(__readbuf, 0, 256);
                     __buf = Encoding.UTF8.GetString(__readbuf);
 
                     return (__retval == 0);
@@ -258,7 +271,7 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, e.Message);
                 Console.WriteLine(__error);
                 logger.Log(__log_level, __error);
                 throw new Exception(__error);
@@ -268,18 +281,18 @@ namespace motCommonLib
         }
         public string Read()
         {
-            if (tcpSocket != null)
+            if (__open && __tcp_socket != null)
             {
                 try
                 {
                     byte[] __readbuf = new byte[4096];
 
-                    int __retval = dataStream.Read(__readbuf, 0, __readbuf.Length);
+                    int __retval = __data_stream.Read(__readbuf, 0, __readbuf.Length);
                     return Encoding.UTF8.GetString(__readbuf);
                 }
                 catch (Exception e)
                 {
-                    string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                    string __error = string.Format(@"Error reading from port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, e.Message);
                     Console.WriteLine(__error);
                     logger.Log(__log_level, __error);
                     throw new Exception(__error);
@@ -290,7 +303,7 @@ namespace motCommonLib
         }
         public bool Reset()
         {
-            if (tcpSocket != null)
+            if (__open && __tcp_socket != null)
             {
                 try
                 {
@@ -299,7 +312,7 @@ namespace motCommonLib
                 }
                 catch (Exception e)
                 {
-                    string __error = string.Format(@"Error resetting port [{0}/{1}] : {2}", this.tcp_address, this.tcp_port, e.Message);
+                    string __error = string.Format(@"Error resetting port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, e.Message);
                     Console.WriteLine(__error);
                     logger.Log(__log_level, __error);
                     throw new Exception(__error);
@@ -313,8 +326,10 @@ namespace motCommonLib
 
         public void Dispose()
         {
-            ((IDisposable)dataStream).Dispose();
-            ((IDisposable)tcpSocket).Dispose();
+            /*
+            ((IDisposable)__data_stream).Dispose();
+            ((IDisposable)__tcp_socket).Dispose();
+            */
         }
     }
 }

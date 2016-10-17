@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,9 +39,11 @@ namespace StructuredDataProxy
     /// 
     public class Execute
     {
-        motSocket __listener;
-        Thread __worker;
+        motSocket   __listener;
+        motPort     __gateway;
+        Thread      __worker;
         XmlDocument __xml_doc;
+        ExecuteArgs __args;
 
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
@@ -92,6 +95,9 @@ namespace StructuredDataProxy
 
         void __parsePioneerRxRecord(XmlDocument __xdoc)
         {
+            XmlNodeList __node_list;
+            motPort __gateway = new motPort();
+
             // The interesting parts of PioneerRx XML are:
             //          Pharmacy
             //          Prescribers<Prescriber>           
@@ -99,51 +105,79 @@ namespace StructuredDataProxy
             //          Facility
             //          Rx
 
-            XmlNodeList __node_list = __xml_doc.GetElementsByTagName("Pharmacy Name");
-            motStoreRecord __store = new motStoreRecord("Add");
-
-
 
             /*
-                   <Pharmacy>
-                      <Identification>
-                        <PioneerRxID></PioneerRxID>
-                        <NCPDP></NCPDP>
-                        <NPI></NPI>
-                        <DEA></DEA>
-                        <DPS></DPS>
-                        <FederalTaxID></FederalTaxID>
-                        <StateLicenseNumber></StateLicenseNumber>
-                      </Identification>
-                      <PharmacyName></PharmacyName>
-                      <StoreNumber></StoreNumber>
-                      <Addresses>
-                        <Address>
-                          <SequenceNumber></SequenceNumber>
-                          <AddressLine1></AddressLine1>
-                          <AddressLine2></AddressLine2>
-                          <City></City>
-                          <StateCode></StateCode>
-                          <ZipCode></ZipCode>
-                          <Type></Type>
-                        </Address>
-                      </Addresses>
-                      <PhoneNumbers>
-                        <PhoneNumber>
-                          <SequenceNumber></SequenceNumber>
-                          <AreaCode></AreaCode>
-                          <Number></Number>
-                          <Extension></Extension>
-                          <Type></Type>
-                        </PhoneNumber>
-                      </PhoneNumbers>
-                      <PrimaryPhoneSequenceNumber></PrimaryPhoneSequenceNumber>
-                      <PrimaryFaxSequenceNumber></PrimaryFaxSequenceNumber>
-                      <Email></Email>
-                      <WebAddress></WebAddress>
-                      <PharmacistInChargeEmployeeID></PharmacistInChargeEmployeeID>
-                    </Pharmacy>
-                */
+                  <Pharmacy>
+                     <Identification>
+                       <PioneerRxID></PioneerRxID>
+                       <NCPDP></NCPDP>
+                       <NPI></NPI>
+                       <DEA></DEA>
+                       <DPS></DPS>
+                       <FederalTaxID></FederalTaxID>
+                       <StateLicenseNumber></StateLicenseNumber>
+                     </Identification>
+                     <PharmacyName></PharmacyName>
+                     <StoreNumber></StoreNumber>
+                     <Addresses>
+                       <Address>
+                         <SequenceNumber></SequenceNumber>
+                         <AddressLine1></AddressLine1>
+                         <AddressLine2></AddressLine2>
+                         <City></City>
+                         <StateCode></StateCode>
+                         <ZipCode></ZipCode>
+                         <Type></Type>
+                       </Address>
+                     </Addresses>
+                     <PhoneNumbers>
+                       <PhoneNumber>
+                         <SequenceNumber></SequenceNumber>
+                         <AreaCode></AreaCode>
+                         <Number></Number>
+                         <Extension></Extension>
+                         <Type></Type>
+                       </PhoneNumber>
+                     </PhoneNumbers>
+                     <PrimaryPhoneSequenceNumber></PrimaryPhoneSequenceNumber>
+                     <PrimaryFaxSequenceNumber></PrimaryFaxSequenceNumber>
+                     <Email></Email>
+                     <WebAddress></WebAddress>
+                     <PharmacistInChargeEmployeeID></PharmacistInChargeEmployeeID>
+                   </Pharmacy>
+               */
+            motStoreRecord __store = new motStoreRecord("Add", __args.__error_level, __args.__auto_truncate);
+           
+            __store.StoreName       = __xml_doc.GetElementsByTagName("PharmacyName").Item(0).InnerText;
+            __store.RxSys_StoreID   = __xml_doc?.GetElementsByTagName("PioneerRxID").Item(0).InnerText;
+            __store.DEANum          = __xml_doc?.GetElementsByTagName("DEA").Item(0).InnerText;
+            __store.Address1        = __xml_doc?.GetElementsByTagName("AddressLine1").Item(0).InnerText;
+            __store.Address2        = __xml_doc?.GetElementsByTagName("AddressLine2").Item(0).InnerText;
+            __store.City            = __xml_doc?.GetElementsByTagName("City").Item(0).InnerText;
+            __store.State           = __xml_doc?.GetElementsByTagName("StateCode").Item(0).InnerText;
+            __store.Zip             = __xml_doc?.GetElementsByTagName("ZipCode").Item(0).InnerText;
+
+            __node_list = __xml_doc?.GetElementsByTagName("PhoneNumbers");
+            IEnumerator __ienum = __node_list.GetEnumerator();
+
+            while (__ienum.MoveNext())
+            {
+                XmlNode __node = (XmlNode)__ienum.Current;
+
+                if(__node.ChildNodes[4].InnerText.ToLower() == "fax")
+                {
+                    __store.Fax = __node.ChildNodes[0].InnerText + __node.ChildNodes[1].InnerText;
+                }
+                else
+                {
+                    __store.Phone = __node.ChildNodes[0].InnerText + __node.ChildNodes[1].InnerText;
+                }
+            }
+
+            __gateway.Open();
+            //__store.Write(__gateway);
+            __gateway.Close();
+           
         }
 
         void __parse_data(string __data)
@@ -161,6 +195,7 @@ namespace StructuredDataProxy
                     __xml_doc = new XmlDocument();
 
                     // Pretty sure its real XML
+                    __data = __data.Remove(0, __data.IndexOf("\n<") +1 );
                     __xml_doc.LoadXml(__data);
 
                     // Let's try and figure out whose data it is. 
@@ -185,19 +220,20 @@ namespace StructuredDataProxy
             catch(Exception ex)
             {
                 __logger.Error("Parse Pioneer Data: {0}", ex.Message);
-
+                __show_error_event("Parse Pioneer Data Failure: " + ex.Message);
             }
         }
 
         public void __start_up(ExecuteArgs __args)
         {
+            this.__args = __args;
+
             // Test cross thread communication
             Task.Run(() =>
             {
                 try
                 {
                     __show_common_event("Strucured Data Proxy Starting Up");
-                    __show_common_event(string.Format("Listening on: {0}:{1}, Sending to: {2}:{3}", __args.__listen_address, __args.__listen_port, __args.__gateway_address, __args.__gateway_port));
                 }
                 catch (Exception e)
                 {
@@ -219,7 +255,9 @@ namespace StructuredDataProxy
                 __worker.Start();
 
                 __show_common_event("Started listening to on port: " + __args.__listen_port);
-                __show_common_event(string.Format("Sending data to: {0}:{1}", __args.__gateway_address, __args.__gateway_port));
+
+                __gateway = new motPort(__args.__gateway_address, __args.__gateway_port, false);
+                __show_common_event(string.Format("Sending data to: {0}:{1}", __args.__gateway_address, __args.__gateway_port));               
             }
             catch (Exception e)
             {
@@ -231,7 +269,7 @@ namespace StructuredDataProxy
         public void __shut_down()
         {
             __listener.close();
-            __show_error_event("Default Proxy Shutting down");
+            __show_error_event("Structured Data Proxy Shutting down");
         }
 
         public Execute()

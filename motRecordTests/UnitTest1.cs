@@ -41,8 +41,8 @@ namespace motRecordTests
             try
             {
                 motPort __p = new motPort();
-                __p.tcp_address = "localhost";
-                __p.tcp_port = 80;
+                __p.__tcp_address = "localhost";
+                __p.__tcp_port = 80;
                 __p.Open();
             }
             catch
@@ -53,8 +53,8 @@ namespace motRecordTests
             try
             {
                 motPort __p = new motPort();
-                __p.tcp_address = "localhost";
-                __p.tcp_port = 0;
+                __p.__tcp_address = "localhost";
+                __p.__tcp_port = 0;
                 __p.Open();
             }
             catch
@@ -65,8 +65,8 @@ namespace motRecordTests
             try
             {
                 motPort __p = new motPort();
-                __p.tcp_address = "esmartpass.com";
-                __p.tcp_port = 80;
+                __p.__tcp_address = "esmartpass.com";
+                __p.__tcp_port = 80;
                 __p.Open();
 
                 Console.WriteLine("Successfully opened esmartpass.com:80");
