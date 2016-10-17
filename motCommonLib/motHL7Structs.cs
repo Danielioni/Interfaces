@@ -1015,6 +1015,23 @@ namespace motCommonLib
             __parser.__parse(__message, __msg_data);
         }
     }
+    public class CX1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public CX1() : base()
+        {
+            __load();
+        }
+        public CX1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+
     public class GT1 : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();

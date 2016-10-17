@@ -156,15 +156,21 @@ namespace StructuredDataProxy
                 // Determine the data type
 
                 // Valid XML
+                 
+
                 if(__data.Contains("<?xml version="))
                 {
                     __xml_doc = new XmlDocument();
 
                     // Pretty sure its real XML
-                    __xml_doc.LoadXml(__data);
+                    __xml_doc.LoadXml(__data.Substring(__data.IndexOf(Environment.NewLine)));
+
+                    Regex __xml_parser = new Regex(
+                                @"\A(?>\s*)<Message>((?>\s*)<(?<Field>\w*)>(?<Data>.*?)</\k<Field>>(?>\s*))*?(?>\s*)</Message>(?>\s*)(?<EOF><eof/>)?",
+                                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
 
                     // Let's try and figure out whose data it is. 
-                    if (__data.Contains("PioneerRxID"))
+                    if (__data.Contains("PioneerRxID") && __xml_parser.Match(__data).Success)
                     {
                         // Pretty obvious
                         __show_common_event("PioneerRx Formatted Data");
@@ -185,7 +191,7 @@ namespace StructuredDataProxy
             catch(Exception ex)
             {
                 __logger.Error("Parse Pioneer Data: {0}", ex.Message);
-
+                __show_error_event("Parse Pioneer Data: " + ex.Message);
             }
         }
 

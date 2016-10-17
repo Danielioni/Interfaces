@@ -144,6 +144,7 @@ namespace HL7Proxy
         // ------------  Start Processing Code ---------------------
 
         string[] __global_month = null;
+        string __message_type = string.Empty;
 
         public void __clean_up()
         {
@@ -436,11 +437,25 @@ namespace HL7Proxy
                     break;
             }
 
-            // If the location ID is missing, assign it to the default location 0
-            __loc.RxSys_LocID = __assign("ORC-2-1", __fields);
-            if (string.IsNullOrEmpty(__loc.RxSys_LocID))
+            // For FrameworkLTC RDE messages, the ORC format is represented as FacilityID\F\PatientID\F\OrnderNum which translates to 
+            //  ORC-3-1 <Facility ID>
+            //  ORC-3-3 <Patient ID>
+            //  ORC-3-5 <Order Number>
+            // Check to see if there are some 'F's, which would indicate the Framework format
+            string __tmp = __assign("ORC-3-2", __fields);
+            if (!string.IsNullOrEmpty(__tmp) && __tmp == "F")
             {
-                __loc.RxSys_LocID = "0";
+                __loc.RxSys_LocID = __assign("ORC-3-1", __fields);
+                __scrip.RxSys_RxNum = __assign("ORC-3-5", __fields);
+            }
+            else
+            {
+                // If the location ID is missing, assign it to the default location 0
+                __loc.RxSys_LocID = __assign("ORC-2-1", __fields);
+                if (string.IsNullOrEmpty(__loc.RxSys_LocID))
+                {
+                    __loc.RxSys_LocID = "UnKnown";
+                }
             }
 
             __loc.LocationName = __assign("ORC-21", __fields);
@@ -467,40 +482,51 @@ namespace HL7Proxy
         {
             string __tmp = string.Empty;
 
+            // For FrameworkLTC RDE messages, the PID format is represented as FacilityID\F\PatientID which translates to 
+            //  PID-3-1 <Facility ID>
+            //  PID-3-3 <Patient ID>
             //
+            // and for ADT Messages the PID format is a pure CX record and rpresented as PatientID^CheckDigit^Check Digit ID Code, so
+            //  PID-3-1 is the ID.  
+            //
+            // Epic uses a CX for RDE messages, so, we might need to follow a rule chain to maintain system independence
+            // Both PID-2-1 and PID-4-1 can also contain a patient ID but its unclear what the rules are there.
+            //  
             // PID-2-1, PID-3-1, PID-4-1 have the Patient ID. Sample A01 records have a blank PID-2 and populated 
             // PID-3-1, though the RDE_O11 is the reverse.  Try them both and take what's there.  3-1 wins in a draw
             // 
-            if (!string.IsNullOrEmpty(__assign("PID-2-1", __fields)))
+
+            // Check to see if there are some 'F's, which would indicate the Framework format
+            __tmp = __assign("PID-3-2", __fields);
+            if (!string.IsNullOrEmpty(__tmp) && __tmp == "F")
             {
-                __pr.RxSys_PatID = __assign("PID-2-1", __fields);
-            }
-            else if (!string.IsNullOrEmpty(__assign("PID-3-1", __fields)))
-            {
-                __pr.RxSys_PatID = __assign("PID-3-1", __fields);
-            }
-            else if (!string.IsNullOrEmpty(__assign("PID-4-1", __fields)))
-            {
-                __pr.RxSys_PatID = __assign("PID-4-1", __fields);
+                if (!string.IsNullOrEmpty(__assign("PID-3-3", __fields)))
+                {
+                    __pr.RxSys_PatID = __assign("PID-3-3", __fields);
+                    __pr.RxSys_LocID = __assign("PID-3-1", __fields);
+                }
             }
             else
             {
-                __pr.RxSys_PatID = "000000";
+                // Walk the potential types looking for the right one -- Generically 
+                if (!string.IsNullOrEmpty(__assign("PID-2-1", __fields)))
+                {
+                    __pr.RxSys_PatID = __assign("PID-2-1", __fields);
+                }
+                else if (!string.IsNullOrEmpty(__assign("PID-3-1", __fields)))
+                {
+                    __pr.RxSys_PatID = __assign("PID-3-1", __fields);
+                }
+                else if (!string.IsNullOrEmpty(__assign("PID-4-1", __fields)))
+                {
+                    __pr.RxSys_PatID = __assign("PID-4-1", __fields);
+                }
+                else
+                {
+                    __pr.RxSys_PatID = "UnKnown";
+                }
             }
 
-            /*
-            __tmp = __assign("PID-2", __fields);
-            if (!string.IsNullOrEmpty(__tmp))
-            {
-                __pr.RxSys_PatID = __tmp;
-            }
-
-            __tmp = __assign("PID-3-1", __fields);
-            if (!string.IsNullOrEmpty(__tmp))
-            {
-                __pr.RxSys_PatID = __tmp;
-            }
-            */
 
             __pr.LastName = __assign("PID-5-1", __fields);
             __pr.FirstName = __assign("PID-5-2", __fields);
@@ -784,6 +810,8 @@ namespace HL7Proxy
             string __diagnosis = string.Format("Patient Diagnosis\n");
             string __event_code = "A01";
 
+            __message_type = "ADT";
+
             string __problem_segment = string.Empty;
 
             try
@@ -895,6 +923,8 @@ namespace HL7Proxy
             string __time_qty = string.Empty;
             string __problem_segment = string.Empty;
 
+            __message_type = "ADT";
+
             try
             {
                 foreach (Dictionary<string, string> __fields in __args.fields)
@@ -934,6 +964,8 @@ namespace HL7Proxy
             int __tq1_record_rx_type = 0;
 
             string __problem_segment = string.Empty;
+
+            __message_type = "OMP";
 
             try
             {
@@ -1071,6 +1103,8 @@ namespace HL7Proxy
 
 
             string __problem_segment = string.Empty;
+
+            __message_type = "RDE";
 
             try
             {
@@ -1232,6 +1266,8 @@ namespace HL7Proxy
             int __tq1_record_rx_type = 0;
 
             string __problem_segment = string.Empty;
+
+            __message_type = "RDS";
 
             try
             {

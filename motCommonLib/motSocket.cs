@@ -179,7 +179,7 @@ namespace motCommonLib
                         __callback(__s_iobuffer);
                     }
 
-                    write("ACK");
+                    //write("ACK");
 
                     __stream.Close();
                     __client.Close();

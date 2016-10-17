@@ -1468,6 +1468,11 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
+                if(string.IsNullOrEmpty(f.tagData))
+                {
+                    return string.Empty;
+                }
+
                 return f.tagData;
             }
 
@@ -1576,7 +1581,25 @@ namespace motCommonLib
         {
             get
             {
-                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("postalcode")));
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("zip")));
+                return f.tagData;
+            }
+
+            set
+            {
+                while (value.Contains("-"))
+                {
+                    value = value.Remove(value.IndexOf("-"), 1);
+                }
+
+                setField(__qualifiedTags, value, "Zip");
+            }
+        }
+        public string Zip
+        {
+            get
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("zip")));
                 return f.tagData;
             }
 
@@ -1654,7 +1677,7 @@ namespace motCommonLib
         {
             get
             {
-                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_licid")));
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_locid")));
                 return f.tagData;
             }
 
@@ -2804,7 +2827,25 @@ namespace motCommonLib
         {
             get
             {
-                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("postalcode")));
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("zip")));
+                return f.tagData;
+            }
+
+            set
+            {
+                while (value.Contains("-"))
+                {
+                    value = value.Remove(value.IndexOf("-"), 1);
+                }
+
+                setField(__qualifiedTags, value, "Zip");
+            }
+        }
+        public string Zip
+        {
+            get
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("zip")));
                 return f.tagData;
             }
 
