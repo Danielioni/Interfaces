@@ -260,11 +260,14 @@ namespace motCommonLib
             {
                 if (__open && __tcp_socket != null)
                 {
-                    byte[] __readbuf = new byte[256];
+                    byte[] __readbuf = new byte[1024];
                     int __retval = 0;
 
-                    __retval = __data_stream.Read(__readbuf, 0, 256);
-                    __buf = Encoding.UTF8.GetString(__readbuf);
+                    while (__data_stream.DataAvailable)
+                    {
+                        __retval = __data_stream.Read(__readbuf, 0, __readbuf.Length);
+                        __buf += Encoding.UTF8.GetString(__readbuf, 0, __retval);
+                    }
 
                     return (__retval == 0);
                 }
@@ -285,10 +288,15 @@ namespace motCommonLib
             {
                 try
                 {
-                    byte[] __readbuf = new byte[4096];
+                    byte[] __readbuf = new byte[1024];
+                    int __retval = 0;
+                    string __data = string.Empty;
 
-                    int __retval = __data_stream.Read(__readbuf, 0, __readbuf.Length);
-                    return Encoding.UTF8.GetString(__readbuf);
+                    while (__data_stream.DataAvailable)
+                    {
+                        __retval = __data_stream.Read(__readbuf, 0, __readbuf.Length);
+                        __data += Encoding.UTF8.GetString(__readbuf, 0, __retval);
+                    }
                 }
                 catch (Exception e)
                 {

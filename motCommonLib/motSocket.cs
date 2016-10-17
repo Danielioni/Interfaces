@@ -48,6 +48,9 @@ namespace motCommonLib
         // to get the system to behave consistently is with a Thread.Sleep to slow down the read and let 
         // the stream catch up.  It's wicked ugly and I can't believe I have to do it. Maybe someday I'll
         // find the real answer ...
+        //
+        // Turned this off -- looking for a real solution now.
+
         public int __sleep_ms { get; set; } = 50;
 
         private int __portnum;
@@ -208,6 +211,8 @@ namespace motCommonLib
             for (int i = 0; i < __b_iobuffer.Length; i++)
             {
                 // Ugly hack to get around UTF8 Normalization failing to convert properly
+                // It makes the MOT delimited interface fail
+
                 if (__b_iobuffer[i] == '\xEE')
                 {
                     __b_iobuffer[i] = (byte)'|';
@@ -232,20 +237,15 @@ namespace motCommonLib
 
             try
             {
-                do
+                while (__stream.DataAvailable) 
                 {
-                    Array.Clear(__b_iobuffer, 0, __b_iobuffer.Length);
-
                     __inbytes = __stream.Read(__b_iobuffer, 0, __b_iobuffer.Length);
 
                     __clean_buffer();
 
                     __s_iobuffer += Encoding.UTF8.GetString(__b_iobuffer, 0, __inbytes);
                     __total_bytes += __inbytes;
-
-                    Thread.Sleep(__sleep_ms);
-
-                } while (__stream.DataAvailable);
+                } 
             }
             catch (Exception e)
             {
