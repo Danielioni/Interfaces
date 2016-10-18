@@ -132,7 +132,7 @@ namespace motCommonLib
         protected string __normalize_date(string __date)
         {
             // Convert 19990102 to 1999-01-02
-            if(!string.IsNullOrEmpty(__date) && !__date.Contains("-"))
+            if (!string.IsNullOrEmpty(__date) && !__date.Contains("-"))
             {
                 var __year = __date.Substring(0, 4);
                 var __month = __date.Substring(4, 2);
@@ -141,6 +141,17 @@ namespace motCommonLib
             }
 
             return __date;
+        }
+        protected string __normalize_string(string __val)
+        {
+            char[] __junk = { '-', '.', ',', ' ', ';', ':', '(', ')' };
+
+            while (__val?.IndexOfAny(__junk) > -1)
+            {
+                __val = __val.Remove(__val.IndexOfAny(__junk), 1);
+            }
+
+            return __val;   
         }
         public void checkDependencies(List<Field> __qualifiedTags)
         {
@@ -167,7 +178,7 @@ namespace motCommonLib
                 if (__qualifiedTags[i].required && (__qualifiedTags[i].when == f.tagData.ToLower()[0] || __qualifiedTags[i].when == 'k'))  // look for a,c,k
                 {
                     if (__qualifiedTags[i].tagData == null || __qualifiedTags[i].tagData.Length == 0)
-                    { 
+                    {
                         if (!__auto_truncate)
                         {
                             string __err = string.Format("REJECTED: Field {0} empty but required for the {1} operation on a {2} record!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
@@ -265,7 +276,7 @@ namespace motCommonLib
                 __val = __val?.Substring(0, f.maxLen);
             }
 
-            f.tagData = __val;
+            f.tagData = __val == null ? string.Empty : __val;
 
             return true;
         }
@@ -300,15 +311,21 @@ namespace motCommonLib
                 __write_log(__log_data, motErrorlLevel.Warning);
 
                 __val = __val?.Substring(0, f.maxLen);
-               
+
             }
 
-            f.tagData = __val;
+            f.tagData = __val == null ? string.Empty : __val;
+
             return true;
         }
         protected void Write(motPort p, List<Field> __qualifiedTags, bool __do_logging)
         {
             string __record = "<Record>";
+
+            if (p == null || __qualifiedTags == null)
+            {
+                throw new Exception("Null Arguments");
+            }
 
             try
             {
@@ -336,7 +353,7 @@ namespace motCommonLib
             {
                 __write_log(e.Message, motErrorlLevel.Error);
                 __write_log(__record, motErrorlLevel.Error);
- 
+
                 throw;
             }
         }
@@ -717,7 +734,7 @@ namespace motCommonLib
 
             set
             {
-                if (value < 2 && value > 7)
+                if ((value < 2 && value > 7) && value != 99)
                 {
                     throw new Exception("Drug Schedule must be 2-7");
                 }
@@ -779,13 +796,8 @@ namespace motCommonLib
             }
 
             set
-            {
-                while (value.Contains("-"))
-                {
-                    value = value.Remove(value.IndexOf("-"), 1);
-                }
-
-                setField(__qualifiedTags, value, "NDCNum", false);
+            {                
+                setField(__qualifiedTags, __normalize_string(value), "NDCNum", false);
             }
         }
         public int SizeFactor
@@ -1172,14 +1184,7 @@ namespace motCommonLib
 
             set
             {
-                char[] __junk = { '(', ')', '-', '.', ',', ' ' };
-
-                while (value.IndexOfAny(__junk) > -1)
-                {
-                    value = value.Remove(value.IndexOfAny(__junk), 1);
-                }
-
-                setField(__qualifiedTags, value, "Phone");
+                setField(__qualifiedTags, __normalize_string(value), "Phone");
             }
         }
         public string Comments
@@ -1468,7 +1473,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
-                if(string.IsNullOrEmpty(f.tagData))
+                if (f == null)
                 {
                     return string.Empty;
                 }
@@ -1517,12 +1522,7 @@ namespace motCommonLib
 
             set
             {
-                while (value.Contains("."))
-                {
-                    value = value.Remove(value.IndexOf("."), 1);
-                }
-
-                setField(__qualifiedTags, value, "MiddleInitial");
+                setField(__qualifiedTags, __normalize_string(value), "MiddleInitial");
             }
         }
         public string Address1
@@ -1587,12 +1587,7 @@ namespace motCommonLib
 
             set
             {
-                while (value.Contains("-"))
-                {
-                    value = value.Remove(value.IndexOf("-"), 1);
-                }
-
-                setField(__qualifiedTags, value, "Zip");
+                setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
         public string Zip
@@ -1605,12 +1600,7 @@ namespace motCommonLib
 
             set
             {
-                while (value.Contains("-"))
-                {
-                    value = value.Remove(value.IndexOf("-"), 1);
-                }
-
-                setField(__qualifiedTags, value, "Zip");
+                setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
         public string Phone1
@@ -1623,14 +1613,7 @@ namespace motCommonLib
 
             set
             {
-                char[] __junk = { '(', ')', '-', '.', ',', ' ' };
-
-                while (value.IndexOfAny(__junk) > -1)
-                {
-                    value = value.Remove(value.IndexOfAny(__junk), 1);
-                }
-
-                setField(__qualifiedTags, value, "Phone1");
+                setField(__qualifiedTags, __normalize_string(value), "Phone1");
             }
         }
         public string Phone2
@@ -1643,14 +1626,7 @@ namespace motCommonLib
 
             set
             {
-                char[] __junk = { '(', ')', '-', '.', ',', ' ' };
-
-                while (value.IndexOfAny(__junk) > -1)
-                {
-                    value = value.Remove(value.IndexOfAny(__junk), 1);
-                }
-
-                setField(__qualifiedTags, value, "Phone2");
+                setField(__qualifiedTags, __normalize_string(value), "Phone2");
             }
         }
         public string WorkPhone
@@ -1663,14 +1639,7 @@ namespace motCommonLib
 
             set
             {
-                char[] __junk = { '(', ')', '-', '.', ',', ' ' };
-
-                while (value.IndexOfAny(__junk) > -1)
-                {
-                    value = value.Remove(value.IndexOfAny(__junk), 1);
-                }
-
-                setField(__qualifiedTags, value, "WorkPhone");
+                setField(__qualifiedTags, __normalize_string(value), "WorkPhone");
             }
         }
         public string RxSys_LocID
@@ -1833,12 +1802,7 @@ namespace motCommonLib
 
             set
             {
-                while (value.Contains("-"))
-                {
-                    value = value.Remove(value.IndexOf("-"), 1);
-                }
-
-                setField(__qualifiedTags, value, "SSN");
+                setField(__qualifiedTags, __normalize_string(value), "SSN");
             }
         }
         public string Allergies
@@ -1903,7 +1867,7 @@ namespace motCommonLib
             }
 
             set
-            {            
+            {
                 setField(__qualifiedTags, __normalize_date(value), "DOB");
             }
         }
@@ -2358,14 +2322,7 @@ namespace motCommonLib
 
             set
             {
-                char[] __junk = { ' ', ';', ':' };
-
-                while (value.IndexOfAny(__junk) > -1)
-                {
-                    value = value.Remove(value.IndexOfAny(__junk), 1);
-                }
-
-                setField(__qualifiedTags, value, "DoseScheduleName");
+                setField(__qualifiedTags, __normalize_string(value), "DoseScheduleName");
             }
         }
         public string Comments
@@ -2833,12 +2790,7 @@ namespace motCommonLib
 
             set
             {
-                while (value.Contains("-"))
-                {
-                    value = value.Remove(value.IndexOf("-"), 1);
-                }
-
-                setField(__qualifiedTags, value, "Zip");
+                setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
         public string Zip
@@ -2851,12 +2803,7 @@ namespace motCommonLib
 
             set
             {
-                while (value.Contains("-"))
-                {
-                    value = value.Remove(value.IndexOf("-"), 1);
-                }
-
-                setField(__qualifiedTags, value, "Zip");
+                setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
         public string Phone
@@ -2869,15 +2816,7 @@ namespace motCommonLib
 
             set
             {
-                char[] __junk = { '(', ')', '-', '.', ',', ' ' };
-
-
-                while (value.IndexOfAny(__junk) > -1)
-                {
-                    value = value.Remove(value.IndexOfAny(__junk), 1);
-                }
-
-                setField(__qualifiedTags, value, "Phone");
+                setField(__qualifiedTags, __normalize_string(value), "Phone");
 
             }
         }
@@ -3178,12 +3117,7 @@ namespace motCommonLib
 
             set
             {
-                if (value != null && value.Contains("-"))
-                {
-                    value = value.Remove('-');  // Sometimes folks pass formatted Zip +4 codes
-                }
-
-                setField(__qualifiedTags, value, "Zip");
+                setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
         public string Phone
@@ -3196,14 +3130,7 @@ namespace motCommonLib
 
             set
             {
-                char[] __junk = { '(', ')', '-', '.', ',', ' ' };
-
-                while (value?.IndexOfAny(__junk) > -1)
-                {
-                    value = value.Remove(value.IndexOfAny(__junk), 1);
-                }
-
-                setField(__qualifiedTags, value, "Phone");
+                setField(__qualifiedTags, __normalize_string(value), "Phone");
             }
         }
         public string Fax

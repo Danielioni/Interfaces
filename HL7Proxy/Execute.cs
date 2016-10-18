@@ -527,12 +527,25 @@ namespace HL7Proxy
                 }
             }
 
-
             __pr.LastName = __assign("PID-5-1", __fields);
             __pr.FirstName = __assign("PID-5-2", __fields);
             __pr.MiddleInitial = __assign("PID-5-3", __fields);
             __pr.DOB = __assign("PID-7", __fields)?.Substring(0, 8);  // Remove the timestamp
             __pr.Gender = __assign("PID-8", __fields)?.Substring(0, 1);
+
+            // 
+            // There are 2 alternatives for entering data, for example an apartment building where the 
+            // street name and is the same but the apt number is different.  It can be used lots of different
+            // ways. It's more important with patient records.
+            //
+            __pr.Address1 = __assign("PID-11-1", __fields);
+            __pr.Address2 = __assign("PID-11-2", __fields) + " " + __assign("PID-11-3", __fields);
+            if (string.IsNullOrEmpty(__pr.Address1))
+            {
+                __pr.Address1 = __pr.Address2;
+                __pr.Address2 = string.Empty;
+            }
+
             __pr.Address1 = __assign("PID-11-1", __fields);
             __pr.Address2 = __assign("PID-11-2", __fields);
             __pr.City = __assign("PID-11-3", __fields);
@@ -561,6 +574,7 @@ namespace HL7Proxy
             __scrip.Comments += "Component Strngth Units  " + __assign("RXC-6-1", __fields);
             __scrip.Comments += "Component Drug Strength Volume " + __assign("RXC-8", __fields);
             __scrip.Comments += "Component Drug Strength Volume Units" + __assign("RXC-9-1", __fields);
+            __scrip.Comments += "\n\n";
         }
         private void __process_RXD(motPrescriptionRecord __scrip, motDrugRecord __drug, Dictionary<string, string> __fields)
         {
@@ -618,8 +632,20 @@ namespace HL7Proxy
             }
 
             __store.StoreName = __assign("RXE-40-2", __fields);
+
+            // 
+            // There are 2 alternatives for entering data, for example an apartment building where the 
+            // street name and is the same but the apt number is different.  It can be used lots of different
+            // ways. It's more important with patient records.
+            //
             __store.Address1 = __assign("RXE-41-1", __fields);
-            __store.Address2 = __assign("RXE-41-2", __fields);
+            __store.Address2 = __assign("RXE-41-2", __fields) + " " + __assign("RXE-41-3", __fields);
+            if (string.IsNullOrEmpty(__store.Address1))
+            {
+                __store.Address1 = __store.Address2;
+                __store.Address2 = string.Empty;
+            }
+
             __store.City = __assign("RXE-41-3", __fields);
             __store.State = __assign("RXE-41-4", __fields);
             __store.Zip = __assign("RXE-41-5", __fields);

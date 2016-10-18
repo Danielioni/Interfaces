@@ -32,8 +32,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace motRecordTests
 {
+    public class __vars
+    {
+        protected string __gateway_address = "localhost";
+        protected int __port_number = 24040;
+        protected motPort p;
+
+        public __vars()
+        { }
+    }
+
     [TestClass]
-    public class testSockets
+    public class testSockets : __vars
     {
         [TestMethod]
         public void __port_cdtor()
@@ -41,7 +51,7 @@ namespace motRecordTests
             try
             {
                 motPort __p = new motPort();
-                __p.__tcp_address = "localhost";
+                __p.__tcp_address = __gateway_address;
                 __p.__tcp_port = 80;
                 __p.Open();
             }
@@ -53,7 +63,7 @@ namespace motRecordTests
             try
             {
                 motPort __p = new motPort();
-                __p.__tcp_address = "localhost";
+                __p.__tcp_address = __gateway_address;
                 __p.__tcp_port = 0;
                 __p.Open();
             }
@@ -90,8 +100,9 @@ namespace motRecordTests
     }
 
     [TestClass]
-    public class motDocTypeTests
+    public class motDocTypeTests : __vars
     {
+
         [TestMethod]
         public void testXMLDoc()
         {
@@ -122,7 +133,7 @@ namespace motRecordTests
 
             try
             {
-                motPort p = new motPort("localhost", "24042");
+                p = new motPort(__gateway_address, __port_number);
                 motParser __test = new motParser(p, __xdoc, motInputStuctures.__inputXML);
             }
             catch (Exception e)
@@ -160,7 +171,7 @@ namespace motRecordTests
 
             try
             {
-                motPort p = new motPort("localhost", "24042");
+                p = new motPort(__gateway_address, __port_number);
                 motParser __test = new motParser(p, __jdoc, motInputStuctures.__inputJSON);
             }
             catch (Exception e)
@@ -181,18 +192,18 @@ namespace motRecordTests
     }
 
     [TestClass]
-    public class recordTypeTests
+    public class recordTypeTests : __vars
     {
         [TestMethod]
         public void testDrugRecord()
         {
             motDrugRecord r;
-            motPort p;
+           
             bool __failed = false;
 
             try
             {
-                p = new motPort("localhost", "24041");
+                p = new motPort(__gateway_address, __port_number);
                 r = new motDrugRecord("Add");
             }
             catch
@@ -203,7 +214,7 @@ namespace motRecordTests
 
             try
             {
-                // Null is a valid value
+                // Null is a valid value, should not fail
                 r.RxSys_DrugID = null;
                 r.LabelCode = null;
                 r.ProductCode = null;
@@ -225,14 +236,52 @@ namespace motRecordTests
                 r.GenericFor = null;
                 r.Write(p);
             }
-            catch
+            catch(Exception ex)
             {
-                __failed = true;                     
+                if (ex.Message.Contains("REJECTED") == false)
+                {
+                    Assert.Fail("Null initialization threw Exception: {0}", ex.Message);
+                }
+                else
+                {
+                    Console.WriteLine("Message from null init: {0}", ex.Message);
+                }
+
+                __failed = true;
+            }           
+
+            // Should not fail
+            try
+            {
+                var __test_read = r.RxSys_DrugID;
+                __test_read = r.LabelCode;
+                __test_read = r.ProductCode;
+                __test_read = r.TradeName;
+                __test_read = r.Strength.ToString();
+                __test_read = r.Unit;
+                __test_read = r.RxOTC;
+                __test_read = r.DoseForm;
+                __test_read = r.Route;
+                __test_read = r.DrugSchedule.ToString();
+                __test_read = r.VisualDescription;
+                __test_read = r.DrugName;
+                __test_read = r.ShortName;
+                __test_read = r.NDCNum;
+                __test_read = r.SizeFactor.ToString();
+                __test_read = r.Template;
+                __test_read = r.DefaultIsolate.ToString();
+                __test_read = r.ConsultMsg;
+                __test_read = r.GenericFor;
+            }
+            catch(Exception ex)
+            {
+                Assert.Fail("Exception handler called while reading with null intializers: {0}", ex.Message);
+                __failed = true;
             }
 
-            if(!__failed)
+            if (!__failed)
             {
-                Assert.Fail("Exception handler not called with null intializers");
+                Assert.Fail("Exception handler called while reading null intialized members");
             }
 
             try   // Should not fail
@@ -294,28 +343,28 @@ namespace motRecordTests
 
             try
             { 
-            // Requirments (a,c,k) -- Should throw an exception
-            r.setField("Action", "Add");
-            r.RxSys_DrugID = "";
-            r.LabelCode = "Mumble";
-            r.ProductCode = "1234";
-            r.TradeName = "ALPHAFROG@ 120 MG Tablet";
-            r.Strength = 12;
-            r.Unit = "MG";
-            r.RxOTC = "R";
-            r.DoseForm = "Tablet";
-            r.Route = "Oral";
-            r.DrugSchedule = 6;
-            r.VisualDescription = "RND/RED/TAB";
-            r.DrugName = "ALPHAFROG@ 120 MG";
-            r.ShortName = "HAL 120MG";
-            r.NDCNum = "00023-0337-01";
-            r.SizeFactor = 5;
-            r.Template = "C";
-            r.DefaultIsolate = 0;
-            r.ConsultMsg = "Don't set your hair on fire";
-            r.GenericFor = "N/A";
-            r.Write(p);
+                // Requirments (a,c,k) -- Should throw an exception
+                r.setField("Action", "Add");
+                r.RxSys_DrugID = "";
+                r.LabelCode = "Mumble";
+                r.ProductCode = "1234";
+                r.TradeName = "ALPHAFROG@ 120 MG Tablet";
+                r.Strength = 12;
+                r.Unit = "MG";
+                r.RxOTC = "R";
+                r.DoseForm = "Tablet";
+                r.Route = "Oral";
+                r.DrugSchedule = 6;
+                r.VisualDescription = "RND/RED/TAB";
+                r.DrugName = "ALPHAFROG@ 120 MG";
+                r.ShortName = "HAL 120MG";
+                r.NDCNum = "00023-0337-01";
+                r.SizeFactor = 5;
+                r.Template = "C";
+                r.DefaultIsolate = 0;
+                r.ConsultMsg = "Don't set your hair on fire";
+                r.GenericFor = "N/A";
+                r.Write(p);
             }
             catch
             {
@@ -324,7 +373,7 @@ namespace motRecordTests
 
             if (!__failed)
             {
-                Assert.Fail("Exception handler not called with null intializers");
+                Assert.Fail("Exception handler not called for missing required items");
             }
         }
 
@@ -332,12 +381,11 @@ namespace motRecordTests
         public void testStoreRecord()
         {
             motStoreRecord s;
-            motPort p;
             bool __failed = false;
 
             try
             {
-                p = new motPort("localhost", "24041");
+                p = new motPort(__gateway_address, __port_number);
                 s = new motStoreRecord("Add");
             }
             catch
@@ -360,66 +408,130 @@ namespace motRecordTests
                 s.DEANum = null;
                 s.Write(p);
             }
-            catch
+            catch(Exception ex)
             {
-                __failed = true;
+                if(ex.Message.Contains("REJECTED") == false)
+                {
+                   Assert.Fail("Null initialization threw Exception: {0}", ex.Message); 
+                }
+                else
+                {
+                    Console.WriteLine("Message from null init: {0}", ex.Message);
+                }
             }
 
-            if(!__failed)
+            __failed = false;
+
+            try // Should pass
             {
-                Assert.Fail("Null initialization did not throw Exception");
+                var __test_string = s.RxSys_StoreID;
+                __test_string = s.StoreName;
+                __test_string = s.Address1;
+                __test_string = s.Address2;
+                __test_string = s.City;
+                __test_string = s.State;
+                __test_string = s.Zip;
+                __test_string = s.Phone;
+                __test_string = s.Fax;
+                __test_string = s.DEANum;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Message from read null members: {0}", ex.Message);
             }
 
             __failed = false;
 
             try
-            { 
-                //s.RxSys_StoreID = "ABCD123456";
-                s.StoreName = "Phreds Phabulous Pharmacy";
-                s.Address1 = "222 Third St.";
-                s.Address2 = "Suite 3100";
-                s.City = "Cambridge";
-                s.State = "ma";
-                s.Zip = "02546";
-                s.Phone = "(617) 254-9822";
-                s.Fax = "6174251111";
-                s.DEANum = "ABCD123456";
+            {
+                var __store_id = s.RxSys_StoreID = "TEST-12345";
+                var __store_name = s.StoreName = "Phreds Phabulous Pharmacy";
+                var __address1 = s.Address1 = "222 Third St.";
+                var __address2 = s.Address2 = "Suite 3100";
+                var __city = s.City = "Cambridge";
+                var __state =  s.State = "MA";
+                var __zip = s.Zip = "02546";
+                var __phone = s.Phone = "(617) 254-9822";
+                var __fax = s.Fax = "6174251111";
+                var __deanum = s.DEANum = "ABCD123456";
                 s.Write(p);
+
+                // Test the values
+                if(s.RxSys_StoreID != __store_id)
+                {
+                    Assert.Fail("Store ID match failure");
+                }
+
+                if (s.StoreName != __store_name)
+                {
+                    Assert.Fail("Store Name match failure");
+                }
+
+                if (s.Address1 != __address1)
+                {
+                    Assert.Fail("Address1 match failure");
+                }
+
+                if (s.Address2 != __address2)
+                {
+                    Assert.Fail("Address2 match failure");
+                }
+
+                if (s.City != __city)
+                {
+                    Assert.Fail("City match failure");
+                }
+
+                if (s.State != __state)
+                {
+                    Assert.Fail("State match failure");
+                }
+
+                if (s.Zip != __zip)
+                {
+                    Assert.Fail("Zip match failure");
+                }
+
+                if (s.Phone != __phone)
+                {
+                    //Assert.Fail("Phone match failure");
+                    Console.WriteLine("Phone number formatting? {0} : {1}", s.Phone, __phone);
+                }
+
+                if (s.Fax != __fax)
+                {
+                    //Assert.Fail("Fax match failure");
+                    Console.WriteLine("Phone number formatting? {0} : {1}", s.Fax, __fax);
+                }
+
+                if (s.DEANum != __deanum)
+                {
+                    Assert.Fail("DEANum match failure");
+                }
 
                 s.StoreName = "Sally's Sensational Spot";
                 s.Write(p);
+
+                s.setField("Action", "Change");
+                s.StoreName = "Brand New Fake Store";
+                s.Write(p);
             }
-            catch
+            catch(Exception ex)
             {
+                Assert.Fail("General Tests Failed: {0}", ex.Message);
                 __failed = true;
             }
-
-            if(!__failed)
-            {
-                Assert.Fail("Missing required value did not throw Exception");
-            }
+          
 
             try
             {
-                s.RxSys_StoreID = "ABCD123456";
-                s.StoreName = "Phreds Phabulous Pharmacy";
-                s.Address1 = "222 Third St.";
-                s.Address2 = "Suite 3100";
-                s.City = "Cambridge";
-                s.State = "ma";
-                s.Zip = "02546";
-                s.Phone = "(617) 254-9822";
-                s.Fax = "6174251111";
-                s.DEANum = "ABCD123456";
-                s.Write(p);
-
-                s.StoreName = "Sally's Sensational Spot";
+                s.setField("Action", "Delete");
                 s.Write(p);
             }
-            catch
+            catch(Exception ex)
             {
-                Assert.Fail("Failed to Add Store Record");
-            }
+                Assert.Fail("Delete record reported failure: {0}", ex.Message);
+            } 
         }
     }
 }

@@ -567,8 +567,8 @@ namespace motCommonLib
         }
         public motParser(motPort _p, string inputStream)
         {
-
             p = _p;
+            logger = LogManager.GetLogger("motInboundLib.Parser");
 
             try
             {
@@ -608,6 +608,7 @@ namespace motCommonLib
         public motParser(motPort _p, string inputStream, motInputStuctures __type)
         {
             p = _p;
+            logger = LogManager.GetLogger("motInboundLib.Parser");
 
             try
             {
