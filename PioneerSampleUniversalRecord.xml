@@ -212,6 +212,15 @@
           <ZipCode>021312</ZipCode>
           <Type>1</Type>
         </Address>
+      <Address>
+          <SequenceNumber>2</SequenceNumber>
+          <AddressLine1>23 Clearbank Rd</AddressLine1>
+          <AddressLine2></AddressLine2>
+          <City>Brewster</City>
+          <StateCode>MA</StateCode>
+          <ZipCode>02660</ZipCode>
+          <Type>1</Type>
+        </Address>
       </Addresses>
       <PhoneNumbers>
         <PhoneNumber>
@@ -220,6 +229,13 @@
           <Number>4445555</Number>
           <Extension></Extension>
           <Type>Home</Type>
+        </PhoneNumber>
+        <PhoneNumber>
+          <SequenceNumber>2</SequenceNumber>
+          <AreaCode>978</AreaCode>
+          <Number>261-2313</Number>
+          <Extension></Extension>
+          <Type>Mobile</Type>
         </PhoneNumber>
       </PhoneNumbers>
       <PrimaryPhoneSequenceNumber>1</PrimaryPhoneSequenceNumber>
@@ -230,13 +246,13 @@
       <HasPatientReceivedNopp/>
       <HeightInches/>87
       <WeightOz/>18000
-      <IsAnimal/>Y
-      <HipaaStatusTypeID/>2
-      <HipaaStatusTypeText/>1
+      <IsAnimal/>N
+      <HipaaStatusTypeID/>22231344
+      <HipaaStatusTypeText/>A bunchof 2s and stuff
       <Email/>paul@patient.com
       <Gender/>M
-      <LanguageText/>E
-      <LanguageCode/>E
+      <LanguageText/>English
+      <LanguageCode/>EN
       <DateOfBirth>
         <Date>19341021</Date>
       </DateOfBirth>
@@ -254,10 +270,10 @@
         <Date>20161001</Date>
       </NextPickupDate>
       <Comments>
-        <Informational></Informational>
-        <Critical></Critical>
-        <PointOfSale></PointOfSale>
-        <LastMTMComment/>
+        <Informational>There are a wholelot of nodes in this document</Informational>
+        <Critical>It's hard to parse without XPath</Critical>
+        <PointOfSale>N/A</PointOfSale>
+        <LastMTMComment/>N/A
       </Comments>
       <Categories>
         <Category></Category>
@@ -266,20 +282,55 @@
       <Allergies>
         <Allergy>
           <Description>Cat Dander</Description>
-          <MedicationID></MedicationID>
+          <MedicationID>00603-3986-31</MedicationID>
           <MedicationIDType>FDB/GoldStandard/RxNorm if exists?</MedicationIDType>
+        </Allergy>
+      <Allergy>
+          <Description>Mold</Description>
+          <MedicationID>00603-3986-31</MedicationID>
+          <MedicationIDType>Hydroxy something</MedicationIDType>
         </Allergy>
       </Allergies>
       <OtherMedications>
         <Medication>
-          <RxNumber></RxNumber>
-          <LastDateFilled></LastDateFilled>
-          <RefillsRemaining></RefillsRemaining>
-          <DaysSupply></DaysSupply>
-          <Pharmacy></Pharmacy>
-          <Prescriber></Prescriber>
-          <DrugName></DrugName>
-          <DrugNDC></DrugNDC>
+          <RxNumber>E12345678</RxNumber>
+          <LastDateFilled>10/10/2016</LastDateFilled>
+          <RefillsRemaining>2</RefillsRemaining>
+          <DaysSupply>30</DaysSupply>
+          <Pharmacy>PRX-2341123</Pharmacy>
+          <Prescriber>40DE86C9-FD69-44D7-9DA4-4D2A3194DE49</Prescriber>
+          <DrugName>Hydroxyzine HCL 10MG</DrugName>
+          <DrugNDC>00603-3968-32</DrugNDC>
+        </Medication>
+        <Medication>
+           <RxNumber>83241987</RxNumber>
+          <LastDateFilled>10/2/2016</LastDateFilled>
+          <RefillsRemaining>4</RefillsRemaining>
+          <DaysSupply>30</DaysSupply>
+          <Pharmacy>PRX-2341123</Pharmacy>
+          <Prescriber>40DE86C9-FD69-44D7-9DA4-4D2A3194DE49</Prescriber>
+          <DrugName>Pantaprazole Sodium 40MG</DrugName>
+          <DrugNDC>13688-0097-77</DrugNDC>
+        </Medication>
+        <Medication>
+          <RxNumber>4443333111</RxNumber>
+          <LastDateFilled>9/22/2016</LastDateFilled>
+          <RefillsRemaining>2</RefillsRemaining>
+          <DaysSupply>30</DaysSupply>
+          <Pharmacy>PRX-2341123</Pharmacy>
+          <Prescriber>40DE86C9-FD69-44D7-9DA4-4D2A3194DE49</Prescriber>
+          <DrugName>Irbsartan 300MG</DrugName>
+          <DrugNDC>31722-0731-30</DrugNDC>
+        </Medication>
+        <Medication>
+          <RxNumber>99911177754</RxNumber>
+          <LastDateFilled>8/30/2016</LastDateFilled>
+          <RefillsRemaining>1</RefillsRemaining>
+          <DaysSupply>30</DaysSupply>
+          <Pharmacy>PRX-2341123</Pharmacy>
+          <Prescriber>40DE86C9-FD69-44D7-9DA4-4D2A3194DE49</Prescriber>
+          <DrugName>Vitamin D Complex</DrugName>
+          <DrugNDC>43292-0555-40</DrugNDC>
         </Medication>
       </OtherMedications>
       <ChangedOnUTC></ChangedOnUTC>
@@ -324,10 +375,10 @@
       <PatientDischargedOn>
         <DateTime></DateTime>
       </PatientDischargedOn>
-      <WingID></WingID>
+      <WingID>WingNut</WingID>
       <WingName></WingName>
       <RoomNumber>271672</RoomNumber>
-      <Bed></Bed>
+      <Bed>4</Bed>
       <Email></Email>
       <Comments>
         <Critcial></Critcial>
@@ -350,7 +401,7 @@
         <DrugDescription>White Round Pill</DrugDescription>
         <DrugStrength>10</DrugStrength>
         <DrugCoded>
-          <ProductCode>13411-0137-03</ProductCode>
+          <ProductCode>00002-4117-04</ProductCode>
           <ProductCodeQualifier>NDC</ProductCodeQualifier>
         </DrugCoded>
         <DeaSchedule>6</DeaSchedule>
@@ -365,7 +416,7 @@
         <DrugDescription>Olanzapine</DrugDescription>
         <DrugStrength>10</DrugStrength>
         <DrugCoded>
-          <ProductCode>13411-0137-03</ProductCode>
+          <ProductCode>00904-6285-61</ProductCode>
           <ProductCodeQualifier>NDC</ProductCodeQualifier>
         </DrugCoded>
         <DeaSchedule>6</DeaSchedule>
@@ -381,7 +432,7 @@
         <LabelType>Generic</LabelType>
         <BrandName>Olanzapine</BrandName>
         <ImprintText>Olanzapine</ImprintText>
-        <Manufacturer></Manufacturer>
+        <Manufacturer>Major Pharmacueticals</Manufacturer>
         <LotNumber></LotNumber>
         <LotExpirationDate></LotExpirationDate>
         <DispensedItemAlternateID/>
@@ -408,7 +459,7 @@
       <OriginTypeID></OriginTypeID>
       <OriginTypeText></OriginTypeText>
       <DateFilled>
-        <Date></Date>
+        <Date>10/20/2016</Date>
       </DateFilled>
       <ExpirationDate>
         <Date></Date>

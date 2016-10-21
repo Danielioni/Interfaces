@@ -31,6 +31,7 @@ using RestSharp;
 using RestSharp.Authenticators;
 using RestSharp.Serializers;
 using motCommonLib;
+using System.Globalization;
 
 /// <summary>
 /// motRecords - Abstractions for all the record types that the Medicine-On-Time Legacy interface supports.  Classes are constructed 
@@ -128,16 +129,41 @@ namespace motCommonLib
         public motErrorlLevel __log_level { get; set; } = motErrorlLevel.Error;  // 0 = off, 1 - Errors Only, 2 - Errors and Warnings,  3 - Errors, Warnings, and Info
 
         public bool __auto_truncate { get; set; } = false;
+        public bool __strong_validation { get; set; } = true;
 
         protected string __normalize_date(string __date)
         {
-            // Convert 19990102 to 1999-01-02
-            if (!string.IsNullOrEmpty(__date) && !__date.Contains("-"))
+            string[] __date_patterns =  // Hope I got them all
+                {
+                "yyyyMMdd",
+                "yyyyMd",
+                "yyyyMMd",
+                "yyyyMdd",
+                "yyyyddMM",
+                "yyyydM",
+                "yyyyddM",
+                "yyyydMM",
+                "ddMMyyyy",
+                "dMyyyy",
+                "ddMyyyy",
+                "dMMyyyy",
+                "MMddyyyy",
+                "Mdyyyy",
+                "MMdyyyy",
+                "Mddyyyy",
+                "dd/MM/yyyy",
+                "d/MM'yyyy",
+                "d/M/yyyy",
+                "dd/M/yyyy",
+                "MM/dd/yyyy",
+                "yyyy-MM-dd",
+                "yyyy-dd-MM"
+            };
+
+            DateTime __dt;
+            if (DateTime.TryParseExact(__date, __date_patterns, CultureInfo.InvariantCulture, DateTimeStyles.None, out __dt))
             {
-                var __year = __date.Substring(0, 4);
-                var __month = __date.Substring(4, 2);
-                var __day = __date.Substring(6, 2);
-                return __year + "-" + __month + "-" + __day;
+                return __dt.ToString("yyyy-MM-dd"); // return MOT Legacy Gateway Format
             }
 
             return __date;
@@ -151,8 +177,39 @@ namespace motCommonLib
                 __val = __val.Remove(__val.IndexOfAny(__junk), 1);
             }
 
-            return __val;   
+            return __val;
         }
+        public string __validate_dea_number(string __id)
+        {
+            // DEA Number Format is 2 letters, 6 numbers, & 1 check digit (CC-NNNNNNN) 
+            // The first letter is a code identifying the type of registrant (see below)
+            // The second letter is the first letter of the registrant's last name
+            __id = __normalize_string(__id);
+
+            if (__strong_validation == true)
+            {
+                if (__id.Length > 9)
+                {
+                    throw new FormatException("Invalid DEA Number, maximum length is 9. Received " + __id.Length + " in " + __id);
+                }
+
+                if (__id[1] != '9' && !Char.IsLetter(__id[1]))
+                {
+                    throw new FormatException("Invalid DEA Number, the id " + __id.Substring(0, 2) + " in " + __id + " is incorrect");
+                }
+
+                for (int i = 2; i < 7; i++)
+                {
+                    if (!Char.IsNumber(__id[i]))
+                    {
+                        throw new FormatException("Invalid DEA Number, the trailing 6 characters must be digits, not " + __id.Substring(2) + " in " + __id);
+                    }
+                }
+            }
+
+            return __id;
+        }
+
         public void checkDependencies(List<Field> __qualifiedTags)
         {
             //
@@ -796,7 +853,7 @@ namespace motCommonLib
             }
 
             set
-            {                
+            {
                 setField(__qualifiedTags, __normalize_string(value), "NDCNum", false);
             }
         }
@@ -1210,7 +1267,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "DEA_ID");
+                setField(__qualifiedTags, __validate_dea_number(value), "DEA_ID");
             }
         }
         public string TPID
@@ -1239,6 +1296,7 @@ namespace motCommonLib
                 setField(__qualifiedTags, Convert.ToString(value), "Specialty");
             }
         }
+
         public string Fax
         {
             get
@@ -1263,6 +1321,22 @@ namespace motCommonLib
             set
             {
                 setField(__qualifiedTags, value, "PagerInfo");
+            }
+        }
+        public string Email
+        {
+            set
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
+                f.tagData += "\nEmail: " + value;
+            }
+        }
+        public string IM
+        {
+            set
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
+                f.tagData += "\nIM: " + value;
             }
         }
         public void Write(motPort p, bool __log_on)
@@ -2030,6 +2104,22 @@ namespace motCommonLib
                 }
 
                 setField(__qualifiedTags, value, "Gender");
+            }
+        }
+        public string Email
+        {
+            set
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
+                f.tagData += string.Format("\nEmail: {0}\n", value);
+            }
+        }
+        public string IM
+        {
+            set
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
+                f.tagData += string.Format("\nIM: {0}\n", value);
             }
         }
         public void Write(motPort p, bool __log_on)
@@ -3156,7 +3246,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "DEANum");
+                setField(__qualifiedTags, __validate_dea_number(value), "DEANum");
             }
         }
         public void Write(motPort p, bool __log_on)

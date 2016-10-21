@@ -203,12 +203,12 @@ namespace motInboundLib
                 NAK __out = new NAK(__resp, __error_code, __organization, __processor);
                 __response = __out.__nak_string;
                 __ui_args.__msh_out = __out.__clean_nak_string;
-                __ui_args.__event_message = "REJECTED";
+                __ui_args.__event_message = "REJECTED " + e.Message;
 
                 __logger.Log(__log_level, "HL7 NAK: {0}", __response);
                 __logger.Log(__log_level, "Failed Messasge: {0}", __data);
+                __logger.Log(__log_level, "Failed Reason: {0}", e.Message);
 
-                
                 UpdateErrorUI(this, __ui_args);
 
                 Console.Write("NAK:" + e.Message);

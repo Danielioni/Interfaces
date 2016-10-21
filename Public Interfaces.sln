@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Records", "Records", "{0B26
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Data", "Sample Data", "{39B60310-AF0E-4ED4-AC51-2E17A661EECA}"
 	ProjectSection(SolutionItems) = preProject
-		PioneerSampleUniversalRecord.xml = PioneerSampleUniversalRecord.xml
+		..\..\..\PioneerSampleUniversalRecord.xml = ..\..\..\PioneerSampleUniversalRecord.xml
 		motSamples\sampleDrug.json = motSamples\sampleDrug.json
 		motSamples\sampleDrug.xml = motSamples\sampleDrug.xml
 		motSamples\sampleLocation.xml = motSamples\sampleLocation.xml

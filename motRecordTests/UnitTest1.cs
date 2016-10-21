@@ -444,6 +444,8 @@ namespace motRecordTests
 
             try
             {
+                s.__strong_validation = true;
+
                 var __store_id = s.RxSys_StoreID = "TEST-12345";
                 var __store_name = s.StoreName = "Phreds Phabulous Pharmacy";
                 var __address1 = s.Address1 = "222 Third St.";
@@ -453,7 +455,9 @@ namespace motRecordTests
                 var __zip = s.Zip = "02546";
                 var __phone = s.Phone = "(617) 254-9822";
                 var __fax = s.Fax = "6174251111";
-                var __deanum = s.DEANum = "ABCD123456";
+                //var __deanum = s.DEANum = "ABAB123456";
+                var __deanum = s.DEANum = "AB-0123456";
+
                 s.Write(p);
 
                 // Test the values
@@ -506,7 +510,10 @@ namespace motRecordTests
 
                 if (s.DEANum != __deanum)
                 {
-                    Assert.Fail("DEANum match failure");
+                    if (__deanum != string.Format("{0}-{1}", s.DEANum.Substring(0, 2), s.DEANum.Substring(2)))
+                    {
+                        Assert.Fail("DEANum match failure");
+                    }
                 }
 
                 s.StoreName = "Sally's Sensational Spot";
