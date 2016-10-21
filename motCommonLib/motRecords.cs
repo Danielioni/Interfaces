@@ -136,28 +136,44 @@ namespace motCommonLib
             string[] __date_patterns =  // Hope I got them all
                 {
                 "yyyyMMdd",
-                "yyyyMd",
                 "yyyyMMd",
                 "yyyyMdd",
+                "yyyyMd",
+
                 "yyyyddMM",
-                "yyyydM",
                 "yyyyddM",
                 "yyyydMM",
+                "yyyydM",
+
                 "ddMMyyyy",
-                "dMyyyy",
                 "ddMyyyy",
                 "dMMyyyy",
+                "dMyyyy",
+
                 "MMddyyyy",
-                "Mdyyyy",
                 "MMdyyyy",
                 "Mddyyyy",
+                "Mdyyyy",
+
                 "dd/MM/yyyy",
-                "d/MM'yyyy",
-                "d/M/yyyy",
                 "dd/M/yyyy",
+                "d/MM/yyyy",
+                "d/M/yyyy",
+          
                 "MM/dd/yyyy",
+                "MM/d/yyyy",
+                "M/dd/yyyy",               
+                "M/d/yyyy",
+
                 "yyyy-MM-dd",
-                "yyyy-dd-MM"
+                "yyyy-M-dd",
+                "yyyy-MM-d",
+                "yyyy-M-d",
+
+                "yyyy-dd-MM",
+                "yyyy-d-MM",
+                "yyyy-dd-M",
+                "yyyy-d-M"
             };
 
             DateTime __dt;
