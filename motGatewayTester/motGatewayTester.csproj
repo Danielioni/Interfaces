@@ -58,13 +58,16 @@
     <Reference Include="motInboundLib">
       <HintPath>..\motClassLibrary\bin\Debug\motInboundLib.dll</HintPath>
     </Reference>
+    <Reference Include="motOutboundLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\motOutboundLib\bin\Debug\motOutboundLib.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
@@ -76,11 +79,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Execute.cs" />
+    <Compile Include="frmDoseSchedule.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmDoseSchedule.Designer.cs">
+      <DependentUpon>frmDoseSchedule.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmDrugRecord.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmDrugRecord.Designer.cs">
       <DependentUpon>frmDrugRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmLocationRecord.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLocationRecord.Designer.cs">
+      <DependentUpon>frmLocationRecord.cs</DependentUpon>
     </Compile>
     <Compile Include="frmMainRecordTester.cs">
       <SubType>Form</SubType>
@@ -106,10 +121,22 @@
     <Compile Include="frmStoreRecord.Designer.cs">
       <DependentUpon>frmStoreRecord.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmPrescriberRecord.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPrescriberRecord.Designer.cs">
+      <DependentUpon>frmPrescriberRecord.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmDoseSchedule.resx">
+      <DependentUpon>frmDoseSchedule.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmDrugRecord.resx">
       <DependentUpon>frmDrugRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLocationRecord.resx">
+      <DependentUpon>frmLocationRecord.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmMainRecordTester.resx">
       <DependentUpon>frmMainRecordTester.cs</DependentUpon>
@@ -122,6 +149,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmStoreRecord.resx">
       <DependentUpon>frmStoreRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPrescriberRecord.resx">
+      <DependentUpon>frmPrescriberRecord.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

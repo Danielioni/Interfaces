@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using motCommonLib;
+using motOutboundLib;
 
 namespace motGatewayTester
 {
@@ -54,6 +56,61 @@ namespace motGatewayTester
         {
             try
             {
+                if ((cbDelimitedTestRecord.Checked || cbTaggedTestRecord.Checked) && txtFileName.Text.Length > 0)
+                {
+                    List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
+                    var __output = new motFormattedFileOutput();
+
+                    if (!Directory.Exists("C:/Records"))
+                    {
+                        Directory.CreateDirectory("C:/Records");
+                    }
+
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        __key_data.Add(new KeyValuePair<string, string>("TableType", "R" + __action.ToUpper().Substring(0, 1)));
+                        //__key_data.Add(new KeyValuePair<string, string>("Action", __action.ToUpper().Substring(0, 1)));
+                    }
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_PatID", txtRxSys_PatID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_RxNum", txtRxNum.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_DocID", txtRxSys_DocID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Sig", txtSig.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxStartDate", txtRxStartDate.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxStopDate", txtRxStopDate.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DoseScheduleName", txtDoseScheduleName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Comments", txtComments.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Refills", txtRefills.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_NewRxNum", txtRxSys_NewRxNum.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Isolate", txtIsolate.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("MDoMStart", txtMDOMStart.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("MDoMEnd", txtMDOMStop.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("QtyPerDose", txtQtyPerDose.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("QtyDispensed", txtQtyDispensed.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxType", txtRxType.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Status", txtStatus.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DoW", txtDOW.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("SpecialDoses", txtSpecialDoses.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DoseTimesQtys", txtDoseTimesQtys.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_DrugID", txtDrug_ID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DiscontinueDate", txtDiscontinueDate.Text));
+
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+                    }
+
+                    if (cbTaggedTestRecord.Checked)
+                    {
+                        if (cbDelimitedTestRecord.Checked)
+                        {
+                            __key_data.RemoveAt(0);
+                        }
+                        __key_data.Add(new KeyValuePair<string, string>("ChartOnly", txtChartOnly.Text));
+                        __key_data.Add(new KeyValuePair<string, string>("AnchorDate", txtAnchorDate.Text));
+
+                        __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Rx", __action);
+                    }
+                }
                 Scrip.setField("Action", __action);
 
                 // Assign all the values and write
@@ -64,8 +121,6 @@ namespace motGatewayTester
                 Scrip.Sig = txtSig.Text;
                 Scrip.Comments = txtComments.Text;
                
-
-
                 Scrip.MDOMStart = txtMDOMStart.Text;
                 Scrip.QtyPerDose = txtQtyPerDose.Text;
                 Scrip.QtyDispensed = txtQtyDispensed.Text;
@@ -88,11 +143,11 @@ namespace motGatewayTester
                 Scrip.RxType = txtRxType.Text;
                 Scrip.AnchorDate = txtAnchorDate.Text;
 
-                __execute.__update_event_ui("Patient field assignment complete ...");
+                __execute.__update_event_ui("Prescription field assignment complete ...");
             }
             catch(Exception ex)
             {
-                __execute.__update_error_ui(string.Format("Patient record field assignment error: {0}", ex.Message));
+                __execute.__update_error_ui(string.Format("Prescription record field assignment error: {0}", ex.Message));
                 return;
             }
 

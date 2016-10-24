@@ -46,7 +46,7 @@ namespace motCommonLib
 
         public void parseTagged(string inboundData)
         {
-            if(string.IsNullOrEmpty(inboundData))
+            if (string.IsNullOrEmpty(inboundData))
             {
                 return;
             }
@@ -96,14 +96,14 @@ namespace motCommonLib
 
             Dictionary<int, string> __prescriber_table = new Dictionary<int, string>()
            {
-               {1,"LastName" },
-               {2,"FirstName" },
-               {3,"MiddleInitial" },
-               {4,"Address1" },
-               {5,"Address2" },
-               {6,"City" },
-               {7,"State" },
-               {8,"Zip" },
+               {1, "LastName" },
+               {2, "FirstName" },
+               {3, "MiddleInitial" },
+               {4, "Address1" },
+               {5, "Address2" },
+               {6, "City" },
+               {7, "State" },
+               {8, "Zip" },
                {9, "Phone" },
                {10,"Comments" },
                {11,"DEA_ID" },
@@ -125,31 +125,31 @@ namespace motCommonLib
                {7, "DoseForm" },
                {8, "Route" },
                {9, "DrugSchedule" },
-               {10, "VisualDescription" },
-               {11, "DrugName" },
-               {12, "ShortName" },
+               {10,"VisualDescription" },
+               {11,"DrugName" },
+               {12,"ShortName" },
                {13,"NDCNum" },
                {14,"SizeFactor" },
                {15,"Template" },
                {16,"ConsultMesg" },
-               {17, "GenericFor" },
-               {18, "RxSys_ID" }
+               {17,"GenericFor" },
+               {18,"RxSys_DrugID" }
            };
 
             Dictionary<int, string> __location_table = new Dictionary<int, string>()
            {
-               {1,"RxSys_LocID" },
-               {2,"LocationName" },
-               {3,"Address1" },
+               {1, "RxSys_StoreID" },
+               {2, "LocationName" },
+               {3, "Address1" },
                {4, "Address2" },
                {5, "City" },
                {6, "State" },
-               {7,"Zip" },
-               {8,"Phone" },
-               {9,"Comments" },
-               {10, "RxSys_LocID" },
-               {11, "CycleDays" },
-               {12, "CycleType" }
+               {7, "Zip" },
+               {8, "Phone" },
+               {9, "Comments" },
+               {10,"RxSys_LocID" },
+               {11,"CycleDays" },
+               {12,"CycleType" }
            };
 
             Dictionary<int, string> __patient_table = new Dictionary<int, string>()
@@ -249,7 +249,7 @@ namespace motCommonLib
 
                 try
                 {
-                    if (__items[0][0] == '\0' || __items[0][0] == '\n')
+                    if (string.IsNullOrEmpty(__items[0]) || __items[0][0] == '\n')
                     {
                         return null;
                     }
@@ -259,7 +259,7 @@ namespace motCommonLib
                     string __table_type;
                     __type.TryGetValue(__items[0][0], out __table_type);
 
-                    if(string.IsNullOrEmpty(__table_type))
+                    if (string.IsNullOrEmpty(__table_type))
                     {
                         return null;
                     }
@@ -280,7 +280,7 @@ namespace motCommonLib
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __prescriber_table[i], __items[i]));
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __prescriber_table[i], __items[i].Trim()));
                             }
                             break;
 
@@ -293,7 +293,7 @@ namespace motCommonLib
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __drug_table[i], __items[i]));
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __drug_table[i], __items[i].Trim()));
                             }
 
                             break;
@@ -307,7 +307,7 @@ namespace motCommonLib
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __location_table[i], __items[i]));
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __location_table[i], __items[i].Trim()));
                             }
                             break;
 
@@ -320,7 +320,7 @@ namespace motCommonLib
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __patient_table[i], __items[i]));
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __patient_table[i], __items[i].Trim()));
                             }
                             break;
 
@@ -328,12 +328,12 @@ namespace motCommonLib
                         case 'r':
                             for (i = 1; i < __items.Length - 1; i++)
                             {
-                                if(i > __rx_table.Count)
+                                if (i > __rx_table.Count)
                                 {
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __rx_table[i], __items[i]));
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __rx_table[i], __items[i].Trim()));
                             }
                             break;
 
@@ -346,7 +346,7 @@ namespace motCommonLib
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __store_table[i], __items[i]));
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __store_table[i], __items[i].Trim()));
                             }
                             break;
 
@@ -359,7 +359,7 @@ namespace motCommonLib
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __timeqtys_table[i], __items[i]));
+                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __timeqtys_table[i], __items[i].Trim()));
                             }
                             break;
 
@@ -393,6 +393,7 @@ namespace motCommonLib
 
             char[] __field_delimiter = { '|' };
             char[] __record_delimiter = { '^' };
+            string __table = string.Empty;
 
             // Unravel the delimited stream
             string[] __items = inboundData.Split(__record_delimiter);
@@ -401,8 +402,9 @@ namespace motCommonLib
             {
                 try
                 {
-                    string[] __fields = __item.Split(__field_delimiter); 
-                    parseTagged(__tc.parse(__fields));
+                    string[] __fields = __item.Split(__field_delimiter);
+                    __table = __tc.parse(__fields);
+                    parseTagged(__table);
                 }
                 catch
                 {

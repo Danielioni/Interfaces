@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using NLog;
 using motCommonLib;
 using motInboundLib;
+using motOutboundLib;
 
 
 namespace motGatewayTester
@@ -130,6 +131,7 @@ namespace motGatewayTester
             btnPrescriber.Enabled = true;
             btnRx.Enabled = true;
             btnStore.Enabled = true;
+            btnTQ.Enabled = true;
 
             btnPrescriber.Enabled = true;
             btnSave.Enabled = true;
@@ -151,6 +153,7 @@ namespace motGatewayTester
             btnPrescriber.Enabled = false;
             btnRx.Enabled = false;
             btnStore.Enabled = false;
+            btnTQ.Enabled = false;
 
             __listening = false;
 
@@ -296,14 +299,16 @@ namespace motGatewayTester
             Environment.Exit(0);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnStore_Click(object sender, EventArgs e)
         {
-
+            var __store_record = new frmStoreRecord();
+            __store_record.Show();
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void btnLocation_Click(object sender, EventArgs e)
         {
-
+            var __location_record = new frmLocationRecord();
+            __location_record.Show();
         }
 
         private void btnPatient_Click(object sender, EventArgs e)
@@ -324,10 +329,16 @@ namespace motGatewayTester
             __drug_record.Show();
         }
 
-        private void btnStore_Click(object sender, EventArgs e)
+        private void btnPrescriber_Click(object sender, EventArgs e)
         {
-            var __store_record = new frmStoreRecord();
-            __store_record.Show();
+            var __prescriber_record = new frmPrescriberRecord();
+            __prescriber_record.Show();
+        }
+
+        private void btnTQ_Click(object sender, EventArgs e)
+        {
+            var __tq = new frmDoseSchedule();
+            __tq.Show();
         }
     }
 

@@ -220,16 +220,21 @@ namespace motCommonLib
         {
             byte[] __retval = new byte[64];
 
-            int __retlen = __data_stream.Read(__retval, 0, __retval.Length);
-
-            if (__retval[0] == '\x06')   // MOT Gateway ACK
+            try
             {
-                return true;
-            }
+                int __retlen = __data_stream.Read(__retval, 0, __retval.Length);
 
-            string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, __retval);
-            Console.WriteLine(__error);
-            logger.Log(__log_level, __error);
+                if (__retval[0] == '\x06')   // MOT Gateway ACK
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                string __error = string.Format(@"Error writing to port [{0}/{1}] : {2} : {3}", this.__tcp_address, this.__tcp_port, __retval, ex.Message);
+                Console.WriteLine(__error);
+                logger.Log(__log_level, __error);
+            }
 
             return false;
         }

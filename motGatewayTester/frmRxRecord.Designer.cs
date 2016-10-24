@@ -108,8 +108,14 @@
             this.txtRxSys_NewRxNum = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtFileName = new System.Windows.Forms.TextBox();
+            this.cbTaggedTestRecord = new System.Windows.Forms.CheckBox();
+            this.cbDelimitedTestRecord = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.gbSwitches.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -175,7 +181,7 @@
             this.txtRxSys_PatID.Location = new System.Drawing.Point(171, 101);
             this.txtRxSys_PatID.Name = "txtRxSys_PatID";
             this.txtRxSys_PatID.Size = new System.Drawing.Size(319, 22);
-            this.txtRxSys_PatID.TabIndex = 2;
+            this.txtRxSys_PatID.TabIndex = 1;
             this.txtRxSys_PatID.TextChanged += new System.EventHandler(this.txtRxSys_PatID_TextChanged);
             // 
             // txtRxNum
@@ -183,7 +189,7 @@
             this.txtRxNum.Location = new System.Drawing.Point(171, 129);
             this.txtRxNum.Name = "txtRxNum";
             this.txtRxNum.Size = new System.Drawing.Size(319, 22);
-            this.txtRxNum.TabIndex = 4;
+            this.txtRxNum.TabIndex = 2;
             this.txtRxNum.TextChanged += new System.EventHandler(this.txtRxNum_TextChanged_1);
             // 
             // label2
@@ -200,7 +206,7 @@
             this.txtRxSys_DocID.Location = new System.Drawing.Point(171, 157);
             this.txtRxSys_DocID.Name = "txtRxSys_DocID";
             this.txtRxSys_DocID.Size = new System.Drawing.Size(319, 22);
-            this.txtRxSys_DocID.TabIndex = 6;
+            this.txtRxSys_DocID.TabIndex = 3;
             // 
             // label3
             // 
@@ -216,7 +222,7 @@
             this.txtDrug_ID.Location = new System.Drawing.Point(171, 185);
             this.txtDrug_ID.Name = "txtDrug_ID";
             this.txtDrug_ID.Size = new System.Drawing.Size(319, 22);
-            this.txtDrug_ID.TabIndex = 8;
+            this.txtDrug_ID.TabIndex = 4;
             // 
             // label4
             // 
@@ -233,7 +239,7 @@
             this.txtSig.Multiline = true;
             this.txtSig.Name = "txtSig";
             this.txtSig.Size = new System.Drawing.Size(319, 22);
-            this.txtSig.TabIndex = 30;
+            this.txtSig.TabIndex = 5;
             this.txtSig.Enter += new System.EventHandler(this.txtComments_Enter);
             this.txtSig.Leave += new System.EventHandler(this.txtComments_Leave);
             // 
@@ -251,8 +257,7 @@
             this.txtRxStartDate.Location = new System.Drawing.Point(171, 243);
             this.txtRxStartDate.Name = "txtRxStartDate";
             this.txtRxStartDate.Size = new System.Drawing.Size(319, 22);
-            this.txtRxStartDate.TabIndex = 32;
-            this.txtRxStartDate.Text = "YYYY-MM-DD";
+            this.txtRxStartDate.TabIndex = 6;
             // 
             // label16
             // 
@@ -268,8 +273,7 @@
             this.txtRxStopDate.Location = new System.Drawing.Point(171, 271);
             this.txtRxStopDate.Name = "txtRxStopDate";
             this.txtRxStopDate.Size = new System.Drawing.Size(319, 22);
-            this.txtRxStopDate.TabIndex = 34;
-            this.txtRxStopDate.Text = "YYYY-MM-DD";
+            this.txtRxStopDate.TabIndex = 7;
             // 
             // label17
             // 
@@ -285,8 +289,7 @@
             this.txtDiscontinueDate.Location = new System.Drawing.Point(171, 299);
             this.txtDiscontinueDate.Name = "txtDiscontinueDate";
             this.txtDiscontinueDate.Size = new System.Drawing.Size(319, 22);
-            this.txtDiscontinueDate.TabIndex = 36;
-            this.txtDiscontinueDate.Text = "YYYY-MM-DD";
+            this.txtDiscontinueDate.TabIndex = 8;
             // 
             // label18
             // 
@@ -302,7 +305,7 @@
             this.txtDoseScheduleName.Location = new System.Drawing.Point(171, 327);
             this.txtDoseScheduleName.Name = "txtDoseScheduleName";
             this.txtDoseScheduleName.Size = new System.Drawing.Size(319, 22);
-            this.txtDoseScheduleName.TabIndex = 38;
+            this.txtDoseScheduleName.TabIndex = 9;
             this.txtDoseScheduleName.TextChanged += new System.EventHandler(this.txtDoseScheduleName_TextChanged);
             // 
             // label19
@@ -319,7 +322,7 @@
             this.txtRefills.Location = new System.Drawing.Point(171, 383);
             this.txtRefills.Name = "txtRefills";
             this.txtRefills.Size = new System.Drawing.Size(319, 22);
-            this.txtRefills.TabIndex = 40;
+            this.txtRefills.TabIndex = 11;
             // 
             // label20
             // 
@@ -335,7 +338,7 @@
             this.txtChartOnly.Location = new System.Drawing.Point(659, 357);
             this.txtChartOnly.Name = "txtChartOnly";
             this.txtChartOnly.Size = new System.Drawing.Size(319, 22);
-            this.txtChartOnly.TabIndex = 42;
+            this.txtChartOnly.TabIndex = 25;
             // 
             // label21
             // 
@@ -351,7 +354,7 @@
             this.txtRxType.Location = new System.Drawing.Point(659, 105);
             this.txtRxType.Name = "txtRxType";
             this.txtRxType.Size = new System.Drawing.Size(319, 22);
-            this.txtRxType.TabIndex = 44;
+            this.txtRxType.TabIndex = 16;
             // 
             // label22
             // 
@@ -367,7 +370,7 @@
             this.txtIsolate.Location = new System.Drawing.Point(171, 439);
             this.txtIsolate.Name = "txtIsolate";
             this.txtIsolate.Size = new System.Drawing.Size(319, 22);
-            this.txtIsolate.TabIndex = 46;
+            this.txtIsolate.TabIndex = 15;
             // 
             // label23
             // 
@@ -384,7 +387,7 @@
             this.txtComments.Multiline = true;
             this.txtComments.Name = "txtComments";
             this.txtComments.Size = new System.Drawing.Size(319, 22);
-            this.txtComments.TabIndex = 48;
+            this.txtComments.TabIndex = 10;
             this.txtComments.Enter += new System.EventHandler(this.txtAllergies_Enter);
             this.txtComments.Leave += new System.EventHandler(this.txtAllergies_Leave);
             // 
@@ -402,15 +405,14 @@
             this.txtAnchorDate.Location = new System.Drawing.Point(659, 385);
             this.txtAnchorDate.Name = "txtAnchorDate";
             this.txtAnchorDate.Size = new System.Drawing.Size(319, 22);
-            this.txtAnchorDate.TabIndex = 58;
-            this.txtAnchorDate.Text = "YYYY-MM-DD";
+            this.txtAnchorDate.TabIndex = 26;
             // 
             // txtMDOMStart
             // 
             this.txtMDOMStart.Location = new System.Drawing.Point(659, 133);
             this.txtMDOMStart.Name = "txtMDOMStart";
             this.txtMDOMStart.Size = new System.Drawing.Size(319, 22);
-            this.txtMDOMStart.TabIndex = 64;
+            this.txtMDOMStart.TabIndex = 17;
             // 
             // label32
             // 
@@ -426,7 +428,7 @@
             this.txtMDOMStop.Location = new System.Drawing.Point(659, 161);
             this.txtMDOMStop.Name = "txtMDOMStop";
             this.txtMDOMStop.Size = new System.Drawing.Size(319, 22);
-            this.txtMDOMStop.TabIndex = 66;
+            this.txtMDOMStop.TabIndex = 18;
             // 
             // label33
             // 
@@ -442,7 +444,7 @@
             this.txtQtyPerDose.Location = new System.Drawing.Point(659, 189);
             this.txtQtyPerDose.Name = "txtQtyPerDose";
             this.txtQtyPerDose.Size = new System.Drawing.Size(319, 22);
-            this.txtQtyPerDose.TabIndex = 68;
+            this.txtQtyPerDose.TabIndex = 19;
             // 
             // label34
             // 
@@ -458,7 +460,7 @@
             this.txtQtyDispensed.Location = new System.Drawing.Point(659, 217);
             this.txtQtyDispensed.Name = "txtQtyDispensed";
             this.txtQtyDispensed.Size = new System.Drawing.Size(319, 22);
-            this.txtQtyDispensed.TabIndex = 70;
+            this.txtQtyDispensed.TabIndex = 20;
             // 
             // label35
             // 
@@ -474,7 +476,7 @@
             this.txtStatus.Location = new System.Drawing.Point(659, 245);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.Size = new System.Drawing.Size(319, 22);
-            this.txtStatus.TabIndex = 72;
+            this.txtStatus.TabIndex = 21;
             // 
             // label36
             // 
@@ -490,7 +492,7 @@
             this.txtDOW.Location = new System.Drawing.Point(659, 273);
             this.txtDOW.Name = "txtDOW";
             this.txtDOW.Size = new System.Drawing.Size(319, 22);
-            this.txtDOW.TabIndex = 74;
+            this.txtDOW.TabIndex = 22;
             this.txtDOW.TextChanged += new System.EventHandler(this.txtMCaidNum_TextChanged);
             // 
             // label37
@@ -507,7 +509,7 @@
             this.txtSpecialDoses.Location = new System.Drawing.Point(659, 301);
             this.txtSpecialDoses.Name = "txtSpecialDoses";
             this.txtSpecialDoses.Size = new System.Drawing.Size(319, 22);
-            this.txtSpecialDoses.TabIndex = 76;
+            this.txtSpecialDoses.TabIndex = 23;
             this.txtSpecialDoses.TextChanged += new System.EventHandler(this.txtAdmitDate_TextChanged);
             // 
             // label38
@@ -524,7 +526,7 @@
             this.txtDoseTimesQtys.Location = new System.Drawing.Point(659, 329);
             this.txtDoseTimesQtys.Name = "txtDoseTimesQtys";
             this.txtDoseTimesQtys.Size = new System.Drawing.Size(319, 22);
-            this.txtDoseTimesQtys.TabIndex = 78;
+            this.txtDoseTimesQtys.TabIndex = 24;
             this.txtDoseTimesQtys.TextChanged += new System.EventHandler(this.txtChartOnly_TextChanged);
             // 
             // label39
@@ -788,7 +790,7 @@
             this.txtRxSys_NewRxNum.Location = new System.Drawing.Point(171, 411);
             this.txtRxSys_NewRxNum.Name = "txtRxSys_NewRxNum";
             this.txtRxSys_NewRxNum.Size = new System.Drawing.Size(319, 22);
-            this.txtRxSys_NewRxNum.TabIndex = 126;
+            this.txtRxSys_NewRxNum.TabIndex = 12;
             // 
             // label6
             // 
@@ -808,11 +810,61 @@
             this.label5.TabIndex = 128;
             this.label5.Text = "Anchor Date";
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Controls.Add(this.txtFileName);
+            this.groupBox2.Controls.Add(this.cbTaggedTestRecord);
+            this.groupBox2.Controls.Add(this.cbDelimitedTestRecord);
+            this.groupBox2.Location = new System.Drawing.Point(171, 484);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(731, 56);
+            this.groupBox2.TabIndex = 204;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "[ Generate Test Record ]";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(408, 23);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(73, 17);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Filename: ";
+            // 
+            // txtFileName
+            // 
+            this.txtFileName.Location = new System.Drawing.Point(487, 22);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(215, 22);
+            this.txtFileName.TabIndex = 2;
+            // 
+            // cbTaggedTestRecord
+            // 
+            this.cbTaggedTestRecord.AutoSize = true;
+            this.cbTaggedTestRecord.Location = new System.Drawing.Point(224, 24);
+            this.cbTaggedTestRecord.Name = "cbTaggedTestRecord";
+            this.cbTaggedTestRecord.Size = new System.Drawing.Size(79, 21);
+            this.cbTaggedTestRecord.TabIndex = 1;
+            this.cbTaggedTestRecord.Text = "Tagged";
+            this.cbTaggedTestRecord.UseVisualStyleBackColor = true;
+            // 
+            // cbDelimitedTestRecord
+            // 
+            this.cbDelimitedTestRecord.AutoSize = true;
+            this.cbDelimitedTestRecord.Location = new System.Drawing.Point(53, 24);
+            this.cbDelimitedTestRecord.Name = "cbDelimitedTestRecord";
+            this.cbDelimitedTestRecord.Size = new System.Drawing.Size(88, 21);
+            this.cbDelimitedTestRecord.TabIndex = 0;
+            this.cbDelimitedTestRecord.Text = "Delimited";
+            this.cbDelimitedTestRecord.UseVisualStyleBackColor = true;
+            // 
             // frmRxRecord
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1082, 495);
+            this.ClientSize = new System.Drawing.Size(1082, 552);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.valRxSys_NewRxNum);
             this.Controls.Add(this.txtRxSys_NewRxNum);
@@ -895,6 +947,8 @@
             this.groupBox1.PerformLayout();
             this.gbSwitches.ResumeLayout(false);
             this.gbSwitches.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -981,5 +1035,10 @@
         private System.Windows.Forms.TextBox txtRxSys_NewRxNum;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtFileName;
+        private System.Windows.Forms.CheckBox cbTaggedTestRecord;
+        private System.Windows.Forms.CheckBox cbDelimitedTestRecord;
     }
 }

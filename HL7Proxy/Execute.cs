@@ -1243,7 +1243,7 @@ namespace HL7Proxy
             // Ugly Kludge but HL7 doesn't seem to have the notion of a store DEA Number -- I'm still looking
             if(string.IsNullOrEmpty(__store.DEANum))
             {
-                __store.DEANum = "XX123456";   // This should get the attention of the pharmacist
+                __store.DEANum = "XX1234567";   // This should get the attention of the pharmacist
             }
 
             // Write them all to the gateway

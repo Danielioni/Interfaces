@@ -118,10 +118,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="medicineontime.pfx" />
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="mot-certificate.snk" />
+    <None Include="NLog.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

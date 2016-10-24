@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Threading;
 using motCommonLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using motOutboundLib;
 
 namespace motRecordTests
 {
@@ -40,6 +40,50 @@ namespace motRecordTests
 
         public __vars()
         { }
+    }
+
+    [TestClass]
+    public class writeMOTFiles
+    {
+        [TestMethod]
+        public void __write_delimited_files()
+        {
+            List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
+            motFormattedFileOutput __foo = new motFormattedFileOutput();
+
+            try
+            {
+                // Add Drug
+                __key_data.Add(new KeyValuePair<string, string>("Header", "AD"));
+                __key_data.Add(new KeyValuePair<string, string>("LblCode", "Label Code"));
+                __key_data.Add(new KeyValuePair<string, string>("ProdCode", "Product Code"));
+                __key_data.Add(new KeyValuePair<string, string>("TradeName", "Super Green"));
+                __key_data.Add(new KeyValuePair<string, string>("Strength", "100"));
+                __key_data.Add(new KeyValuePair<string, string>("Unit", "MG"));
+                __key_data.Add(new KeyValuePair<string, string>("RxOtc", "O"));
+                __key_data.Add(new KeyValuePair<string, string>("DoseForm", "Tablet"));
+                __key_data.Add(new KeyValuePair<string, string>("Route", "Oral"));
+                __key_data.Add(new KeyValuePair<string, string>("DrugSchedule", "1"));
+                __key_data.Add(new KeyValuePair<string, string>("VisualDescription", "Green Slime"));
+                __key_data.Add(new KeyValuePair<string, string>("DrugName", "Super Green"));
+                __key_data.Add(new KeyValuePair<string, string>("ShortName", "SGPlus"));
+                __key_data.Add(new KeyValuePair<string, string>("NDCNum", "000002345123"));
+                __key_data.Add(new KeyValuePair<string, string>("SizeFactor", "1"));
+                __key_data.Add(new KeyValuePair<string, string>("Template", "a"));
+                __key_data.Add(new KeyValuePair<string, string>("ConsultMsg", "Hold your nose and swallow it"));
+                __key_data.Add(new KeyValuePair<string, string>("GenericFor", "Green SLime Mold"));
+                __key_data.Add(new KeyValuePair<string, string>("RxSys_DrugID", "AD1761"));
+
+                __foo.WriteDelimitedFile(@"\Users\Pjenney\drug_test.delimited", __key_data);
+            }
+            catch(Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            
+
+        }
+
     }
 
     [TestClass]

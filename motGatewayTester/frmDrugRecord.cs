@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using motCommonLib;
+using motOutboundLib;
 
 
 namespace motGatewayTester
@@ -124,6 +126,57 @@ namespace motGatewayTester
         {
             try
             {
+                if ((cbDelimitedTestRecord.Checked || cbTaggedTestRecord.Checked) && txtFileName.Text.Length > 0)
+                {
+                    List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
+                    var __output = new motFormattedFileOutput();
+
+                    if(!Directory.Exists("C:/Records"))
+                    {
+                        Directory.CreateDirectory("C:/Records");
+                    }
+
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        __key_data.Add(new KeyValuePair<string, string>("TableType", "D" + __action.ToUpper().Substring(0, 1)));
+                        //__key_data.Add(new KeyValuePair<string, string>("Action", __action.ToUpper().Substring(0, 1)));
+                    }
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_DrugID", txtRxSys_DrugID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("LabelCode", txtLblCode.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("ProductCode", txtProdCode.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("TradeName", txtTradename.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Strength", txtStrength.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Unit", txtUnit.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxOTC", txtRxOtc.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DoseForm", txtDoseForm.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Route", txtRoute.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DrugSchedule", txtDrugSchedule.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("VisualDescription", txtVisualDescription.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DrugName", txtDrugName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("ShortName", txtShortName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("NDCNum", txtNDCNum.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("SizeFactor", txtSizeFactor.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Template", txtTemplate.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DefaultIsolate", txtDefaultIsolate.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("ConsultMsg", txtConsultMsg.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("GenericFor", txtGenericFor.Text));
+
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+                    }
+
+                    if (cbTaggedTestRecord.Checked)
+                    {
+                        if (cbDelimitedTestRecord.Checked)
+                        {
+                            __key_data.RemoveAt(0);
+                        }
+                        __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Drug", __action);
+                    }
+                }
+
+
                 Drug.RxSys_DrugID = txtRxSys_DrugID.Text;
                 Drug.LabelCode = txtLblCode.Text;
                 Drug.ProductCode = txtProdCode.Text;

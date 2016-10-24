@@ -204,6 +204,11 @@ namespace motCommonLib
 
             if (__strong_validation == true)
             {
+                if(__id.Length < 9)
+                {
+                    throw new FormatException("Invalid DEA Number, minimum length is 9. Received " + __id.Length + " in " + __id);
+                }
+
                 if (__id.Length > 9)
                 {
                     throw new FormatException("Invalid DEA Number, maximum length is 9. Received " + __id.Length + " in " + __id);

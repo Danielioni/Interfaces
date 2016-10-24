@@ -93,8 +93,14 @@
             this.rbDelete = new System.Windows.Forms.RadioButton();
             this.rbChange = new System.Windows.Forms.RadioButton();
             this.rbAdd = new System.Windows.Forms.RadioButton();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtFileName = new System.Windows.Forms.TextBox();
+            this.cbTaggedTestRecord = new System.Windows.Forms.CheckBox();
+            this.cbDelimitedTestRecord = new System.Windows.Forms.CheckBox();
             this.gbSwitches.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // valDrugName
@@ -111,7 +117,7 @@
             this.txtDrugName.Location = new System.Drawing.Point(160, 411);
             this.txtDrugName.Name = "txtDrugName";
             this.txtDrugName.Size = new System.Drawing.Size(319, 22);
-            this.txtDrugName.TabIndex = 201;
+            this.txtDrugName.TabIndex = 12;
             this.txtDrugName.TextChanged += new System.EventHandler(this.txtDrugName_TextChanged);
             // 
             // label6
@@ -321,7 +327,7 @@
             this.txtGenericFor.Location = new System.Drawing.Point(648, 245);
             this.txtGenericFor.Name = "txtGenericFor";
             this.txtGenericFor.Size = new System.Drawing.Size(319, 22);
-            this.txtGenericFor.TabIndex = 168;
+            this.txtGenericFor.TabIndex = 19;
             this.txtGenericFor.TextChanged += new System.EventHandler(this.txtGenericFor_TextChanged);
             // 
             // label36
@@ -338,7 +344,7 @@
             this.txtConsultMsg.Location = new System.Drawing.Point(648, 217);
             this.txtConsultMsg.Name = "txtConsultMsg";
             this.txtConsultMsg.Size = new System.Drawing.Size(319, 22);
-            this.txtConsultMsg.TabIndex = 166;
+            this.txtConsultMsg.TabIndex = 18;
             this.txtConsultMsg.TextChanged += new System.EventHandler(this.txtConsultMsg_TextChanged);
             // 
             // label35
@@ -355,7 +361,7 @@
             this.txtDefaultIsolate.Location = new System.Drawing.Point(648, 189);
             this.txtDefaultIsolate.Name = "txtDefaultIsolate";
             this.txtDefaultIsolate.Size = new System.Drawing.Size(319, 22);
-            this.txtDefaultIsolate.TabIndex = 164;
+            this.txtDefaultIsolate.TabIndex = 17;
             this.txtDefaultIsolate.TextChanged += new System.EventHandler(this.txtDefaultIsolate_TextChanged);
             // 
             // label34
@@ -372,7 +378,7 @@
             this.txtTemplate.Location = new System.Drawing.Point(648, 161);
             this.txtTemplate.Name = "txtTemplate";
             this.txtTemplate.Size = new System.Drawing.Size(319, 22);
-            this.txtTemplate.TabIndex = 162;
+            this.txtTemplate.TabIndex = 16;
             this.txtTemplate.TextChanged += new System.EventHandler(this.txtTemplate_TextChanged);
             // 
             // label33
@@ -389,7 +395,7 @@
             this.txtSizeFactor.Location = new System.Drawing.Point(648, 133);
             this.txtSizeFactor.Name = "txtSizeFactor";
             this.txtSizeFactor.Size = new System.Drawing.Size(319, 22);
-            this.txtSizeFactor.TabIndex = 160;
+            this.txtSizeFactor.TabIndex = 15;
             this.txtSizeFactor.TextChanged += new System.EventHandler(this.txtSizeFactor_TextChanged);
             // 
             // label32
@@ -406,7 +412,7 @@
             this.txtDrugSchedule.Location = new System.Drawing.Point(160, 355);
             this.txtDrugSchedule.Name = "txtDrugSchedule";
             this.txtDrugSchedule.Size = new System.Drawing.Size(319, 22);
-            this.txtDrugSchedule.TabIndex = 157;
+            this.txtDrugSchedule.TabIndex = 10;
             this.txtDrugSchedule.TextChanged += new System.EventHandler(this.txtDrugSchedule_TextChanged);
             // 
             // label24
@@ -423,7 +429,7 @@
             this.txtShortName.Location = new System.Drawing.Point(160, 439);
             this.txtShortName.Name = "txtShortName";
             this.txtShortName.Size = new System.Drawing.Size(319, 22);
-            this.txtShortName.TabIndex = 155;
+            this.txtShortName.TabIndex = 13;
             this.txtShortName.TextChanged += new System.EventHandler(this.txtShortName_TextChanged);
             // 
             // label23
@@ -440,7 +446,7 @@
             this.txtNDCNum.Location = new System.Drawing.Point(648, 105);
             this.txtNDCNum.Name = "txtNDCNum";
             this.txtNDCNum.Size = new System.Drawing.Size(319, 22);
-            this.txtNDCNum.TabIndex = 153;
+            this.txtNDCNum.TabIndex = 14;
             this.txtNDCNum.TextChanged += new System.EventHandler(this.txtNDCNum_TextChanged);
             // 
             // label22
@@ -457,7 +463,7 @@
             this.txtVisualDescription.Location = new System.Drawing.Point(160, 383);
             this.txtVisualDescription.Name = "txtVisualDescription";
             this.txtVisualDescription.Size = new System.Drawing.Size(319, 22);
-            this.txtVisualDescription.TabIndex = 149;
+            this.txtVisualDescription.TabIndex = 11;
             this.txtVisualDescription.TextChanged += new System.EventHandler(this.txtVisualDescription_TextChanged);
             // 
             // label20
@@ -474,7 +480,7 @@
             this.txtRoute.Location = new System.Drawing.Point(160, 327);
             this.txtRoute.Name = "txtRoute";
             this.txtRoute.Size = new System.Drawing.Size(319, 22);
-            this.txtRoute.TabIndex = 147;
+            this.txtRoute.TabIndex = 9;
             this.txtRoute.TextChanged += new System.EventHandler(this.txtRoute_TextChanged);
             // 
             // label19
@@ -491,7 +497,7 @@
             this.txtDoseForm.Location = new System.Drawing.Point(160, 299);
             this.txtDoseForm.Name = "txtDoseForm";
             this.txtDoseForm.Size = new System.Drawing.Size(319, 22);
-            this.txtDoseForm.TabIndex = 145;
+            this.txtDoseForm.TabIndex = 8;
             this.txtDoseForm.TextChanged += new System.EventHandler(this.txtDoseForm_TextChanged);
             // 
             // label18
@@ -508,7 +514,7 @@
             this.txtRxOtc.Location = new System.Drawing.Point(160, 271);
             this.txtRxOtc.Name = "txtRxOtc";
             this.txtRxOtc.Size = new System.Drawing.Size(319, 22);
-            this.txtRxOtc.TabIndex = 143;
+            this.txtRxOtc.TabIndex = 7;
             this.txtRxOtc.TextChanged += new System.EventHandler(this.txtRxOtc_TextChanged);
             // 
             // label17
@@ -525,7 +531,7 @@
             this.txtUnit.Location = new System.Drawing.Point(160, 243);
             this.txtUnit.Name = "txtUnit";
             this.txtUnit.Size = new System.Drawing.Size(319, 22);
-            this.txtUnit.TabIndex = 141;
+            this.txtUnit.TabIndex = 6;
             this.txtUnit.TextChanged += new System.EventHandler(this.txtUnit_TextChanged);
             // 
             // label16
@@ -543,7 +549,7 @@
             this.txtStrength.Multiline = true;
             this.txtStrength.Name = "txtStrength";
             this.txtStrength.Size = new System.Drawing.Size(319, 22);
-            this.txtStrength.TabIndex = 139;
+            this.txtStrength.TabIndex = 5;
             this.txtStrength.TextChanged += new System.EventHandler(this.txtStrength_TextChanged);
             // 
             // label15
@@ -560,7 +566,7 @@
             this.txtTradename.Location = new System.Drawing.Point(160, 185);
             this.txtTradename.Name = "txtTradename";
             this.txtTradename.Size = new System.Drawing.Size(319, 22);
-            this.txtTradename.TabIndex = 137;
+            this.txtTradename.TabIndex = 4;
             this.txtTradename.TextChanged += new System.EventHandler(this.txtTradename_TextChanged);
             // 
             // label4
@@ -577,7 +583,7 @@
             this.txtProdCode.Location = new System.Drawing.Point(160, 157);
             this.txtProdCode.Name = "txtProdCode";
             this.txtProdCode.Size = new System.Drawing.Size(319, 22);
-            this.txtProdCode.TabIndex = 135;
+            this.txtProdCode.TabIndex = 3;
             this.txtProdCode.TextChanged += new System.EventHandler(this.txtProdCode_TextChanged);
             // 
             // label3
@@ -594,7 +600,7 @@
             this.txtLblCode.Location = new System.Drawing.Point(160, 129);
             this.txtLblCode.Name = "txtLblCode";
             this.txtLblCode.Size = new System.Drawing.Size(319, 22);
-            this.txtLblCode.TabIndex = 133;
+            this.txtLblCode.TabIndex = 2;
             this.txtLblCode.TextChanged += new System.EventHandler(this.txtLblCode_TextChanged);
             // 
             // label2
@@ -611,7 +617,7 @@
             this.txtRxSys_DrugID.Location = new System.Drawing.Point(160, 101);
             this.txtRxSys_DrugID.Name = "txtRxSys_DrugID";
             this.txtRxSys_DrugID.Size = new System.Drawing.Size(319, 22);
-            this.txtRxSys_DrugID.TabIndex = 131;
+            this.txtRxSys_DrugID.TabIndex = 1;
             this.txtRxSys_DrugID.TextChanged += new System.EventHandler(this.txtRxSys_DrugID_TextChanged);
             // 
             // label1
@@ -672,11 +678,61 @@
             this.rbAdd.UseVisualStyleBackColor = true;
             this.rbAdd.CheckedChanged += new System.EventHandler(this.rbAdd_CheckedChanged);
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.txtFileName);
+            this.groupBox2.Controls.Add(this.cbTaggedTestRecord);
+            this.groupBox2.Controls.Add(this.cbDelimitedTestRecord);
+            this.groupBox2.Location = new System.Drawing.Point(41, 512);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(731, 56);
+            this.groupBox2.TabIndex = 203;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "[ Generate Test Record ]";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(408, 23);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(73, 17);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Filename: ";
+            // 
+            // txtFileName
+            // 
+            this.txtFileName.Location = new System.Drawing.Point(487, 22);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(215, 22);
+            this.txtFileName.TabIndex = 2;
+            // 
+            // cbTaggedTestRecord
+            // 
+            this.cbTaggedTestRecord.AutoSize = true;
+            this.cbTaggedTestRecord.Location = new System.Drawing.Point(224, 24);
+            this.cbTaggedTestRecord.Name = "cbTaggedTestRecord";
+            this.cbTaggedTestRecord.Size = new System.Drawing.Size(79, 21);
+            this.cbTaggedTestRecord.TabIndex = 1;
+            this.cbTaggedTestRecord.Text = "Tagged";
+            this.cbTaggedTestRecord.UseVisualStyleBackColor = true;
+            // 
+            // cbDelimitedTestRecord
+            // 
+            this.cbDelimitedTestRecord.AutoSize = true;
+            this.cbDelimitedTestRecord.Location = new System.Drawing.Point(53, 24);
+            this.cbDelimitedTestRecord.Name = "cbDelimitedTestRecord";
+            this.cbDelimitedTestRecord.Size = new System.Drawing.Size(88, 21);
+            this.cbDelimitedTestRecord.TabIndex = 0;
+            this.cbDelimitedTestRecord.Text = "Delimited";
+            this.cbDelimitedTestRecord.UseVisualStyleBackColor = true;
+            // 
             // frmDrugRecord
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1040, 589);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.valDrugName);
             this.Controls.Add(this.txtDrugName);
             this.Controls.Add(this.label6);
@@ -744,6 +800,8 @@
             this.gbSwitches.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -814,5 +872,10 @@
         private System.Windows.Forms.RadioButton rbDelete;
         private System.Windows.Forms.RadioButton rbChange;
         private System.Windows.Forms.RadioButton rbAdd;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txtFileName;
+        private System.Windows.Forms.CheckBox cbTaggedTestRecord;
+        private System.Windows.Forms.CheckBox cbDelimitedTestRecord;
     }
 }

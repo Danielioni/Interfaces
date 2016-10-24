@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("motOutboundLib")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Libraries for outbound communication")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Medicine-On-Time")]
 [assembly: AssemblyProduct("motOutboundLib")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]

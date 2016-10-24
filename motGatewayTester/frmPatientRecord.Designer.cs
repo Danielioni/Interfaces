@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPatientRecord));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rbDelete = new System.Windows.Forms.RadioButton();
             this.rbChange = new System.Windows.Forms.RadioButton();
@@ -155,8 +156,14 @@
             this.valSSN = new System.Windows.Forms.Label();
             this.valRxSys_AltDoc = new System.Windows.Forms.Label();
             this.valRxSys_PrimaryDoc = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.txtFileName = new System.Windows.Forms.TextBox();
+            this.cbTaggedTestRecord = new System.Windows.Forms.CheckBox();
+            this.cbDelimitedTestRecord = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.gbSwitches.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -1306,11 +1313,61 @@
             this.valRxSys_PrimaryDoc.TabIndex = 105;
             this.valRxSys_PrimaryDoc.Text = "0";
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label41);
+            this.groupBox2.Controls.Add(this.txtFileName);
+            this.groupBox2.Controls.Add(this.cbTaggedTestRecord);
+            this.groupBox2.Controls.Add(this.cbDelimitedTestRecord);
+            this.groupBox2.Location = new System.Drawing.Point(183, 666);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(731, 56);
+            this.groupBox2.TabIndex = 205;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "[ Generate Test Record ]";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(408, 23);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(73, 17);
+            this.label41.TabIndex = 3;
+            this.label41.Text = "Filename: ";
+            // 
+            // txtFileName
+            // 
+            this.txtFileName.Location = new System.Drawing.Point(487, 22);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(215, 22);
+            this.txtFileName.TabIndex = 2;
+            // 
+            // cbTaggedTestRecord
+            // 
+            this.cbTaggedTestRecord.AutoSize = true;
+            this.cbTaggedTestRecord.Location = new System.Drawing.Point(224, 24);
+            this.cbTaggedTestRecord.Name = "cbTaggedTestRecord";
+            this.cbTaggedTestRecord.Size = new System.Drawing.Size(79, 21);
+            this.cbTaggedTestRecord.TabIndex = 1;
+            this.cbTaggedTestRecord.Text = "Tagged";
+            this.cbTaggedTestRecord.UseVisualStyleBackColor = true;
+            // 
+            // cbDelimitedTestRecord
+            // 
+            this.cbDelimitedTestRecord.AutoSize = true;
+            this.cbDelimitedTestRecord.Location = new System.Drawing.Point(53, 24);
+            this.cbDelimitedTestRecord.Name = "cbDelimitedTestRecord";
+            this.cbDelimitedTestRecord.Size = new System.Drawing.Size(88, 21);
+            this.cbDelimitedTestRecord.TabIndex = 0;
+            this.cbDelimitedTestRecord.Text = "Delimited";
+            this.cbDelimitedTestRecord.UseVisualStyleBackColor = true;
+            // 
             // frmPatientRecord
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1082, 729);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.valGender);
             this.Controls.Add(this.valChartOnly);
             this.Controls.Add(this.valAdmitDate);
@@ -1434,12 +1491,15 @@
             this.Controls.Add(this.txtRxSys_PatID);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmPatientRecord";
             this.Text = "Patient Record";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.gbSwitches.ResumeLayout(false);
             this.gbSwitches.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1574,5 +1634,10 @@
         private System.Windows.Forms.Label valSSN;
         private System.Windows.Forms.Label valRxSys_AltDoc;
         private System.Windows.Forms.Label valRxSys_PrimaryDoc;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.TextBox txtFileName;
+        private System.Windows.Forms.CheckBox cbTaggedTestRecord;
+        private System.Windows.Forms.CheckBox cbDelimitedTestRecord;
     }
 }

@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using motCommonLib;
+using motOutboundLib;
 
 namespace motGatewayTester
 {
@@ -97,6 +99,78 @@ namespace motGatewayTester
         {
             try
             {
+                if ((cbDelimitedTestRecord.Checked || cbTaggedTestRecord.Checked) && txtFileName.Text.Length > 0)
+                {
+                    List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
+                    var __output = new motFormattedFileOutput();
+
+                    if (!Directory.Exists("C:/Records"))
+                    {
+                        Directory.CreateDirectory("C:/Records");
+                    }
+
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        __key_data.Add(new KeyValuePair<string, string>("TableType", "A" + __action.ToUpper().Substring(0, 1)));
+                        //__key_data.Add(new KeyValuePair<string, string>("Action", __action.ToUpper().Substring(0, 1)));
+                    }
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_PatID", txtRxSys_PatID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("LastName", txtLastName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("FirstName", txtFirstName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("MiddleInitial", txtMiddleInitial.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Address1", txtAddress1.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Address2", txtAddress2.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("City", txtCity.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("State", txtState.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Zip", txtZip.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Phone1", txtPhone1.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Phone2", txtPhone2.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("WorkPhone", txtWorkPhone.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_LocID", txtRxSys_LocID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Room", txtRoom.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Comments", txtComments.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Gender", txtGender.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Status", txtStatus.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("CycleDate", txtCycleDate.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("CycleDays", txtCycleDays.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("CycleType", txtCycleType.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Status", txtStatus.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_LastDoc", txtRxSys_LastDoc.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_PrimaryDoc", txtRxSys_PrimaryDoc.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_AltDoc", txtRxSys_AltDoc.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("SSN", txtSSN.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Allergies", txtAllergies.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Diet", txtDiet.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DxNotes", txtDxNote.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("TreatmentNotes", txtTreatmentNotes.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DOB", txtDOB.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Height", txtHeight.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Weight", txtWeight.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("ResponsibleName", txtResponsibleName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("InsName", txtInsName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("InsPNo", txtInsPNo.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("AltInsName", txtAltInsName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("AltInsPNo", txtAltInsPNo.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("MCareNum", txtMCareNum.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("MCaidNum", txtMCaidNum.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("AdmitDate", txtAdmitDate.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("ChartOnly", txtChartOnly.Text));
+                  
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+                    }
+
+                    if (cbTaggedTestRecord.Checked)
+                    {
+                        if (cbDelimitedTestRecord.Checked)
+                        {
+                            __key_data.RemoveAt(0);
+                        }
+                        __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Patient", __action);
+                    }
+                }
+
                 Patient.setField("Action", __action);
 
                 // Assign all the values and write

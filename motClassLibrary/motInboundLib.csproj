@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>MOT.ico</ApplicationIcon>
+    <ApplicationIcon>MOT Proxy.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -70,6 +70,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MOT Proxy.ico" />
     <Content Include="MOT.ico" />
     <None Include="app.config" />
     <None Include="mot-certificate.snk" />

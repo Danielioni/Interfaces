@@ -33,6 +33,7 @@
             this.tbcMain = new System.Windows.Forms.TabControl();
             this.tbpRun = new System.Windows.Forms.TabPage();
             this.gbTestRecords = new System.Windows.Forms.GroupBox();
+            this.btnTQ = new System.Windows.Forms.Button();
             this.btnDrug = new System.Windows.Forms.Button();
             this.btnRx = new System.Windows.Forms.Button();
             this.btnStore = new System.Windows.Forms.Button();
@@ -162,6 +163,7 @@
             // 
             // gbTestRecords
             // 
+            this.gbTestRecords.Controls.Add(this.btnTQ);
             this.gbTestRecords.Controls.Add(this.btnDrug);
             this.gbTestRecords.Controls.Add(this.btnRx);
             this.gbTestRecords.Controls.Add(this.btnStore);
@@ -170,10 +172,21 @@
             this.gbTestRecords.Controls.Add(this.btnPatient);
             this.gbTestRecords.Location = new System.Drawing.Point(79, 501);
             this.gbTestRecords.Name = "gbTestRecords";
-            this.gbTestRecords.Size = new System.Drawing.Size(445, 170);
+            this.gbTestRecords.Size = new System.Drawing.Size(542, 170);
             this.gbTestRecords.TabIndex = 20;
             this.gbTestRecords.TabStop = false;
             this.gbTestRecords.Text = "[ Test Records ]";
+            // 
+            // btnTQ
+            // 
+            this.btnTQ.Enabled = false;
+            this.btnTQ.Location = new System.Drawing.Point(414, 65);
+            this.btnTQ.Name = "btnTQ";
+            this.btnTQ.Size = new System.Drawing.Size(106, 42);
+            this.btnTQ.TabIndex = 26;
+            this.btnTQ.Text = "Time/Qtys";
+            this.btnTQ.UseVisualStyleBackColor = true;
+            this.btnTQ.Click += new System.EventHandler(this.btnTQ_Click);
             // 
             // btnDrug
             // 
@@ -217,7 +230,7 @@
             this.btnLocation.TabIndex = 22;
             this.btnLocation.Text = "Location";
             this.btnLocation.UseVisualStyleBackColor = true;
-            this.btnLocation.Click += new System.EventHandler(this.button1_Click_1);
+            this.btnLocation.Click += new System.EventHandler(this.btnLocation_Click);
             // 
             // btnPrescriber
             // 
@@ -228,7 +241,7 @@
             this.btnPrescriber.TabIndex = 21;
             this.btnPrescriber.Text = "Prescriber";
             this.btnPrescriber.UseVisualStyleBackColor = true;
-            this.btnPrescriber.Click += new System.EventHandler(this.button1_Click);
+            this.btnPrescriber.Click += new System.EventHandler(this.btnPrescriber_Click);
             // 
             // btnPatient
             // 
@@ -976,6 +989,7 @@
         private System.Windows.Forms.Button btnDrug;
         private System.Windows.Forms.Button btnRx;
         private System.Windows.Forms.Button btnStore;
+        private System.Windows.Forms.Button btnTQ;
     }
 }
 
