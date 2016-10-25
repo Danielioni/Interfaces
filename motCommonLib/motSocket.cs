@@ -164,13 +164,6 @@ namespace motCommonLib
                     Console.WriteLine("Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
                     __logger.Log(__log_level, "Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
 
-                    /*Task.Run(() =>
-                     {
-                         Thread.CurrentThread.Name = "reader";
-                         read();                    
-                     });
-                     */
-
                     if (read() > 0)
                     {
                         __callback(__s_iobuffer);

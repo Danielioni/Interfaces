@@ -90,8 +90,8 @@ namespace motCommonLib
                 {'r', "Rx" },
                 {'S', "Store" },
                 {'s', "Store" },
-                {'T', "TimeQtys" },
-                {'t', "TimeQtys" }
+                {'T', "TimesQtys" },
+                {'t', "TimesQtys" }
             };
 
             Dictionary<int, string> __prescriber_table = new Dictionary<int, string>()
