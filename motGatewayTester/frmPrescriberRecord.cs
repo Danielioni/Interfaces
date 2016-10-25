@@ -120,75 +120,98 @@ namespace motGatewayTester
 
         private void btnGo_Click(object sender, EventArgs e)
         {
-            if ((cbDelimitedTestRecord.Checked || cbTaggedTestRecord.Checked) && txtFileName.Text.Length > 0)
-            {
-                List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
-                var __output = new motFormattedFileOutput();
-
-                if (!Directory.Exists("C:/Records"))
-                {
-                    Directory.CreateDirectory("C:/Records");
-                }
-
-                if (cbDelimitedTestRecord.Checked)
-                {
-                    __key_data.Add(new KeyValuePair<string, string>("TableType", "P" + __action.ToUpper().Substring(0, 1)));
-                    //__key_data.Add(new KeyValuePair<string, string>("Action", __action.ToUpper().Substring(0, 1)));
-                }
-                
-                __key_data.Add(new KeyValuePair<string, string>("LastName", txtLastName.Text));
-                __key_data.Add(new KeyValuePair<string, string>("FirstName", txtFirstName.Text));
-                __key_data.Add(new KeyValuePair<string, string>("MiddleInitial", txtMiddleInitial.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Address1", txtAddress1.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Address2", txtAddress2.Text));
-                __key_data.Add(new KeyValuePair<string, string>("City", txtCity.Text));
-                __key_data.Add(new KeyValuePair<string, string>("State", txtState.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Zip", txtZip.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Phone", txtPhone.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Comments", txtComments.Text));
-                __key_data.Add(new KeyValuePair<string, string>("DEA_ID", txtDEA_ID.Text));
-                __key_data.Add(new KeyValuePair<string, string>("TPID", txtTPID.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Speciality", txtSpecialty.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Fax", txtFax.Text));
-                __key_data.Add(new KeyValuePair<string, string>("PagerInfo", txtPagerInfo.Text));
-                __key_data.Add(new KeyValuePair<string, string>("RxSys_DocID", txtRxSys_DocID.Text));
-
-                if (cbDelimitedTestRecord.Checked)
-                {
-                    __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
-                }
-
-                if (cbTaggedTestRecord.Checked)
-                {
-                    if (cbDelimitedTestRecord.Checked)
-                    {
-                        __key_data.RemoveAt(0);
-                    }
-                    __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Prescriber", __action);
-                }
-            }
-
             try
             {
-                Doc.RxSys_DocID = txtRxSys_DocID.Text;
-                Doc.LastName = txtLastName.Text;
-                Doc.FirstName = txtFirstName.Text;
-                Doc.MiddleInitial = txtMiddleInitial.Text;
-                Doc.Address1 = txtAddress1.Text;
-                Doc.Address2 = txtAddress2.Text;
-                Doc.City = txtCity.Text;
-                Doc.State = txtState.Text;
-                Doc.PostalCode = txtZip.Text;
-                Doc.Phone = txtPhone.Text;
-                Doc.Comments = txtComments.Text;
-                Doc.DEA_ID = txtDEA_ID.Text;
-                Doc.TPID = txtTPID.Text;
-                Doc.Specialty = txtSpecialty.Text.Length > 0 ? Convert.ToInt32(txtSpecialty.Text) : 0;
-                Doc.Fax = txtFax.Text;
-                Doc.PagerInfo = txtPagerInfo.Text;
+                if ((cbDelimitedTestRecord.Checked || cbTaggedTestRecord.Checked) && txtFileName.Text.Length > 0)
+                {
+                    List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
+                    var __output = new motFormattedFileOutput();
 
+                    if (!Directory.Exists("C:/Records"))
+                    {
+                        Directory.CreateDirectory("C:/Records");
+                    }
 
-                __execute.__update_event_ui("Prescriber field assignment complete ...");
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        __key_data.Add(new KeyValuePair<string, string>("TableType", "P" + __action.ToUpper().Substring(0, 1)));
+                    }
+
+                    __key_data.Add(new KeyValuePair<string, string>("LastName", txtLastName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("FirstName", txtFirstName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("MiddleInitial", txtMiddleInitial.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Address1", txtAddress1.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Address2", txtAddress2.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("City", txtCity.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("State", txtState.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Zip", txtZip.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Phone", txtPhone.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Comments", txtComments.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DEA_ID", txtDEA_ID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("TPID", txtTPID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Speciality", txtSpecialty.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Fax", txtFax.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("PagerInfo", txtPagerInfo.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_DocID", txtRxSys_DocID.Text));
+
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        byte[] __record = __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+
+                        if (cbSendDelimitedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
+
+                    }
+
+                    if (cbTaggedTestRecord.Checked)
+                    {
+                        if (cbDelimitedTestRecord.Checked)
+                        {
+                            __key_data.RemoveAt(0);
+                        }
+
+                        string __record = __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Prescriber", __action);
+
+                        if (cbSendTaggedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
+                    }
+                }
+                else
+                {
+                    Doc.RxSys_DocID = txtRxSys_DocID.Text;
+                    Doc.LastName = txtLastName.Text;
+                    Doc.FirstName = txtFirstName.Text;
+                    Doc.MiddleInitial = txtMiddleInitial.Text;
+                    Doc.Address1 = txtAddress1.Text;
+                    Doc.Address2 = txtAddress2.Text;
+                    Doc.City = txtCity.Text;
+                    Doc.State = txtState.Text;
+                    Doc.PostalCode = txtZip.Text;
+                    Doc.Phone = txtPhone.Text;
+                    Doc.Comments = txtComments.Text;
+                    Doc.DEA_ID = txtDEA_ID.Text;
+                    Doc.TPID = txtTPID.Text;
+                    Doc.Specialty = txtSpecialty.Text.Length > 0 ? Convert.ToInt32(txtSpecialty.Text) : 0;
+                    Doc.Fax = txtFax.Text;
+                    Doc.PagerInfo = txtPagerInfo.Text;
+
+                    __execute.__update_event_ui("Prescriber field assignment complete ...");
+
+                    try
+                    {
+                        Doc.Write(__execute.__p);
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        __execute.__update_error_ui(string.Format("Prescriber record write error: {0}", ex.Message));
+                        return;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -196,16 +219,7 @@ namespace motGatewayTester
                 return;
             }
 
-            try
-            {
-                Doc.Write(__execute.__p);
-                __execute.__update_event_ui("Prescriber write record complete ...");
-            }
-            catch (Exception ex)
-            {
-                __execute.__update_error_ui(string.Format("Prescriber record write error: {0}", ex.Message));
-                return;
-            }
+            __execute.__update_event_ui("Prescriber write record complete ...");
         }
     }
 }

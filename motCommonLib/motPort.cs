@@ -239,6 +239,31 @@ namespace motCommonLib
             return false;
         }
 
+        public bool Write(byte[] __data)
+        {
+            try
+            {
+                if (__open && __tcp_socket != null)
+                {
+                    __data_stream.Write(__data, 0, __data.Length);
+                    return ProcessRetVal();
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format(@"Error writing to port [{0}/{1}] : {2}", this.__tcp_address, this.__tcp_port, e.Message);
+                Console.WriteLine(__error);
+                logger.Log(__log_level, __error);
+                throw new Exception(__error);
+            }
+
+            return false;
+        }
+
+        public bool Write(string __data)
+        {
+            return Write(__data, __data.Length);
+        }
         public bool Write(string __buf, int __len)
         {
             try

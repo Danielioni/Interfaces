@@ -15,7 +15,7 @@ namespace motOutboundLib
         {
         }
 
-        public void WriteDelimitedFile(string __path, List<KeyValuePair<string, string>> __data)
+        public byte[] WriteDelimitedFile(string __path, List<KeyValuePair<string, string>> __data)
         {
             try
             {
@@ -48,6 +48,8 @@ namespace motOutboundLib
                     b = m.ToArray();
 
                     File.WriteAllBytes(__path + ".drec", b);
+
+                    return b;
                 }
             }
             catch (Exception ex)
@@ -57,7 +59,7 @@ namespace motOutboundLib
             }
         }
 
-        public void WriteTaggedFile(string __path, List<KeyValuePair<string, string>> __data, string __table_type, string __action)
+        public string WriteTaggedFile(string __path, List<KeyValuePair<string, string>> __data, string __table_type, string __action)
         {
             StringBuilder __tagged_string = new StringBuilder();
 
@@ -85,6 +87,9 @@ namespace motOutboundLib
                 __tagged_string.Append(string.Format("</Record>"));
 
                 File.WriteAllText(__path + ".trec", __tagged_string.ToString());
+
+                return __tagged_string.ToString();
+
             }
             catch(Exception ex)
             {

@@ -131,7 +131,7 @@ namespace motGatewayTester
                     List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
                     var __output = new motFormattedFileOutput();
 
-                    if(!Directory.Exists("C:/Records"))
+                    if (!Directory.Exists("C:/Records"))
                     {
                         Directory.CreateDirectory("C:/Records");
                     }
@@ -139,8 +139,8 @@ namespace motGatewayTester
                     if (cbDelimitedTestRecord.Checked)
                     {
                         __key_data.Add(new KeyValuePair<string, string>("TableType", "D" + __action.ToUpper().Substring(0, 1)));
-                        //__key_data.Add(new KeyValuePair<string, string>("Action", __action.ToUpper().Substring(0, 1)));
                     }
+
                     __key_data.Add(new KeyValuePair<string, string>("RxSys_DrugID", txtRxSys_DrugID.Text));
                     __key_data.Add(new KeyValuePair<string, string>("LabelCode", txtLblCode.Text));
                     __key_data.Add(new KeyValuePair<string, string>("ProductCode", txtProdCode.Text));
@@ -163,7 +163,12 @@ namespace motGatewayTester
 
                     if (cbDelimitedTestRecord.Checked)
                     {
-                        __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+                        byte[] __record = __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+
+                        if (cbSendDelimitedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
                     }
 
                     if (cbTaggedTestRecord.Checked)
@@ -172,49 +177,57 @@ namespace motGatewayTester
                         {
                             __key_data.RemoveAt(0);
                         }
-                        __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Drug", __action);
+
+                        string __record = __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Drug", __action);
+
+                        if (cbSendTaggedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
                     }
                 }
+                else
+                {
+                    Drug.RxSys_DrugID = txtRxSys_DrugID.Text;
+                    Drug.LabelCode = txtLblCode.Text;
+                    Drug.ProductCode = txtProdCode.Text;
+                    Drug.TradeName = txtTradename.Text;
+                    Drug.Strength = Convert.ToInt32(txtStrength.Text);
+                    Drug.Unit = txtUnit.Text;
+                    Drug.RxOTC = txtRxOtc.Text;
+                    Drug.DoseForm = txtDoseForm.Text;
+                    Drug.Route = txtRoute.Text;
+                    Drug.DrugSchedule = Convert.ToInt32(txtDrugSchedule.Text);
+                    Drug.VisualDescription = txtVisualDescription.Text;
+                    Drug.DrugName = txtDrugName.Text;
+                    Drug.ShortName = txtShortName.Text;
+                    Drug.NDCNum = txtNDCNum.Text;
+                    Drug.SizeFactor = Convert.ToInt32(txtSizeFactor.Text);
+                    Drug.Template = txtTemplate.Text;
+                    Drug.DefaultIsolate = Convert.ToInt32(txtDefaultIsolate.Text);
+                    Drug.ConsultMsg = txtConsultMsg.Text;
+                    Drug.GenericFor = txtGenericFor.Text;
 
+                    __execute.__update_event_ui("Drug field assignment complete ...");
 
-                Drug.RxSys_DrugID = txtRxSys_DrugID.Text;
-                Drug.LabelCode = txtLblCode.Text;
-                Drug.ProductCode = txtProdCode.Text;
-                Drug.TradeName = txtTradename.Text;
-                Drug.Strength = Convert.ToInt32(txtStrength.Text);
-                Drug.Unit = txtUnit.Text;
-                Drug.RxOTC = txtRxOtc.Text;
-                Drug.DoseForm = txtDoseForm.Text;
-                Drug.Route = txtRoute.Text;
-                Drug.DrugSchedule = Convert.ToInt32(txtDrugSchedule.Text);
-                Drug.VisualDescription = txtVisualDescription.Text;
-                Drug.DrugName = txtDrugName.Text;
-                Drug.ShortName = txtShortName.Text;
-                Drug.NDCNum = txtNDCNum.Text;
-                Drug.SizeFactor = Convert.ToInt32(txtSizeFactor.Text);
-                Drug.Template = txtTemplate.Text;
-                Drug.DefaultIsolate = Convert.ToInt32(txtDefaultIsolate.Text);
-                Drug.ConsultMsg = txtConsultMsg.Text;
-                Drug.GenericFor = txtGenericFor.Text;
-
-                __execute.__update_event_ui("Drug field assignment complete ...");
+                    try
+                    {
+                        Drug.Write(__execute.__p);
+                    }
+                    catch (Exception ex)
+                    {
+                        __execute.__update_error_ui(string.Format("Drug record write error: {0}", ex.Message));
+                        return;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                __execute.__update_error_ui(string.Format("Drug record field assignment error: {0}", ex.Message));
+                __execute.__update_error_ui(string.Format("Drug record error: {0}", ex.Message));
                 return;
             }
 
-            try
-            {
-                Drug.Write(__execute.__p);
-                __execute.__update_event_ui("Drug write record complete ...");
-            }
-            catch (Exception ex)
-            {
-                __execute.__update_error_ui(string.Format("Drug record write error: {0}", ex.Message));
-                return;
-            }
+            __execute.__update_event_ui("Drug write record complete ...");
         }
 
         private void rbChange_CheckedChanged(object sender, EventArgs e)

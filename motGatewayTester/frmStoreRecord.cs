@@ -98,78 +98,91 @@ namespace motGatewayTester
 
         private void btnGo_Click(object sender, EventArgs e)
         {
-            if ((cbDelimitedTestRecord.Checked || cbTaggedTestRecord.Checked) && txtFileName.Text.Length > 0)
+            try
             {
-                List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
-                var __output = new motFormattedFileOutput();
+                if ((cbDelimitedTestRecord.Checked || cbTaggedTestRecord.Checked) && txtFileName.Text.Length > 0)
+                {
+                    List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();
+                    var __output = new motFormattedFileOutput();
 
-                if (!Directory.Exists("C:/Records"))
-                {
-                    Directory.CreateDirectory("C:/Records");
-                }
-
-                if (cbDelimitedTestRecord.Checked)
-                {
-                    __key_data.Add(new KeyValuePair<string, string>("TableType", "S" + __action.ToUpper().Substring(0, 1)));
-                }
-                __key_data.Add(new KeyValuePair<string, string>("RxSys_StoreID", txtRxSys_StoreID.Text));
-                __key_data.Add(new KeyValuePair<string, string>("StoreName", txtStoreName.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Address1", txtAddress1.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Address2", txtAddress2.Text));
-                __key_data.Add(new KeyValuePair<string, string>("City", txtCity.Text));
-                __key_data.Add(new KeyValuePair<string, string>("State", txtState.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Zip", txtZip.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Phone", txtPhone.Text));
-                __key_data.Add(new KeyValuePair<string, string>("Fax", txtFax.Text));
-                __key_data.Add(new KeyValuePair<string, string>("DEANum", txtDEANum.Text));
-                
-                if (cbDelimitedTestRecord.Checked)
-                {
-                    __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
-                }
-
-                if (cbTaggedTestRecord.Checked)
-                {
-                    if (cbDelimitedTestRecord.Checked)
+                    if (!Directory.Exists("C:/Records"))
                     {
-                        __key_data.RemoveAt(0);
+                        Directory.CreateDirectory("C:/Records");
                     }
 
-                    __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Store", __action);
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        __key_data.Add(new KeyValuePair<string, string>("TableType", "S" + __action.ToUpper().Substring(0, 1)));
+                    }
+                    __key_data.Add(new KeyValuePair<string, string>("RxSys_StoreID", txtRxSys_StoreID.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("StoreName", txtStoreName.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Address1", txtAddress1.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Address2", txtAddress2.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("City", txtCity.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("State", txtState.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Zip", txtZip.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Phone", txtPhone.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("Fax", txtFax.Text));
+                    __key_data.Add(new KeyValuePair<string, string>("DEANum", txtDEANum.Text));
+
+                    if (cbDelimitedTestRecord.Checked)
+                    {
+                        byte[] __record = __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+
+                        if (cbSendDelimitedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
+                    }
+
+                    if (cbTaggedTestRecord.Checked)
+                    {
+                        if (cbDelimitedTestRecord.Checked)
+                        {
+                            __key_data.RemoveAt(0);
+                        }
+
+                        string __record = __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Store", __action);
+
+                        if (cbSendTaggedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
+                    }
+                }
+                else
+                {
+                    Store.RxSys_StoreID = txtRxSys_StoreID.Text;
+                    Store.StoreName = txtStoreName.Text;
+                    Store.Address1 = txtAddress1.Text;
+                    Store.Address2 = txtAddress2.Text;
+                    Store.City = txtCity.Text;
+                    Store.State = txtState.Text;
+                    Store.Zip = txtZip.Text;
+                    Store.Phone = txtPhone.Text;
+                    Store.Fax = txtFax.Text;
+                    Store.DEANum = txtDEANum.Text;
+
+                    __execute.__update_event_ui("Store field assignment complete ...");
+
+                    try
+                    {
+                        Store.Write(__execute.__p);
+                    }
+                    catch (Exception ex)
+                    {
+                        __execute.__update_error_ui(string.Format("Store record write error: {0}", ex.Message));
+                        return;
+                    }
                 }
             }
-
-            try
-            {
-                Store.RxSys_StoreID = txtRxSys_StoreID.Text;
-                Store.StoreName = txtStoreName.Text;
-                Store.Address1 = txtAddress1.Text;
-                Store.Address2 = txtAddress2.Text;
-                Store.City = txtCity.Text;
-                Store.State = txtState.Text;
-                Store.Zip = txtZip.Text;
-                Store.Phone = txtPhone.Text;
-                Store.Fax = txtFax.Text;
-                Store.DEANum = txtDEANum.Text;
-
-                __execute.__update_event_ui("Store field assignment complete ...");
-            }
             catch (Exception ex)
             {
-                __execute.__update_error_ui(string.Format("Store record field assignment error: {0}", ex.Message));
+                __execute.__update_error_ui(string.Format("Store record error: {0}", ex.Message));
                 return;
             }
 
-            try
-            {
-                Store.Write(__execute.__p);
-                __execute.__update_event_ui("Store write record complete ...");
-            }
-            catch (Exception ex)
-            {
-                __execute.__update_error_ui(string.Format("Store record write error: {0}", ex.Message));
-                return;
-            }
+            __execute.__update_event_ui("Store write record complete ...");
         }
     }
 }

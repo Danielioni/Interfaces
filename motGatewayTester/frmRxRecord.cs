@@ -69,8 +69,8 @@ namespace motGatewayTester
                     if (cbDelimitedTestRecord.Checked)
                     {
                         __key_data.Add(new KeyValuePair<string, string>("TableType", "R" + __action.ToUpper().Substring(0, 1)));
-                        //__key_data.Add(new KeyValuePair<string, string>("Action", __action.ToUpper().Substring(0, 1)));
                     }
+
                     __key_data.Add(new KeyValuePair<string, string>("RxSys_PatID", txtRxSys_PatID.Text));
                     __key_data.Add(new KeyValuePair<string, string>("RxSys_RxNum", txtRxNum.Text));
                     __key_data.Add(new KeyValuePair<string, string>("RxSys_DocID", txtRxSys_DocID.Text));
@@ -96,7 +96,12 @@ namespace motGatewayTester
 
                     if (cbDelimitedTestRecord.Checked)
                     {
-                        __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+                        byte[] __record = __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+
+                        if (cbSendDelimitedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
                     }
 
                     if (cbTaggedTestRecord.Checked)
@@ -105,62 +110,72 @@ namespace motGatewayTester
                         {
                             __key_data.RemoveAt(0);
                         }
+
                         __key_data.Add(new KeyValuePair<string, string>("ChartOnly", txtChartOnly.Text));
                         __key_data.Add(new KeyValuePair<string, string>("AnchorDate", txtAnchorDate.Text));
 
-                        __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Rx", __action);
+                        string __record = __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Rx", __action);
+
+                        if (cbSendTaggedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
                     }
                 }
-                Scrip.setField("Action", __action);
+                else
+                {
+                    Scrip.setField("Action", __action);
 
-                // Assign all the values and write
-                Scrip.RxSys_PatID = txtRxSys_PatID.Text;
-                Scrip.RxSys_RxNum = txtRxNum.Text;
-                Scrip.RxSys_DrugID = txtDrug_ID.Text;
-                Scrip.RxSys_DocID = txtRxSys_DocID.Text;
-                Scrip.Sig = txtSig.Text;
-                Scrip.Comments = txtComments.Text;
-               
-                Scrip.MDOMStart = txtMDOMStart.Text;
-                Scrip.QtyPerDose = txtQtyPerDose.Text;
-                Scrip.QtyDispensed = txtQtyDispensed.Text;
+                    // Assign all the values and write
+                    Scrip.RxSys_PatID = txtRxSys_PatID.Text;
+                    Scrip.RxSys_RxNum = txtRxNum.Text;
+                    Scrip.RxSys_DrugID = txtDrug_ID.Text;
+                    Scrip.RxSys_DocID = txtRxSys_DocID.Text;
+                    Scrip.Sig = txtSig.Text;
+                    Scrip.Comments = txtComments.Text;
 
-                Scrip.Status = txtStatus.Text;
-                Scrip.DoW = txtDOW.Text;
+                    Scrip.MDOMStart = txtMDOMStart.Text;
+                    Scrip.QtyPerDose = txtQtyPerDose.Text;
+                    Scrip.QtyDispensed = txtQtyDispensed.Text;
 
-                Scrip.RxStartDate = txtRxStartDate.Text;
-                Scrip.RxStopDate = txtRxStopDate.Text;
-                Scrip.DiscontinueDate = txtDiscontinueDate.Text;
+                    Scrip.Status = txtStatus.Text;
+                    Scrip.DoW = txtDOW.Text;
 
-                Scrip.DoseScheduleName = txtDoseScheduleName.Text;
-                Scrip.Isolate = txtIsolate.Text;
+                    Scrip.RxStartDate = txtRxStartDate.Text;
+                    Scrip.RxStopDate = txtRxStopDate.Text;
+                    Scrip.DiscontinueDate = txtDiscontinueDate.Text;
 
-                Scrip.SpecialDoses = txtSpecialDoses.Text;
-                Scrip.DoseTimesQtys = txtDoseTimesQtys.Text;
+                    Scrip.DoseScheduleName = txtDoseScheduleName.Text;
+                    Scrip.Isolate = txtIsolate.Text;
 
-                Scrip.ChartOnly = txtChartOnly.Text;
-                Scrip.Refills = txtRefills.Text;
-                Scrip.RxType = txtRxType.Text;
-                Scrip.AnchorDate = txtAnchorDate.Text;
+                    Scrip.SpecialDoses = txtSpecialDoses.Text;
+                    Scrip.DoseTimesQtys = txtDoseTimesQtys.Text;
 
-                __execute.__update_event_ui("Prescription field assignment complete ...");
+                    Scrip.ChartOnly = txtChartOnly.Text;
+                    Scrip.Refills = txtRefills.Text;
+                    Scrip.RxType = txtRxType.Text;
+                    Scrip.AnchorDate = txtAnchorDate.Text;
+
+                    __execute.__update_event_ui("Prescription field assignment complete ...");
+
+                    try
+                    {
+                        Scrip.Write(__execute.__p);                       
+                    }
+                    catch (Exception ex)
+                    {
+                        __execute.__update_error_ui(string.Format("Prescription record write error: {0}", ex.Message));
+                        return;
+                    }
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                __execute.__update_error_ui(string.Format("Prescription record field assignment error: {0}", ex.Message));
+                __execute.__update_error_ui(string.Format("Prescription record error: {0}", ex.Message));
                 return;
             }
 
-            try
-            {
-                Scrip.Write(__execute.__p);
-                __execute.__update_event_ui("Prescription write record complete ...");
-            }
-            catch(Exception ex)
-            {
-                __execute.__update_error_ui(string.Format("Prescription record write error: {0}", ex.Message));
-                return;
-            }        
+            __execute.__update_event_ui("Prescription write record complete ...");
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)

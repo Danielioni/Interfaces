@@ -36,9 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="motOutboundLib">
-      <HintPath>..\motOutboundLib\bin\Debug\motOutboundLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -66,6 +63,10 @@
     <ProjectReference Include="..\motCommonLib\motCommonLib.csproj">
       <Project>{ca048b94-057e-4f73-b60d-4f79096e46c9}</Project>
       <Name>motCommonLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\motOutboundLib\motOutboundLib.csproj">
+      <Project>{b8caced9-09d0-411f-9fd6-11dcf222ddfd}</Project>
+      <Name>motOutboundLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -58,10 +58,6 @@
     <Reference Include="motInboundLib">
       <HintPath>..\motClassLibrary\bin\Debug\motInboundLib.dll</HintPath>
     </Reference>
-    <Reference Include="motOutboundLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\motOutboundLib\bin\Debug\motOutboundLib.dll</HintPath>
-    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
@@ -181,6 +177,12 @@
   <ItemGroup>
     <Content Include="MOT-Logo Black.ico" />
     <Content Include="MOT-Proxy ICON.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\motOutboundLib\motOutboundLib.csproj">
+      <Project>{b8caced9-09d0-411f-9fd6-11dcf222ddfd}</Project>
+      <Name>motOutboundLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

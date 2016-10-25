@@ -112,8 +112,8 @@ namespace motGatewayTester
                     if (cbDelimitedTestRecord.Checked)
                     {
                         __key_data.Add(new KeyValuePair<string, string>("TableType", "A" + __action.ToUpper().Substring(0, 1)));
-                        //__key_data.Add(new KeyValuePair<string, string>("Action", __action.ToUpper().Substring(0, 1)));
                     }
+
                     __key_data.Add(new KeyValuePair<string, string>("RxSys_PatID", txtRxSys_PatID.Text));
                     __key_data.Add(new KeyValuePair<string, string>("LastName", txtLastName.Text));
                     __key_data.Add(new KeyValuePair<string, string>("FirstName", txtFirstName.Text));
@@ -155,10 +155,15 @@ namespace motGatewayTester
                     __key_data.Add(new KeyValuePair<string, string>("MCaidNum", txtMCaidNum.Text));
                     __key_data.Add(new KeyValuePair<string, string>("AdmitDate", txtAdmitDate.Text));
                     __key_data.Add(new KeyValuePair<string, string>("ChartOnly", txtChartOnly.Text));
-                  
+
                     if (cbDelimitedTestRecord.Checked)
                     {
-                        __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+                        byte[] __record = __output.WriteDelimitedFile(@"C:\Records\" + txtFileName.Text, __key_data);
+
+                        if (cbSendDelimitedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
                     }
 
                     if (cbTaggedTestRecord.Checked)
@@ -167,79 +172,89 @@ namespace motGatewayTester
                         {
                             __key_data.RemoveAt(0);
                         }
-                        __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Patient", __action);
+
+                        string __record = __output.WriteTaggedFile(@"C:\Records\" + txtFileName.Text, __key_data, "Patient", __action);
+
+                        if (cbSendTaggedRecord.Checked)
+                        {
+                            __execute.__p.Write(__record);
+                        }
                     }
                 }
+                else
+                {
+                    Patient.setField("Action", __action);
 
-                Patient.setField("Action", __action);
+                    // Assign all the values and write
+                    Patient.RxSys_PatID = txtRxSys_PatID.Text;
+                    Patient.LastName = txtLastName.Text;
+                    Patient.MiddleInitial = txtMiddleInitial.Text;
+                    Patient.FirstName = txtFirstName.Text;
+                    Patient.Address1 = txtAddress1.Text;
+                    Patient.Address2 = txtAddress2.Text;
+                    Patient.City = txtCity.Text;
+                    Patient.PostalCode = txtZip.Text;
+                    Patient.Phone1 = txtPhone1.Text;
+                    Patient.Phone2 = txtPhone2.Text;
+                    Patient.WorkPhone = txtWorkPhone.Text;
+                    Patient.Room = txtRoom.Text;
 
-                // Assign all the values and write
-                Patient.RxSys_PatID = txtRxSys_PatID.Text;
-                Patient.LastName = txtLastName.Text;
-                Patient.MiddleInitial = txtMiddleInitial.Text;
-                Patient.FirstName = txtFirstName.Text;
-                Patient.Address1 = txtAddress1.Text;
-                Patient.Address2 = txtAddress2.Text;
-                Patient.City = txtCity.Text;
-                Patient.PostalCode = txtZip.Text;
-                Patient.Phone1 = txtPhone1.Text;
-                Patient.Phone2 = txtPhone2.Text;
-                Patient.WorkPhone = txtWorkPhone.Text;
-                Patient.Room = txtRoom.Text;
+                    Patient.Comments = txtComments.Text;
+                    Patient.Allergies = txtAllergies.Text;
+                    Patient.Diet = txtDiet.Text;
+                    Patient.DxNotes = txtDxNote.Text;
+                    Patient.TreatmentNotes = txtTreatmentNotes.Text;
+                    Patient.ResponisbleName = txtResponsibleName.Text;
 
-                Patient.Comments = txtComments.Text;
-                Patient.Allergies = txtAllergies.Text;
-                Patient.Diet = txtDiet.Text;
-                Patient.DxNotes = txtDxNote.Text;
-                Patient.TreatmentNotes = txtTreatmentNotes.Text;
-                Patient.ResponisbleName = txtResponsibleName.Text;
+                    Patient.DOB = txtDOB.Text;
+                    Patient.Height = Convert.ToInt32(txtHeight.Text);
+                    Patient.Weight = Convert.ToInt32(txtWeight.Text);
 
-                Patient.DOB = txtDOB.Text;
-                Patient.Height = Convert.ToInt32(txtHeight.Text);
-                Patient.Weight = Convert.ToInt32(txtWeight.Text);
+                    Patient.InsName = txtInsName.Text;
+                    Patient.AltInsName = txtAltInsName.Text;
+                    Patient.InsPNo = txtAltInsName.Text;
+                    Patient.AltInsPNo = txtAltInsPNo.Text;
+                    Patient.MedicareNum = txtMCareNum.Text;
+                    Patient.MedicaidNum = txtMCaidNum.Text;
 
-                Patient.InsName = txtInsName.Text;
-                Patient.AltInsName = txtAltInsName.Text;
-                Patient.InsPNo = txtAltInsName.Text;
-                Patient.AltInsPNo = txtAltInsPNo.Text;
-                Patient.MedicareNum = txtMCareNum.Text;
-                Patient.MedicaidNum = txtMCaidNum.Text;
+                    Patient.CycleDate = txtCycleDate.Text;
+                    Patient.CycleDays = Convert.ToInt32(txtCycleDays.Text);
+                    Patient.CycleType = Convert.ToInt32(txtCycleType.Text);
 
-                Patient.CycleDate = txtCycleDate.Text;
-                Patient.CycleDays = Convert.ToInt32(txtCycleDays.Text);
-                Patient.CycleType = Convert.ToInt32(txtCycleType.Text);
+                    Patient.Status = Convert.ToInt32(txtStatus.Text);
+                    Patient.SSN = txtSSN.Text;
 
-                Patient.Status = Convert.ToInt32(txtStatus.Text);
-                Patient.SSN = txtSSN.Text;
+                    Patient.AdmitDate = txtAdmitDate.Text;
+                    Patient.ChartOnly = txtChartOnly.Text;
+                    Patient.Gender = txtGender.Text;
 
-                Patient.AdmitDate = txtAdmitDate.Text;
-                Patient.ChartOnly = txtChartOnly.Text;
-                Patient.Gender = txtGender.Text;
+                    Patient.RxSys_PatID = txtRxSys_PatID.Text;
+                    Patient.RxSys_LocID = txtRxSys_LocID.Text;
+                    Patient.RxSys_PrimaryDoc = txtRxSys_PrimaryDoc.Text;
+                    Patient.RxSys_LastDoc = txtRxSys_LastDoc.Text;
+                    Patient.RxSys_AltDoc = txtRxSys_AltDoc.Text;
 
-                Patient.RxSys_PatID = txtRxSys_PatID.Text;
-                Patient.RxSys_LocID = txtRxSys_LocID.Text;
-                Patient.RxSys_PrimaryDoc = txtRxSys_PrimaryDoc.Text;
-                Patient.RxSys_LastDoc = txtRxSys_LastDoc.Text;
-                Patient.RxSys_AltDoc = txtRxSys_AltDoc.Text;
+                    __execute.__update_event_ui("Patient field assignment complete ...");
 
-                __execute.__update_event_ui("Patient field assignment complete ...");
+                    try
+                    {
+                        Patient.Write(__execute.__p);
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        __execute.__update_error_ui(string.Format("Patient record write error: {0}", ex.Message));
+                        return;
+                    }
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 __execute.__update_error_ui(string.Format("Patient record field assignment error: {0}", ex.Message));
                 return;
             }
 
-            try
-            {
-                Patient.Write(__execute.__p);
-                __execute.__update_event_ui("Patient write record complete ...");
-            }
-            catch(Exception ex)
-            {
-                __execute.__update_error_ui(string.Format("Patient record write error: {0}", ex.Message));
-                return;
-            }        
+            __execute.__update_event_ui("Patient write record complete ...");
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
