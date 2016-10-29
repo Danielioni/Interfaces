@@ -1,0 +1,30 @@
+The interface is based on the Softwriters and Epic specs and we make changes to account for other needs.  We support the following messages:
+
+	ADT^A04^ADT_A01
+		MSH, EVN, PID, PV1,[{OBX}], [{AL1}], [{DG1}]
+
+	ADT^A08^ADT_A01
+		MSH, EVN, PID, PV1,[{OBX}], [{AL1}], [{DG1}]
+
+	OMP^O09^OMP_O09	- NW (New)
+		MSH, PID, [PV1], {ORC, [{TQ1}], [{RXR}], RXO, [{RXC}]},[{NTE}]
+
+	OMP^O09^OMP_O09	DC - {Discontinue}
+		MSH, PID, [PV1], {ORC, [{TQ1}], [{RXR}], RXO, [{RXC}]}
+
+	OMP^O09^OMP_O09	RF - {Refill}
+		MSH, PID, [PV1], {ORC, [{TQ1}], [{RXR}], RXO, [{RXC}]}	
+	
+	RDE^O11^RDE_O11  - DO (Drug Order)
+		MSH, [PID,[PV1]],{ORC,[RXO,{RXR}],RXE,[{NTE}],{TQ1},{RXR},[{RXC]}]}
+
+	RDE^O11^RDE_O11  - LO ( Literal Order)
+		MSH, PID, [PV1],ORC,[TQ1],[RXE]
+
+	RDS^O13^RDS_O13 - DM (Dispense Message)
+		MSH, [PID,[PV1],{ORC,[RXO,[RXE],[{NTE}{TQ1},RXR,[{RXC}],RXD}
+	
+For dose schedules, as well as supporting generic RX?/TQ1, we’ve also implemented the Softwriters ‘Q’ format:
+	D (Daily) QJ# where 1 == Monday - QJ123 = MWF, in MOT QJ123 = STT 
+	E (Every x Days) Q#D e.g. Q2D is every 2nd s 
+	M (Monthly) QL#,#,... e.g. QL3 QL1,15 QL1,5,10,20

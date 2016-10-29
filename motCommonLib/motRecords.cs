@@ -685,6 +685,11 @@ namespace motCommonLib
             }
         }
 
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
+
         public string RxSys_DrugID
         {
             get
@@ -1130,6 +1135,12 @@ namespace motCommonLib
                 throw;
             }
         }
+
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
+
         public string RxSys_DocID
         {
             get
@@ -1567,7 +1578,7 @@ namespace motCommonLib
         {
             get
             {
-                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_docid")));
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_primarydoc")));
                 if (f == null)
                 {
                     return string.Empty;
@@ -1578,7 +1589,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "RxSys_DocID");
+                setField(__qualifiedTags, value, "RxSys_PrimaryDoc");
             }
         }
         public string LastName
@@ -2302,6 +2313,11 @@ namespace motCommonLib
             }
         }
 
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
+
         public string RxSys_RxNum
         {
             get
@@ -2791,6 +2807,12 @@ namespace motCommonLib
                 throw;
             }
         }
+
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
+
         public string RxSys_LocID
         {
             get
@@ -3140,6 +3162,12 @@ namespace motCommonLib
                 throw;
             }
         }
+
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
+
         public string RxSys_StoreID
         {
             get
@@ -3423,6 +3451,12 @@ namespace motCommonLib
                 throw;
             }
         }
+
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
+
         public string RxSys_LocID
         {
             get

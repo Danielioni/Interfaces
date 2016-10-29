@@ -37,6 +37,7 @@ namespace motInboundLib
         public List<Dictionary<string, string>> fields { get; set; }
         public Dictionary<string, string> descriptions { get; set; }
         public DateTime timestamp { get; set; }
+        public List<Order> __order_list { get; set; }
     }
 
     public delegate void ADT_A01EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
@@ -144,6 +145,7 @@ namespace motInboundLib
                         RDE_O11 __rde_o11 = new RDE_O11(__data);
                         __message_data = __rde_o11.__message_store;
                         __args.fields = __message_data;
+                        __args.__order_list = __rde_o11.__orders;
                         __args.timestamp = DateTime.Now;
 
                         RDE_O11MessageEventReceived(this, __args);

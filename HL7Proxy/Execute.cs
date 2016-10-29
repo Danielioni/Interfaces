@@ -532,21 +532,7 @@ namespace HL7Proxy
             __pr.MiddleInitial = __assign("PID-5-3", __fields);
             __pr.DOB = __assign("PID-7", __fields)?.Substring(0, 8);  // Remove the timestamp
             __pr.Gender = __assign("PID-8", __fields)?.Substring(0, 1);
-
-            // 
-            // There are 2 alternatives for entering data, for example an apartment building where the 
-            // street name and is the same but the apt number is different.  It can be used lots of different
-            // ways. It's more important with patient records.
-            //
-            __pr.Address1 = __assign("PID-11-1", __fields);
-            __pr.Address2 = __assign("PID-11-2", __fields) + " " + __assign("PID-11-3", __fields);
-            if (string.IsNullOrEmpty(__pr.Address1))
-            {
-                __pr.Address1 = __pr.Address2;
-                __pr.Address2 = string.Empty;
-            }
-
-            __pr.Address1 = __assign("PID-11-1", __fields);
+            __pr.Address1 = __assign("PID-11-1", __fields); // In a PID Segment this is always an XAD structure
             __pr.Address2 = __assign("PID-11-2", __fields);
             __pr.City = __assign("PID-11-3", __fields);
             __pr.State = __assign("PID-11-4", __fields);
@@ -559,7 +545,7 @@ namespace HL7Proxy
         }
         private void __process_PV1(motPrescriberRecord __doc, motPatientRecord __pr, Dictionary<string, string> __fields)
         {
-            __doc.RxSys_DocID = __assign("PV1-7-1", __fields);
+            __doc.DEA_ID = __doc.RxSys_DocID = __assign("PV1-7-1", __fields);
             __doc.LastName = __assign("PV1-7-2", __fields);
             __doc.FirstName = __assign("PV1-7-3", __fields);
             __doc.MiddleInitial = __assign("PV1-7-4", __fields);
@@ -695,7 +681,7 @@ namespace HL7Proxy
 
             // Explicit named repeat pattern in use
             if (!string.IsNullOrEmpty(__tq1_3_1))
-            {               
+            {
                 __scrip.DoseScheduleName = __tq1_3_1;
                 __scrip.QtyPerDose = __assign("TQ1-2-1", __tq1);
 
@@ -708,7 +694,7 @@ namespace HL7Proxy
                 // See if its a dose schedule we know about
                 try
                 {
-                    string __format = string.Empty;                   
+                    string __format = string.Empty;
                     __lookup.__doseSchedules.TryGetValue(__tq1_3_1, out __format);
 
                     if (!string.IsNullOrEmpty(__format))
@@ -740,7 +726,7 @@ namespace HL7Proxy
 
                 return __scrip.DoseTimesQtys;
             }
-            
+
 
             __scrip.QtyPerDose = __assign("TQ1-2-1", __tq1);
             return __scrip.DoseTimesQtys = __dose_time_qty;
@@ -925,7 +911,11 @@ namespace HL7Proxy
                 __pr.DxNotes = __diagnosis;
 
                 motPort __p = new motPort(__target_ip, __target_port);
+
+                // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ 
+                __doc.Write(__p, __logging);
                 __pr.Write(__p, __logging);
+
                 __p.Close();
             }
             catch (Exception e)
@@ -983,6 +973,7 @@ namespace HL7Proxy
             var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
             var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
             var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
+            var __tq_list = new List<motTimeQtysRecord>();
 
             string __dose_time_qty = string.Empty;
             string __notes = string.Empty;
@@ -1021,16 +1012,18 @@ namespace HL7Proxy
 
                             case "TQ1":
                                 __problem_segment = "TQ1";
-                                __dose_time_qty = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
 
-                                __tq1_records_processed++;                               // > 1 means additive instructions
-                                __tq1_record_rx_type = Convert.ToInt32(__scrip.RxType);  // Non-zero means that its an add to special dose?
+                                var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
 
-                                if (__tq1_records_processed > 1)
-                                {
-                                    __scrip.QtyPerDose = string.Empty;
-                                }
+                                __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
 
+                                __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
+                                __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
+                                __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
+
+                                __tq_list.Add(__tmp_tq);
+
+                                __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
                                 break;
 
                             case "RXC":
@@ -1087,12 +1080,18 @@ namespace HL7Proxy
 
                 motPort __p = new motPort(__target_ip, __target_port);
 
-                __scrip.Write(__p, __logging);
-                __pr.Write(__p, __logging);
-                __doc.Write(__p, __logging);
-                __loc.Write(__p, __logging);
-                __drug.Write(__p, __logging);
+                // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
                 __store.Write(__p, __logging);
+                __loc.Write(__p, __logging);
+                __doc.Write(__p, __logging);
+                __pr.Write(__p, __logging);
+                __scrip.Write(__p, __logging);
+                __drug.Write(__p, __logging);
+
+                foreach (motTimeQtysRecord __tq in __tq_list)
+                {
+                    __tq.Write(__p);
+                }
 
                 __p.Close();
 
@@ -1103,13 +1102,15 @@ namespace HL7Proxy
                 __logger.Log(__log_level, "OMP O09 Processing Failure: {0}", e.Message);
                 throw;
             }
-
-
         }
+
+        // Drug Order       MSH, [ PID, [PV1] ], { ORC, [RXO, {RXR}, RXE, [{NTE}], {TQ1}, {RXR}, [{RXC}] }, [ZPI]
+        // Literal Order    MSH, PID, [PV1], ORC, [TQ1], [RXE], [ZAS]
         void __process_RDE_O11_Event(Object sender, HL7Event7MessageArgs __args)
         {
             int __tq1_records_processed = 0;
             int __tq1_record_rx_type = 0;
+            int __counter = 1;
 
             //__update_event_ui("Received RDE_O11 Event");
 
@@ -1119,21 +1120,21 @@ namespace HL7Proxy
             var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
             var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
             var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
-            
-            List<motTimeQtysRecord> __tq1_list = new List<motTimeQtysRecord>();
+            var __tq_list = new List<motTimeQtysRecord>();
 
             string __time_qty = string.Empty;
             string __dose_time_qty = string.Empty;
             string __tmp = string.Empty;
-            bool __had_zpi = false;
 
+            bool __processed_rxe = false;
 
             string __problem_segment = string.Empty;
-
-            __message_type = "RDE";
+            __message_type = "RDE^O11";
 
             try
             {
+                motPort __p = new motPort(__target_ip, __target_port);
+
                 foreach (Dictionary<string, string> __fields in __args.fields)
                 {
                     foreach (KeyValuePair<string, string> __pair in __fields)
@@ -1143,14 +1144,26 @@ namespace HL7Proxy
                             case "MSH":
                                 break;
 
-                            case "OBX":
-                                __problem_segment = "OBX";
-                                __process_OBX(__pr, __fields);
+                            /*
+                        case "OBX":
+                            __problem_segment = "OBX";
+                            __process_OBX(__pr, __fields);
+                            break;
+
+
+                        case "ORC":
+                            __problem_segment = "ORC";
+                            __process_ORC(__loc, __doc, __pr, __scrip, __fields);
+                            break;
+                            */
+                            case "AL1":
+                                __problem_segment = "AL1";
+                                __pr.Allergies += __process_AL1(__fields);
                                 break;
 
-                            case "ORC":
-                                __problem_segment = "ORC";
-                                __process_ORC(__loc, __doc, __pr, __scrip, __fields);
+                            case "DG1":
+                                __problem_segment = "DG1";
+                                __pr.DxNotes += __process_DG1(__fields);
                                 break;
 
                             case "PID":
@@ -1158,49 +1171,59 @@ namespace HL7Proxy
                                 __process_PID(__pr, __fields);
                                 break;
 
+                            case "PV1":
+                                __problem_segment = "PV1";
+                                __process_PV1(__doc, __pr, __fields);
+                                break;
+
                             case "RXE":
                                 __problem_segment = "RXE";
                                 __process_RXE(__drug, __doc, __scrip, __store, __fields);
                                 break;
 
-                            case "RXO":
-                                __problem_segment = "RXO";
-                                __process_RXO(__pr, __drug, __fields);
+                            case "NTE":
+                                __pr.Comments += __process_NTE(__fields);
                                 break;
 
-                            case "RXR":
-                                __problem_segment = "RXR";
-                                __drug.Route = __assign("RXR-1-2", __fields);
+                            case "IN1":
+                                __process_IN1(__pr, __fields);
                                 break;
 
+                            case "IN2":
+                                __process_IN2(__pr, __fields);
+                                break;
+                            
+                            /*
+                        case "RXC":
+                            __problem_segment = "RXC";
+                            __process_RXC(__scrip, __fields);
+                            break;
+
+
+                        case "RXO":
+                            __problem_segment = "RXO";
+                            __process_RXO(__pr, __drug, __fields);
+                            break;
+
+                        case "RXR":
+                            __problem_segment = "RXR";
+                            __drug.Route = __assign("RXR-1-2", __fields);
+                            break;
+                            */
                             case "TQ1":
                                 __problem_segment = "TQ1";
 
-                                motTimeQtysRecord __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
+                                var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
 
-                                __tmp_tq.RxSys_LocID = "0";
-                                if(!string.IsNullOrEmpty(__loc.RxSys_LocID))
-                                {
-                                    __tmp_tq.RxSys_LocID = __loc.RxSys_LocID;
-                                }
+                                __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
 
+                                __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
                                 __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
                                 __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
 
-                                __tq1_list.Add(__tmp_tq);
+                                __tq_list.Add(__tmp_tq);
 
-                                //__dose_time_qty += __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
-
-                                __tq1_records_processed++;                               // > 1 means additive instructions
-                                __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed, __scrip.DoseScheduleName);
-
-                                __tq1_record_rx_type = Convert.ToInt32(__scrip.RxType);  // Non-zero means that its an add to special dose?
-
-                                //if (__tq1_records_processed > 1)
-                                //{
-                                //    __scrip.QtyPerDose = string.Empty;
-                                //}
-
+                                __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
                                 break;
 
                             case "ZAS":
@@ -1213,13 +1236,12 @@ namespace HL7Proxy
                                 break;
 
                             case "ZLB": // Epic Drug Label
-                                __problem_segment = "ZLB"; 
+                                __problem_segment = "ZLB";
                                 __process_ZLB();
                                 break;
 
                             case "ZPI":  // FrameworksLTC Additional presccription info
                                 __problem_segment = "ZPI";
-                                __had_zpi = true;
                                 __process__ZPI(__scrip, __store, __fields);
                                 break;
                         }
@@ -1235,34 +1257,45 @@ namespace HL7Proxy
 
             __clean_up();
 
-            __scrip.RxSys_PatID = __pr.RxSys_PatID;
-            __pr.Status = 1;
+            
+ 
 
-            __scrip.DoseTimesQtys = __dose_time_qty;
 
             // Ugly Kludge but HL7 doesn't seem to have the notion of a store DEA Number -- I'm still looking
-            if(string.IsNullOrEmpty(__store.DEANum))
+            if (string.IsNullOrEmpty(__store.DEANum))
             {
                 __store.DEANum = "XX1234567";   // This should get the attention of the pharmacist
             }
 
-            // Write them all to the gateway
+
             try
             {
                 motPort __p = new motPort(__target_ip, __target_port);
 
-                foreach(motTimeQtysRecord __tq in __tq1_list)
+                if (__processed_rxe)
                 {
-                    __tq.Write(__p);
-                }
+                    __scrip.RxSys_PatID = __pr.RxSys_PatID;
+                    __pr.Status = 1;
 
-                __scrip.Write(__p);
-                __pr.Write(__p);
-                __doc.Write(__p);
-                __loc.Write(__p);
-                __drug.Write(__p);
-                __store.Write(__p);
-                __p.Close();
+                    // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
+                    __store.Write(__p, __logging);
+                    __loc.Write(__p, __logging);
+                    __doc.Write(__p, __logging);
+                    __pr.Write(__p, __logging);
+                    __scrip.Write(__p, __logging);
+                    __drug.Write(__p, __logging);
+
+                    foreach (motTimeQtysRecord __tq in __tq_list)
+                    {
+                        __tq.Write(__p);
+                    }
+
+                    __tq_list.Clear();
+                }
+                else
+                {
+                    __pr.Write(__p);
+                }
 
             }
             catch (Exception e)
@@ -1270,6 +1303,75 @@ namespace HL7Proxy
                 __show_error_event(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
                 __logger.Log(__log_level, "RDE_O11  Processing Failure: {0}", e.Message);
                 throw;
+            }
+
+            try
+            {
+                motPort __p = new motPort(__target_ip, __target_port);
+
+                foreach (Order __order in __args.__order_list)
+                {
+                    __scrip.Clear();
+                    __doc.Clear();
+                    __loc.Clear();
+                    __store.Clear();
+                    __drug.Clear();
+
+
+                    __process_ORC(__loc, __doc, __pr, __scrip, __order.__orc.__msg_data);
+                    __process_RXE(__drug, __doc, __scrip, __store, __order.__rxe.__msg_data);
+                    __process_RXO(__pr, __drug, __order.__rxo.__msg_data);
+
+                    foreach (TQ1 __tq1 in __order.__tq1)
+                    {
+                        var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
+
+                        __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
+                        __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
+                        __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __tq1.__msg_data);
+                        __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
+                        __tq_list.Add(__tmp_tq);
+
+                        __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
+                    }
+
+                    foreach (RXR __rxr in __order.__rxr)
+                    {
+                        __drug.Route = __assign("RXR-1-2", __rxr.__msg_data);
+                    }
+
+                    __scrip.Comments += "Patient Notes\n";
+                    foreach (NTE __nte in __order.__nte)
+                    {
+                        __scrip.Comments += string.Format("  {0}) {1}\n", __counter++, __process_NTE(__nte.__msg_data));
+                    }
+
+                    foreach (RXC __rxc in __order.__rxc)
+                    {
+                        __process_RXC(__scrip, __rxc.__msg_data);
+                    }
+
+                    // Write the records in sequence
+                    // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
+                    __store.Write(__p, __logging);
+                    __loc.Write(__p, __logging);
+                    __doc.Write(__p, __logging);
+                    __pr.Write(__p, __logging);
+                    __scrip.Write(__p, __logging);
+                    __drug.Write(__p, __logging);
+
+                    foreach (motTimeQtysRecord __tq in __tq_list)
+                    {
+                        __tq.Write(__p);
+                    }
+
+                    __tq_list.Clear();
+                }
+
+                __p.Close();
+            }
+            catch (Exception ex)
+            {
             }
         }
         void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
@@ -1282,12 +1384,13 @@ namespace HL7Proxy
             var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
             var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
             var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
+            var __tq_list = new List<motTimeQtysRecord>();
 
             string __time_qty = string.Empty;
             string __dose_time_qty = string.Empty;
             string __tmp = string.Empty;
             string __patient_notes = string.Empty;
-            bool __had_zpi = false;
+            //bool __had_zpi = false;
             int __tq1_records_processed = 0;
             int __tq1_record_rx_type = 0;
 
@@ -1338,16 +1441,18 @@ namespace HL7Proxy
 
                             case "TQ1":
                                 __problem_segment = "TQ1";
-                                __dose_time_qty = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
 
-                                __tq1_records_processed++;                               // > 1 means additive instructions
-                                __tq1_record_rx_type = Convert.ToInt32(__scrip.RxType);  // Non-zero means that its an add to special dose?
+                                var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
 
-                                if (__tq1_records_processed > 1)
-                                {
-                                    __scrip.QtyPerDose = string.Empty;
-                                }
+                                __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
 
+                                __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
+                                __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
+                                __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
+
+                                __tq_list.Add(__tmp_tq);
+
+                                __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
                                 break;
 
                             case "RXR":
@@ -1367,7 +1472,7 @@ namespace HL7Proxy
 
                             case "ZPI":
                                 __problem_segment = "ZPI";
-                                __had_zpi = true;
+                                //__had_zpi = true;
                                 __process__ZPI(__scrip, __store, __fields);
                                 break;
                         }
@@ -1398,12 +1503,19 @@ namespace HL7Proxy
             {
                 motPort __p = new motPort(__target_ip, __target_port);
 
-                __scrip.Write(__p, __logging);
-                __pr.Write(__p, __logging);
-                __doc.Write(__p, __logging);
-                __loc.Write(__p, __logging);
-                __drug.Write(__p, __logging);
+
+                // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
                 __store.Write(__p, __logging);
+                __loc.Write(__p, __logging);
+                __doc.Write(__p, __logging);
+                __pr.Write(__p, __logging);
+                __scrip.Write(__p, __logging);
+                __drug.Write(__p, __logging);
+
+                foreach (motTimeQtysRecord __tq in __tq_list)
+                {
+                    __tq.Write(__p);
+                }
 
                 __p.Close();
             }

@@ -424,6 +424,62 @@ namespace motCommonLib
             Console.WriteLine("Done Processing OMP_O09, now what ...");
         }
     }
+    /*
+        RDE^O11^RDE_O11  - DO(Drug Order)
+            MSH, [PID,[PV1],{ORC,[RXO, RXR], RXE, [{NTE}], {TQ1}, RXR, [{RXC]} ]}
+
+        RDE^O11^RDE_O11  - LO(Literal Order)
+            MSH, PID, [PV1],ORC,[TQ1],[RXE]
+    */
+
+    // RDE_O11 Order - {ORC,[RXO,{RXR}],RXE,[{NTE}],{TQ1},{RXR},[{RXC]}]}
+    public class Order // Triggered by a new ORC
+    {
+        public ORC __orc;
+        public RXO __rxo;
+        public RXE __rxe;
+        public List<RXR> __rxr;
+        public List<NTE> __nte;
+        public List<TQ1> __tq1;
+        public List<RXC> __rxc;
+        public List<OBX> __obx;
+
+        public Order()
+        {
+            try
+            {
+                __orc = new ORC();
+                __rxo = new RXO();
+                __rxe = new RXE();
+                __rxr = new List<RXR>();
+                __nte = new List<NTE>();
+                __tq1 = new List<TQ1>();
+                __rxc = new List<RXC>();
+                __obx = new List<OBX>();
+            }
+            catch
+            { throw; }
+
+        }
+
+        public bool Empty()
+        {
+            if( __orc.__msg_data.Count == 0 &&
+                __rxo.__msg_data.Count == 0 &&
+                __rxe.__msg_data.Count == 0 &&
+                __rxr.Count == 0 &&
+                __nte.Count == 0 &&
+                __tq1.Count == 0 &&
+                __rxc.Count == 0 &&
+                __obx.Count == 0)
+            {
+                return true;
+            }
+
+            return false;               
+        }
+    }
+
     public class RDE_O11 : HL7_Message_dictionary  // Pharmacy/Treatment Encoded Order Message
     {
         // Drug Order       MSH, [ PID, [PV1] ], { ORC, [RXO, {RXR}, RXE, [{NTE}], {TQ1}, {RXR}, [{RXC}] }, [ZPI]
@@ -435,6 +491,7 @@ namespace motCommonLib
         public ORC __orc;
         public RXE __rxe;
         public RXO __rxo;
+        public AL1 __al1;
         public List<RXR> __rxr;
         public List<RXC> __rxc;
         public List<NTE> __nte;
@@ -444,40 +501,9 @@ namespace motCommonLib
         public ZLB __zlb;           // Epic
         public ZPI __zpi;           // FrameworksLTC
 
+        public List<Order> __orders; 
+
         public List<Dictionary<string, string>> __message_store;
-
-        /*
-                public class Order
-                {
-                    public ORC __orc;
-                    public RXO __rxo;
-
-                    public RXE __rxe;
-                    public List<NTE> __nte;
-                    public List<TQ1> __tq1;
-                    public List<RXC> __rxc;
-                    public List<RXR> __rxr;
-
-                    public Order()
-                    {
-                        try
-                        {
-                            __orc = new ORC();
-                            __rxo = new RXO();
-                            __rxr = new List<RXR>();
-                            __rxe = new RXE();
-                            __nte = new List<NTE>();
-                            __tq1 = new List<TQ1>();
-                            __rxc = new List<RXC>();
-                        }
-                        catch
-                        { throw; }
-                    }
-                }
-
-                public Order __order;
-        */
-
 
         public RDE_O11() : base()
         {
@@ -488,7 +514,9 @@ namespace motCommonLib
             string[] __segments = __message.Split('\r');
 
             __segments = __clear_newlines(__segments);
-         
+
+            __orders = new List<Order>();
+            Order __current_order =  new Order();
 
             __rxr = new List<RXR>();
             __rxc = new List<RXC>();
@@ -504,15 +532,18 @@ namespace motCommonLib
                 {
                     switch (__type.Substring(0, 3))
                     {
+                        case "AL1":
+                            __al1 = new AL1(__type);
+                            break;
+
                         case "MSH":
                             __msh = new MSH(__type);
                             __message_store.Add(__msh.__msg_data);
                             break;
 
                         case "OBX":
-                            OBX __tmp_obx = new OBX(__type);
-                            __obx.Add(__tmp_obx);
-                            __message_store.Add(__tmp_obx.__msg_data);
+                            OBX __tmp_obx = new OBX(__type);                            
+                            __current_order.__obx.Add(__tmp_obx);                         
                             break;
 
                         case "PID":
@@ -527,35 +558,39 @@ namespace motCommonLib
 
                         case "TQ1":
                             TQ1 __tmp_tq1 = new TQ1(__type);
-                            __tq1.Add(__tmp_tq1);
-                            __message_store.Add(__tmp_tq1.__msg_data);
+                           __current_order.__tq1.Add(__tmp_tq1);                          
                             break;
 
                         case "RXC":
                             RXC __tmp_rxc = new RXC(__type);
-                            __rxc.Add(__tmp_rxc);
-                            __message_store.Add(__tmp_rxc.__msg_data);
+                           __current_order.__rxc.Add(__tmp_rxc);
                             break;
 
                         case "RXE":
                             __rxe = new RXE(__type);
-                            __message_store.Add(__rxe.__msg_data);
+                            __current_order.__rxe = __rxe;                     
                             break;
 
                         case "RXO":
                             __rxo = new RXO(__type);
-                            __message_store.Add(__rxo.__msg_data);
+                            __current_order.__rxo = __rxo;
                             break;
 
                         case "RXR":
                             RXR __tmp_rxr = new RXR(__type);
                             __rxr.Add(__tmp_rxr);
-                            __message_store.Add(__tmp_rxr.__msg_data);
+                            __current_order.__rxr.Add(__tmp_rxr);
                             break;
 
-                        case "ORC":  // Need to parse the order
-                            __orc = new ORC(__type);
-                            __message_store.Add(__orc.__msg_data);
+                        case "ORC":  // Need to parse the order       
+                            if(!__current_order.Empty()) // Is this a new order
+                            {
+                                __orders.Add(__current_order);
+                                __current_order = null;
+                            }
+
+                            __current_order = new Order();
+                            __current_order.__orc = new ORC(__type);
                             break;
 
                         case "ZAS":
@@ -575,8 +610,7 @@ namespace motCommonLib
 
                         case "NTE":
                             NTE __tmp_nte = new NTE(__type);
-                            __nte.Add(__tmp_nte);
-                            __message_store.Add(__tmp_nte.__msg_data);
+                            __current_order.__nte.Add(__tmp_nte);
                             break;
 
                         default:
@@ -585,10 +619,18 @@ namespace motCommonLib
                 }
             }
 
+            if(__current_order != null)
+            {
+                __orders.Add(__current_order);
+            }
+
             // Raise __newMessage Event
             Console.WriteLine("Done Processing RDE_O11, now what ...");
         }
     }
+
+   
+
     public class RDS_O13 : HL7_Message_dictionary   // Pharmacy/Treatment Dispense Message
     {
         // Dispense Msg      MSH, [ PID, [PV1] ], { ORC, [RXO], {RXE}, [{NTE}], {TQ1}, {RXR}, [{RXC}], RXD }, [ZPI] 
@@ -609,35 +651,7 @@ namespace motCommonLib
         public List<Dictionary<string, string>> __message_store;
 
         /*
-                public class Order
-                {
-                    public ORC __orc;
-                    public RXO __rxo;
-                    public RXE __rxe;
-                    public RXD __rxd;
-                    public List<NTE> __nte;
-                    public List<TQ1> __tq1;
-                    public List<RXR> __rxr;
-                    public List<RXC> __rxc;
 
-
-                    public Order()
-                    {
-                        try
-                        {
-                            __orc = new ORC();
-                            __rxo = new RXO();
-                            __rxe = new RXE();
-                            __nte = new List<NTE>();
-                            __tq1 = new List<TQ1>();
-                            __rxr = new List<RXR>();
-                            __rxc = new List<RXC>();
-                            __rxd = new RXD();
-                        }
-                        catch
-                        { throw; }
-                    }
-                }
                 public Order __order;
         */
         public RDS_O13(string __message) : base()
