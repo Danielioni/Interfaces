@@ -16,6 +16,7 @@ namespace HL7Proxy
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
 
+        private string __problem_segment = "NONE";
 
         int __first_day_of_week = 0;
 
@@ -350,20 +351,28 @@ namespace HL7Proxy
 
         public string __process_AL1(Dictionary<string, string> __fields)
         {
+            __problem_segment = "AL1";
+
             return string.Format("Code: {0}\nDesc: {1}\nSeverity: {2}\nReaction: {3}\nID Date: {4}\n******\n",
                                              __assign("AL1-2", __fields), __assign("AL1-3", __fields), __assign("AL1-4", __fields), __assign("AL1-5", __fields), __assign("AL1-6", __fields));
         }
         private string __process_DG1(Dictionary<string, string> __fields)
         {
+            __problem_segment = "DG1";
+
             return string.Format("Coding Method: {0}\nDiag Code: {1}\nDesc: {2}\nDate: {3}\nType: {4}\nMajor Catagory: {5}\nRelated Group: {6}\n******\n",
                                                __assign("DG1-2", __fields), __assign("DG1-3-1", __fields), __assign("DG1-4", __fields), __assign("DG1-5-1", __fields), __assign("DG1-6", __fields), __assign("DG1-7-1", __fields), __assign("DG1-8-1", __fields));
         }
         private string __process_EVN(Dictionary<string, string> __fields)
         {
+            __problem_segment = "EVN";
+
             return __assign("EVN-1", __fields);
         }
         private void __process_IN1(motPatientRecord __pr, Dictionary<string, string> __fields)
         {
+            __problem_segment = "IN1";
+
             __pr.InsName = __assign("IN1-1-4", __fields);
 
             // No Insurancec Policy Number per se, but there is a group name(1-9) and a group number(1-8) 
@@ -371,19 +380,27 @@ namespace HL7Proxy
         }
         private void __process_IN2(motPatientRecord __pr, Dictionary<string, string> __fields)
         {
+            __problem_segment = "IN2";
+
             __pr.SSN = __assign("IN2-1", __fields);
         }
         private string __process_NK1(Dictionary<string, string> __fields)
         {
+            __problem_segment = "NK1";
+
             return string.Format("{0} {1} {2} [{3}]\n",
                                     __assign("NK1-2-2", __fields), __assign("NK1-2-3", __fields), __assign("NK1-2-1", __fields), __assign("NK1-3-1", __fields));
         }
         private string __process_NTE(Dictionary<string, string> __fields)
         {
+            __problem_segment = "NT3";
+
             return __assign("NTE-3", __fields);
         }
         private void __process_OBX(motPatientRecord __pr, Dictionary<string, string> __fields)
         {
+            __problem_segment = "OBX";
+
             if (__assign("OBX-3-2", __fields).ToLower().Contains("weight"))
             {
                 if (__assign("OBX-6-1", __fields).ToLower().Contains("kg"))
@@ -415,6 +432,8 @@ namespace HL7Proxy
         }
         private void __process_ORC(motLocationRecord __loc, motPrescriberRecord __doc, motPatientRecord __pr, motPrescriptionRecord __scrip, Dictionary<string, string> __fields)
         {
+            __problem_segment = "ORC";
+
             switch (__assign("ORC-1", __fields))
             {
                 case "NW":
@@ -482,6 +501,8 @@ namespace HL7Proxy
         {
             string __tmp = string.Empty;
 
+            __problem_segment = "PID";
+
             // For FrameworkLTC RDE messages, the PID format is represented as FacilityID\F\PatientID which translates to 
             //  PID-3-1 <Facility ID>
             //  PID-3-3 <Patient ID>
@@ -545,13 +566,30 @@ namespace HL7Proxy
         }
         private void __process_PV1(motPrescriberRecord __doc, motPatientRecord __pr, Dictionary<string, string> __fields)
         {
+            __problem_segment = "PV1";
+
             __doc.DEA_ID = __doc.RxSys_DocID = __assign("PV1-7-1", __fields);
             __doc.LastName = __assign("PV1-7-2", __fields);
             __doc.FirstName = __assign("PV1-7-3", __fields);
             __doc.MiddleInitial = __assign("PV1-7-4", __fields);
         }
+
+        private void __process_PV2(motPatientRecord __pr, Dictionary<string, string> __fields)
+        {
+            __problem_segment = "PV2";
+        }
+        private void __process_PD1(motPatientRecord __pr, Dictionary<string, string> __fields)
+        {
+            __problem_segment = "PD1";
+        }
+        private void __process_PRT(motPatientRecord __pr, Dictionary<string, string> __fields)
+        {
+            __problem_segment = "PRT";
+        }
         private void __process_RXC(motPrescriptionRecord __scrip, Dictionary<string, string> __fields)  // Process Compound Components
         {
+            __problem_segment = "RXC";
+
             __scrip.Comments += "Compound Order Segment\n__________________\n";
             __scrip.Comments += "Component Type:  " + __assign("RXC-1", __fields);
             __scrip.Comments += "Component Amount " + __assign("RXC-3", __fields);
@@ -564,6 +602,8 @@ namespace HL7Proxy
         }
         private void __process_RXD(motPrescriptionRecord __scrip, motDrugRecord __drug, Dictionary<string, string> __fields)
         {
+            __problem_segment = "RXD";
+
             __scrip.RxSys_DrugID = __assign("RXD-2-1", __fields);
             __scrip.QtyDispensed = __assign("RXD-4", __fields);
             __scrip.RxSys_RxNum = __assign("RXD-7", __fields);
@@ -573,6 +613,8 @@ namespace HL7Proxy
         }
         private void __process_RXE(motDrugRecord __drug, motPrescriberRecord __doc, motPrescriptionRecord __scrip, motStoreRecord __store, Dictionary<string, string> __fields)
         {
+            __problem_segment = "RXE";
+
             __doc.DEA_ID = __assign("RXE-13-1", __fields);
 
             __drug.RxSys_DrugID = __assign("RXE-2-1", __fields);  // TODO: Don't think this is right
@@ -638,14 +680,20 @@ namespace HL7Proxy
         }
         private void __process_RXO(motPatientRecord __pr, motDrugRecord __drug, Dictionary<string, string> __fields)
         {
+            __problem_segment = "RXO";
+
             __pr.DxNotes = __assign("RXO-20-2", __fields) + " - " + __assign("RXO-20-5", __fields);
         }
         private void __process_RXR(motDrugRecord __drug, Dictionary<string, string> __fields)
         {
+            __problem_segment = "RXR";
+
             __drug.Route = __assign("RXR-1-1", __fields);
         }
         private string __process_TQ1(motPrescriptionRecord __scrip, int __tq1_record_rx_type, Dictionary<string, string> __tq1)
         {
+            __problem_segment = "TQ1";
+
             string __dose_time_qty = string.Empty;
             string __tq1_3_1 = __assign("TQ1-3-1", __tq1);  // Repeat pattern
 
@@ -733,14 +781,19 @@ namespace HL7Proxy
         }
         private void __process_ZAS()
         {
+            __problem_segment = "ZAS";
+
             return;
         }
         private void __process_ZLB()
         {
+            __problem_segment = "ZLB";
             return;
         }
         private void __process__ZPI(motPrescriptionRecord __scrip, motStoreRecord __store, Dictionary<string, string> __fields)
         {
+            __problem_segment = "ZPI";
+
             //__scrip.RxSys_RxNum = __assign("ZPI-34", __fields);
             //__scrip.RxSys_DrugID = __assign("ZPI-21", __fields);
             //__scrip.RxStopDate = __assign("ZPI-26", __fields);
@@ -751,6 +804,8 @@ namespace HL7Proxy
         }
         private void __process_ZFI(motDrugRecord __drug, Dictionary<string, string> __fields)
         {
+            __problem_segment = "ZFI";
+
             __drug.RxSys_DrugID = __assign("ZF1-1", __fields);  // Item Id
             __drug.TradeName = __assign("ZF1-1", __fields);  // Item Id
             __drug.DrugName = __assign("ZFI-4", __fields);
@@ -979,133 +1034,122 @@ namespace HL7Proxy
             string __notes = string.Empty;
             int __tq1_records_processed = 0;
             int __tq1_record_rx_type = 0;
+            int __counter = 1;
 
             string __problem_segment = string.Empty;
 
             __message_type = "OMP";
 
-            try
+            motPort __p;
+
+            try // Process the Patient
             {
-                foreach (Dictionary<string, string> __fields in __args.fields)
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        switch (__pair.Key)
-                        {
-                            case "MSH":
-                                break;
+                __p = new motPort(__target_ip, __target_port);
 
-                            case "PID":
-                                __problem_segment = "PID";
-                                __process_PID(__pr, __fields);
-                                break;
+                __process_PID(__pr, __args.__patient.__pid.__msg_data);
+                __process_PV1(__doc, __pr, __args.__patient.__pv1.__msg_data);
+                __process_PV2(__pr, __args.__patient.__pv2.__msg_data);
+                __process_PD1(__pr, __args.__patient.__pd1.__msg_data);
+                __process_IN1(__pr, __args.__patient.__in1.__msg_data);
+                __process_IN2(__pr, __args.__patient.__in2.__msg_data);
 
-                            case "PV1":
-                                __problem_segment = "PV1";
-                                __process_PV1(__doc, __pr, __fields);
-                                break;
+                foreach (PRT __prt in __args.__patient.__prt) { __process_PRT(__pr, __prt.__msg_data); }
+                foreach (NTE __nte in __args.__patient.__nte) { __pr.Comments += __process_NTE(__nte.__msg_data); }
+                foreach (AL1 __al1 in __args.__patient.__al1) { __pr.Allergies += __process_AL1(__al1.__msg_data); }
+                foreach (DG1 __dg1 in __args.__patient.__dg1) { __pr.DxNotes += __process_DG1(__dg1.__msg_data); }
 
-                            case "ORC":
-                                __problem_segment = "ORC";
-                                __process_ORC(__loc, __doc, __pr, __scrip, __fields);
-                                break;
-
-                            case "TQ1":
-                                __problem_segment = "TQ1";
-
-                                var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
-
-                                __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
-
-                                __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
-                                __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
-                                __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
-
-                                __tq_list.Add(__tmp_tq);
-
-                                __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
-                                break;
-
-                            case "RXC":
-                                __problem_segment = "RXC";
-                                break;
-
-                            case "RXD":
-                                __problem_segment = "RXD";
-                                __process_RXD(__scrip, __drug, __fields);
-                                break;
-
-                            case "RXE":
-                                __problem_segment = "RXE";
-                                __process_RXE(__drug, __doc, __scrip, __store, __fields);
-                                break;
-
-                            case "RXR":
-                                __problem_segment = "RXR";
-                                __process_RXR(__drug, __fields);
-                                break;
-
-                            case "RXO":
-                                __problem_segment = "RXO";
-                                __process_RXO(__pr, __drug, __fields);
-                                break;
-
-                            case "NTE":
-                                __problem_segment = "NTE";
-                                __notes += __process_NTE(__fields);
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-                }
-
-                __scrip.RxSys_PatID = __pr.RxSys_PatID;
-                __scrip.Comments = __notes;
-                __scrip.DoseTimesQtys = __dose_time_qty;
+                __pr.Write(__p);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                __show_error_event(string.Format("OMP_O09 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
-                __logger.Log(__log_level, "OMP General Processing Failure: {0}", e.Message);
+                __show_error_event(string.Format("OMP_O09 Parse Failure while processing ({0}) -- {1}", __problem_segment, ex.Message));
+                __logger.Log(__log_level, "OMP_O09 General Processing Failure: {0}", ex.Message);
                 throw;
             }
 
 
-            // Write them all to the gateway
             try
             {
-                __clean_up();
+                __pr.setField("Action", "Change");
 
-                motPort __p = new motPort(__target_ip, __target_port);
-
-                // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
-                __store.Write(__p, __logging);
-                __loc.Write(__p, __logging);
-                __doc.Write(__p, __logging);
-                __pr.Write(__p, __logging);
-                __scrip.Write(__p, __logging);
-                __drug.Write(__p, __logging);
-
-                foreach (motTimeQtysRecord __tq in __tq_list)
+                foreach (Order __order in __args.__order_list)
                 {
-                    __tq.Write(__p);
+                    __scrip.Clear();
+                    __doc.Clear();
+                    __loc.Clear();
+                    __store.Clear();
+                    __drug.Clear();
+
+                    __process_ORC(__loc, __doc, __pr, __scrip, __order.__orc.__msg_data);
+                    __process_RXO(__pr, __drug, __order.__rxo.__msg_data);
+
+                    foreach (TQ1 __tq1 in __order.__tq1)
+                    {
+                        var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
+
+                        __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
+                        __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
+                        __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __tq1.__msg_data);
+                        __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
+                        __tq_list.Add(__tmp_tq);
+
+                        __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
+                    }
+
+                    foreach (RXC __rxc in __order.__rxc)
+                    {
+                        __process_RXC(__scrip, __rxc.__msg_data);
+                    }
+
+                    foreach (RXR __rxr in __order.__rxr)
+                    {
+                        __drug.Route = __assign("RXR-1-2", __rxr.__msg_data);
+                    }
+
+                    __scrip.Comments += "Patient Notes\n";
+                    foreach (NTE __nte in __order.__nte)
+                    {
+                        __scrip.Comments += string.Format("  {0}) {1}\n", __counter++, __process_NTE(__nte.__msg_data));
+                    }
+
+                    // Ugly Kludge but HL7 doesn't seem to have the notion of a store DEA Number -- I'm still looking
+                    if (string.IsNullOrEmpty(__store.DEANum))
+                    {
+                        __store.DEANum = "XX1234567";   // This should get the attention of the pharmacist
+                    }
+
+                    // Write the records in sequence
+                    // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
+                    __store.Write(__p, __logging);
+                    __loc.Write(__p, __logging);
+                    __doc.Write(__p, __logging);
+                    __pr.Write(__p, __logging);
+                    __scrip.Write(__p, __logging);
+                    __drug.Write(__p, __logging);
+
+                    foreach (motTimeQtysRecord __tq in __tq_list)
+                    {
+                        __tq.Write(__p);
+                    }
+
+                    __tq_list.Clear();
+                    __counter = 1;
                 }
 
                 __p.Close();
-
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                __show_error_event(string.Format("OMP_O09 Processing Failure: {0}", e.Message));
-                __logger.Log(__log_level, "OMP O09 Processing Failure: {0}", e.Message);
+                __show_error_event(string.Format("OMP_O09 Processing Failure: {0}", ex.Message));
+                __logger.Log(__log_level, "OMP_O09  Processing Failure: {0}", ex.Message);
                 throw;
             }
+
         }
 
         // Drug Order       MSH, [ PID, [PV1] ], { ORC, [RXO, {RXR}, RXE, [{NTE}], {TQ1}, {RXR}, [{RXC}] }, [ZPI]
         // Literal Order    MSH, PID, [PV1], ORC, [TQ1], [RXE], [ZAS]
+        // TODO:  CHeck the Framework SPec for where the order types live
         void __process_RDE_O11_Event(Object sender, HL7Event7MessageArgs __args)
         {
             int __tq1_records_processed = 0;
@@ -1126,188 +1170,40 @@ namespace HL7Proxy
             string __dose_time_qty = string.Empty;
             string __tmp = string.Empty;
 
-            bool __processed_rxe = false;
+            motPort __p;
 
-            string __problem_segment = string.Empty;
             __message_type = "RDE^O11";
 
-            try
+
+            try // Process the Patient
             {
-                motPort __p = new motPort(__target_ip, __target_port);
+                __p = new motPort(__target_ip, __target_port);
 
-                foreach (Dictionary<string, string> __fields in __args.fields)
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        switch (__pair.Key)
-                        {
-                            case "MSH":
-                                break;
+                __process_PID(__pr, __args.__patient.__pid.__msg_data);
+                __process_PV1(__doc, __pr, __args.__patient.__pv1.__msg_data);
+                __process_PV2(__pr, __args.__patient.__pv2.__msg_data);
+                __process_PD1(__pr, __args.__patient.__pd1.__msg_data);
+                __process_IN1(__pr, __args.__patient.__in1.__msg_data);
+                __process_IN2(__pr, __args.__patient.__in2.__msg_data); 
 
-                            /*
-                        case "OBX":
-                            __problem_segment = "OBX";
-                            __process_OBX(__pr, __fields);
-                            break;
+                foreach (PRT __prt in __args.__patient.__prt) { __process_PRT(__pr, __prt.__msg_data); }
+                foreach (NTE __nte in __args.__patient.__nte) { __pr.Comments += __process_NTE(__nte.__msg_data); }
+                foreach (AL1 __al1 in __args.__patient.__al1) { __pr.Allergies += __process_AL1(__al1.__msg_data); }
+                foreach (DG1 __dg1 in __args.__patient.__dg1) { __pr.DxNotes += __process_DG1(__dg1.__msg_data); }
 
-
-                        case "ORC":
-                            __problem_segment = "ORC";
-                            __process_ORC(__loc, __doc, __pr, __scrip, __fields);
-                            break;
-                            */
-                            case "AL1":
-                                __problem_segment = "AL1";
-                                __pr.Allergies += __process_AL1(__fields);
-                                break;
-
-                            case "DG1":
-                                __problem_segment = "DG1";
-                                __pr.DxNotes += __process_DG1(__fields);
-                                break;
-
-                            case "PID":
-                                __problem_segment = "PID";
-                                __process_PID(__pr, __fields);
-                                break;
-
-                            case "PV1":
-                                __problem_segment = "PV1";
-                                __process_PV1(__doc, __pr, __fields);
-                                break;
-
-                            case "RXE":
-                                __problem_segment = "RXE";
-                                __process_RXE(__drug, __doc, __scrip, __store, __fields);
-                                break;
-
-                            case "NTE":
-                                __pr.Comments += __process_NTE(__fields);
-                                break;
-
-                            case "IN1":
-                                __process_IN1(__pr, __fields);
-                                break;
-
-                            case "IN2":
-                                __process_IN2(__pr, __fields);
-                                break;
-                            
-                            /*
-                        case "RXC":
-                            __problem_segment = "RXC";
-                            __process_RXC(__scrip, __fields);
-                            break;
-
-
-                        case "RXO":
-                            __problem_segment = "RXO";
-                            __process_RXO(__pr, __drug, __fields);
-                            break;
-
-                        case "RXR":
-                            __problem_segment = "RXR";
-                            __drug.Route = __assign("RXR-1-2", __fields);
-                            break;
-                            */
-                            case "TQ1":
-                                __problem_segment = "TQ1";
-
-                                var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
-
-                                __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
-
-                                __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
-                                __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
-                                __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
-
-                                __tq_list.Add(__tmp_tq);
-
-                                __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
-                                break;
-
-                            case "ZAS":
-                                __problem_segment = "ZAS";
-                                break;
-
-                            case "ZF1":  // FrameworksLTC Compounding
-                                __problem_segment = "ZF1";
-                                __process_ZFI(__drug, __fields);
-                                break;
-
-                            case "ZLB": // Epic Drug Label
-                                __problem_segment = "ZLB";
-                                __process_ZLB();
-                                break;
-
-                            case "ZPI":  // FrameworksLTC Additional presccription info
-                                __problem_segment = "ZPI";
-                                __process__ZPI(__scrip, __store, __fields);
-                                break;
-                        }
-                    }
-                }
+                __pr.Write(__p);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                __show_error_event(string.Format("RDE_O11 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
-                __logger.Log(__log_level, "RDE_O11 General Processing Failure: {0}", e.Message);
+                __show_error_event(string.Format("RDE_O11 Parse Failure while processing ({0}) -- {1}", __problem_segment, ex.Message));
+                __logger.Log(__log_level, "RDE_O11 General Processing Failure: {0}", ex.Message);
                 throw;
             }
 
-            __clean_up();
-
-            
- 
-
-
-            // Ugly Kludge but HL7 doesn't seem to have the notion of a store DEA Number -- I'm still looking
-            if (string.IsNullOrEmpty(__store.DEANum))
-            {
-                __store.DEANum = "XX1234567";   // This should get the attention of the pharmacist
-            }
-
 
             try
             {
-                motPort __p = new motPort(__target_ip, __target_port);
-
-                if (__processed_rxe)
-                {
-                    __scrip.RxSys_PatID = __pr.RxSys_PatID;
-                    __pr.Status = 1;
-
-                    // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
-                    __store.Write(__p, __logging);
-                    __loc.Write(__p, __logging);
-                    __doc.Write(__p, __logging);
-                    __pr.Write(__p, __logging);
-                    __scrip.Write(__p, __logging);
-                    __drug.Write(__p, __logging);
-
-                    foreach (motTimeQtysRecord __tq in __tq_list)
-                    {
-                        __tq.Write(__p);
-                    }
-
-                    __tq_list.Clear();
-                }
-                else
-                {
-                    __pr.Write(__p);
-                }
-
-            }
-            catch (Exception e)
-            {
-                __show_error_event(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
-                __logger.Log(__log_level, "RDE_O11  Processing Failure: {0}", e.Message);
-                throw;
-            }
-
-            try
-            {
-                motPort __p = new motPort(__target_ip, __target_port);
+                __pr.setField("Action", "Change");
 
                 foreach (Order __order in __args.__order_list)
                 {
@@ -1316,7 +1212,6 @@ namespace HL7Proxy
                     __loc.Clear();
                     __store.Clear();
                     __drug.Clear();
-
 
                     __process_ORC(__loc, __doc, __pr, __scrip, __order.__orc.__msg_data);
                     __process_RXE(__drug, __doc, __scrip, __store, __order.__rxe.__msg_data);
@@ -1351,6 +1246,13 @@ namespace HL7Proxy
                         __process_RXC(__scrip, __rxc.__msg_data);
                     }
 
+
+                    // Ugly Kludge but HL7 doesn't seem to have the notion of a store DEA Number -- I'm still looking
+                    if (string.IsNullOrEmpty(__store.DEANum))
+                    {
+                        __store.DEANum = "XX1234567";   // This should get the attention of the pharmacist
+                    }
+
                     // Write the records in sequence
                     // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
                     __store.Write(__p, __logging);
@@ -1366,17 +1268,24 @@ namespace HL7Proxy
                     }
 
                     __tq_list.Clear();
+                    __counter = 1;
                 }
 
                 __p.Close();
             }
             catch (Exception ex)
             {
+                __show_error_event(string.Format("RDE_O11 Processing Failure: {0}", ex.Message));
+                __logger.Log(__log_level, "RDE_O11  Processing Failure: {0}", ex.Message);
+                throw;
             }
         }
+
         void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            //__update_event_ui("Received RDS_O13 Event");
+            int __tq1_records_processed = 0;
+            int __tq1_record_rx_type = 0;
+            int __counter = 1;
 
             var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
             var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
@@ -1389,140 +1298,109 @@ namespace HL7Proxy
             string __time_qty = string.Empty;
             string __dose_time_qty = string.Empty;
             string __tmp = string.Empty;
-            string __patient_notes = string.Empty;
-            //bool __had_zpi = false;
-            int __tq1_records_processed = 0;
-            int __tq1_record_rx_type = 0;
 
-            string __problem_segment = string.Empty;
+            __message_type = "RDS^O13";
 
-            __message_type = "RDS";
+            motPort __p;
 
-            try
+            try // Process the Patient
             {
-                foreach (Dictionary<string, string> __fields in __args.fields)
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        switch (__pair.Key)
-                        {
-                            case "MSH":
-                                break;
+                __p = new motPort(__target_ip, __target_port);
 
-                            case "PID":
-                                __problem_segment = "PID";
-                                __process_PID(__pr, __fields);
-                                break;
+                __process_PID(__pr, __args.__patient.__pid.__msg_data);
+                __process_PV1(__doc, __pr, __args.__patient.__pv1.__msg_data);
+                __process_PV2(__pr, __args.__patient.__pv2.__msg_data);
+                __process_PD1(__pr, __args.__patient.__pd1.__msg_data);
 
-                            case "PV1":
-                                __problem_segment = "PV1";
-                                __process_PV1(__doc, __pr, __fields);
-                                break;
+                foreach (PRT __prt in __args.__patient.__prt) { __process_PRT(__pr, __prt.__msg_data); }
+                foreach (NTE __nte in __args.__patient.__nte) { __pr.Comments += __process_NTE(__nte.__msg_data); }
+                foreach (AL1 __al1 in __args.__patient.__al1) { __pr.Allergies += __process_AL1(__al1.__msg_data); }
 
-                            case "ORC":
-                                __problem_segment = "ORC";
-                                __process_ORC(__loc, __doc, __pr, __scrip, __fields);
-                                break;
-
-                            case "RXO":
-                                __problem_segment = "RXO";
-                                __process_RXO(__pr, __drug, __fields);
-                                break;
-
-                            case "RXE":
-                                __problem_segment = "RXE";
-                                __process_RXE(__drug, __doc, __scrip, __store, __fields);
-                                break;
-
-                            case "NTE":
-                                __problem_segment = "NTE";
-                                __patient_notes += __process_NTE(__fields);
-                                break;
-
-                            case "TQ1":
-                                __problem_segment = "TQ1";
-
-                                var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
-
-                                __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
-
-                                __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
-                                __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __fields);
-                                __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
-
-                                __tq_list.Add(__tmp_tq);
-
-                                __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
-                                break;
-
-                            case "RXR":
-                                __problem_segment = "RXR";
-                                __process_RXR(__drug, __fields);
-                                break;
-
-                            case "RXC":
-                                __problem_segment = "RXC";
-                                __process_RXC(__scrip, __fields);
-                                break;
-
-                            case "RXD":
-                                __problem_segment = "RXD";
-                                __process_RXD(__scrip, __drug, __fields);
-                                break;
-
-                            case "ZPI":
-                                __problem_segment = "ZPI";
-                                //__had_zpi = true;
-                                __process__ZPI(__scrip, __store, __fields);
-                                break;
-                        }
-                    }
-                }
+                __pr.Write(__p);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                __show_error_event(string.Format("RDS_O13 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
-                __logger.Log(__log_level, "RDS_O13 Processing Failure: {0}", e.Message);
+                __show_error_event(string.Format("RS_O13 Parse Failure while processing ({0}) -- {1}", __problem_segment, ex.Message));
+                __logger.Log(__log_level, "RDS_O13 General Processing Failure: {0}", ex.Message);
                 throw;
             }
 
-            // Clean up and assign the temp values
-            __clean_up();
-
-            __scrip.Comments = __patient_notes;
-            __scrip.DoseTimesQtys = __time_qty;
-            __scrip.RxSys_PatID = __pr.RxSys_PatID;
-
-            if (string.IsNullOrEmpty(__scrip.Sig))
+            try // Process the Order
             {
-                __scrip.Sig = "Information Only -- Please Update";
-            }
-
-            // Write them all to the gateway
-            try
-            {
-                motPort __p = new motPort(__target_ip, __target_port);
-
-
-                // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
-                __store.Write(__p, __logging);
-                __loc.Write(__p, __logging);
-                __doc.Write(__p, __logging);
-                __pr.Write(__p, __logging);
-                __scrip.Write(__p, __logging);
-                __drug.Write(__p, __logging);
-
-                foreach (motTimeQtysRecord __tq in __tq_list)
+                foreach (Order __order in __args.__order_list)
                 {
-                    __tq.Write(__p);
+                    __scrip.Clear();
+                    __doc.Clear();
+                    __loc.Clear();
+                    __store.Clear();
+                    __drug.Clear();
+
+                    __process_ORC(__loc, __doc, __pr, __scrip, __order.__orc.__msg_data);
+                    __process_RXE(__drug, __doc, __scrip, __store, __order.__rxe.__msg_data);
+                    __process_RXO(__pr, __drug, __order.__rxo.__msg_data);
+
+                    foreach (TQ1 __tq1 in __order.__tq1)
+                    {
+                        var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
+
+                        __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
+                        __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
+                        __tmp_tq.DoseTimesQtys = __process_TQ1(__scrip, __tq1_record_rx_type, __tq1.__msg_data);
+                        __tmp_tq.DoseScheduleName = __scrip.DoseScheduleName;
+                        __tq_list.Add(__tmp_tq);
+
+                        __scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __scrip.DoseScheduleName);
+                    }
+
+                    foreach (RXR __rxr in __order.__rxr)
+                    {
+                        __drug.Route = __assign("RXR-1-2", __rxr.__msg_data);
+                    }
+
+                    __scrip.Comments += "Patient Notes\n";
+                    foreach (NTE __nte in __order.__nte)
+                    {
+                        __scrip.Comments += string.Format("  {0}) {1}\n", __counter++, __process_NTE(__nte.__msg_data));
+                    }
+
+                    foreach (RXC __rxc in __order.__rxc)
+                    {
+                        __process_RXC(__scrip, __rxc.__msg_data);
+                    }
+
+                    __pr.setField("Action", "Change");
+
+
+                    // Ugly Kludge but HL7 doesn't seem to have the notion of a store DEA Number -- I'm still looking
+                    if (string.IsNullOrEmpty(__store.DEANum))
+                    {
+                        __store.DEANum = "XX1234567";   // This should get the attention of the pharmacist
+                    }
+
+                    // Write the records in sequence
+                    // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
+                    __store.Write(__p, __logging);
+                    __loc.Write(__p, __logging);
+                    __doc.Write(__p, __logging);
+                    __pr.Write(__p, __logging);
+                    __scrip.Write(__p, __logging);
+                    __drug.Write(__p, __logging);
+
+                    foreach (motTimeQtysRecord __tq in __tq_list)
+                    {
+                        __tq.Write(__p);
+                    }
+
+                    __tq_list.Clear();
+                    __counter = 1;
                 }
 
                 __p.Close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                __show_error_event(string.Format("RDE_O11 Processing Failure: {0}", e.Message));
-                __logger.Log(__log_level, "RDS_O13 Processing Failure: {0}", e.Message);
+                __show_error_event(string.Format("RDS_O13 Processing Failure: {0}", ex.Message));
+                __logger.Log(__log_level, "RDS_O13  Processing Failure: {0}", ex.Message);
                 throw;
             }
         }

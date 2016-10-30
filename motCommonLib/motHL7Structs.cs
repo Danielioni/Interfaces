@@ -320,98 +320,139 @@ namespace motCommonLib
         // Control Code RF (Refill)         MSH, PID, [PV1], { ORC, [{TQ1}], RXO, [{RXC}] }
 
         public MSH __msh;
-        public PID __pid;
-        public PV1 __pv1;
-        public ORC __orc;
-        public List<TQ1> __tq1;
-        public RXO __rxo;
-        public List<RXC> __rxc;
-        public List<NTE> __nte;
+        //public PID __pid;
+        //public PV1 __pv1;
+        //public ORC __orc;
+        //public List<TQ1> __tq1;
+        //public RXO __rxo;
+        //public List<RXC> __rxc;
+        //public List<NTE> __nte;
+
+        public List<Order> __orders;
+        public Patient __patient;
 
         public List<Dictionary<string, string>> __message_store;
 
-        /*
-                public class Order
-                {
-                    public ORC __orc;
-                    public List<TQ1> __tq1;
-                    public RXO __rxo;
-                    public List<RXC> __rxc;
-
-                    public Order()
-                    {
-                        try
-                        {
-                            __orc = new ORC();
-                            __tq1 = new List<TQ1>();
-                            __rxo = new RXO();
-                            __rxc = new List<RXC>();
-                        }
-                        catch
-                        { throw; }
-                    }
-                }
-         */
 
         public OMP_O09(string __message) : base()
         {
+            string __last_significant_item = "NONE";
             string[] __segments = __message.Split('\r');
 
             __segments = __clear_newlines(__segments);
 
-            __tq1 = new List<TQ1>();
-            __rxc = new List<RXC>();
-            __nte = new List<NTE>();
+            //__tq1 = new List<TQ1>();
+            //__rxc = new List<RXC>();
+            //__nte = new List<NTE>();
+
+            __patient = new Patient();
+            __orders = new List<Order>();
+            Order __current_order = new Order();
 
             __message_store = new List<Dictionary<string, string>>();
 
-            foreach (string __field in __segments)
+            foreach (string __type in __segments)
             {
-                if (!string.IsNullOrEmpty(__field))
+                if (!string.IsNullOrEmpty(__type))
                 {
-                    switch (__field.Substring(0, 3))
+                    switch (__type.Substring(0, 3))
                     {
                         case "MSH":
-                            __msh = new MSH(__field);
-                            __message_store.Add(__msh.__msg_data);
+                            __message_store.Add(new MSH(__type).__msg_data);
+                            break;
+
+                        case "AL1":
+                            __patient.__al1.Add(new AL1(__type));
+                            break;
+
+                        case "OBX":
+                            __current_order.__obx.Add(new OBX(__type));
                             break;
 
                         case "PID":
-                            __pid = new PID(__field);
-                            __message_store.Add(__pid.__msg_data);
+                            __patient.__pid = new PID(__type);
+                            __last_significant_item = "PID";
                             break;
 
                         case "PV1":
-                            __pv1 = new PV1(__field);
-                            __message_store.Add(__pv1.__msg_data);
+                            __patient.__pv1 = new PV1(__type);
+                            __last_significant_item = "PV1";
                             break;
 
-                        case "ORC":
-                            __orc = new ORC(__field);
-                            __message_store.Add(__orc.__msg_data);
+                        case "PV2":
+                            __patient.__pv2 = new PV2(__type);
+                            __last_significant_item = "PV2";
+                            break;
+
+                        case "PD1":
+                            __patient.__pd1 = new PD1(__type);
+                            break;
+
+                        case "PRT":
+                            if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
+                            {
+                                __patient.__prt.Add(new PRT(__type));
+                            }
+                            else
+                            {
+                                __current_order.__prt.Add(new PRT(__type));
+                            }
+                            break;
+
+                        case "IN1":
+                            __patient.__in1 = new IN1(__type);
+                            break;
+
+                        case "IN2":
+                            __patient.__in2 = new IN2(__type);
                             break;
 
                         case "TQ1":
-                            TQ1 __tmp_tq1 = new TQ1(__field);
-                            __tq1.Add(__tmp_tq1);
-                            __message_store.Add(__tmp_tq1.__msg_data);
-                            break;
-
-                        case "RXO":
-                            __rxo = new RXO(__field);
-                            __message_store.Add(__rxo.__msg_data);
+                            __current_order.__tq1.Add(new TQ1(__type));
                             break;
 
                         case "RXC":
-                            RXC __tmp_rxc = new RXC(__field);
-                            __rxc.Add(__tmp_rxc);
-                            __message_store.Add(__tmp_rxc.__msg_data);
+                            __current_order.__rxc.Add(new RXC(__type));
+                            break;
+
+                        case "RXE":
+                            __current_order.__rxe = new RXE(__type);
+                            __last_significant_item = "RXE";
+                            break;
+
+                        case "RXO":
+                            __current_order.__rxo = new RXO(__type);
+                            break;
+
+                        case "RXR":
+                            __current_order.__rxr.Add(new RXR(__type));
+                            break;
+
+                        case "ORC":  // Need to parse the order       
+                            if (!__current_order.Empty()) // Is this a new order
+                            {
+                                __orders.Add(__current_order);
+                                __current_order = null;
+                            }
+
+                            __current_order = new Order();
+                            __current_order.__orc = new ORC(__type);
+                            __last_significant_item = "ORC";
                             break;
 
                         case "NTE":
-                            NTE __tmp_nte = new NTE(__field);
-                            __nte.Add(__tmp_nte);
-                            __message_store.Add(__tmp_nte.__msg_data);
+                            if (__last_significant_item == "PID")
+                            {
+                                __patient.__nte.Add(new NTE(__type));
+                            }
+                            else
+                            {
+                                __current_order.__nte.Add(new NTE(__type));
+                            }
+                            break;
+
+                        case "DG1":
+                            __patient.__dg1.Add(new DG1(__type));
                             break;
 
                         default:
@@ -421,7 +462,7 @@ namespace motCommonLib
             }
 
             // Raise __newMessage Event
-            Console.WriteLine("Done Processing OMP_O09, now what ...");
+           //  Console.WriteLine("Done Processing OMP_O09, now what ...");
         }
     }
     /*
@@ -443,6 +484,8 @@ namespace motCommonLib
         public List<TQ1> __tq1;
         public List<RXC> __rxc;
         public List<OBX> __obx;
+        public List<PRT> __prt;
+        public List<FT1> __ft1;
 
         public Order()
         {
@@ -456,6 +499,8 @@ namespace motCommonLib
                 __tq1 = new List<TQ1>();
                 __rxc = new List<RXC>();
                 __obx = new List<OBX>();
+                __prt = new List<PRT>();
+                __ft1 = new List<FT1>();
             }
             catch
             { throw; }
@@ -471,6 +516,8 @@ namespace motCommonLib
                 __nte.Count == 0 &&
                 __tq1.Count == 0 &&
                 __rxc.Count == 0 &&
+                __prt.Count == 0 &&
+                __ft1.Count == 0 &&
                 __obx.Count == 0)
             {
                 return true;
@@ -480,28 +527,86 @@ namespace motCommonLib
         }
     }
 
+    public class Patient
+    {
+        public PID __pid;
+        public PD1 __pd1;
+        public List<PRT> __prt;
+        public List<NTE> __nte;
+        public List<AL1> __al1;
+        public List<DG1> __dg1;
+        public PV1 __pv1;
+        public PV2 __pv2;
+        public IN1 __in1;
+        public IN2 __in2;
+        
+
+        public Patient()
+        {
+            try
+            {
+                __pid = new PID();
+                __pd1 = new PD1();
+                __prt = new List<PRT>();
+                __nte = new List<NTE>();
+                __al1 = new List<AL1>();
+                __dg1 = new List<DG1>();
+                __pv1 = new PV1();
+                __pv2 = new PV2();
+                __in1 = new IN1();
+                __in2 = new IN2();
+               
+            }
+            catch
+            { throw; }
+        }
+
+        public bool Empty()
+        {
+            if (__pid.__msg_data.Count == 0 &&
+                __pd1.__msg_data.Count == 0 &&
+                __pv1.__msg_data.Count == 0 &&
+                __pv2.__msg_data.Count == 0 &&
+                __in1.__msg_data.Count == 0 &&
+                __in2.__msg_data.Count == 0 &&
+                __dg1.Count == 0 &&
+                __prt.Count == 0 &&
+                __nte.Count == 0 &&                
+                __al1.Count == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     public class RDE_O11 : HL7_Message_dictionary  // Pharmacy/Treatment Encoded Order Message
     {
         // Drug Order       MSH, [ PID, [PV1] ], { ORC, [RXO, {RXR}, RXE, [{NTE}], {TQ1}, {RXR}, [{RXC}] }, [ZPI]
         // Literal Order    MSH, PID, [PV1], ORC, [TQ1], [RXE], [ZAS]
 
         public MSH __msh;
-        public PID __pid;
-        public PV1 __pv1;
-        public ORC __orc;
-        public RXE __rxe;
-        public RXO __rxo;
-        public AL1 __al1;
-        public List<RXR> __rxr;
-        public List<RXC> __rxc;
-        public List<NTE> __nte;
-        public List<TQ1> __tq1;
-        public List<OBX> __obx;
+        //public PID __pid;
+        //public PV1 __pv1;
+        //public PV2 __pv2;
+        //public ORC __orc;
+        //public RXE __rxe;
+        //public RXO __rxo;
+        //public AL1 __al1;
+        //public SFT __sft;
+        //public UAC __uac;
+        //public List<RXR> __rxr;
+        //public List<RXC> __rxc;
+        //public List<NTE> __nte;
+        //public List<TQ1> __tq1;
+        //public List<OBX> __obx;
         public ZAS __zas;           // FrameworksLTC
         public ZLB __zlb;           // Epic
         public ZPI __zpi;           // FrameworksLTC
 
-        public List<Order> __orders; 
+        public List<Order> __orders;
+        public Patient __patient;
 
         public List<Dictionary<string, string>> __message_store;
 
@@ -511,18 +616,21 @@ namespace motCommonLib
 
         public RDE_O11(string __message) : base()
         {
-            string[] __segments = __message.Split('\r');
+            string __last_significant_item = "NONE";
 
+            string[] __segments = __message.Split('\r');
             __segments = __clear_newlines(__segments);
 
             __orders = new List<Order>();
             Order __current_order =  new Order();
 
-            __rxr = new List<RXR>();
-            __rxc = new List<RXC>();
-            __nte = new List<NTE>();
-            __tq1 = new List<TQ1>();
-            __obx = new List<OBX>();
+            __patient = new Patient();
+
+            //__rxr = new List<RXR>();
+            //__rxc = new List<RXC>();
+            //__nte = new List<NTE>();
+            //__tq1 = new List<TQ1>();
+            //__obx = new List<OBX>();
 
             __message_store = new List<Dictionary<string, string>>();
             
@@ -530,56 +638,77 @@ namespace motCommonLib
             {
                 if (!string.IsNullOrEmpty(__type) && __type.Length > 1)
                 {
-                    switch (__type.Substring(0, 3))
+                    switch (__type?.Substring(0, 3))
                     {
                         case "AL1":
-                            __al1 = new AL1(__type);
+                            __patient.__al1.Add(new AL1(__type));
                             break;
 
                         case "MSH":
-                            __msh = new MSH(__type);
-                            __message_store.Add(__msh.__msg_data);
+                            __message_store.Add(new MSH(__type).__msg_data);
                             break;
 
                         case "OBX":
-                            OBX __tmp_obx = new OBX(__type);                            
-                            __current_order.__obx.Add(__tmp_obx);                         
+                            __current_order.__obx.Add(new OBX(__type));   
                             break;
 
                         case "PID":
-                            __pid = new PID(__type);
-                            __message_store.Add(__pid.__msg_data);
+                            __patient.__pid = new PID(__type);
+                            __last_significant_item = "PID";
                             break;
 
                         case "PV1":
-                            __pv1 = new PV1(__type);
-                            __message_store.Add(__pv1.__msg_data);
+                            __patient.__pv1 = new PV1(__type);
+                            __last_significant_item = "PV1";
+                            break;
+
+                        case "PV2":
+                            __patient.__pv2 = new PV2(__type);
+                            __last_significant_item = "PV2";
+                            break;
+
+                        case "PD1":
+                            __patient.__pd1 = new PD1(__type);
+                            break;
+
+                        case "PRT":
+                            if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
+                            {
+                                __patient.__prt.Add(new PRT(__type));
+                            }
+                            else
+                            {
+                                __current_order.__prt.Add(new PRT(__type));
+                            }
+                            break;
+
+                        case "IN1":
+                            __patient.__in1 = new IN1(__type);
+                            break;
+
+                        case "IN2":
+                            __patient.__in2 = new IN2(__type);
                             break;
 
                         case "TQ1":
-                            TQ1 __tmp_tq1 = new TQ1(__type);
-                           __current_order.__tq1.Add(__tmp_tq1);                          
+                            __current_order.__tq1.Add(new TQ1(__type));                      
                             break;
 
                         case "RXC":
-                            RXC __tmp_rxc = new RXC(__type);
-                           __current_order.__rxc.Add(__tmp_rxc);
+                            __current_order.__rxc.Add(new RXC(__type));
                             break;
 
                         case "RXE":
-                            __rxe = new RXE(__type);
-                            __current_order.__rxe = __rxe;                     
+                            __current_order.__rxe = new RXE(__type);
+                            __last_significant_item = "RXE";
                             break;
 
                         case "RXO":
-                            __rxo = new RXO(__type);
-                            __current_order.__rxo = __rxo;
+                            __current_order.__rxo = new RXO(__type);
                             break;
 
                         case "RXR":
-                            RXR __tmp_rxr = new RXR(__type);
-                            __rxr.Add(__tmp_rxr);
-                            __current_order.__rxr.Add(__tmp_rxr);
+                            __current_order.__rxr.Add(new RXR(__type));
                             break;
 
                         case "ORC":  // Need to parse the order       
@@ -591,26 +720,34 @@ namespace motCommonLib
 
                             __current_order = new Order();
                             __current_order.__orc = new ORC(__type);
+                            __last_significant_item = "ORC";
                             break;
 
                         case "ZAS":
-                            __zas = new ZAS(__type);
-                            __message_store.Add(__zas.__msg_data);
+                            __message_store.Add(new ZAS(__type).__msg_data);
                             break;
 
                         case "ZLB":
-                            __zlb = new ZLB(__type);
-                            __message_store.Add(__zlb.__msg_data);
+                            __message_store.Add(new ZLB(__type).__msg_data);
                             break;
 
                         case "ZPI":
-                            __zpi = new ZPI(__type);
-                            __message_store.Add(__zpi.__msg_data);
+                            __message_store.Add(new ZPI(__type).__msg_data);
                             break;
 
                         case "NTE":
-                            NTE __tmp_nte = new NTE(__type);
-                            __current_order.__nte.Add(__tmp_nte);
+                            if (__last_significant_item == "PID")
+                            {
+                                __patient.__nte.Add(new NTE(__type));
+                            }
+                            else
+                            {
+                                __current_order.__nte.Add(new NTE(__type));
+                            }
+                            break;
+
+                        case "DG1":
+                            __patient.__dg1.Add(new DG1(__type));
                             break;
 
                         default:
@@ -625,117 +762,155 @@ namespace motCommonLib
             }
 
             // Raise __newMessage Event
-            Console.WriteLine("Done Processing RDE_O11, now what ...");
+            // Console.WriteLine("Done Processing RDE_O11, now what ...");
         }
-    }
-
-   
+    }  
 
     public class RDS_O13 : HL7_Message_dictionary   // Pharmacy/Treatment Dispense Message
     {
         // Dispense Msg      MSH, [ PID, [PV1] ], { ORC, [RXO], {RXE}, [{NTE}], {TQ1}, {RXR}, [{RXC}], RXD }, [ZPI] 
 
         public MSH __msh;
-        public PID __pid;
-        public PV1 __pv1;
-        public ORC __orc;
-        public RXO __rxo;
-        public RXE __rxe;
-        public RXD __rxd;
-        public List<NTE> __nte;
-        public List<TQ1> __tq1;
-        public List<RXR> __rxr;
-        public List<RXC> __rxc;
+        //public PID __pid;
+        //public PV1 __pv1;
+        //public ORC __orc;
+        //public RXO __rxo;
+        //public RXE __rxe;
+        //public RXD __rxd;
+        //public AL1 __al1;
+        //public List<NTE> __nte;
+        //public List<TQ1> __tq1;
+        //public List<RXR> __rxr;
+        //public List<RXC> __rxc;
         public ZPI __zpi;
 
         public List<Dictionary<string, string>> __message_store;
+        public List<Order> __orders;
+        public Patient __patient;
 
-        /*
-
-                public Order __order;
-        */
         public RDS_O13(string __message) : base()
         {
+            string __last_significant_item = "NONE";
             string[] __segments = __message.Split('\r');
 
             __segments = __clear_newlines(__segments);
 
-            __nte = new List<NTE>();
-            __tq1 = new List<TQ1>();
-            __rxr = new List<RXR>();
-            __rxc = new List<RXC>();
+            //__nte = new List<NTE>();
+            //__tq1 = new List<TQ1>();
+            //__rxr = new List<RXR>();
+            //__rxc = new List<RXC>();
+
+            __orders = new List<Order>();
+            Order __current_order = new Order();
 
             __message_store = new List<Dictionary<string, string>>();
 
-            foreach (string __field in __segments)
+            foreach (string __type in __segments)
             {
-                if (!string.IsNullOrEmpty(__field))
+                if (!string.IsNullOrEmpty(__type))
                 {
-                    switch (__field.Substring(0, 3))
+                    switch (__type.Substring(0, 3))
                     {
+                        case "AL1":
+                            __patient.__al1.Add(new AL1(__type));
+                            break;
+
                         case "MSH":
-                            __msh = new MSH(__field);
-                            __message_store.Add(__msh.__msg_data);
+                            __message_store.Add(new MSH(__type).__msg_data);
+                            break;
+
+                        case "OBX":
+                            __current_order.__obx.Add(new OBX(__type));
                             break;
 
                         case "PID":
-                            __pid = new PID(__field);
-                            __message_store.Add(__pid.__msg_data);
+                            __patient.__pid = new PID(__type);
+                            __last_significant_item = "PID";
                             break;
 
                         case "PV1":
-                            __pv1 = new PV1(__field);
-                            __message_store.Add(__pv1.__msg_data);
+                            __patient.__pv1 = new PV1(__type);
+                            __last_significant_item = "PV1";
                             break;
 
-                        case "ORC":
-                            __orc = new ORC(__field);
-                            __message_store.Add(__orc.__msg_data);
+                        case "PV2":
+                            __patient.__pv2 = new PV2(__type);
+                            __last_significant_item = "PV2";
                             break;
 
-                        case "RXO":
-                            __rxo = new RXO(__field);
-                            __message_store.Add(__rxo.__msg_data);
+                        case "PD1":
+                            __patient.__pd1 = new PD1(__type);
                             break;
 
-                        case "RXE":
-                            __rxe = new RXE(__field);
-                            __message_store.Add(__rxe.__msg_data);
+                        case "PRT":
+                            if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
+                            {
+                                __patient.__prt.Add(new PRT(__type));
+                            }
+                            else
+                            {
+                                __current_order.__prt.Add(new PRT(__type));
+                            }
                             break;
 
-                        case "RXD":
-                            __rxd = new RXD(__field);
-                            __message_store.Add(__rxd.__msg_data);
+                        case "IN1":
+                            __patient.__in1 = new IN1(__type);
                             break;
 
-                        case "NTE":
-                            NTE __tmp_nte = new NTE(__field);
-                            __nte.Add(__tmp_nte);
-                            __message_store.Add(__tmp_nte.__msg_data);
+                        case "IN2":
+                            __patient.__in2 = new IN2(__type);
                             break;
 
                         case "TQ1":
-                            TQ1 __tmp_tq1 = new TQ1(__field);
-                            __tq1.Add(__tmp_tq1);
-                            __message_store.Add(__tmp_tq1.__msg_data);
-                            break;
-
-                        case "RXR":
-                            RXR __tmp_rxr = new RXR(__field);
-                            __rxr.Add(__tmp_rxr);
-                            __message_store.Add(__tmp_rxr.__msg_data);
+                            __current_order.__tq1.Add(new TQ1(__type));
                             break;
 
                         case "RXC":
-                            //__rxc.Add(new RXC(__field));
-                            RXC __tmp_rxc = new RXC(__field);
-                            __rxc.Add(__tmp_rxc);
-                            __message_store.Add(__tmp_rxc.__msg_data);
+                            __current_order.__rxc.Add(new RXC(__type));
+                            break;
+
+                        case "RXE":
+                            __current_order.__rxe = new RXE(__type);
+                            __last_significant_item = "RXE";
+                            break;
+
+                        case "RXO":
+                            __current_order.__rxo = new RXO(__type);
+                            break;
+
+                        case "RXR":
+                            __current_order.__rxr.Add(new RXR(__type));
+                            break;
+
+                        case "ORC":  // Need to parse the order       
+                            if (!__current_order.Empty()) // Is this a new order
+                            {
+                                __orders.Add(__current_order);
+                                __current_order = null;
+                            }
+
+                            __current_order = new Order();
+                            __current_order.__orc = new ORC(__type);
+                            __last_significant_item = "ORC";
                             break;
 
                         case "ZPI":
-                            __zpi = new ZPI(__field);
-                            __message_store.Add(__zpi.__msg_data);
+                            __message_store.Add(new ZPI(__type).__msg_data);
+                            break;
+
+                        case "NTE":
+                            if (__last_significant_item == "PID")
+                            {
+                                __patient.__nte.Add(new NTE(__type));
+                            }
+                            else
+                            {
+                                __current_order.__nte.Add(new NTE(__type));
+                            }
+                            break;
+
+                        case "DG1":
+                            __patient.__dg1.Add(new DG1(__type));
                             break;
 
                         default:
@@ -745,7 +920,7 @@ namespace motCommonLib
             }
 
             // Raise __newMessage Event
-            Console.WriteLine("Done Processing RDS_O13, now what ...");
+            // Console.WriteLine("Done Processing RDS_O13, now what ...");
 
         }
         public RDS_O13() : base()
@@ -757,6 +932,20 @@ namespace motCommonLib
     //  Segments - These all parse as SEG-#,-#... and stored as a Dictioary<string,string>
     //
 
+    public class FT1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        public void __load()
+        {
+           
+        }
+        public FT1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
     public class AL1 : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();
@@ -1045,7 +1234,6 @@ namespace motCommonLib
             __parser.__parse(__message, __msg_data);
         }
     }
-
     public class GT1 : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();
@@ -1611,6 +1799,86 @@ namespace motCommonLib
             __parser.__parse(__message, __msg_data);
         }
     }
+    public class PV2 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        // TODO:  Finish Field Names
+        private void __load()  // TODO:  Finish Patient Visit Fields
+        {
+            
+        }
+        public PV2() : base()
+        {
+            __load();
+        }
+
+        public PV2(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class PRT : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        // TODO:  Finish Field Names
+        private void __load()  // TODO:  Finish Patient Visit Fields
+        {
+
+        }
+        public PRT() : base()
+        {
+            __load();
+        }
+
+        public PRT(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class SFT : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        // TODO:  Finish Field Names
+        private void __load()  // TODO:  Finish Patient Visit Fields
+        {
+
+        }
+        public SFT() : base()
+        {
+            __load();
+        }
+
+        public SFT(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
+    public class UAC : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        // TODO:  Finish Field Names
+        private void __load()  // TODO:  Finish Patient Visit Fields
+        {
+
+        }
+        public UAC() : base()
+        {
+            __load();
+        }
+
+        public UAC(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
     public class ROL : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();
@@ -1627,62 +1895,29 @@ namespace motCommonLib
             __parser.__parse(__message, __msg_data);
         }
     }
+    public class PD1 : HL7_Message_dictionary
+    {
+        HL7MessageParser __parser = new HL7MessageParser();
+
+        private void __load()
+        { }
+        public PD1() : base()
+        {
+            __load();
+        }
+        public PD1(string __message) : base()
+        {
+            __load();
+            __parser.__parse(__message, __msg_data);
+        }
+    }
     public class RXC : HL7_Message_dictionary
     {
         HL7MessageParser __parser = new HL7MessageParser();
 
         private void __load()
         {
-            __field_names.Add("RXC-1", @"RX Component Type");
-
-            __field_names.Add("RXC-2", @"Component Code");
-            __field_names.Add("RXC-2-1", @"Identifier");
-            __field_names.Add("RXC-2-2", @"Text");
-            __field_names.Add("RXC-2-3", @"Name of Coding System");
-            __field_names.Add("RXC-2-4", @"Alternate Identifier");
-            __field_names.Add("RXC-2-5", @"Alternate Text");
-            __field_names.Add("RXC-2-6", @"Name of Alternate CodingSystem");
-
-            __field_names.Add("RXC-3", @"Component Amount");
-
-            __field_names.Add("RXC-4", @"Component Units");
-            __field_names.Add("RXC-4-1", @"Identifier");
-            __field_names.Add("RXC-4-2", @"Text");
-            __field_names.Add("RXC-4-3", @"Name of Coding System");
-            __field_names.Add("RXC-4-4", @"Alternate Identifier");
-            __field_names.Add("RXC-4-5", @"Alternate Text");
-            __field_names.Add("RXC-4-6", @"NAme of Alternate Coding System");
-
-            __field_names.Add("RXC-5", @"Component Strength");
-
-            __field_names.Add("RXC-6", @"Component Strength Units");
-            __field_names.Add("RXC-6-1", @"Identifier");
-            __field_names.Add("RXC-6-2", @"Text");
-            __field_names.Add("RXC-6-3", @"Name of Coding System");
-            __field_names.Add("RXC-6-4", @"Alternate Identifier");
-            __field_names.Add("RXC-6-5", @"Alternate Text");
-            __field_names.Add("RXC-6-6", @"NAme of Alternate Coding System");
-
-            __field_names.Add("RXC-7", @"Suplementary Code");
-            __field_names.Add("RXC-7-1", @"Identifier");
-            __field_names.Add("RXC-7-2", @"Text");
-            __field_names.Add("RXC-7-3", @"Name of Coding System");
-            __field_names.Add("RXC-7-4", @"Alternate Identifier");
-            __field_names.Add("RXC-7-5", @"Alternate Text");
-            __field_names.Add("RXC-7-6", @"Name of Alternate Coding System");
-
-            __field_names.Add("RXC-8", @"Component Drug Volume");
-
-            __field_names.Add("RXC-9", @"Component Drug Volume Units");
-            __field_names.Add("RXC-9-1", @"Identifier");
-            __field_names.Add("RXC-9-2", @"Text");
-            __field_names.Add("RXC-9-3", @"Name of Coding System");
-            __field_names.Add("RXC-9-4", @"Alternate Identifier");
-            __field_names.Add("RXC-9-5", @"Alternate Text");
-            __field_names.Add("RXC-9-6", @"Name of Alternate Coding System");
-            __field_names.Add("RXC-9-7", @"Coding System Version ID");
-            __field_names.Add("RXC-9-8", @"Alternate Coding System Version");
-            __field_names.Add("RXC-9-9", @"Original Text");
+          
         }
         public RXC() : base()
         {
