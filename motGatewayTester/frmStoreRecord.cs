@@ -22,7 +22,7 @@ namespace motGatewayTester
         public frmStoreRecord()
         {
             InitializeComponent();
-            Store = new motStoreRecord(__action, motErrorlLevel.Info, false);
+            Store = new motStoreRecord(__action);
             __execute = frmMainRecordTester.__execute;
         }
 
@@ -131,7 +131,7 @@ namespace motGatewayTester
 
                         if (cbSendDelimitedRecord.Checked)
                         {
-                            __execute.__p.Write(__record);
+                            __execute.__p.write(__record);
                         }
                     }
 
@@ -146,7 +146,7 @@ namespace motGatewayTester
 
                         if (cbSendTaggedRecord.Checked)
                         {
-                            __execute.__p.Write(__record);
+                            __execute.__p.write(__record);
                         }
                     }
                 }

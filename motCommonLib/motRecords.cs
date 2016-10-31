@@ -119,16 +119,12 @@ namespace motCommonLib
     /// </summary>
     public class motRecordBase
     {
-        protected string __dsn;
-
-        protected string _tableAction;
-        protected Logger logger = LogManager.GetLogger("motInboundLib.Record");
-        protected motPort __default;
-
-        //public bool __log_records { get; set; } = false;
-        public motErrorlLevel __log_level { get; set; } = motErrorlLevel.Error;  // 0 = off, 1 - Errors Only, 2 - Errors and Warnings,  3 - Errors, Warnings, and Info
-
-        public bool __auto_truncate { get; set; } = false;
+        protected string    __dsn;
+        protected string    __tableAction;
+        protected Logger    __logger = LogManager.GetLogger("motCommonLib.Record");
+        protected motSocket __default = null;
+        public bool         __log_records { get; set; } = false;
+        public bool        __auto_truncate { get; set; } = false;
         public bool __strong_validation { get; set; } = true;
 
         protected string __normalize_date(string __date)
@@ -197,6 +193,11 @@ namespace motCommonLib
         }
         public string __validate_dea_number(string __id)
         {
+            if(string.IsNullOrEmpty(__id))
+            {
+                return string.Empty;
+            }
+
             // DEA Number Format is 2 letters, 6 numbers, & 1 check digit (CC-NNNNNNN) 
             // The first letter is a code identifying the type of registrant (see below)
             // The second letter is the first letter of the registrant's last name
@@ -261,12 +262,13 @@ namespace motCommonLib
                         {
                             string __err = string.Format("REJECTED: Field {0} empty but required for the {1} operation on a {2} record!", __qualifiedTags[i].tagName, f.tagData, __qualifiedTags[0].tagData);
 
-                            Console.WriteLine(__err);
+                            __logger.Error(__err);
                             throw new Exception(__err);
                         }
                         else
                         {
-                            string.Format("Attention: Empty {0}", __qualifiedTags[i].tagName);
+                            string __err = string.Format("Attention: Empty {0}", __qualifiedTags[i].tagName);
+                            __logger.Error(__err);
                         }
                     }
                 }
@@ -284,42 +286,6 @@ namespace motCommonLib
 
             __qualifiedTags[0].tagData = __type;
             __qualifiedTags[1].tagData = __action;
-
-        }
-
-        protected void __write_log(string __data, motErrorlLevel __el)
-        {
-            if (motErrorlLevel.Off == __log_level)
-            {
-                return;
-            }
-
-            switch (__el)
-            {
-                case motErrorlLevel.Error:
-                    if (__log_level >= motErrorlLevel.Error)
-                    {
-                        logger.Error(__data);
-                    }
-                    break;
-
-                case motErrorlLevel.Warning:
-                    if (__log_level >= motErrorlLevel.Warning)
-                    {
-                        logger.Warn(__data);
-                    }
-                    break;
-
-                case motErrorlLevel.Info:
-                    if (__log_level > motErrorlLevel.Warning)
-                    {
-                        logger.Info(__data);
-                    }
-                    break;
-
-                default:
-                    break;
-            }
         }
 
         protected bool setField(List<Field> __qualifiedTags, string __val, string __tag)
@@ -344,17 +310,17 @@ namespace motCommonLib
                 if (!__auto_truncate)
                 {
                     __log_data = string.Format("Field Overflow at: <{0}>, Data: {1} Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
-                    __write_log(__log_data, motErrorlLevel.Error);
+                    __logger.Error(__log_data);
                     throw new Exception(__log_data);
                 }
 
                 __log_data = string.Format("Autotruncated Overflowed Field at: <{0}>, Data: {1} Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
-                __write_log(__log_data, motErrorlLevel.Warning);
+                __logger.Warn(__log_data);
 
                 __val = __val?.Substring(0, f.maxLen);
             }
 
-            f.tagData = __val == null ? string.Empty : __val;
+            f.tagData = string.IsNullOrEmpty(__val)  ? string.Empty : __val;
 
             return true;
         }
@@ -375,34 +341,33 @@ namespace motCommonLib
                 return false;   // Field doesn't exist
             }
 
-            if (__val != null && __val.ToString().Length > f.maxLen)
+            if (!string.IsNullOrEmpty(__val) && __val.ToString().Length > f.maxLen)
             {
                 if (!__truncate)
                 {
                     __log_data = string.Format("Field Overflow at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
-                    __write_log(__log_data, motErrorlLevel.Error);
-
+                    __logger.Error(__log_data);
                     throw new Exception(__log_data);
                 }
 
                 __log_data = string.Format("Autotruncated Oferflowed Field at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
-                __write_log(__log_data, motErrorlLevel.Warning);
+                __logger.Warn(__log_data);
 
                 __val = __val?.Substring(0, f.maxLen);
-
             }
 
-            f.tagData = __val == null ? string.Empty : __val;
+            f.tagData = string.IsNullOrEmpty(__val) ? string.Empty : __val;
 
             return true;
         }
-        protected void Write(motPort p, List<Field> __qualifiedTags, bool __do_logging)
+        protected void Write(motSocket p, List<Field> __qualifiedTags, bool __do_logging)
         {
             string __record = "<Record>";
 
             if (p == null || __qualifiedTags == null)
             {
-                throw new Exception("Null Arguments");
+                __logger.Error("Null parameters to base.Write()");
+                throw new ArgumentNullException("Null Arguments");
             }
 
             try
@@ -422,20 +387,17 @@ namespace motCommonLib
                 __record += "</Record>";
 
                 // Push it to the port
-                p.Write(__record, __record.Length);
+                p.write(__record);
 
-                __write_log(__record, motErrorlLevel.Info);
-
+                __logger.Info(__record);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                __write_log(e.Message, motErrorlLevel.Error);
-                __write_log(__record, motErrorlLevel.Error);
-
+                __logger.Error("{0)\n{1}", ex.Message, __record);
                 throw;
             }
         }
-        public void Write(motPort p, List<Field> __qualifiedTags)
+        public void Write(motSocket p, List<Field> __qualifiedTags)
         {
             try
             {
@@ -446,11 +408,11 @@ namespace motCommonLib
                 throw;
             }
         }
-        public void Write(motPort p, string __text)
+        public void Write(motSocket p, string __text)
         {
             try
             {
-                p.Write(__text, __text.Length);
+                p.write(__text);
             }
             catch (Exception e)
             {
@@ -461,7 +423,7 @@ namespace motCommonLib
         {
             try
             {
-                motPort p = new motPort("127.0.0.1", "24042");
+                motSocket p = new motSocket("localhost", 24042);
                 Write(p, __tags);
             }
             catch
@@ -473,7 +435,7 @@ namespace motCommonLib
         {
             try
             {
-                motPort p = new motPort("127.0.0.1", "24042");
+                motSocket p = new motSocket("localhost", 24042);
                 Write(p, __str);
             }
             catch
@@ -508,8 +470,6 @@ namespace motCommonLib
             RestRequest request = new RestRequest();
             request.Method = Method.POST;
             request.AddHeader("Content-Type", "application/json");
-
-
 
             //var myContentJson = JsonConvert.SerializeObject(obj, settings);
 
@@ -581,7 +541,7 @@ namespace motCommonLib
 
         private void createRecord(string tableAction)
         {
-            _tableAction = tableAction.ToLower();
+            __tableAction = tableAction.ToLower();
 
             try
             {
@@ -626,33 +586,14 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Drug record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public motDrugRecord(string Action, motErrorlLevel LogLevel) : base()
+        public motDrugRecord(string Action,  bool AutoTruncate) : base()
         {
-            __log_level = LogLevel;
-
-            try
-            {
-                __qualifiedTags = new List<Field>();
-                createRecord(Action);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to create Drug record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public motDrugRecord(string Action, motErrorlLevel LogLevel, bool AutoTruncate) : base()
-        {
-            __log_level = LogLevel;
             __auto_truncate = AutoTruncate;
 
             try
@@ -663,7 +604,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Drug record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -747,9 +688,9 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("strength")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
-
+            
             set
             {
                 setField(__qualifiedTags, Convert.ToString(value), "Strength", false);
@@ -812,7 +753,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("drugschedule")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -848,9 +789,15 @@ namespace motCommonLib
 
             set
             {
-                if (string.IsNullOrEmpty(value) && __auto_truncate)
+                if (string.IsNullOrEmpty(value))
                 {
+                    bool __tmp = __auto_truncate;
+                    __auto_truncate = false;
+
                     setField(__qualifiedTags, "Pharmacist Attention - Missing Drug Name", "DrugName");
+
+                    __auto_truncate = __tmp;
+
                     return;
                 }
 
@@ -888,7 +835,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("sizefactor")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -914,7 +861,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("defaultisolate")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -972,7 +919,7 @@ namespace motCommonLib
             }
         }
 
-        public void Write(motPort p)
+        public void Write(motSocket p)
         {
             try
             {
@@ -981,14 +928,14 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Drug record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
 
-        public void Write(motPort p, bool __log_on)
+        public void Write(motSocket p, bool __log_on)
         {
             try
             {
@@ -997,7 +944,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Drug record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -1054,34 +1001,15 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Prescriber record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
 
-        public motPrescriberRecord(string Action, motErrorlLevel LogLevel) : base()
+        public motPrescriberRecord(string Action, bool AutoTruncate) : base()
         {
-            __log_level = LogLevel;
-
-            try
-            {
-                __qualifiedTags = new List<Field>();
-                createRecord(Action);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to create Prescriber record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public motPrescriberRecord(string Action, motErrorlLevel LogLevel, bool AutoTruncate) : base()
-        {
-            __log_level = LogLevel;
             __auto_truncate = AutoTruncate;
 
             try
@@ -1092,7 +1020,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Prescriber record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -1249,7 +1177,7 @@ namespace motCommonLib
         {
             get
             {
-                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("postalcode")));
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("zip")));
                 return f.tagData;
             }
 
@@ -1263,6 +1191,26 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "Zip");
             }
         }
+
+        public string Zip
+        {
+            get
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("zip")));
+                return f.tagData;
+            }
+
+            set
+            {
+                while (value.Contains("-"))
+                {
+                    value = value.Remove(value.IndexOf("-"), 1);
+                }
+
+                setField(__qualifiedTags, value, "Zip");
+            }
+        }
+
         public string Phone
         {
             get
@@ -1320,7 +1268,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("speciality")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -1371,31 +1319,31 @@ namespace motCommonLib
                 f.tagData += "\nIM: " + value;
             }
         }
-        public void Write(motPort p, bool __log_on)
+        public void Write(motSocket p, bool __log_on)
         {
             try
             {
-                Write(p, __qualifiedTags, __log_on);
+                base.Write(p, __qualifiedTags, __log_on);
             }
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Prescriber record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public void Write(motPort p)
+        public void Write(motSocket p)
         {
             try
             {
-                Write(p, __qualifiedTags);
+               base.Write(p, __qualifiedTags);
             }
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Prescriber record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -1475,33 +1423,15 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Patient record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public motPatientRecord(string Action, motErrorlLevel LogLevel) : base()
-        {
-            __log_level = LogLevel;
 
-            try
-            {
-                __qualifiedTags = new List<Field>();
-                createRecord(Action);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to create Patient record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public motPatientRecord(string Action, motErrorlLevel LogLevel, bool AutoTruncate) : base()
+        public motPatientRecord(string Action, bool AutoTruncate) : base()
         {
-            __log_level = LogLevel;
             __auto_truncate = AutoTruncate;
 
             try
@@ -1512,7 +1442,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Patient record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -1805,7 +1735,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((("cycledays"))));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -1823,7 +1753,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((("cycletype"))));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
 
@@ -1844,7 +1774,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains((("status"))));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -1982,7 +1912,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("height")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -1995,7 +1925,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("weight")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -2154,7 +2084,7 @@ namespace motCommonLib
                 f.tagData += string.Format("\nIM: {0}\n", value);
             }
         }
-        public void Write(motPort p, bool __log_on)
+        public void Write(motSocket p, bool __log_on)
         {
             try
             {
@@ -2163,13 +2093,13 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Patient record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public void Write(motPort p)
+        public void Write(motSocket p)
         {
             try
             {
@@ -2178,7 +2108,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Patient record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -2247,7 +2177,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Prescription record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -2255,8 +2185,6 @@ namespace motCommonLib
         }
         public motPrescriptionRecord(string Action, motErrorlLevel LogLevel) : base()
         {
-            __log_level = LogLevel;
-
             try
             {
                 __qualifiedTags = new List<Field>();
@@ -2265,15 +2193,14 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Prescription record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public motPrescriptionRecord(string Action, motErrorlLevel LogLevel, bool AutoTruncate) : base()
+        public motPrescriptionRecord(string Action, bool AutoTruncate) : base()
         {
-            __log_level = LogLevel;
             __auto_truncate = AutoTruncate;
 
             try
@@ -2284,7 +2211,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Prescription record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -2647,7 +2574,7 @@ namespace motCommonLib
                 setField(__qualifiedTags, __normalize_date(value), "AnchorDate");
             }
         }
-        public void Write(motPort p, bool __log_on)
+        public void Write(motSocket p, bool __log_on)
         {
             try
             {
@@ -2656,13 +2583,13 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Prescription record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public void Write(motPort p)
+        public void Write(motSocket p)
         {
             try
             {
@@ -2671,7 +2598,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Prescription record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -2727,33 +2654,14 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Location record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public motLocationRecord(string Action, motErrorlLevel LogLevel) : base()
+        public motLocationRecord(string Action, bool AutoTruncate) : base()
         {
-            __log_level = LogLevel;
-
-            try
-            {
-                __qualifiedTags = new List<Field>();
-                createRecord(Action);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to create Location record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public motLocationRecord(string Action, motErrorlLevel LogLevel, bool AutoTruncate) : base()
-        {
-            __log_level = LogLevel;
             __auto_truncate = AutoTruncate;
 
             try
@@ -2764,7 +2672,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Location record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -2850,9 +2758,14 @@ namespace motCommonLib
 
             set
             {
-                if (string.IsNullOrEmpty(value) && __auto_truncate)
+                if (string.IsNullOrEmpty(value))
                 {
+                    bool __tmp = __auto_truncate;
+                    __auto_truncate = false;
+
                     setField(__qualifiedTags, "Pharmacist Attention - Missing Location Name", "LocationName");
+
+                    __auto_truncate = __tmp;
                     return;
                 }
 
@@ -2971,7 +2884,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("cycledays")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -2989,7 +2902,7 @@ namespace motCommonLib
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("cycletype")));
-                return Convert.ToInt32(f.tagData);
+                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
             }
 
             set
@@ -3004,7 +2917,7 @@ namespace motCommonLib
             }
 
         }
-        public void Write(motPort p, bool __log_on)
+        public void Write(motSocket p, bool __log_on)
         {
             try
             {
@@ -3013,13 +2926,13 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Location record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public void Write(motPort p)
+        public void Write(motSocket p)
         {
             try
             {
@@ -3028,7 +2941,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Location record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -3082,33 +2995,15 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Store record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public motStoreRecord(string Action, motErrorlLevel LogLevel) : base()
-        {
-            __log_level = LogLevel;
 
-            try
-            {
-                __qualifiedTags = new List<Field>();
-                createRecord(Action);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to create Store record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public motStoreRecord(string Action, motErrorlLevel LogLevel, bool AutoTruncate) : base()
+        public motStoreRecord(string Action,  bool AutoTruncate) : base()
         {
-            __log_level = LogLevel;
             __auto_truncate = AutoTruncate;
 
             try
@@ -3119,7 +3014,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create Store record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -3298,7 +3193,7 @@ namespace motCommonLib
                 setField(__qualifiedTags, __validate_dea_number(value), "DEANum");
             }
         }
-        public void Write(motPort p, bool __log_on)
+        public void Write(motSocket p, bool __log_on)
         {
             try
             {
@@ -3307,13 +3202,13 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write Store record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public void Write(motPort p)
+        public void Write(motSocket p)
         {
             try
             {
@@ -3322,7 +3217,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to creawritete Store record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -3371,33 +3266,14 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create TimeQtys record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public motTimeQtysRecord(string Action, motErrorlLevel LogLevel) : base()
+        public motTimeQtysRecord(string Action, bool AutoTruncate) : base()
         {
-            __log_level = LogLevel;
-
-            try
-            {
-                __qualifiedTags = new List<Field>();
-                createRecord(Action);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to create TimeQtys record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public motTimeQtysRecord(string Action, motErrorlLevel LogLevel, bool AutoTruncate) : base()
-        {
-            __log_level = LogLevel;
             __auto_truncate = AutoTruncate;
 
             try
@@ -3408,7 +3284,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to create TimeQtys record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
@@ -3496,7 +3372,7 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "DoseTimesQtys");
             }
         }
-        public void Write(motPort p, bool __log_on)
+        public void Write(motSocket p, bool __log_on)
         {
             try
             {
@@ -3505,13 +3381,13 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write TimeQtys record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;
             }
         }
-        public void Write(motPort p)
+        public void Write(motSocket p)
         {
             try
             {
@@ -3520,7 +3396,7 @@ namespace motCommonLib
             catch (Exception e)
             {
                 string __error = string.Format("Failed to write TimeQtys record: {0}", e.Message);
-                __write_log(__error, motErrorlLevel.Error);
+                __logger.Error(__error);
                 Console.Write(__error);
 
                 throw;

@@ -68,11 +68,11 @@ namespace motInboundLib
         public string __last_retval { get; set; } = string.Empty;
         public string __last_event { get; set; } = string.Empty;
 
-        public LogLevel __log_level { get; set; } = LogLevel.Error;
-        private Logger __logger;
-        public motSocket __socket;
-        private Thread  __worker;
-        private int     __listener_port = 0;
+        public LogLevel   __log_level { get; set; } = LogLevel.Error;
+        private Logger    __logger;
+        private motSocket __socket;
+        private Thread    __worker;
+        private int       __listener_port = 0;
 
         List<Dictionary<string, string>> __message_data = new List<Dictionary<string, string>>();
 
@@ -84,12 +84,11 @@ namespace motInboundLib
 
         public UpdateUIEventHandler UpdateEventUI;
         public UpdateUIErrorHandler UpdateErrorUI;
+        private UIupdateArgs __ui_args = new UIupdateArgs();
 
         public void __parse_message(string __data)
         {
             HL7Event7MessageArgs __args = new HL7Event7MessageArgs();
-            UIupdateArgs __ui_args = new UIupdateArgs();
-            
             string[] __segments;
             MSH __resp = null;
             string __response = string.Empty;
@@ -114,7 +113,12 @@ namespace motInboundLib
             catch
             {
                 string __error_code = "AR";
-                __resp = new MSH(@"MSH |^ ~\&| MOT | MOT | MALFORMED MESSAGE | BAD MESSAGE | 20161007120518 | 637300 | RDE ^ O11 | 2 | T | 2.6 |||||| UNICODE UTF - 8 |||||");
+                __resp = new MSH(@"MSH |^ ~\&|"+
+                    __organization + " | " + 
+                    __processor + 
+                    "| MALFORMED MESSAGE | BAD MESSAGE | "+
+                    DateTime.Now.ToString("yyyyMMddhhmm") + 
+                    "| 637300 | UNKNOWN | 2 | T | 276 |||||| UNICODE UTF-8 |||||");
 
                 NAK __out = new NAK(__resp, __error_code, __organization, __processor);
                 __response = __out.__nak_string;
@@ -122,11 +126,7 @@ namespace motInboundLib
                 __ui_args.__event_message = "Fatal:  Malormed Message";
                 __ui_args.__msh_out = __out.__clean_nak_string;
 
-                __logger.Log(__log_level, "HL7 NAK: {0}", __response);
-                __logger.Log(__log_level, "Failed Messasge: {0}", __data);
-
-                Console.Write("NAK: Malformed Message: {0}", __response);
-
+                __logger.Error("HL7 NAK: {0} Failed Messasge: {1}", __response, __data);
                 __write_message_to_endpoint(__response);
 
                 UpdateErrorUI(this, __ui_args);
@@ -191,16 +191,16 @@ namespace motInboundLib
                 __response = __out.__ack_string;
                 __ui_args.__msh_out = __out.__clean_ack_string;
 
-                __logger.Log(__log_level, "HL7 ACK: {0}", __response);
+                __logger.Info("HL7 ACK: {0}", __response);
 
                 UpdateEventUI(this, __ui_args);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 string __error_code = "AP";
 
                 // Parse the message, look for REJECTED
-                if(e.Message.Contains("REJECTED"))
+                if(ex.Message.Contains("REJECTED"))
                 {
                     __error_code = "AR";
                 }
@@ -208,29 +208,22 @@ namespace motInboundLib
                 NAK __out = new NAK(__resp, __error_code, __organization, __processor);
                 __response = __out.__nak_string;
                 __ui_args.__msh_out = __out.__clean_nak_string;
-                __ui_args.__event_message = "REJECTED " + e.Message;
+                __ui_args.__event_message = "REJECTED " + ex.Message;
 
-                __logger.Log(__log_level, "HL7 NAK: {0}", __response);
-                __logger.Log(__log_level, "Failed Messasge: {0}", __data);
-                __logger.Log(__log_level, "Failed Reason: {0}", e.Message);
+                __logger.Error("HL7 NAK: {0}", __response);
+                __logger.Error("Failed Messasge: {0} Failed Reason: {1}", __data, ex.Message);
 
                 UpdateErrorUI(this, __ui_args);
-
-                Console.Write("NAK:" + e.Message);
             }
 
             __write_message_to_endpoint(__response);
         }
 
-        public void __start_listener(int __port, motSocket.__void_delegate __callback_p)
+        public void __start_listener(int __port, motSocket.__void_string_delegate __s_callback)
         {
             try
             {
-                Console.WriteLine("__start_listener: {0}", Thread.CurrentThread.ManagedThreadId);
-
-                __socket = new motSocket(__port, __callback_p);
-
-                // This will start the listener and call the callback 
+                __socket = new motSocket(__port, __s_callback);
                 __worker = new Thread(new ThreadStart(__socket.listen));
                 __worker.Name = "listener";
                 __worker.Start();
@@ -238,8 +231,9 @@ namespace motInboundLib
             catch (Exception e)
             {
                 string __err = string.Format("An error occurred while attempting to start the HL7 listener: {0}", e.Message);
-                Console.WriteLine(__err);
-                __logger.Log(__log_level, __err);
+                __ui_args.__event_message = __err;
+                UpdateErrorUI(this, __ui_args);
+                __logger.Error(__err);
                 throw;
             }
         }
@@ -251,8 +245,12 @@ namespace motInboundLib
                 __socket.close();
                 __worker.Join();
             }
-            catch(NullReferenceException)
+            catch(Exception ex)
             {
+                string __err = string.Format("An error occurred while attempting to stop the HL7 listener: {0}", ex.Message);
+                __ui_args.__event_message = __err;
+                UpdateErrorUI(this, __ui_args);
+                __logger.Error(__err);
                 return;
             }
         }
@@ -267,9 +265,9 @@ namespace motInboundLib
             catch (Exception e)
             {
                 string __err = string.Format("Port I/O error sending ACK to {0}.  {1}", __socket.remoteEndPoint, e.Message);
-
-                Console.WriteLine(__err);
-                __logger.Log(__log_level, __err);
+                __ui_args.__event_message = __err;
+                UpdateErrorUI(this, __ui_args);
+                __logger.Error(__err);
             }
         }
 
@@ -288,22 +286,22 @@ namespace motInboundLib
             }
             catch (Exception e)
             {
-                __logger.Log(__log_level, "Failed to write file {0}, {1}", __filename, e.Message);
+                __logger.Error("Failed to write file {0}, {1}", __filename, e.Message);
             }
         }
 
-        public void __start(motSocket.__void_delegate __callback)
+        public void __start(motSocket.__void_string_delegate __s_callback)
         {
             try
             {
-                __start_listener(__listener_port, __callback);
-                __logger.Log(__log_level, "HL7 Listener waiting on port: {0}", __listener_port);
+                __start_listener(__listener_port, __s_callback);
+                __logger.Info("HL7 Listener waiting on port: {0}", __listener_port);
             }
             catch (Exception e)
             {
                 string __err = string.Format("HL7 Listener failed to start on port {0}: {1} ", __listener_port, e.Message);
 
-                __logger.Log(__log_level,__err);
+                __logger.Error(__err);
                 throw new Exception(__err);
             }
         }

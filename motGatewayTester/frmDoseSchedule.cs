@@ -23,7 +23,7 @@ namespace motGatewayTester
         {
             InitializeComponent();
 
-            TQ = new motTimeQtysRecord(__action, motErrorlLevel.Info, false);
+            TQ = new motTimeQtysRecord(__action, false);
             __execute = frmMainRecordTester.__execute;
         }
 
@@ -71,7 +71,7 @@ namespace motGatewayTester
 
                         if (cbSendDelimitedRecord.Checked)
                         {
-                            __execute.__p.Write(__record);
+                            __execute.__p.write(__record);
                         }
                     }
 
@@ -86,7 +86,7 @@ namespace motGatewayTester
 
                         if (cbSendTaggedRecord.Checked)
                         {
-                            __execute.__p.Write(__record);
+                            __execute.__p.write(__record);
                         }
                     }
                 }

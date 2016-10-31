@@ -35,8 +35,8 @@ namespace motRecordTests
     public class __vars
     {
         protected string __gateway_address = "localhost";
-        protected int __port_number = 24040;
-        protected motPort p;
+        protected int __port_number = 24041;
+        protected motSocket p;
 
         public __vars()
         { }
@@ -94,10 +94,10 @@ namespace motRecordTests
         {
             try
             {
-                motPort __p = new motPort();
-                __p.__tcp_address = __gateway_address;
-                __p.__tcp_port = 80;
-                __p.Open();
+                motSocket __p = new motSocket();
+                __p.__address = __gateway_address;
+                __p.__port = 80;
+                __p.open();
             }
             catch
             {
@@ -106,10 +106,10 @@ namespace motRecordTests
 
             try
             {
-                motPort __p = new motPort();
-                __p.__tcp_address = __gateway_address;
-                __p.__tcp_port = 0;
-                __p.Open();
+                motSocket __p = new motSocket();
+                __p.__address = __gateway_address;
+                __p.__port = 0;
+                __p.open();
             }
             catch
             {
@@ -118,26 +118,27 @@ namespace motRecordTests
 
             try
             {
-                motPort __p = new motPort();
-                __p.__tcp_address = "esmartpass.com";
-                __p.__tcp_port = 80;
-                __p.Open();
+                motSocket __p = new motSocket();
+                __p.__address = "esmartpass.com";
+                __p.__port = 80;
+                __p.open();
 
                 Console.WriteLine("Successfully opened esmartpass.com:80");
-                __p.Close();
+                __p.close();
+                __p.open();
 
-                motPort __pq = new motPort("esmartpass.com", 80);
+                motSocket __pq = new motSocket("esmartpass.com", 80);
                 Console.WriteLine("Successfully opened esmartpass.com:80 using int port constructor");
-                __pq.Close();
+                __pq.close();
 
-                motPort __pqr = new motPort("esmartpass.com", 80);
+                motSocket __pqr = new motSocket("esmartpass.com", 80);
                 Console.WriteLine("Successfully opened esmartpass.com:80 using string port constructor");
-                __pqr.Close();
+                __pqr.close();
 
             }
-            catch
+            catch(Exception ex)
             {
-                Console.WriteLine("Failed to open port localhost:0");
+                Console.WriteLine("Failed to open port localhost: {0}", ex.Message);
                 Assert.Fail("Failed to open eSmartpass:80");
             }
         }
@@ -177,7 +178,7 @@ namespace motRecordTests
 
             try
             {
-                p = new motPort(__gateway_address, __port_number);
+                p = new motSocket(__gateway_address, __port_number);
                 motParser __test = new motParser(p, __xdoc, motInputStuctures.__inputXML);
             }
             catch (Exception e)
@@ -215,7 +216,7 @@ namespace motRecordTests
 
             try
             {
-                p = new motPort(__gateway_address, __port_number);
+                p = new motSocket(__gateway_address, __port_number);
                 motParser __test = new motParser(p, __jdoc, motInputStuctures.__inputJSON);
             }
             catch (Exception e)
@@ -247,7 +248,7 @@ namespace motRecordTests
 
             try
             {
-                p = new motPort(__gateway_address, __port_number);
+                p = new motSocket(__gateway_address, __port_number);
                 r = new motDrugRecord("Add");
             }
             catch
@@ -429,7 +430,7 @@ namespace motRecordTests
 
             try
             {
-                p = new motPort(__gateway_address, __port_number);
+                p = new motSocket(__gateway_address, __port_number);
                 s = new motStoreRecord("Add");
             }
             catch

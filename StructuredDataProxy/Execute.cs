@@ -40,7 +40,7 @@ namespace StructuredDataProxy
     public class Execute
     {
         motSocket __listener;
-        motPort __gateway;
+        motSocket __gateway;
         Thread __worker;
         XmlDocument __xml_doc;
         ExecuteArgs __args;
@@ -109,7 +109,7 @@ namespace StructuredDataProxy
                 XmlNode __pharmacy = __xdoc.SelectSingleNode("//Pharmacy");
 
 
-                motStoreRecord __store = new motStoreRecord("Add", __args.__error_level, __args.__auto_truncate);
+                motStoreRecord __store = new motStoreRecord("Add",  __args.__auto_truncate);
 
                 __store.StoreName = __pharmacy.SelectSingleNode("PharmacyName").InnerText;
                 __store.RxSys_StoreID = __pharmacy.SelectSingleNode("Identification/PioneerRxID").InnerText;
@@ -147,7 +147,7 @@ namespace StructuredDataProxy
 
                 foreach (XmlNode __prescriber in __prescribers)
                 {
-                    var __doc = new motPrescriberRecord("Add", __args.__error_level, __args.__auto_truncate);
+                    var __doc = new motPrescriberRecord("Add",  __args.__auto_truncate);
 
                     // its odd.  The PrescriberID is writen like this:
                     //      <PresccriberID>
@@ -203,7 +203,7 @@ namespace StructuredDataProxy
             try
             {
                 var __patient = __xdoc.SelectSingleNode("//Patient");
-                var __pat = new motPatientRecord("Add", __args.__error_level, __args.__auto_truncate);
+                var __pat = new motPatientRecord("Add", __args.__auto_truncate);
                 List<motPrescriptionRecord> __rx_list = new List<motPrescriptionRecord>();
 
                 __pat.RxSys_PatID = __patient?.SelectSingleNode("//Identification/PatientID/Guid").InnerText;
@@ -255,7 +255,7 @@ namespace StructuredDataProxy
                 XmlNodeList __scrip_node_list = __patient?.SelectNodes("OtherMedications/Medication");
                 foreach(XmlNode __scrip in __scrip_node_list)
                 {
-                    var __new_scrip = new motPrescriptionRecord("Add", __args.__error_level, __args.__auto_truncate);
+                    var __new_scrip = new motPrescriptionRecord("Add", __args.__auto_truncate);
 
                     __new_scrip.RxSys_RxNum = __scrip["RxNumber"].InnerText;
                     __new_scrip.RxSys_DocID = __scrip["Prescriber"].InnerText;
@@ -367,7 +367,7 @@ namespace StructuredDataProxy
 
                 __show_common_event("Started listening to on port: " + __args.__listen_port);
 
-                __gateway = new motPort(__args.__gateway_address, __args.__gateway_port);
+                __gateway = new motSocket(__args.__gateway_address, Convert.ToInt32(__args.__gateway_port));
                 __show_common_event(string.Format("Sending data to: {0}:{1}", __args.__gateway_address, __args.__gateway_port));
             }
             catch (Exception e)

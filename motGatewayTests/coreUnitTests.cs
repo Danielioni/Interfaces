@@ -39,10 +39,10 @@ namespace motCommonLib.Test
         [TestMethod]
         static void __port_cdtor()
         { 
-            motPort __p = new motPort();
-            __p.__tcp_address = "localhost";
-            __p.__tcp_port = 80;
-            __p.Open();
+            motSocket __p = new motSocket();
+            __p.__address = "localhost";
+            __p.__port = 80;
+            __p.open();
         }
     }
 
@@ -79,7 +79,7 @@ namespace motCommonLib.Test
 
             try
             {
-                motPort p = new motPort("localhost", "24042");
+                motSocket p = new motSocket("localhost", 24042);
                 motParser __test = new motParser(p, __xdoc, motInputStuctures.__inputXML);
             }
             catch (Exception e)
@@ -117,7 +117,7 @@ namespace motCommonLib.Test
 
             try
             {
-                motPort p = new motPort("localhost", "24042");
+                motSocket p = new motSocket("localhost", 24042);
                 motParser __test = new motParser(p, __jdoc, motInputStuctures.__inputJSON);
             }
             catch (Exception e)
@@ -144,11 +144,11 @@ namespace motCommonLib.Test
         static void testDrugRecord()
         {
             motDrugRecord r;
-            motPort p;
+            motSocket p;
 
             try
             {
-                p = new motPort("localhost", "24042");
+                p = new motSocket("localhost", 24042);
                 r = new motDrugRecord("Add");
 
                 // Null is a valid value
@@ -217,11 +217,11 @@ namespace motCommonLib.Test
         static void testStoreRecord()
         {
             motStoreRecord s;
-            motPort p;
+            motSocket p;
 
             try
             {
-                p = new motPort("localhost", "24042");
+                p = new motSocket("localhost", 24042);
                 s = new motStoreRecord("Add");
 
                 s.RxSys_StoreID = null;

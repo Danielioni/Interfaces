@@ -39,7 +39,7 @@ namespace motCommonLib
     {
         public motInputStuctures __type { get; set; }
 
-        public motPort p { get; set; } = null;
+        public motSocket p { get; set; } = null;
 
         private Logger logger;
         public LogLevel __log_level { get; set; } = LogLevel.Error;
@@ -556,7 +556,7 @@ namespace motCommonLib
         }
         public void Write(string inboundData)
         {
-            if (p == null || !p.Write(inboundData, inboundData.Length))
+            if (p == null || !p.write(inboundData))
             {
                 // Need to do better than this, need to retrieve the error code at least     
                 logger.Log(__log_level, @"Failed to write to gateway");
@@ -567,7 +567,7 @@ namespace motCommonLib
         {
             logger = LogManager.GetLogger("motInboundLib.Parser");
         }
-        public motParser(motPort _p, string inputStream)
+        public motParser(motSocket _p, string inputStream)
         {
             p = _p;
             logger = LogManager.GetLogger("motInboundLib.Parser");
@@ -607,7 +607,7 @@ namespace motCommonLib
                 throw new Exception("Parse failure: {0}" + e.Message);
             }
         }
-        public motParser(motPort _p, string inputStream, motInputStuctures __type)
+        public motParser(motSocket _p, string inputStream, motInputStuctures __type)
         {
             p = _p;
             logger = LogManager.GetLogger("motInboundLib.Parser");

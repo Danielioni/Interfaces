@@ -21,7 +21,7 @@ namespace motGatewayTester
         Logger __logger = null;
         LogLevel __log_level { get; set; } = LogLevel.Error;
 
-        public motPort __p;
+        public motSocket __p;
         //public motSocket __s;
 
         public void __update_event_ui(string __message)
@@ -50,7 +50,7 @@ namespace motGatewayTester
             try
             {
                 __update_event_ui("Proxy Tester Starting Up");
-                __p = new motPort(__args.__gateway_address, __args.__gateway_port);
+                __p = new motSocket(__args.__gateway_address, Convert.ToInt32(__args.__gateway_port));
                 //__s = new motSocket(Convert.ToInt32(__args.__listen_port));
                 __update_event_ui(string.Format("Listening on: {0}:{1}, Sending to: {2}:{3}", __args.__listen_address, __args.__listen_port, __args.__gateway_address, __args.__gateway_port));
             }

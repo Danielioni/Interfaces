@@ -12,10 +12,10 @@ namespace DelimitedProxy
     public class Execute
     {
         motSocket __listener;
-        motPort __gateway;
-        Thread __worker;
-        string __gateway_address;
-        string __gateway_port;
+        motSocket __gateway;
+        Thread    __worker;
+        string    __gateway_address;
+        string    __gateway_port;
 
         Logger __logger = null;
         LogLevel __log_level { get; set; } = LogLevel.Info;
@@ -51,6 +51,24 @@ namespace DelimitedProxy
         }
 
         // Do the real work here - call delegates to update UI
+        private void __clean_buffer(byte[] __b_iobuffer)
+        {
+
+            for (int i = 0; i < __b_iobuffer.Length; i++)
+            {
+                // Ugly hack to get around UTF8 Normalization failing to convert properly
+                // It makes the MOT delimited interface fail
+
+                if (__b_iobuffer[i] == '\xEE')
+                {
+                    __b_iobuffer[i] = (byte)'|';
+                }
+                if (__b_iobuffer[i] == '\xE2')
+                {
+                    __b_iobuffer[i] = (byte)'^';
+                }
+            }
+        }
         void __parse(string __data)
         {
             __update_event_ui(string.Format("Received Request from {0}", __listener.remoteEndPoint.ToString()));
@@ -61,9 +79,9 @@ namespace DelimitedProxy
                 var __parser = new motParser();
 
                 __parser.__log_level = __log_level;
-                __parser.p = new motPort(__gateway_address, __gateway_port);
+                __parser.p = new motSocket(__gateway_address, Convert.ToInt32(__gateway_port));
                 __parser.parseDelimited(__data);
-                __parser.p.Close();
+                __parser.p.close();
             }
             catch(Exception ex)
             {
@@ -86,7 +104,8 @@ namespace DelimitedProxy
 
                 int __lp = Convert.ToInt32(__args.__listen_port);
                 __listener = new motSocket(__lp, __parse);
-                __listener.__log_level = LogLevel.Info;
+                __listener.__b_stream_processor = __clean_buffer;
+                //__listener.__log_level = LogLevel.Info;
                
 
                 // This will start the listener and call the callback 

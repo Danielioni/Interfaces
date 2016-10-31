@@ -71,12 +71,6 @@
     <AssemblyOriginatorKeyFile>mot-certificate.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="motCommonLib">
-      <HintPath>..\motClassLibrary\bin\Debug\motCommonLib.dll</HintPath>
-    </Reference>
-    <Reference Include="motInboundLib">
-      <HintPath>..\motClassLibrary\bin\Debug\motInboundLib.dll</HintPath>
-    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
@@ -148,6 +142,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MOT Proxy.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\motClassLibrary\motInboundLib.csproj">
+      <Project>{e6380e69-7e57-42a2-9d15-cfba019b2ccd}</Project>
+      <Name>motInboundLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\motCommonLib\motCommonLib.csproj">
+      <Project>{ca048b94-057e-4f73-b60d-4f79096e46c9}</Project>
+      <Name>motCommonLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

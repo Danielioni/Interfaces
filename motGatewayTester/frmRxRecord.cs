@@ -23,7 +23,7 @@ namespace motGatewayTester
         public frmRxRecord()
         {
             InitializeComponent();
-            Scrip = new motPrescriptionRecord(__action, motErrorlLevel.Info, false);
+            Scrip = new motPrescriptionRecord(__action, false);
             __execute = frmMainRecordTester.__execute;
         }
 
@@ -100,7 +100,7 @@ namespace motGatewayTester
 
                         if (cbSendDelimitedRecord.Checked)
                         {
-                            __execute.__p.Write(__record);
+                            __execute.__p.write(__record);
                         }
                     }
 
@@ -118,7 +118,7 @@ namespace motGatewayTester
 
                         if (cbSendTaggedRecord.Checked)
                         {
-                            __execute.__p.Write(__record);
+                            __execute.__p.write(__record);
                         }
                     }
                 }

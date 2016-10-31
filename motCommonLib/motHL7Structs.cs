@@ -319,21 +319,10 @@ namespace motCommonLib
         // Control Code DC (Discontinue)    MSH, PID, [PV1], { ORC, [{TQ1}], RXO, [{RXC}] }
         // Control Code RF (Refill)         MSH, PID, [PV1], { ORC, [{TQ1}], RXO, [{RXC}] }
 
-        public MSH __msh;
-        //public PID __pid;
-        //public PV1 __pv1;
-        //public ORC __orc;
-        //public List<TQ1> __tq1;
-        //public RXO __rxo;
-        //public List<RXC> __rxc;
-        //public List<NTE> __nte;
-
+        public MSH __msh;       
         public List<Order> __orders;
         public Patient __patient;
-
         public List<Dictionary<string, string>> __message_store;
-
-
         public OMP_O09(string __message) : base()
         {
             string __last_significant_item = "NONE";
@@ -460,9 +449,6 @@ namespace motCommonLib
                     }
                 }
             }
-
-            // Raise __newMessage Event
-           //  Console.WriteLine("Done Processing OMP_O09, now what ...");
         }
     }
     /*
@@ -587,20 +573,6 @@ namespace motCommonLib
         // Literal Order    MSH, PID, [PV1], ORC, [TQ1], [RXE], [ZAS]
 
         public MSH __msh;
-        //public PID __pid;
-        //public PV1 __pv1;
-        //public PV2 __pv2;
-        //public ORC __orc;
-        //public RXE __rxe;
-        //public RXO __rxo;
-        //public AL1 __al1;
-        //public SFT __sft;
-        //public UAC __uac;
-        //public List<RXR> __rxr;
-        //public List<RXC> __rxc;
-        //public List<NTE> __nte;
-        //public List<TQ1> __tq1;
-        //public List<OBX> __obx;
         public ZAS __zas;           // FrameworksLTC
         public ZLB __zlb;           // Epic
         public ZPI __zpi;           // FrameworksLTC
@@ -609,11 +581,9 @@ namespace motCommonLib
         public Patient __patient;
 
         public List<Dictionary<string, string>> __message_store;
-
         public RDE_O11() : base()
         {
         }
-
         public RDE_O11(string __message) : base()
         {
             string __last_significant_item = "NONE";
@@ -625,13 +595,6 @@ namespace motCommonLib
             Order __current_order =  new Order();
 
             __patient = new Patient();
-
-            //__rxr = new List<RXR>();
-            //__rxc = new List<RXC>();
-            //__nte = new List<NTE>();
-            //__tq1 = new List<TQ1>();
-            //__obx = new List<OBX>();
-
             __message_store = new List<Dictionary<string, string>>();
             
             foreach (string __type in __segments)
@@ -760,9 +723,6 @@ namespace motCommonLib
             {
                 __orders.Add(__current_order);
             }
-
-            // Raise __newMessage Event
-            // Console.WriteLine("Done Processing RDE_O11, now what ...");
         }
     }  
 
@@ -771,34 +731,16 @@ namespace motCommonLib
         // Dispense Msg      MSH, [ PID, [PV1] ], { ORC, [RXO], {RXE}, [{NTE}], {TQ1}, {RXR}, [{RXC}], RXD }, [ZPI] 
 
         public MSH __msh;
-        //public PID __pid;
-        //public PV1 __pv1;
-        //public ORC __orc;
-        //public RXO __rxo;
-        //public RXE __rxe;
-        //public RXD __rxd;
-        //public AL1 __al1;
-        //public List<NTE> __nte;
-        //public List<TQ1> __tq1;
-        //public List<RXR> __rxr;
-        //public List<RXC> __rxc;
         public ZPI __zpi;
-
         public List<Dictionary<string, string>> __message_store;
         public List<Order> __orders;
         public Patient __patient;
-
         public RDS_O13(string __message) : base()
         {
             string __last_significant_item = "NONE";
             string[] __segments = __message.Split('\r');
 
             __segments = __clear_newlines(__segments);
-
-            //__nte = new List<NTE>();
-            //__tq1 = new List<TQ1>();
-            //__rxr = new List<RXR>();
-            //__rxc = new List<RXC>();
 
             __orders = new List<Order>();
             Order __current_order = new Order();
@@ -918,10 +860,6 @@ namespace motCommonLib
                     }
                 }
             }
-
-            // Raise __newMessage Event
-            // Console.WriteLine("Done Processing RDS_O13, now what ...");
-
         }
         public RDS_O13() : base()
         { }
@@ -981,8 +919,6 @@ namespace motCommonLib
         {
             __load();
             __parser.__parse(__message, __msg_data);
-
-            Console.WriteLine("Finished parsing AL1");
         }
     }
     public class EVN : HL7_Message_dictionary
@@ -1448,8 +1384,6 @@ namespace motCommonLib
             {
                 __msg_data.Add("MSH-9-3", __msg_data["MSH-9-1"] + "_" + __msg_data["MSH-9-2"]);
             }
-
-            //Console.WriteLine("Finished parsing MSH");
         }
 
         public string __full_message()
@@ -2089,11 +2023,7 @@ namespace motCommonLib
 
             MSH __tmp_msh = __msh;
 
-            string __time_stamp = DateTime.Now.Year.ToString() +
-                                  DateTime.Now.Month.ToString() +
-                                  DateTime.Now.Day.ToString() +
-                                  DateTime.Now.Hour.ToString() +
-                                  DateTime.Now.Minute.ToString();
+            string __time_stamp = DateTime.Now.ToString("yyyyMMddhh");
 
             __tmp_msh.__msg_data["MSH-5"] = __tmp_msh.__msg_data["MSH-3"];
             __tmp_msh.__msg_data["MSH-6"] = __tmp_msh.__msg_data["MSH-4"];
@@ -2168,14 +2098,7 @@ namespace motCommonLib
             }
 
             MSH __tmp_msh = __msh;
-
-            string __time_stamp = DateTime.Now.Year.ToString() +
-                                  DateTime.Now.Month.ToString() +
-                                  DateTime.Now.Day.ToString() +
-                                  DateTime.Now.Hour.ToString() +
-                                  DateTime.Now.Minute.ToString();
-
-            
+            string __time_stamp = DateTime.Now.ToString("yyyyMMddhh");
 
             __tmp_msh.__msg_data["MSH-5"] = __tmp_msh.__msg_data["MSH-3"];
             __tmp_msh.__msg_data["MSH-6"] = __tmp_msh.__msg_data["MSH-4"];

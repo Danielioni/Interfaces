@@ -73,7 +73,6 @@
     <Compile Include="motInputStuctures.cs" />
     <Compile Include="motLookupTables.cs" />
     <Compile Include="motParser.cs" />
-    <Compile Include="motPort.cs" />
     <Compile Include="motRecords.cs" />
     <Compile Include="motSocket.cs" />
     <Compile Include="motUtils.cs" />
@@ -99,8 +98,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-
-</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

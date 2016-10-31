@@ -47,8 +47,8 @@ namespace CPRPlusInterface
     /// </summary>
     public partial class MainWindow : Window
     {
-        public motPort __port;
-        public string __DSN;
+        public motSocket __port;
+        public string    __DSN;
         public volatile bool __running = true;
         public volatile int __refresh_rate = 0;
         public volatile bool __window_ready = false;
@@ -276,10 +276,10 @@ namespace CPRPlusInterface
 
             try
             {
-                motPort p = new motPort(txtMOT_Address.Text, txtMOT_Port.Text);
+                motSocket p = new motSocket(txtMOT_Address.Text, Convert.ToInt32(txtMOT_Port.Text));
                 txtResponse.AppendText(@"Address Is Good To Go!");
                 btnKeep.IsEnabled = true;
-                p.Close();
+                p.close();
             }
             catch (Exception err)
             {
@@ -663,7 +663,7 @@ namespace CPRPlusInterface
                 __running = true;
                 __update_db_settings();
 
-                __port = new motPort(txtMOT_Address.Text, txtMOT_Port.Text);
+                __port = new motSocket(txtMOT_Address.Text, Convert.ToInt32(txtMOT_Port.Text));
 
                 string __s_address = txtMOT_Address.Text;
                 string __s_port = txtMOT_Port.Text;
@@ -738,7 +738,7 @@ namespace CPRPlusInterface
         /// </summary>
         class cprPlus : databaseInputSource
         {
-            protected motPort __port;
+            protected motSocket __port;
             protected bool __override_length_checking = true;
             protected Dictionary<string, string> __query;
             protected List<string> __view;
@@ -753,7 +753,7 @@ namespace CPRPlusInterface
 
 
 
-            public cprPlus(dbType __type, string DSN, motPort p) : base(__type, DSN)
+            public cprPlus(dbType __type, string DSN, motSocket p) : base(__type, DSN)
             {
                 __port = p;
                 __load_queries("");
@@ -762,7 +762,7 @@ namespace CPRPlusInterface
 
             public cprPlus(dbType __type, string DSN, string __address, string __p) : base(__type, DSN)
             {
-                __port = new motPort(__address, __p);
+                __port = new motSocket(__address, Convert.ToInt32(__p));
                 __load_queries("");
                 __set_views();
             }

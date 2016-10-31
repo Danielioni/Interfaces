@@ -39,9 +39,6 @@
     <Reference Include="motCommonLib">
       <HintPath>..\motCommonLib\bin\Debug\motCommonLib.dll</HintPath>
     </Reference>
-    <Reference Include="motInboundLib">
-      <HintPath>..\motClassLibrary\bin\Debug\motInboundLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -103,6 +100,12 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\motClassLibrary\motInboundLib.csproj">
+      <Project>{e6380e69-7e57-42a2-9d15-cfba019b2ccd}</Project>
+      <Name>motInboundLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

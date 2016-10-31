@@ -33,9 +33,9 @@ namespace HL7Proxy
         volatile bool __logging = false;
 
         volatile string __target_ip = string.Empty;
-        volatile string __target_port = string.Empty;
+        volatile int __target_port;
         volatile string __source_ip = string.Empty;
-        volatile string __source_port = string.Empty;
+        volatile int __source_port;
 
         //  public void __update_event_ui(string __message)
 
@@ -89,9 +89,9 @@ namespace HL7Proxy
             try
             {
                 __target_ip = __args.__gateway_address;
-                __target_port = __args.__gateway_port;
+                __target_port = Convert.ToInt32(__args.__gateway_port);
                 __source_ip = __args.__listen_address;
-                __source_port = __args.__listen_port;
+                __source_port = Convert.ToInt32(__args.__listen_port);
 
                 __error_level = __args.__error_level;
                 __auto_truncate = __args.__auto_truncate;
@@ -863,12 +863,12 @@ namespace HL7Proxy
         {
             //__update_event_ui("Received ADT_A01 Event");
 
-            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
-            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
-            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
-            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
-            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
-            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
+            var __pr = new motPatientRecord("Add", __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add",__auto_truncate);
+            var __doc = new motPrescriberRecord("Add", __auto_truncate);
+            var __loc = new motLocationRecord("Add",  __auto_truncate);
+            var __store = new motStoreRecord("Add", __auto_truncate);
+            var __drug = new motDrugRecord("Add",  __auto_truncate);
 
             string __time_qty = string.Empty;
             string __tmp = string.Empty;
@@ -965,13 +965,13 @@ namespace HL7Proxy
                 __pr.Allergies = __allergies;
                 __pr.DxNotes = __diagnosis;
 
-                motPort __p = new motPort(__target_ip, __target_port);
+                motSocket __p = new motSocket(__target_ip, __target_port);
 
                 // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ 
                 __doc.Write(__p, __logging);
                 __pr.Write(__p, __logging);
 
-                __p.Close();
+                __p.close();
             }
             catch (Exception e)
             {
@@ -984,12 +984,12 @@ namespace HL7Proxy
         {
             //__update_event_ui("Received ADT_A12 Event");
 
-            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
-            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
-            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
-            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
-            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
-            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
+            var __pr = new motPatientRecord("Add",  __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add",  __auto_truncate);
+            var __doc = new motPrescriberRecord("Add",  __auto_truncate);
+            var __loc = new motLocationRecord("Add",  __auto_truncate);
+            var __store = new motStoreRecord("Add",  __auto_truncate);
+            var __drug = new motDrugRecord("Add",  __auto_truncate);
 
             string __time_qty = string.Empty;
             string __problem_segment = string.Empty;
@@ -1022,12 +1022,12 @@ namespace HL7Proxy
         {
             //__update_event_ui(string.Format("{0} - Received OMP_O09 Event", DateTime.Now));
 
-            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
-            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
-            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
-            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
-            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
-            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
+            var __pr = new motPatientRecord("Add",  __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add",  __auto_truncate);
+            var __doc = new motPrescriberRecord("Add",  __auto_truncate);
+            var __loc = new motLocationRecord("Add",  __auto_truncate);
+            var __store = new motStoreRecord("Add",  __auto_truncate);
+            var __drug = new motDrugRecord("Add",  __auto_truncate);
             var __tq_list = new List<motTimeQtysRecord>();
 
             string __dose_time_qty = string.Empty;
@@ -1040,11 +1040,11 @@ namespace HL7Proxy
 
             __message_type = "OMP";
 
-            motPort __p;
+            motSocket __p;
 
             try // Process the Patient
             {
-                __p = new motPort(__target_ip, __target_port);
+                __p = new motSocket(__target_ip, __target_port);
 
                 __process_PID(__pr, __args.__patient.__pid.__msg_data);
                 __process_PV1(__doc, __pr, __args.__patient.__pv1.__msg_data);
@@ -1085,7 +1085,7 @@ namespace HL7Proxy
 
                     foreach (TQ1 __tq1 in __order.__tq1)
                     {
-                        var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
+                        var __tmp_tq = new motTimeQtysRecord("Add", __auto_truncate);
 
                         __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
                         __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
@@ -1136,7 +1136,7 @@ namespace HL7Proxy
                     __counter = 1;
                 }
 
-                __p.Close();
+                __p.close();
             }
             catch (Exception ex)
             {
@@ -1158,26 +1158,26 @@ namespace HL7Proxy
 
             //__update_event_ui("Received RDE_O11 Event");
 
-            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
-            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
-            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
-            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
-            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
-            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
+            var __pr = new motPatientRecord("Add",  __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add",  __auto_truncate);
+            var __doc = new motPrescriberRecord("Add",  __auto_truncate);
+            var __loc = new motLocationRecord("Add",  __auto_truncate);
+            var __store = new motStoreRecord("Add",  __auto_truncate);
+            var __drug = new motDrugRecord("Add",  __auto_truncate);
             var __tq_list = new List<motTimeQtysRecord>();
 
             string __time_qty = string.Empty;
             string __dose_time_qty = string.Empty;
             string __tmp = string.Empty;
 
-            motPort __p;
+            motSocket __p;
 
             __message_type = "RDE^O11";
 
 
             try // Process the Patient
             {
-                __p = new motPort(__target_ip, __target_port);
+                __p = new motSocket(__target_ip, __target_port);
 
                 __process_PID(__pr, __args.__patient.__pid.__msg_data);
                 __process_PV1(__doc, __pr, __args.__patient.__pv1.__msg_data);
@@ -1219,7 +1219,7 @@ namespace HL7Proxy
 
                     foreach (TQ1 __tq1 in __order.__tq1)
                     {
-                        var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
+                        var __tmp_tq = new motTimeQtysRecord("Add",  __auto_truncate);
 
                         __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
                         __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
@@ -1271,7 +1271,7 @@ namespace HL7Proxy
                     __counter = 1;
                 }
 
-                __p.Close();
+                //__p.close();
             }
             catch (Exception ex)
             {
@@ -1287,12 +1287,12 @@ namespace HL7Proxy
             int __tq1_record_rx_type = 0;
             int __counter = 1;
 
-            var __pr = new motPatientRecord("Add", __error_level, __auto_truncate);
-            var __scrip = new motPrescriptionRecord("Add", __error_level, __auto_truncate);
-            var __doc = new motPrescriberRecord("Add", __error_level, __auto_truncate);
-            var __loc = new motLocationRecord("Add", __error_level, __auto_truncate);
-            var __store = new motStoreRecord("Add", __error_level, __auto_truncate);
-            var __drug = new motDrugRecord("Add", __error_level, __auto_truncate);
+            var __pr = new motPatientRecord("Add",  __auto_truncate);
+            var __scrip = new motPrescriptionRecord("Add",  __auto_truncate);
+            var __doc = new motPrescriberRecord("Add",  __auto_truncate);
+            var __loc = new motLocationRecord("Add",  __auto_truncate);
+            var __store = new motStoreRecord("Add",  __auto_truncate);
+            var __drug = new motDrugRecord("Add",  __auto_truncate);
             var __tq_list = new List<motTimeQtysRecord>();
 
             string __time_qty = string.Empty;
@@ -1301,11 +1301,11 @@ namespace HL7Proxy
 
             __message_type = "RDS^O13";
 
-            motPort __p;
+            motSocket __p;
 
             try // Process the Patient
             {
-                __p = new motPort(__target_ip, __target_port);
+                __p = new motSocket(__target_ip, __target_port);
 
                 __process_PID(__pr, __args.__patient.__pid.__msg_data);
                 __process_PV1(__doc, __pr, __args.__patient.__pv1.__msg_data);
@@ -1341,7 +1341,7 @@ namespace HL7Proxy
 
                     foreach (TQ1 __tq1 in __order.__tq1)
                     {
-                        var __tmp_tq = new motTimeQtysRecord("Add", __error_level, __auto_truncate);
+                        var __tmp_tq = new motTimeQtysRecord("Add",  __auto_truncate);
 
                         __tq1_record_rx_type = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? Convert.ToInt32(__scrip.RxType) : 0;  // Non-zero means that its an add to special dose?
                         __tmp_tq.RxSys_LocID = !string.IsNullOrEmpty(__loc.RxSys_LocID) ? __loc.RxSys_LocID : "HOMECARE";
@@ -1395,7 +1395,7 @@ namespace HL7Proxy
                     __counter = 1;
                 }
 
-                __p.Close();
+                __p.close();
             }
             catch (Exception ex)
             {

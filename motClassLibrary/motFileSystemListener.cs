@@ -38,7 +38,7 @@ namespace motInboundLib
 
     public class motFileSystemListener
     {
-        motPort pt;
+        motSocket pt;
 
         public void writeData()
         {
@@ -48,7 +48,7 @@ namespace motInboundLib
         {
             try
             {
-                pt = new motPort(address, port);
+                pt = new motSocket(address, Convert.ToInt32(port));
             }
             catch (Exception e)
             {
