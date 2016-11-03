@@ -243,7 +243,7 @@ namespace motInboundLib
             try
             {
                 __socket.close();
-                __worker.Join();
+                //__worker.Join();
             }
             catch(Exception ex)
             {

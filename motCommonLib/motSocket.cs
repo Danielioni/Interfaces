@@ -200,23 +200,21 @@ namespace motCommonLib
             {
                 try
                 {
-                    __client = __trigger.AcceptTcpClient();
-                    __stream = __client.GetStream();
+                    using (__client = __trigger.AcceptTcpClient())
+                    {                      
+                        __stream = __client.GetStream();
+                        __stream.ReadTimeout = 60;
+                        __stream.WriteTimeout = 60;
 
-                    __stream.WriteTimeout = TCP_TIMEOUT;
-                    __stream.ReadTimeout = TCP_TIMEOUT;
-
-                    __remoteEndPoint = __client.Client.RemoteEndPoint;
-                    __localEndPoint = __client.Client.LocalEndPoint;
-                    __logger.Info("Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
-
-                    //Task.Run(() =>
-                    //{
-                    if (read() > 0)
-                    {
-                        __s_callback?.Invoke(__s_iobuffer);
+                        __remoteEndPoint = __client.Client.RemoteEndPoint;
+                        __localEndPoint = __client.Client.LocalEndPoint;
+                        __logger.Info("Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
+                        
+                        if (read() > 0)
+                        {
+                            __s_callback?.Invoke(__s_iobuffer);
+                        }
                     }
-                    //});
                 }
                 catch (System.InvalidOperationException ex)
                 {

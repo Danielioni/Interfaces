@@ -388,6 +388,7 @@ namespace motCommonLib
 
                 // Push it to the port
                 p.write(__record);
+                p.write("<EOF>");
 
                 __logger.Info(__record);
             }

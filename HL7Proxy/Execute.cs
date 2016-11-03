@@ -1253,6 +1253,11 @@ namespace HL7Proxy
                         __store.DEANum = "XX1234567";   // This should get the attention of the pharmacist
                     }
 
+                    if(string.IsNullOrEmpty(__scrip.RxSys_PatID))
+                    {
+                        __scrip.RxSys_PatID = __pr.RxSys_PatID;
+                    }
+
                     // Write the records in sequence
                     // Note:  Sequence things Correctly Store, Facility, Doc, Patient, Rx, Drug, TQ  
                     __store.Write(__p, __logging);

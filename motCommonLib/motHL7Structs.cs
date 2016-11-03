@@ -9,16 +9,8 @@ namespace motCommonLib
 {
 
     /// <summary>
-    /// Messsages to support for FrameworkLTE
+    /// HL7 - Grammer:
     /// 
-    ///     ADT^A04, ADT_A01
-    ///     ADT^A08, ADT_A01
-    ///     OMP^O09, OMP_O09
-    ///     ADT^A23, ADT_A21
-    ///     RDE^011, RDE_O11
-    ///     RDS^O13, RDS_O13
-    /// 
-    ///     Grammer:
     ///         <CR> - Segment Terminator
     ///         |    - Field Separator
     ///         ^    - Component Separator
@@ -38,7 +30,76 @@ namespace motCommonLib
     ///             W - Withdrawn
     ///             
     /// </summary>
+
+    /// <summary>
+    /// Messsages to support for FrameworkLTE
     /// 
+    ///     ADT^A04, ADT_A01
+    ///     ADT^A08, ADT_A01
+    ///     
+    ///     OMP^O09, OMP_O09
+    ///     ADT^A23, ADT_A21
+    ///     
+    ///     RDE^011, RDE_O11
+    ///     
+    ///         v2.7.1 Spec
+    ///         Header:     MSH, [{SFT}], [UAC], [{NTE}], 
+    ///         Patient:        [PID, [PD1], [{PRT}],[{NTE}], 
+    ///         Visit:              [PV1, [PV2], [{PRT}]],
+    ///         Insurance:          [IN1, [IN2], [IN3]],
+    ///         Misc:               [GT1], [{AL1}]],
+    ///         Order:          [{ORC,
+    ///         Timing:             [{TQ1, [{TQ2}]}],
+    ///         Detail:             [RXO, [{NTE}], {RXR},
+    ///         Component:              [{RXC, [{NTE}]}],
+    ///                             [{PRT}], RXE, [{PRT}],[{NTE}],
+    ///         Timing Encoded:         [{TQ1, [{TQ2}]}],
+    ///                             {RXR}, [{RXC}],
+    ///         Observation:            [{OBX, [{PRT}],[{NTE}]}],
+    ///                             [{FT1}], [BLG], [{CTI}] }]
+    ///         
+    ///     FrameworkLTC Spec
+    ///     -----------------
+    ///     RDE^O11^RDE_O11  - DO(Drug Order)
+    ///         Header:     MSH, 
+    ///         Patient:        [PID,[PV1]],
+    ///         Order:          {ORC,[RXO,{RXR}],RXE,[{NTE},{TQ1},{RXR},[{RXC]},
+    ///         Custom:         [ZPI]
+    ///
+    ///     RDE^O11^RDE_O11  - LO(Literal Order)
+    ///         Header:     MSH, 
+    ///         Patient:        PID, [PV1],
+    ///         Order:          ORC,[TQ1],[RXE],
+    ///         Custom:         [ZAS]
+    ///        
+    ///     -- RDE Special Interpretations
+    ///         PID-2:          3rd Party Patient ID [CX]
+    ///         PID-3:          FW Patient ID - FacilityID\F\PatientID
+    ///         PID-4:          Alternate Patient ID
+    /// 
+    ///     EPIC Spec
+    ///     ----------
+    ///     RDE^O11
+    ///         Header:     MSH,PID,CON,
+    ///         Order:          {ORC,[RXE,RXD,ZLB,PRT,OBX]}
+    ///                    
+    ///     Response:       ORR,MSH,MSA,[ERR]
+    ///     
+    ///     --- RDE Special Interpretations
+    ///         PID-2:       CX :: Backward Compatability Only
+    ///         PID-3:       ID^^^SA^assigning athority-ID2^^^SA2^Assigning Athourity
+    ///            
+    ///     RDS^O13, RDS_O13
+    ///     
+    /// 
+    /// </summary>
+
+    /// <summary>
+    /// Messages to support for EPIC
+    /// </summary>
+
+
+
     public class HL7MessageParser
     {
 
@@ -117,13 +178,30 @@ namespace motCommonLib
                     __gotone = __field.IndexOfAny(__local_delimiters);    // Subfield ADT01^RDE^RDE_011
                     if (__gotone != -1)
                     {
-                        __tagname = __tagname + "-" + __major.ToString();
+                        if (__field.IndexOf('~') > 0)
+                        {
+                            char[] __tilde = { '~' };
+                            string[] __tilde_split = __field.Split(__tilde);
+                            var __tmp_field_name = __field_names[0];
 
-                        // Wait for it so we don't loose the overall seque
-                        bool __success = __sub_parse(__tagname, __field, __field[__gotone], __message_data, __minor);
+                            foreach (string __split in __tilde_split)
+                            {
+                                __tagname = __tagname + "-" + __major.ToString();
+                                __sub_parse(__tagname, __split, __split[__field.IndexOfAny(__local_delimiters)], __message_data, __minor);
+                                __tagname = "~" + __tmp_field_name;
+                                __tmp_field_name = __tagname;  // Add '~', 1 for each iteration.  We'll decode them later
+                            }
+                        }
+                        else
+                        {
+                            __tagname = __tagname + "-" + __major.ToString();
 
-                        // Reset the tagname to the root level
-                        __tagname = __field_names[0];
+                            // Wait for it so we don't loose the overall seque
+                            bool __success = __sub_parse(__tagname, __field, __field[__gotone], __message_data, __minor);
+
+                            // Reset the tagname to the root level
+                            __tagname = __field_names[0];
+                        }
                     }
                 }
 
