@@ -82,6 +82,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\HL7toXML\HL7toXDocumentParser\HL7toXDocumentParser.csproj">
+      <Project>{7c0dc366-5746-4fc0-8960-66a97e4c85ff}</Project>
+      <Name>HL7toXDocumentParser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\motCommonLib\motCommonLib.csproj">
       <Project>{ca048b94-057e-4f73-b60d-4f79096e46c9}</Project>
       <Name>motCommonLib</Name>

@@ -28,6 +28,7 @@ using System.IO;
 using System.Threading;
 using NLog;
 
+
 namespace motInboundLib
 {
     using motCommonLib;
@@ -39,6 +40,7 @@ namespace motInboundLib
         public DateTime timestamp { get; set; }
         public List<Order> __order_list { get; set; }
         public Patient __patient { get; set; }
+        public string __raw_data;
     }
 
     public delegate void ADT_A01EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
@@ -143,11 +145,12 @@ namespace motInboundLib
                     case "RDE_O11":
                         __ui_args.__event_message = "RDE_011 Message Event";
 
-                        RDE_O11 __rde_o11 = new RDE_O11(__data);
-                        __message_data = __rde_o11.__message_store;
-                        __args.fields = __message_data;
-                        __args.__order_list = __rde_o11.__orders;
-                        __args.__patient = __rde_o11.__patient;
+                        //RDE_O11 __rde_o11 = new RDE_O11(__data);
+                        //__message_data = __rde_o11.__message_store;
+                        //__args.fields = __message_data;
+                        //__args.__order_list = __rde_o11.__orders;
+                        //__args.__patient = __rde_o11.__patient;
+                        __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
                         RDE_O11MessageEventReceived(this, __args);
                         break;
@@ -155,11 +158,12 @@ namespace motInboundLib
                     case "OMP_O09":
                         __ui_args.__event_message = "OMP_O09 Message Event";
 
-                        OMP_O09 __omp_o09 = new OMP_O09(__data);
-                        __message_data = __omp_o09.__message_store;
-                        __args.fields = __message_data;
-                        __args.__patient = __omp_o09.__patient;
-                        __args.__order_list = __omp_o09.__orders;
+                        //OMP_O09 __omp_o09 = new OMP_O09(__data);
+                        //__message_data = __omp_o09.__message_store;
+                        //__args.fields = __message_data;
+                        //__args.__patient = __omp_o09.__patient;
+                        //__args.__order_list = __omp_o09.__orders;
+                        __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
                         OMP_O09MessageEventReceived(this, __args);
                         break;
@@ -167,11 +171,12 @@ namespace motInboundLib
                     case "RDS_O13":
                         __ui_args.__event_message = "RDS_013 Message Event";
 
-                        RDS_O13 __rds_o13 = new RDS_O13(__data);
-                        __message_data = __rds_o13.__message_store;
-                        __args.fields = __message_data;
-                        __args.__order_list = __rds_o13.__orders;
-                        __args.__patient = __rds_o13.__patient;
+                        //RDS_O13 __rds_o13 = new RDS_O13(__data);
+                        //__message_data = __rds_o13.__message_store;
+                        //__args.fields = __message_data;
+                        //__args.__order_list = __rds_o13.__orders;
+                        //__args.__patient = __rds_o13.__patient;
+                        __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
                         RDS_O13MessageEventReceived(this, __args);
                         break;
@@ -179,10 +184,11 @@ namespace motInboundLib
                     case "ADT_A01":
                         __ui_args.__event_message = "ADT_A01 Message Event";
 
-                        ADT_A01 __adt_a01 = new ADT_A01(__data);
-                        __message_data = __adt_a01.__message_store;
-                        __args.fields = __message_data;
+                        //ADT_A01 __adt_a01 = new ADT_A01(__data);
+                        //__message_data = __adt_a01.__message_store;
+                        //__args.fields = __message_data;
                         __args.timestamp = DateTime.Now;
+                        __args.__raw_data = __data;
                         ADT_A01MessageEventReceived(this, __args);
                         break;
                 }

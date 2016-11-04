@@ -1171,7 +1171,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value.ToUpper(), "State");
+                setField(__qualifiedTags, value?.ToUpper(), "State");
             }
         }
         public string PostalCode
@@ -2824,7 +2824,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value.ToUpper(), "State");
+                setField(__qualifiedTags, value?.ToUpper(), "State");
             }
         }
         public string PostalCode
