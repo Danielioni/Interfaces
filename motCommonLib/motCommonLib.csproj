@@ -66,6 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="motSequencecdQueue.cs" />
     <Compile Include="motCSVFile.cs" />
     <Compile Include="motEmail.cs" />
     <Compile Include="motDatabase.cs" />
