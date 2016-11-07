@@ -22,6 +22,8 @@ namespace HL7Proxy
 
         int __first_day_of_week = 0;
 
+        SendingApplication SendingApp = SendingApplication.Unknown;
+
         HL7SocketListener __listener;
         public motErrorlLevel __error_level { get; set; } = motErrorlLevel.Error;
 
@@ -148,6 +150,7 @@ namespace HL7Proxy
 
         string[] __global_month = null;
         string __message_type = string.Empty;
+        string __event_code = string.Empty;
 
         public class RecordBundle
         {
@@ -159,6 +162,9 @@ namespace HL7Proxy
             public motDrugRecord __drug;
             public List<motTimeQtysRecord> __tq_list;
 
+            public List<motStoreRecord> __store_list;
+            public List<motPrescriberRecord> __doc_list;
+
             public RecordBundle(bool __auto_truncate)
             {
                 __pr = new motPatientRecord("Add", __auto_truncate);
@@ -167,15 +173,29 @@ namespace HL7Proxy
                 __loc = new motLocationRecord("Add", __auto_truncate);
                 __store = new motStoreRecord("Add", __auto_truncate);
                 __drug = new motDrugRecord("Add", __auto_truncate);
+
                 __tq_list = new List<motTimeQtysRecord>();
+                __store_list = new List<motStoreRecord>();
+                __doc_list = new List<motPrescriberRecord>();
             }
 
             public void Write(motSocket __socket)
             {
                 try
                 {
+                    foreach(motStoreRecord __store in __store_list)
+                    {
+                        __store.Write(__socket);
+                    }
+
                     __store.Write(__socket);
                     __loc.Write(__socket);
+
+                    foreach (motPrescriberRecord __doc in __doc_list)
+                    {
+                        __doc.Write(__socket);
+                    }
+
                     __doc.Write(__socket);
                     __pr.Write(__socket);
                     __drug.Write(__socket);
@@ -287,7 +307,7 @@ namespace HL7Proxy
                 __pr.DoW = __new_pattern;
                 __pr.RxType = "5";
 
-                __pr.DoseTimesQtys = string.Format("{0}{1:00.00}", __tq1.Get("TQ1.4"), Convert.ToDouble(__tq1.Get("TQ1.2.1")));
+                __pr.DoseTimesQtys = string.Format("{0}{1:00.00}", __tq1.Get("TQ1.4.1"), Convert.ToDouble(__tq1.Get("TQ1.2.1")));
             }
             else if (__pattern[0] == 'Q' && __pattern.Contains("D"))  // Daily, need to qualify with the Q
             {
@@ -414,7 +434,7 @@ namespace HL7Proxy
             __problem_segment = "AL1";
 
             return string.Format("Code: {0}\nDesc: {1}\nSeverity: {2}\nReaction: {3}\nID Date: {4}\n******\n",
-                                             __al1.Get("AL1.2"), __al1.Get("AL1.3"), __al1.Get("AL1.4"), __al1.Get("AL1.5"), __al1.Get("AL1.6"));
+                                             __al1.Get("AL1.2.1"), __al1.Get("AL1.3.1"), __al1.Get("AL1.4.1"), __al1.Get("AL1.5.1"), __al1.Get("AL1.6.1"));
         }
         private string __process_DG1(RecordBundle __recs, DG1 __dg1)
         {
@@ -426,7 +446,7 @@ namespace HL7Proxy
             __problem_segment = "DG1";
 
             return string.Format("Coding Method: {0}\nDiag Code: {1}\nDesc: {2}\nDate: {3}\nType: {4}\nMajor Catagory: {5}\nRelated Group: {6}\n******\n",
-                                               __dg1.Get("DG1.2"), __dg1.Get("DG1.3.1"), __dg1.Get("DG1.4"), __dg1.Get("DG1.5.1"), __dg1.Get("DG1.6"), __dg1.Get("DG1.7.1"), __dg1.Get("DG1.8.1"));
+                                               __dg1.Get("DG1.2.1"), __dg1.Get("DG1.3.1"), __dg1.Get("DG1.4.1"), __dg1.Get("DG1.5.1"), __dg1.Get("DG1.6.1"), __dg1.Get("DG1.7.1"), __dg1.Get("DG1.8.1"));
         }
         private string __process_EVN(RecordBundle __recs, EVN __evn)
         {
@@ -437,7 +457,7 @@ namespace HL7Proxy
 
             __problem_segment = "EVN";
 
-            return __evn.Get("EVN.1");
+            return __evn.Get("EVN.1.1");
         }
         private void __process_IN1(RecordBundle __recs, IN1 __in1)
         {
@@ -462,7 +482,7 @@ namespace HL7Proxy
 
             __problem_segment = "IN2";
 
-            __recs.__pr.SSN = __in2.Get("IN2.1");
+            __recs.__pr.SSN = __in2.Get("IN2.1.1");
         }
         private string __process_NK1(RecordBundle __recs, NK1 __nk1)
         {
@@ -484,7 +504,7 @@ namespace HL7Proxy
             }
             __problem_segment = "NTE";
 
-            return __nte.Get("NTE.3");
+            return __nte.Get("NTE.3.1");
         }
         private void __process_OBX(RecordBundle __recs, OBX __obx)
         {
@@ -499,7 +519,7 @@ namespace HL7Proxy
             {
                 if (__obx.Get("OBX.6.1").ToLower().Contains("kg"))
                 {
-                    double __double_tmp = Convert.ToDouble(__obx.Get("OBX.5"));
+                    double __double_tmp = Convert.ToDouble(__obx.Get("OBX.5.1"));
                     __double_tmp *= 2.2;
                     __recs.__pr.Weight = Convert.ToInt32(__double_tmp);
                 }
@@ -514,7 +534,7 @@ namespace HL7Proxy
 
                 if (__obx.Get("OBX.6.1").ToLower().Contains("cm"))
                 {
-                    double __double_tmp = Convert.ToDouble(__obx.Get("OBX.5"));
+                    double __double_tmp = Convert.ToDouble(__obx.Get("OBX.5.1"));
                     __double_tmp *= 2.54;
                     __recs.__pr.Height = Convert.ToInt32(__double_tmp);
                 }
@@ -555,29 +575,24 @@ namespace HL7Proxy
                     break;
             }
 
-            // For FrameworkLTC RDE messages, the ORC format is represented as FacilityID\F\PatientID\F\OrnderNum which translates to 
-            //  ORC-3-1 <Facility ID>
-            //  ORC-3-3 <Patient ID>
-            //  ORC-3-5 <Order Number>
-            // Check to see if there are some 'F's, which would indicate the Framework format
-            string __tmp = __orc.Get("ORC.3.2");
-
-            if (!string.IsNullOrEmpty(__tmp) && __tmp == "F")
+            // For FrameworkLTC RDE messages, the ORC format is represented as FacilityID\F\PatientID\F\OrnderNum which parses to 
+            //  <Facility ID> | <Patient ID> | <Order Number>
+            //
+            if(SendingApp == SendingApplication.FrameworkLTE)          
             {
-                __recs.__loc.RxSys_LocID = __orc.Get("ORC.3.1");
-                __recs.__scrip.RxSys_RxNum = __orc.Get("ORC.3.5");
+                char[] __delim = { '|' };
+                string[] __part = __orc.Get("ORC.3.1").Split(__delim);
+
+                __recs.__loc.RxSys_LocID = __part[0];
+                __recs.__scrip.RxSys_RxNum = __part[2];
             }
             else
             {
-                // If the location ID is missing, assign it to the default location 0
-                __recs.__loc.RxSys_LocID = __orc.Get("ORC.2.1");
-                if (string.IsNullOrEmpty(__recs.__loc.RxSys_LocID))
-                {
-                    __recs.__loc.RxSys_LocID = "UnKnown";
-                }
+                __recs.__loc.RxSys_LocID = __orc.Get("ORC.21.3");
+                __recs.__scrip.RxSys_RxNum = __orc.Get("ORC.2.1");
             }
 
-            __recs.__loc.LocationName = __orc.Get("ORC.21");
+            __recs.__loc.LocationName = __orc.Get("ORC.21.1");
             __recs.__loc.Address1 = __orc.Get("ORC.22.1");
             __recs.__loc.Address2 = __orc.Get("ORC.22.2");
             __recs.__loc.City = __orc.Get("ORC.22.3");
@@ -609,9 +624,8 @@ namespace HL7Proxy
 
             __problem_segment = "PID";
 
-            // For FrameworkLTC RDE messages, the PID format is represented as FacilityID\F\PatientID which translates to 
-            //  PID-3-1 <Facility ID>
-            //  PID-3-3 <Patient ID>
+            // For FrameworkLTC RDE messages, the PID format is represented as FacilityID\F\PatientID which is converted to 
+            // FacilityID | PatientID by the parser.  So the tag is still <PID.3> but we need to split it.         
             //
             // and for ADT Messages the PID format is a pure CX record and rpresented as PatientID^CheckDigit^Check Digit ID Code, so
             //  PID-3-1 is the ID.  
@@ -624,13 +638,16 @@ namespace HL7Proxy
             // 
 
             // Check to see if there are some 'F's, which would indicate the Framework format
-            __tmp = __pid.Get("PID.3.2");
-            if (!string.IsNullOrEmpty(__tmp) && __tmp == "F")
+            if(SendingApp == SendingApplication.FrameworkLTE)
             {
-                if (!string.IsNullOrEmpty(__pid.Get("PID.3.3")))
+                char[] __delim = { '|' };
+                
+                __tmp = __pid.Get("PID.3.1");
+                if(!string.IsNullOrEmpty(__tmp))
                 {
-                    __recs.__pr.RxSys_PatID = __pid.Get("PID.3.3");
-                    __recs.__pr.RxSys_LocID = __pid.Get("PID.3.1");
+                    string[] __part = __tmp.Split(__delim);
+                    __recs.__pr.RxSys_LocID = __part[0];
+                    __recs.__pr.RxSys_PatID = __part[1];
                 }
             }
             else
@@ -657,8 +674,12 @@ namespace HL7Proxy
             __recs.__pr.LastName = __pid.Get("PID.5.1");
             __recs.__pr.FirstName = __pid.Get("PID.5.2");
             __recs.__pr.MiddleInitial = __pid.Get("PID.5.3");
-            __recs.__pr.DOB = __pid.Get("PID.7")?.Substring(0, 8);  // Remove the timestamp
-            __recs.__pr.Gender = __pid.Get("PID.8")?.Substring(0, 1);
+
+            if (__pid.Get("PID.7").Length >= 8)
+            {
+                __recs.__pr.DOB = __pid.Get("PID.7.1")?.Substring(0, 8);  // Remove the timestamp
+            }
+            __recs.__pr.Gender = __pid.Get("PID.8.1")?.Substring(0, 1);
             __recs.__pr.Address1 = __pid.Get("PID.11.1"); // In a PID Segment this is always an XAD structure
             __recs.__pr.Address2 = __pid.Get("PID.11.2");
             __recs.__pr.City = __pid.Get("PID.11.3");
@@ -666,7 +687,7 @@ namespace HL7Proxy
             __recs.__pr.Zip = __pid.Get("PID.11.5");
             __recs.__pr.Phone1 = __pid.Get("PID.13.1");
             __recs.__pr.WorkPhone = __pid.Get("PID.14.1");
-            __recs.__pr.SSN = __pid.Get("PID.19");
+            __recs.__pr.SSN = __pid.Get("PID.19.1");
 
             //__scrip.RxSys_PatID = __pr.RxSys_PatID;
         }
@@ -679,7 +700,7 @@ namespace HL7Proxy
 
             __problem_segment = "PV1";
 
-            __recs.__doc.DEA_ID = __recs.__doc.RxSys_DocID = __pv1.Get("PV1.7.1");
+            __recs.__doc.RxSys_DocID = __pv1.Get("PV1.7.1");
             __recs.__doc.LastName = __pv1.Get("PV1.7.2");
             __recs.__doc.FirstName = __pv1.Get("PV1.7.3");
             __recs.__doc.MiddleInitial = __pv1.Get("PV1.7.4");
@@ -704,14 +725,69 @@ namespace HL7Proxy
 
             __problem_segment = "PD1";
         }
-        private void __process_PRT(RecordBundle __recs, PRT __prt)
+        private void __process_PRT(RecordBundle __recs, PRT __prt)  // this is an EPICor 2.7 record
         {
             if (__recs == null || __prt == null)
             {
                 return;
             }
 
+            var __tmp_doc = new motPrescriberRecord("Add", __auto_truncate);
+            var __tmp_store = new motStoreRecord("Add", __auto_truncate);
+
             __problem_segment = "PRT";
+
+
+            // Participant Person
+            __tmp_doc.RxSys_DocID = __prt.Get("PRT.5.1");
+            __tmp_doc.LastName = __prt.Get("PRT.5.2");
+            __tmp_doc.FirstName = __prt.Get("PRT.5.3");
+            __tmp_doc.MiddleInitial = __prt.Get("PRT.5.4");
+            __tmp_doc.Address1 = __prt.Get("PRT.14.1");
+            __tmp_doc.Address2 = __prt.Get("PRT.14.2");
+            __tmp_doc.City = __prt.Get("PRT.14.3");
+            __tmp_doc.State = __prt.Get("PRT.14.4");
+            __tmp_doc.Zip = __prt.Get("PRT.14.5");
+            __tmp_doc.DEA_ID = "XD0123456";
+
+
+            // Participant Organization
+            __tmp_store.RxSys_StoreID = __prt.Get("PRT.7.1");
+            __tmp_store.StoreName = __prt.Get("PRT.7.2");
+            __tmp_store.Address1 = __prt.Get("PRT.14.1");
+            __tmp_store.Address2 = __prt.Get("PRT.14.2");
+            __tmp_store.City = __prt.Get("PRT.14.3");
+            __tmp_store.State = __prt.Get("PRT.14.4");
+            __tmp_store.Zip = __prt.Get("PRT.14.5");
+            __tmp_store.DEANum = "XS0123456";
+
+            var __list = __prt.GetList("PRT.15.1");
+
+            // Get the phones  format is NNNNNNNNNNTT with TT being PH or FX
+            for (int i = 0; i < 2l; i++)
+            {
+                if (__list[i].Contains("PH"))
+                {
+                    __tmp_store.Phone = __tmp_doc.Phone = __list[i].Substring(0, __list[i].Length - 2);
+                }
+                else
+                {
+                    __tmp_store.Fax = __tmp_doc.Fax = __list[i].Substring(0, __list[i].Length - 2);
+                }
+            }
+
+
+           
+
+            if (!string.IsNullOrEmpty(__tmp_doc.RxSys_DocID))
+            {
+                __recs.__doc_list.Add(__tmp_doc);
+            }
+
+            if (!string.IsNullOrEmpty(__tmp_store.RxSys_StoreID))
+            {
+                __recs.__store_list.Add(__tmp_store);
+            }
         }
         private void __process_RXC(RecordBundle __recs, RXC __rxc)  // Process Compound Components
         {
@@ -723,12 +799,12 @@ namespace HL7Proxy
             __problem_segment = "RXC";
 
             __recs.__scrip.Comments += "Compound Order Segment\n__________________\n";
-            __recs.__scrip.Comments += "Component Type:  " + __rxc.Get("RXC.1");
-            __recs.__scrip.Comments += "Component Amount " + __rxc.Get("RXC.3");
+            __recs.__scrip.Comments += "Component Type:  " + __rxc.Get("RXC.1.1");
+            __recs.__scrip.Comments += "Component Amount " + __rxc.Get("RXC.3.1");
             __recs.__scrip.Comments += "Component Units  " + __rxc.Get("RXC.4.1");
             __recs.__scrip.Comments += "Component Strength" + __rxc.Get("RXC.5");
             __recs.__scrip.Comments += "Component Strngth Units  " + __rxc.Get("RXC.6.1");
-            __recs.__scrip.Comments += "Component Drug Strength Volume " + __rxc.Get("RXC.8");
+            __recs.__scrip.Comments += "Component Drug Strength Volume " + __rxc.Get("RXC.8.1");
             __recs.__scrip.Comments += "Component Drug Strength Volume Units" + __rxc.Get("RXC.9.1");
             __recs.__scrip.Comments += "\n\n";
         }
@@ -760,20 +836,20 @@ namespace HL7Proxy
 
             __recs.__doc.DEA_ID = __rxe.Get("RXE.13.1");
 
-            __recs.__drug.RxSys_DrugID = __rxe.Get("RXE.2.1");  // TODO: Don't think this is right
+            __recs.__drug.RxSys_DrugID = __rxe.Get("RXE.2.1");
             __recs.__drug.NDCNum = __rxe.Get("RXE.2.1");
             __recs.__drug.DrugName = __rxe.Get("RXE.2.2");
             __recs.__drug.TradeName = __recs.__drug.DrugName;
 
             if (__rxe.Get("RXE.25") != string.Empty)
             {
-                if (!string.IsNullOrEmpty(__rxe.Get("RXE.25")))
+                if (!string.IsNullOrEmpty(__rxe.Get("RXE.25.1")))
                 {
-                    __recs.__drug.Strength = Convert.ToInt32(__rxe.Get("RXE.25"));
+                    __recs.__drug.Strength = Convert.ToInt32(__rxe.Get("RXE.25.1"));
                 }
             }
 
-            __recs.__drug.Unit = __rxe.Get("RXE.26");
+            __recs.__drug.Unit = __rxe.Get("RXE.26.1");
             __recs.__drug.DoseForm = __rxe.Get("RXE.6.1");
 
             if (__rxe.Get("RXE.35.1") != string.Empty)
@@ -786,7 +862,7 @@ namespace HL7Proxy
 
             __recs.__scrip.RxSys_DrugID = __recs.__drug.NDCNum;
             __recs.__scrip.QtyPerDose = __rxe.Get("RXE.3.1");
-            __recs.__scrip.RxSys_RxNum = __rxe.Get("RXE.15");
+            __recs.__scrip.RxSys_RxNum = __rxe.Get("RXE.15.1");
             __recs.__scrip.DoseScheduleName = __rxe.Get("RXE.7.1");
 
             if (!string.IsNullOrEmpty(__rxe.Get("RXE.7.2")))
@@ -798,8 +874,8 @@ namespace HL7Proxy
                 __recs.__scrip.Sig = "Pharmacist Attention - Missing Sig";
             }
 
-            __recs.__scrip.QtyDispensed = __rxe.Get("RXE.10");
-            __recs.__scrip.Refills = __rxe.Get("RXE.16");
+            __recs.__scrip.QtyDispensed = __rxe.Get("RXE.10.1");
+            __recs.__scrip.Refills = __rxe.Get("RXE.16.1");
             __recs.__scrip.RxType = "0";
 
             __recs.__store.RxSys_StoreID = __rxe.Get("RXE.40.1");
@@ -923,7 +999,7 @@ namespace HL7Proxy
                 }
 
                 // There is a dose schedule, but we have  to tease it out
-                string __tq1_4 = __tq1.Get("TQ1.4");
+                string __tq1_4 = __tq1.Get("TQ1.4.1");
 
                 if (__tq1_4.Contains("~"))  // TODO - XML parser breaks this
                 {
@@ -1030,7 +1106,6 @@ namespace HL7Proxy
 
             return __data;
         }
-
         static string __assign(string __key, Dictionary<string, string> __fields)
         {
             if (string.IsNullOrEmpty(__key))
@@ -1120,6 +1195,11 @@ namespace HL7Proxy
                 __process_RXE(__recs, __order.__rxe);
                 __process_RXO(__recs, __order.__rxo);
 
+                foreach (PRT __prt in __order.__prt)
+                {
+                    __process_PRT(__recs, __prt);
+                }
+
                 foreach (TQ1 __tq1 in __order.__tq1)
                 {
                     var __tmp_tq = new motTimeQtysRecord("Add", __auto_truncate);
@@ -1174,15 +1254,16 @@ namespace HL7Proxy
             var __next_of_kin = string.Format("Next Of Kin\n");
             var __allergies = string.Format("Patient Allergies\n");
             var __diagnosis = string.Format("Patient Diagnosis\n");
-            var __event_code = "A01";
             var __problem_segment = string.Empty;
 
-            __message_type = "ADT";
+            SendingApp = __args.__sa;
 
             var __HL7xml = new HL7toXDocumentParser.Parser();
             var xDoc = __HL7xml.Parse(__args.__raw_data);
-
             ADT_A01 ADT = new ADT_A01(xDoc);
+
+            __message_type = "ADT";
+            __event_code = "A01";
 
             try
             {
@@ -1196,7 +1277,6 @@ namespace HL7Proxy
                 foreach(DG1 __dg1 in ADT.__dg1) { __recs.__pr.DxNotes   += __process_DG1(__recs, __dg1); }
 
                 __recs.Write(new motSocket(__target_ip, __target_port));
-
             }
             catch (Exception e)
             {
@@ -1209,37 +1289,41 @@ namespace HL7Proxy
         {
             //__update_event_ui("Received ADT_A12 Event");
 
-            var __records = new RecordBundle(__auto_truncate);
+            var __recs = new RecordBundle(__auto_truncate);
+            var __time_qty = string.Empty;
+            var __tmp = string.Empty;
+            var __next_of_kin = string.Format("Next Of Kin\n");
+            var __allergies = string.Format("Patient Allergies\n");
+            var __diagnosis = string.Format("Patient Diagnosis\n");
+            var __problem_segment = string.Empty;
 
-            string __time_qty = string.Empty;
-            string __problem_segment = string.Empty;
-
-            __message_type = "ADT";
+            SendingApp = __args.__sa;
 
             var __HL7xml = new HL7toXDocumentParser.Parser();
             var xDoc = __HL7xml.Parse(__args.__raw_data);
+            ADT_A01 ADT = new ADT_A01(xDoc);
+
+            __message_type = "ADT";
+            __event_code = "A12";
 
             try
             {
-                foreach (Dictionary<string, string> __fields in __args.fields)
-                {
-                    foreach (KeyValuePair<string, string> __pair in __fields)
-                    {
-                        switch (__pair.Key)
-                        {
-                            default:
-                                break;
-                        }
-                    }
-                }
+                __process_PID(__recs, ADT.__pid);
+                __process_PV1(__recs, ADT.__pv1);
+                __process_PV2(__recs, ADT.__pv2);
+                __process_PD1(__recs, ADT.__pd1);
+
+                foreach (OBX __obx in ADT.__obx) { __process_OBX(__recs, __obx); }
+                foreach (AL1 __al1 in ADT.__al1) { __recs.__pr.Allergies += __process_AL1(__recs, __al1); }
+                foreach (DG1 __dg1 in ADT.__dg1) { __recs.__pr.DxNotes += __process_DG1(__recs, __dg1); }
+
+                __recs.Write(new motSocket(__target_ip, __target_port));
             }
             catch (Exception e)
             {
                 __show_error_event(string.Format("ADT_A12 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
                 throw;
             }
-
-            // Write records ...
         }
         void __process_OMP_O09_Event(Object sender, HL7Event7MessageArgs __args)
         {
@@ -1247,13 +1331,17 @@ namespace HL7Proxy
             var __time_qty = string.Empty;
             var __dose_time_qty = string.Empty;
             var __tmp = string.Empty;
+
+            SendingApp = __args.__sa;
+
             var __HL7xml = new HL7toXDocumentParser.Parser();
             var xDoc = __HL7xml.Parse(__args.__raw_data);
             var OMP = new OMP_O09(xDoc);
 
             motSocket __p;
 
-            __message_type = "OMP^O09";
+            __message_type = "OMP";
+            __event_code = "O09";
 
             try // Process the Patient
             {
@@ -1281,7 +1369,6 @@ namespace HL7Proxy
             }
 
         }
-
         // Drug Order       MSH, [ PID, [PV1] ], { ORC, [RXO, {RXR}, RXE, [{NTE}], {TQ1}, {RXR}, [{RXC}] }, [ZPI]
         // Literal Order    MSH, PID, [PV1], ORC, [TQ1], [RXE], [ZAS]
         // TODO:  CHeck the Framework SPec for where the order types live
@@ -1291,13 +1378,17 @@ namespace HL7Proxy
             var __time_qty = string.Empty;
             var __dose_time_qty = string.Empty;
             var __tmp = string.Empty;
+
+            SendingApp = __args.__sa;
+
             var __HL7xml = new HL7toXDocumentParser.Parser();
             var xDoc = __HL7xml.Parse(__args.__raw_data);
             var RDE = new RDE_O11(xDoc);
 
             motSocket __p;
 
-            __message_type = "RDE^O11";
+            __message_type = "RDE";
+            __event_code = "O11";
 
             try // Process the Patient
             {
@@ -1324,7 +1415,6 @@ namespace HL7Proxy
                 throw;
             }
         }
-
         void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
         {
             var __recs = new RecordBundle(__auto_truncate);
@@ -1332,12 +1422,16 @@ namespace HL7Proxy
             var __dose_time_qty = string.Empty;
             var __tmp = string.Empty;
             var __HL7xml = new HL7toXDocumentParser.Parser();
+
+            SendingApp = __args.__sa;
+
             var xDoc = __HL7xml.Parse(__args.__raw_data);
             var RDS = new RDS_O13(xDoc);
 
             motSocket __p;
 
-            __message_type = "RDS^O13";
+            __message_type = "RDS";
+            __event_code = "O13";
 
             try // Process the Patient
             {

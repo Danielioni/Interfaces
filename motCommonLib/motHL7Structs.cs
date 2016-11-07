@@ -119,7 +119,7 @@ namespace motCommonLib
                 {
                     string __tmp_tagname = __tagname;
 
-                    __tagname = __tagname + "-" + __minor.ToString();
+                    __tagname = __tagname + "." + __minor.ToString();
                     __sub_parse(__tagname, __field, __field[__gotone], __message_data, __minor); // recurse
 
                     __tagname = __tmp_tagname;
@@ -127,7 +127,7 @@ namespace motCommonLib
                     continue;
                 }
 
-                __message_data.Add(__tagname + "-" + __minor.ToString(), __field.TrimStart(' ').TrimEnd(' '));
+                __message_data.Add(__tagname + "." + __minor.ToString(), __field.TrimStart(' ').TrimEnd(' '));
                 __minor++;
             }
 
@@ -165,14 +165,14 @@ namespace motCommonLib
                 {
                     if (__major < 3)
                     {
-                        __message_data.Add("MSH-1", "|");
-                        __message_data.Add("MSH-2", @"^~\&");
+                        __message_data.Add("MSH.1", "|");
+                        __message_data.Add("MSH.2", @"^~\&");
                         __major = 3;
                         continue;
                     }
                 }
 
-                __message_data.Add(__tagname + "-" + __major.ToString(), __field);
+                __message_data.Add(__tagname + "." + __major.ToString(), __field);
 
                 if (__field != @"^~\&")
                 {
@@ -187,7 +187,7 @@ namespace motCommonLib
 
                             foreach (string __split in __tilde_split)
                             {
-                                __tagname = __tagname + "-" + __major.ToString();
+                                __tagname = __tagname + "." + __major.ToString();
                                 __sub_parse(__tagname, __split, __split[__field.IndexOfAny(__local_delimiters)], __message_data, __minor);
                                 __tagname = "~" + __tmp_field_name;
                                 __tmp_field_name = __tagname;  // Add '~', 1 for each iteration.  We'll decode them later
@@ -195,7 +195,7 @@ namespace motCommonLib
                         }
                         else
                         {
-                            __tagname = __tagname + "-" + __major.ToString();
+                            __tagname = __tagname + "." + __major.ToString();
 
                             // Wait for it so we don't loose the overall seque
                             bool __success = __sub_parse(__tagname, __field, __field[__gotone], __message_data, __minor);
@@ -222,12 +222,40 @@ namespace motCommonLib
 
         public string Get(string __key)
         {
-            string __result = (from elem in __data.Descendants(__key) select elem.Value).FirstOrDefault();
-            if(__result == null)
+            if (string.IsNullOrEmpty(__key))
             {
-                __result = string.Empty;
+                return string.Empty;
             }
 
+            string __result;
+
+            __result = (from elem in __data.Descendants(__key) select elem.Value).FirstOrDefault();
+
+            if (string.IsNullOrEmpty(__result))
+            {
+                if (__key.Substring(__key.Length - 2, 2) == ".1")
+                {
+                    // Try without the .1 first,  if its empty, try the full key
+                    __result = (from elem in __data.Descendants(__key.Substring(0, __key.Length - 2)) select elem.Value).FirstOrDefault();
+                    if (!string.IsNullOrEmpty(__result))
+                    {
+                        return __result;
+                    }
+                }                
+            }
+
+            return __result;
+        }
+
+        public List<string> GetList(string __key)
+        {
+            if (string.IsNullOrEmpty(__key))
+            {
+                return null;
+            }
+
+            var __result = (from elem in __data.Descendants(__key) select elem.Value).ToList();
+                      
             return __result;
         }
 
@@ -441,17 +469,6 @@ namespace motCommonLib
                         __patient.__pd1 = new PD1(__xe);
                         break;
 
-                    case "PRT":
-                        if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
-                        {
-                            __patient.__prt.Add(new PRT(__xe));
-                        }
-                        else
-                        {
-                            __current_order.__prt.Add(new PRT(__xe));
-                        }
-                        break;
-
                     case "IN1":
                         __patient.__in1 = new IN1(__xe);
                         break;
@@ -491,6 +508,19 @@ namespace motCommonLib
                         __current_order = new Order();
                         __current_order.__orc = new ORC(__xe);
                         __last_significant_item = "ORC";
+                        break;
+
+                    case "PRT":
+
+                        if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
+                        {
+                            __patient.__prt.Add(new PRT(__xe));
+                        }
+                        else
+                        {
+                            __current_order.__prt.Add(new PRT(__xe));
+                        }
+
                         break;
 
                     case "ZAS":
@@ -584,21 +614,12 @@ namespace motCommonLib
 
         public bool Empty()
         {
-            /*
-            if (__orc.__msg_data.Count == 0 &&
-                __rxo.__msg_data.Count == 0 &&
-                __rxe.__msg_data.Count == 0 &&
-                __rxr.Count == 0 &&
-                __nte.Count == 0 &&
-                __tq1.Count == 0 &&
-                __rxc.Count == 0 &&
-                __prt.Count == 0 &&
-                __ft1.Count == 0 &&
-                __obx.Count == 0)
+            
+            if (__orc == null )
             {
                 return true;
             }
-            */
+            
             return false;
         }
     }
@@ -745,6 +766,7 @@ namespace motCommonLib
                         break;
 
                     case "PRT":
+                        
                         if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
                         {
                             __patient.__prt.Add(new PRT(__xe));
@@ -753,6 +775,7 @@ namespace motCommonLib
                         {
                             __current_order.__prt.Add(new PRT(__xe));
                         }
+                        
                         break;
 
                     case "IN1":
@@ -896,6 +919,7 @@ namespace motCommonLib
                         break;
 
                     case "PRT":
+                        
                         if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
                         {
                             __patient.__prt.Add(new PRT(__xe));
@@ -904,6 +928,7 @@ namespace motCommonLib
                         {
                             __current_order.__prt.Add(new PRT(__xe));
                         }
+                        
                         break;
 
                     case "IN1":
@@ -1189,7 +1214,7 @@ namespace motCommonLib
     public class MSA : HL7_Element_Base
     {
         HL7MessageParser __parser = new HL7MessageParser();
-
+    
         private void __load()
         {
         }
@@ -1200,6 +1225,7 @@ namespace motCommonLib
         public MSA(XElement __xe) : base(__xe)
         {
         }
+      
         public MSA(string __message) : base()
         {
             __load();
@@ -1209,6 +1235,7 @@ namespace motCommonLib
     public class MSH : HL7_Element_Base
     {
         HL7MessageParser __parser = new HL7MessageParser();
+        bool __parsed_list = false;
 
         private void __load()
         {
@@ -1217,15 +1244,29 @@ namespace motCommonLib
         {
             __load();
         }
-
+        public new string Get(string __key)
+        {
+            if (__parsed_list)
+            {
+                string __tmp = string.Empty;
+                __msg_data.TryGetValue(__key, out __tmp);
+                return __tmp;
+            }
+            else
+            {
+                return base.Get(__key);
+            }
+        }
         public MSH(XElement __xe) : base(__xe)
         {
+            __parsed_list = false;
             __data = new XDocument(__xe);
         }
         public MSH(string __message)
         {
             __load();
             __parser.__parse(__message, __msg_data);
+            __parsed_list = true;
 
             //
             // Wierdness - In MSH-9 there can be 2 or 3 items for example |ADT^AO1| or |RDE^O11^RDE_O11|. It looks like if there
@@ -1233,9 +1274,9 @@ namespace motCommonLib
             //             and if there's a 3, it will overwrite it.
             string __tmp = string.Empty;
 
-            if (!__msg_data.TryGetValue("MSH-9-3", out __tmp))
+            if (!__msg_data.TryGetValue("MSH.9.3", out __tmp))
             {
-                __msg_data.Add("MSH-9-3", __msg_data["MSH-9-1"] + "_" + __msg_data["MSH-9-2"]);
+                __msg_data.Add("MSH.9.3", __msg_data["MSH.9.1"] + "_" + __msg_data["MSH.9.2"]);
             }
         }
 
@@ -1759,41 +1800,41 @@ namespace motCommonLib
 
             string __time_stamp = DateTime.Now.ToString("yyyyMMddhh");
 
-            __tmp_msh.__msg_data["MSH-5"] = __tmp_msh.__msg_data["MSH-3"];
-            __tmp_msh.__msg_data["MSH-6"] = __tmp_msh.__msg_data["MSH-4"];
+            __tmp_msh.__msg_data["MSH.5"] = __tmp_msh.__msg_data["MSH.3"];
+            __tmp_msh.__msg_data["MSH.6"] = __tmp_msh.__msg_data["MSH.4"];
 
-            __tmp_msh.__msg_data["MSH-3"] = __proc;
-            __tmp_msh.__msg_data["MSH-4"] = __org;
+            __tmp_msh.__msg_data["MSH.3"] = __proc;
+            __tmp_msh.__msg_data["MSH.4"] = __org;
 
             __ack_string = '\x0B' +
                            @"MSH|^~\&|" +
-                           __tmp_msh.__msg_data["MSH-3"] + "|" +
-                           __tmp_msh.__msg_data["MSH-4"] + "|" +
-                           __tmp_msh.__msg_data["MSH-5"] + "|" +
-                           __tmp_msh.__msg_data["MSH-6"] + "|" +
+                           __tmp_msh.__msg_data["MSH.3"] + "|" +
+                           __tmp_msh.__msg_data["MSH.4"] + "|" +
+                           __tmp_msh.__msg_data["MSH.5"] + "|" +
+                           __tmp_msh.__msg_data["MSH.6"] + "|" +
                            __time_stamp + "||ACK^" +
-                           __tmp_msh.__msg_data["MSH-9-2"] + "|" +
-                           __tmp_msh.__msg_data["MSH-10"] + "|" +
-                           __tmp_msh.__msg_data["MSH-11"] + "|" +
-                           __tmp_msh.__msg_data["MSH-12"] + "|" +
+                           __tmp_msh.__msg_data["MSH.9.2"] + "|" +
+                           __tmp_msh.__msg_data["MSH.10"] + "|" +
+                           __tmp_msh.__msg_data["MSH.11"] + "|" +
+                           __tmp_msh.__msg_data["MSH.12"] + "|" +
                            "\r" +
                            @"MSA|AA|" +
-                           __tmp_msh.__msg_data["MSH-10"] + "|" +
+                           __tmp_msh.__msg_data["MSH.10"] + "|" +
                            '\x1C' +
                            '\x0D';
 
             __clean_ack_string = @"MSH | ^~\& | " +
-                           __tmp_msh.__msg_data["MSH-3"] + " | " +
-                           __tmp_msh.__msg_data["MSH-4"] + " | " +
-                           __tmp_msh.__msg_data["MSH-5"] + " | " +
-                           __tmp_msh.__msg_data["MSH-6"] + " | " +
+                           __tmp_msh.__msg_data["MSH.3"] + " | " +
+                           __tmp_msh.__msg_data["MSH.4"] + " | " +
+                           __tmp_msh.__msg_data["MSH.5"] + " | " +
+                           __tmp_msh.__msg_data["MSH.6"] + " | " +
                            __time_stamp + "|| ACK^" +
-                           __tmp_msh.__msg_data["MSH-9-2"] + " | " +
-                           __tmp_msh.__msg_data["MSH-10"] + " | " +
-                           __tmp_msh.__msg_data["MSH-11"] + " | " +
-                           __tmp_msh.__msg_data["MSH-12"] + " | " +
+                           __tmp_msh.__msg_data["MSH.9.2"] + " | " +
+                           __tmp_msh.__msg_data["MSH.10"] + " | " +
+                           __tmp_msh.__msg_data["MSH.11"] + " | " +
+                           __tmp_msh.__msg_data["MSH.12"] + " | " +
                            "\n\tMSA | AA | " +
-                           __tmp_msh.__msg_data["MSH-10"] + "|\n";
+                           __tmp_msh.__msg_data["MSH.10"] + "|\n";
         }
 
         public ACK(MSH __msh)
@@ -1834,42 +1875,42 @@ namespace motCommonLib
             MSH __tmp_msh = __msh;
             string __time_stamp = DateTime.Now.ToString("yyyyMMddhh");
 
-            __tmp_msh.__msg_data["MSH-5"] = __tmp_msh.__msg_data["MSH-3"];
-            __tmp_msh.__msg_data["MSH-6"] = __tmp_msh.__msg_data["MSH-4"];
-            __tmp_msh.__msg_data["MSH-3"] = __proc;
-            __tmp_msh.__msg_data["MSH-4"] = __org;
+            __tmp_msh.__msg_data["MSH.5"] = __tmp_msh.__msg_data["MSH.3"];
+            __tmp_msh.__msg_data["MSH.6"] = __tmp_msh.__msg_data["MSH.4"];
+            __tmp_msh.__msg_data["MSH.3"] = __proc;
+            __tmp_msh.__msg_data["MSH.4"] = __org;
 
             __nak_string = '\x0B' +
                            @"MSH|^~\&|" +
-                           __tmp_msh.__msg_data["MSH-3"] + "|" +
-                           __tmp_msh.__msg_data["MSH-4"] + "|" +
-                           __tmp_msh.__msg_data["MSH-5"] + "|" +
-                           __tmp_msh.__msg_data["MSH-6"] + "|" +
+                           __tmp_msh.__msg_data["MSH.3"] + "|" +
+                           __tmp_msh.__msg_data["MSH.4"] + "|" +
+                           __tmp_msh.__msg_data["MSH.5"] + "|" +
+                           __tmp_msh.__msg_data["MSH.6"] + "|" +
                            __time_stamp + "||NAK^" +
-                           __tmp_msh.__msg_data["MSH-9-2"] + "|" +
-                           __tmp_msh.__msg_data["MSH-10"] + "|" +
-                           __tmp_msh.__msg_data["MSH-11"] + "|" +
-                           __tmp_msh.__msg_data["MSH-12"] + "|" +
+                           __tmp_msh.__msg_data["MSH.9.2"] + "|" +
+                           __tmp_msh.__msg_data["MSH.10"] + "|" +
+                           __tmp_msh.__msg_data["MSH.11"] + "|" +
+                           __tmp_msh.__msg_data["MSH.12"] + "|" +
                            "\r" +
                            @"MSA|" +
                            __error_code + "|" +
-                           __tmp_msh.__msg_data["MSH-10"] + "|" +
+                           __tmp_msh.__msg_data["MSH.10"] + "|" +
                            '\x1C' +
                            '\x0D';
 
             __clean_nak_string = @"MSH | ^~\& |" +
-                           __tmp_msh.__msg_data["MSH-3"] + " | " +
-                           __tmp_msh.__msg_data["MSH-4"] + " | " +
-                           __tmp_msh.__msg_data["MSH-5"] + " | " +
-                           __tmp_msh.__msg_data["MSH-6"] + " | " +
+                           __tmp_msh.__msg_data["MSH.3"] + " | " +
+                           __tmp_msh.__msg_data["MSH.4"] + " | " +
+                           __tmp_msh.__msg_data["MSH.5"] + " | " +
+                           __tmp_msh.__msg_data["MSH.6"] + " | " +
                            __time_stamp + "| | NAK^" +
-                           __tmp_msh.__msg_data["MSH-9-2"] + " | " +
-                           __tmp_msh.__msg_data["MSH-10"] + " | " +
-                           __tmp_msh.__msg_data["MSH-11"] + " | " +
-                           __tmp_msh.__msg_data["MSH-12"] + " | " +
+                           __tmp_msh.__msg_data["MSH.9.2"] + " | " +
+                           __tmp_msh.__msg_data["MSH.10"] + " | " +
+                           __tmp_msh.__msg_data["MSH.11"] + " | " +
+                           __tmp_msh.__msg_data["MSH.12"] + " | " +
                            "\n\tMSA | " +
                            __error_code + "| " +
-                           __tmp_msh.__msg_data["MSH-10"] + " |\n";
+                           __tmp_msh.__msg_data["MSH.10"] + " |\n";
         }
 
         public NAK(MSH __msh, string __error_code)
