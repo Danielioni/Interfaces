@@ -96,6 +96,12 @@
   <ItemGroup>
     <Content Include="MOT.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HL7toXML\HL7toXDocumentParser\HL7toXDocumentParser.csproj">
+      <Project>{7c0dc366-5746-4fc0-8960-66a97e4c85ff}</Project>
+      <Name>HL7toXDocumentParser</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

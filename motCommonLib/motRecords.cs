@@ -388,6 +388,7 @@ namespace motCommonLib
 
                 // Push it to the port
                 p.write(__record);
+                p.write("<EOF>");
 
                 __logger.Info(__record);
             }
@@ -1170,7 +1171,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value.ToUpper(), "State");
+                setField(__qualifiedTags, value?.ToUpper(), "State");
             }
         }
         public string PostalCode
@@ -2823,7 +2824,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value.ToUpper(), "State");
+                setField(__qualifiedTags, value?.ToUpper(), "State");
             }
         }
         public string PostalCode

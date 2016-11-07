@@ -28,17 +28,30 @@ using System.IO;
 using System.Threading;
 using NLog;
 
+
 namespace motInboundLib
 {
     using motCommonLib;
 
+    public enum SendingApplication
+    {
+        FrameworkLTE,
+        Epic,
+        QS1,
+        QuickMAR,
+        RX30,
+        Unknown
+    };
+
     public class HL7Event7MessageArgs : EventArgs
     {
-        public List<Dictionary<string, string>> fields { get; set; }
-        public Dictionary<string, string> descriptions { get; set; }
+        //public List<Dictionary<string, string>> fields { get; set; }
+        //public Dictionary<string, string> descriptions { get; set; }
         public DateTime timestamp { get; set; }
-        public List<Order> __order_list { get; set; }
-        public Patient __patient { get; set; }
+        //public List<Order> __order_list { get; set; }
+        //public Patient __patient { get; set; }
+        public string __raw_data;
+        public SendingApplication __sa { get; set; }
     }
 
     public delegate void ADT_A01EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
@@ -86,6 +99,8 @@ namespace motInboundLib
         public UpdateUIErrorHandler UpdateErrorUI;
         private UIupdateArgs __ui_args = new UIupdateArgs();
 
+        public SendingApplication SendingApp { get; set; } = SendingApplication.Unknown;
+
         public void __parse_message(string __data)
         {
             HL7Event7MessageArgs __args = new HL7Event7MessageArgs();
@@ -108,7 +123,21 @@ namespace motInboundLib
                 __segments = __data.Split('\r');
                 __resp = new MSH(__segments[0]);
                 __ui_args.__msh_in = __segments[0];
-              
+
+              switch(__resp.Get("MSH.3").ToLower())                  
+              {
+                    case "frameworkltc":
+                        SendingApp = SendingApplication.FrameworkLTE;
+                        break;
+
+                    case "epic":
+                        SendingApp = SendingApplication.Epic;
+                        break;
+
+                    default:
+                        SendingApp = SendingApplication.Unknown;
+                        break;
+              }
             }
             catch
             {
@@ -138,51 +167,41 @@ namespace motInboundLib
             try
             {
                 // Figure out what kind of message it is              
-                switch (__resp.__msg_data["MSH-9-3"])
+                switch (__resp.Get("MSH.9.3"))
                 {
                     case "RDE_O11":
                         __ui_args.__event_message = "RDE_011 Message Event";
 
-                        RDE_O11 __rde_o11 = new RDE_O11(__data);
-                        __message_data = __rde_o11.__message_store;
-                        __args.fields = __message_data;
-                        __args.__order_list = __rde_o11.__orders;
-                        __args.__patient = __rde_o11.__patient;
+                        __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
+                        __args.__sa = SendingApp;
                         RDE_O11MessageEventReceived(this, __args);
                         break;
 
                     case "OMP_O09":
                         __ui_args.__event_message = "OMP_O09 Message Event";
 
-                        OMP_O09 __omp_o09 = new OMP_O09(__data);
-                        __message_data = __omp_o09.__message_store;
-                        __args.fields = __message_data;
-                        __args.__patient = __omp_o09.__patient;
-                        __args.__order_list = __omp_o09.__orders;
+                        __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
+                        __args.__sa = SendingApp;
                         OMP_O09MessageEventReceived(this, __args);
                         break;
 
                     case "RDS_O13":
                         __ui_args.__event_message = "RDS_013 Message Event";
 
-                        RDS_O13 __rds_o13 = new RDS_O13(__data);
-                        __message_data = __rds_o13.__message_store;
-                        __args.fields = __message_data;
-                        __args.__order_list = __rds_o13.__orders;
-                        __args.__patient = __rds_o13.__patient;
+                        __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
+                        __args.__sa = SendingApp;
                         RDS_O13MessageEventReceived(this, __args);
                         break;
 
                     case "ADT_A01":
                         __ui_args.__event_message = "ADT_A01 Message Event";
 
-                        ADT_A01 __adt_a01 = new ADT_A01(__data);
-                        __message_data = __adt_a01.__message_store;
-                        __args.fields = __message_data;
                         __args.timestamp = DateTime.Now;
+                        __args.__raw_data = __data;
+                        __args.__sa = SendingApp;
                         ADT_A01MessageEventReceived(this, __args);
                         break;
                 }
@@ -243,7 +262,7 @@ namespace motInboundLib
             try
             {
                 __socket.close();
-                __worker.Join();
+                //__worker.Join();
             }
             catch(Exception ex)
             {
