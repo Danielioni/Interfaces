@@ -216,3 +216,4 @@ ModelManifest.xml
 *.pfx
 *.crt
 
+/HL7toXDocumentParser/
