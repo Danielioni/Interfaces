@@ -155,7 +155,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredDataProxy", "Stru
 		{CA048B94-057E-4F73-B60D-4F79096E46C9} = {CA048B94-057E-4F73-B60D-4F79096E46C9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HL7toXDocumentParser", "..\HL7toXML\HL7toXDocumentParser\HL7toXDocumentParser.csproj", "{7C0DC366-5746-4FC0-8960-66A97E4C85FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HL7toXDocumentParser", "HL7toXDocumentParser\HL7toXDocumentParser.csproj", "{7C0DC366-5746-4FC0-8960-66A97E4C85FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
