@@ -1184,9 +1184,12 @@ namespace motCommonLib
 
             set
             {
-                while (value.Contains("-"))
+                if (value != null)
                 {
-                    value = value.Remove(value.IndexOf("-"), 1);
+                    while ((bool)value?.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
                 }
 
                 setField(__qualifiedTags, value, "Zip");
@@ -1203,9 +1206,12 @@ namespace motCommonLib
 
             set
             {
-                while (value.Contains("-"))
+                if (value != null)
                 {
-                    value = value.Remove(value.IndexOf("-"), 1);
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
                 }
 
                 setField(__qualifiedTags, value, "Zip");
@@ -1624,6 +1630,14 @@ namespace motCommonLib
 
             set
             {
+                if (value != null)
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+                }
+
                 setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
@@ -1637,6 +1651,14 @@ namespace motCommonLib
 
             set
             {
+                if (value != null)
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+                }
+
                 setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
@@ -2061,9 +2083,9 @@ namespace motCommonLib
 
             set
             {
-                if (value.ToUpper() != "F" && value.ToUpper() != "M")
+                if (value?.ToUpper() != "F" && value?.ToUpper() != "M")
                 {
-                    throw new Exception("Gender  M or F'");
+                   value = "U";
                 }
 
                 setField(__qualifiedTags, value, "Gender");
@@ -2837,6 +2859,14 @@ namespace motCommonLib
 
             set
             {
+                if (value != null)
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+                }
+
                 setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
@@ -2850,6 +2880,14 @@ namespace motCommonLib
 
             set
             {
+                if (value != null)
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+                }
+
                 setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }
@@ -3152,6 +3190,14 @@ namespace motCommonLib
 
             set
             {
+                if (value != null)
+                {
+                    while (value.Contains("-"))
+                    {
+                        value = value.Remove(value.IndexOf("-"), 1);
+                    }
+                }
+
                 setField(__qualifiedTags, __normalize_string(value), "Zip");
             }
         }

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml.Linq;
 using motCommonLib;
 using motInboundLib;
+using HL7toXDocumentParser;
 
 namespace motHL7Tests
 {
@@ -37,8 +38,10 @@ namespace motHL7Tests
         [TestMethod]
         public void testPID()
         {
+            /*
             var __pid = new PID(@"PID|1|JS567002|MQNH\F\567675||Smith^Jeremy^A^^^^D||19860103000000|F|||100 Some Street^Apt #10^Pittsburgh^PA^15215||(412)781-0001|||||MR0000004|111-22-3333|||||||||||N|||||||||");
             __pid = new PID(@"PID|||PATID1234^5^M11||JONES^WILLIAM^A^III||19610615|M-||2106-3|1200 N ELM STREET^^GREENSBORO^NC^27401-1020|GL|(919)379-1212|(919)271-3434~(919)277-3114||S||PATID12345001^2^M10|123456789|9-87654^NC");
+            */
         }
 
         [TestMethod]
@@ -57,8 +60,21 @@ namespace motHL7Tests
         [TestMethod]
         public void testAL1()
         {
-            var __al1 = new AL1(@"AL1|1||^PENICILLIN||PRODUCES HIVES~RASH");
-            __al1 = new AL1(@"AL1|2||^CAT DANDER~FLEAS~HAIR~FUR||Produces SNEEZING~RASH~EYE WATERING~EAR PAIN");
+            /*
+            var __HL7xml = new HL7toXDocumentParser.Parser(); 
+            var xDoc = __HL7xml.Parse(@"AL1|1||^PENICILLIN||PRODUCES HIVES~RASH");
+
+            var xElement = xDoc.Root;
+            var __al1 = new AL1(xElement);
+
+            // var __al1 = new AL1(@"AL1|1||^PENICILLIN||PRODUCES HIVES~RASH");
+
+            xDoc = __HL7xml.Parse(@"AL1|2||^CAT DANDER~FLEAS~HAIR~FUR||Produces SNEEZING~RASH~EYE WATERING~EAR PAIN");
+            xElement = xDoc.Root;
+            __al1 = new AL1(xElement);
+
+            //__al1 = new AL1(@"AL1|2||^CAT DANDER~FLEAS~HAIR~FUR||Produces SNEEZING~RASH~EYE WATERING~EAR PAIN");
+            */
         }
     }
 }

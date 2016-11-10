@@ -35,7 +35,7 @@ namespace motRecordTests
     public class __vars
     {
         protected string __gateway_address = "localhost";
-        protected int __port_number = 24041;
+        protected int __port_number = 24049;
         protected motSocket p;
 
         public __vars()
@@ -251,9 +251,9 @@ namespace motRecordTests
                 p = new motSocket(__gateway_address, __port_number);
                 r = new motDrugRecord("Add");
             }
-            catch
+            catch(Exception ex)
             {
-                Assert.Fail("Record construction failure - can't continue");
+                Assert.Fail("Record construction failure {0} - can't continue", ex.Message);
                 return;
             }
 
@@ -421,7 +421,177 @@ namespace motRecordTests
                 Assert.Fail("Exception handler not called for missing required items");
             }
         }
+        [TestMethod]
+        public void testPatientRecord()
+        {
+            motPatientRecord Patient;
 
+            try
+            {
+                p = new motSocket(__gateway_address, __port_number);
+                Patient = new motPatientRecord("Add");
+            }
+            catch
+            {
+                Assert.Fail("Failed to construct Patient Record -- Can't Continue");
+                return;
+            }
+
+            try
+            {
+                // Assign all the values and write
+                Patient.RxSys_PatID = null;
+                Patient.LastName = null;
+                Patient.MiddleInitial = null;
+                Patient.FirstName = null;
+                Patient.Address1 = null;
+                Patient.Address2 = null;
+                Patient.City = null;
+                Patient.PostalCode = null;
+                Patient.Phone1 = null;
+                Patient.Phone2 = null;
+                Patient.WorkPhone = null;
+                Patient.Room = null;
+
+                Patient.Comments = null;
+                Patient.Allergies = null;
+                Patient.Diet = null;
+                Patient.DxNotes = null;
+                Patient.TreatmentNotes = null;
+                Patient.ResponisbleName = null;
+
+                Patient.DOB = null;
+                Patient.Height = 0;
+                Patient.Weight = 0;
+
+                Patient.InsName = null;
+                Patient.AltInsName = null;
+                Patient.InsPNo = null;
+                Patient.AltInsPNo = null;
+                Patient.MedicareNum = null;
+                Patient.MedicaidNum = null;
+
+                Patient.CycleDate = null;
+                Patient.CycleDays = 0;
+                Patient.CycleType = 0;
+
+                Patient.Status = 0;
+                Patient.SSN = null;
+
+                Patient.AdmitDate = null;
+                Patient.ChartOnly = null;
+                Patient.Gender = null;
+
+                Patient.RxSys_PatID = null;
+                Patient.RxSys_LocID = null;
+                Patient.RxSys_PrimaryDoc = null;
+                Patient.RxSys_LastDoc = null;
+                Patient.RxSys_AltDoc = null;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                Assert.Fail("Failed null assignment test in Patient Record -- Can't Continue {0}", ex.StackTrace);
+                return;
+            }
+        }
+        [TestMethod]
+        public void testPrescriberRecord()
+        {
+            motPrescriberRecord Doc;
+
+            try
+            {
+                p = new motSocket(__gateway_address, __port_number);
+                Doc = new motPrescriberRecord("Add");
+            }
+            catch
+            {
+                Assert.Fail("Failed to construct Prescriber Record -- Can't Continue");
+                return;
+            }
+
+            try
+            {
+                Doc.RxSys_DocID = null;
+                Doc.LastName = null;
+                Doc.FirstName = null;
+                Doc.MiddleInitial = null;
+                Doc.Address1 = null;
+                Doc.Address2 = null;
+                Doc.City = null;
+                Doc.State = null;
+                Doc.PostalCode = null;
+                Doc.Phone = null;
+                Doc.Comments = null;
+                Doc.DEA_ID = null;
+                Doc.TPID = null;
+                Doc.Specialty = 0;
+                Doc.Fax = null;
+                Doc.PagerInfo = null;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                Assert.Fail("Failed null assignment test in Prescriber Record -- Can't Continue {0}", ex.StackTrace);
+                return;
+            }
+
+        }
+        [TestMethod]
+        public void testScripRecord()
+        {
+            motPrescriptionRecord Scrip;
+
+            try
+            {
+                p = new motSocket(__gateway_address, __port_number);
+                Scrip = new motPrescriptionRecord("Add");
+            }
+            catch
+            {
+                Assert.Fail("Failed to construct Prescription Record -- Can't Continue");
+                return;
+            }
+
+            try
+            {
+                Scrip.RxSys_PatID = null;
+                Scrip.RxSys_RxNum = null;
+                Scrip.RxSys_DrugID = null;
+                Scrip.RxSys_DocID = null;
+                Scrip.Sig = null;
+                Scrip.Comments = null;
+
+                Scrip.MDOMStart = null;
+                Scrip.QtyPerDose = null;
+                Scrip.QtyDispensed = null;
+
+                Scrip.Status = null;
+                Scrip.DoW = null;
+
+                Scrip.RxStartDate = null;
+                Scrip.RxStopDate = null;
+                Scrip.DiscontinueDate = null;
+
+                Scrip.DoseScheduleName = null;
+                Scrip.Isolate = null;
+
+                Scrip.SpecialDoses = null;
+                Scrip.DoseTimesQtys = null;
+
+                Scrip.ChartOnly = null;
+                Scrip.Refills = null;
+                Scrip.RxType = null;
+                Scrip.AnchorDate = null;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                Assert.Fail("Failed null assignment test in Prescription Record -- Can't Continue {0}", ex.StackTrace);
+                return;
+            }
+        }
         [TestMethod]
         public void testStoreRecord()
         {
@@ -455,13 +625,15 @@ namespace motRecordTests
             }
             catch(Exception ex)
             {
-                if(ex.Message.Contains("REJECTED") == false)
+                Console.WriteLine(ex.StackTrace);
+
+                if (ex.Message.Contains("REJECTED") == false)
                 {
-                   Assert.Fail("Null initialization threw Exception: {0}", ex.Message); 
+                   Assert.Fail("Null initialization threw Exception: {0}", ex.StackTrace); 
                 }
                 else
                 {
-                    Console.WriteLine("Message from null init: {0}", ex.Message);
+                    Console.WriteLine("Message from null init: {0}", ex.StackTrace);
                 }
             }
 
@@ -570,7 +742,7 @@ namespace motRecordTests
             }
             catch(Exception ex)
             {
-                Assert.Fail("General Tests Failed: {0}", ex.Message);
+                Assert.Fail("General Tests Failed: {0}", ex.StackTrace);
                 __failed = true;
             }
           
@@ -584,6 +756,64 @@ namespace motRecordTests
             {
                 Assert.Fail("Delete record reported failure: {0}", ex.Message);
             } 
+        }
+        [TestMethod]
+        public void testLocationRecord()
+        {
+            try
+            {
+                var Loc = new motLocationRecord("Add");
+                Loc.RxSys_StoreID = null;
+                Loc.RxSys_LocID = null;
+                Loc.LocationName = null;
+                Loc.Address1 = null;
+                Loc.Address2 = null;
+                Loc.City = null;
+                Loc.State = null;
+                Loc.Zip = null;
+                Loc.Phone = null;
+                Loc.Comments = null;
+                Loc.CycleDays = 0;
+                Loc.CycleType = 0;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+
+                if (ex.Message.Contains("REJECTED") == false)
+                {
+                    Assert.Fail("Location record Null initialization threw Exception: {0}", ex.StackTrace);
+                }
+                else
+                {
+                    Console.WriteLine("Message from Location Record null init: {0}", ex.StackTrace);
+                }
+            }
+        }
+        [TestMethod]
+        public void testTQRecord()
+        {
+            try
+            {
+                var TQ = new motTimeQtysRecord("Add");
+                TQ.RxSys_LocID = null;
+                TQ.DoseScheduleName = null;
+                TQ.DoseTimesQtys = null;
+            }
+            catch(Exception ex)
+            {
+
+                Console.WriteLine(ex.StackTrace);
+
+                if (ex.Message.Contains("REJECTED") == false)
+                {
+                    Assert.Fail("TQ record Null initialization threw Exception: {0}", ex.StackTrace);
+                }
+                else
+                {
+                    Console.WriteLine("Message from TQ Record null init: {0}", ex.StackTrace);
+                }
+            }
         }
     }
 }
