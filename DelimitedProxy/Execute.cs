@@ -91,6 +91,20 @@ namespace DelimitedProxy
             
         }
 
+        private bool __delimited_protocol_processor(byte[] __buffer)
+        {
+            try
+            {
+                // just pass along the response
+                __listener.write_return(__buffer);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         //string __test_prescriber = "AP\xEE LastName\xEE FirstName\xEE MiddleInitial\xEE Address1\xEE Address2\xEE City\xEE State\xEE Zip\xEE Phone\xEE Comments\xEE DEA_ID\xEE TPID\xEE Speciality\xEE Fax\xEE PagerInfo\xEERxSysDoc1\xEE 1025143\xE2 AP\xEEpLastName\xEEpFirstName\xEEpMiddleInitial\xEEpAddress1\xEEpAddress2\xEEpCity\xEEpState\xEEpZip\xEEPhone\xEEpComments\xEEpDEA_ID\xEEpTPID\xEEpSpeciality\xEEpFax\xEEpPagerInfo\xEERxSysDoc2\xEE 1972834\xE2";
 
         public void __start_up(ExecuteArgs __args)
@@ -105,8 +119,7 @@ namespace DelimitedProxy
                 int __lp = Convert.ToInt32(__args.__listen_port);
                 __listener = new motSocket(__lp, __parse);
                 __listener.__b_stream_processor = __clean_buffer;
-                //__listener.__log_level = LogLevel.Info;
-               
+                __listener.__b_protocol_processor = __delimited_protocol_processor;
 
                 // This will start the listener and call the callback 
                 __worker = new Thread(new ThreadStart(__listener.listen));

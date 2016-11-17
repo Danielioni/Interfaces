@@ -243,16 +243,24 @@ namespace HL7Proxy
             //  E (Every x Days)    Q#D e.g. Q2D is every 2nd s
             //  M (Monthly)         QL#,#,... e.g. QL3 QL1,15 QL1,5,10,20
 
-            string __date = __tq1.Get("TQ1.7.1")?.Substring(0, 8);
+            string __date;
+            int __start_dow;
+            DateTime __dt;
 
-            int __start_year = Convert.ToInt32(__date.Substring(0, 4));
-            int __start_month = Convert.ToInt32(__date.Substring(4, 2));
-            int __start_day = Convert.ToInt32(__date.Substring(6, 2));
+            if (__tq1.Get("TQ1.7.1").Length >= 8)
+            {
+                __date = __tq1.Get("TQ1.7.1")?.Substring(0, 8);
 
-            DateTime __dt = new DateTime(__start_year, __start_month, __start_day);
-            int __start_dow = (int)__dt.DayOfWeek;  // Ordinal First DoW == 0 == Sunday
+                int __start_year = Convert.ToInt32(__date.Substring(0, 4));
+                int __start_month = Convert.ToInt32(__date.Substring(4, 2));
+                int __start_day = Convert.ToInt32(__date.Substring(6, 2));
 
-            __pr.RxStartDate = __tq1.Get("TQ1.7.1")?.Substring(0, 8);
+                __dt = new DateTime(__start_year, __start_month, __start_day);
+                __start_dow = (int)__dt.DayOfWeek;  // Ordinal First DoW == 0 == Sunday
+
+                __pr.RxStartDate = __tq1.Get("TQ1.7.1")?.Substring(0, 8);
+            }
+
             __pattern = __tq1.Get("TQ1.3.1");
 
             //__pr.DoseScheduleName = __pattern;
@@ -345,6 +353,12 @@ namespace HL7Proxy
                 __pattern = __pattern.Substring(2);
                 string[] __days = __pattern.Split(__toks);
 
+                __pr.DoseScheduleName = "QL";            // => This is a key part.  The DosScheduleName has to be unique in MOTALL 
+                foreach (string __d in __days)
+                {
+                    __pr.DoseScheduleName += __d;
+                }
+
                 if (__global_month == null)
                 {
                     __global_month = new string[35];
@@ -361,7 +375,7 @@ namespace HL7Proxy
                     __global_month[Convert.ToInt16(__d) - 1] = string.Format("{0:00.00}", Convert.ToDouble(__tq1.Get("TQ1.2.1") == null ? "0" : __tq1.Get("TQ1.2.1")));
                 }
 
-                // __pr.RxType = "20";  // Not Supported -- Reported by PCHS 20160822, they "suggest" trying 18
+                //__pr.RxType = "20";  // Not Supported in Legacy -- Reported by PCHS 20160822, they "suggest" trying 18
                 __pr.RxType = "18";
 
                 i = 1;
@@ -390,9 +404,9 @@ namespace HL7Proxy
                 // will support the full range of operations.
                 ///
 
-                __pr.DoseScheduleName = "QLX";            // => This is the key part.  The DosScheduleName has to exist on MOTALL 
+                
                 __pr.SpecialDoses = __global_month[0];
-                __pr.DoseTimesQtys = string.Format("{0}{1:00.00}", __tq1.Get("TQ1.4"), Convert.ToDouble(__tq1.Get("TQ1.2.1") == null ? "0" : __tq1.Get("TQ1.2.1")));
+                __pr.DoseTimesQtys = string.Format("{0}{1:00.00}", __tq1.Get("TQ1.4.1"), __tq1.Get("TQ1.2.1") == null ? 00.00 : Convert.ToDouble(__tq1.Get("TQ1.2.1")));
 
                 if (__logging)
                 {
@@ -679,7 +693,12 @@ namespace HL7Proxy
             {
                 __recs.__pr.DOB = __pid.Get("PID.7.1")?.Substring(0, 8);  // Remove the timestamp
             }
-            __recs.__pr.Gender = __pid.Get("PID.8.1")?.Substring(0, 1);
+
+            if (!string.IsNullOrEmpty(__pid.Get("PID.8.1")))
+            {
+                __recs.__pr.Gender = __pid.Get("PID.8.1")?.Substring(0, 1);
+            }
+
             __recs.__pr.Address1 = __pid.Get("PID.11.1"); // In a PID Segment this is always an XAD structure
             __recs.__pr.Address2 = __pid.Get("PID.11.2");
             __recs.__pr.City = __pid.Get("PID.11.3");

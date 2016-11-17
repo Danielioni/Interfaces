@@ -282,10 +282,17 @@ namespace motCommonLib
         }
 
         private static bool __default_protocol_processor(byte[] __buffer)
-        {
-            return __buffer[0] != '0';
+        {           
+            return __buffer.Length > 0;
         }
-
+        public void write_return(byte[] __data)
+        {
+            __stream.Write(__data, 0, __data.Length);
+        }
+        public void write_return(string __data)
+        {
+            __stream.Write(Encoding.UTF8.GetBytes(__data), 0, __data.Length);
+        }
         public bool write(string __data)
         {
             try
@@ -307,8 +314,6 @@ namespace motCommonLib
                 __logger.Error("write() failed: {0}", ex.Message);
                 throw new Exception("write() failed: " + ex.Message);
             }
-
-            return false;
         }
 
         public bool write(byte[] __data)
@@ -328,8 +333,6 @@ namespace motCommonLib
                 __logger.Error("write() failed: {0}", ex.Message);
                 throw new Exception("write() failed: " + ex.Message);
             }
-
-            return false;
         }
 
         public bool send(byte[] __data)

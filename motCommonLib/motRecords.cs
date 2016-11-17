@@ -112,7 +112,67 @@ namespace motCommonLib
             __field.Clear();
         }
     }
+    public class motWriteQueue
+    {
+        
+        private List<KeyValuePair<string, string>> __records { get; set; } = null;
+        public motWriteQueue()
+        {
+            __records = new List<KeyValuePair<string, string>>();
+        }
+        ~motWriteQueue()
+        {
+            if(__records != null)
+            {
+                __records.Clear();
+            }
+        }
 
+        private int compare(KeyValuePair<string,string> a, KeyValuePair<string, string> b)
+        {
+            return string.Compare(a.Key, b.Key);
+        }
+        public void Add(string __type, string __record)
+        {
+            if(string.IsNullOrEmpty(__type) || string.IsNullOrEmpty(__record))
+            {
+                throw new ArgumentNullException("motQueue.Add NULL argument");
+            }
+
+            __records.Add(new KeyValuePair<string,string>(__type, __record));
+            __records.Sort(compare); 
+        }
+        public void Write(motSocket __socket)
+        {
+            if(__socket == null)
+            {
+                throw new ArgumentNullException("motQueue Null Socket Argument");
+            }
+
+            try
+            {
+                // Push it to the port
+                foreach (KeyValuePair<string,string> __record in __records)
+                {
+                    __socket.write(__record.Value);
+                }
+
+                __socket.write("<EOF/>");
+
+                // Flush
+                __records.Clear();
+                
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Failed to write queue: " + ex.StackTrace);
+            }
+        }
+        public void Clear()
+        {
+            __records.Clear();
+        }
+    }
 
     /// <summary>
     /// Basic list processing and rules for record creation - base class for all records
@@ -123,12 +183,83 @@ namespace motCommonLib
         protected string    __tableAction;
         protected Logger    __logger = LogManager.GetLogger("motCommonLib.Record");
         protected motSocket __default = null;
-        public bool         __log_records { get; set; } = false;
-        public bool        __auto_truncate { get; set; } = false;
+
+
+        public bool __log_records { get; set; } = false;
+        public bool __auto_truncate { get; set; } = false;
         public bool __strong_validation { get; set; } = true;
+
+        // External Ordered Queue
+        public bool __queue_writes { get; set; } = false;
+        public motWriteQueue __write_queue { get; set; } = null;
+        public void AddToQueue(string __type, List<Field> __qualifiedTags)
+        {
+            if (__write_queue== null)
+            {
+                __logger.Error("Null Queue");
+                throw new ArgumentNullException("Invalid Queue");
+            }
+
+            if (__qualifiedTags == null)
+            {
+                __logger.Error("Null parameters to base.Write()");
+                throw new ArgumentNullException("Bad Tag List");
+            }
+
+            string __record = "<Record>";
+
+            try
+            {
+                checkDependencies(__qualifiedTags);
+
+                for (int i = 0; i < __qualifiedTags.Count; i++)
+                {
+                    // Qualify field requirement
+                    // if required and when == action && is_blank -> throw
+
+                    __record += "<" + __qualifiedTags[i].tagName + ">" +
+                                      __qualifiedTags[i].tagData + "</" +
+                                      __qualifiedTags[i].tagName + ">";
+                }
+
+                __record += "</Record>";
+                __write_queue.Add(__type, __record);
+                
+            }
+            catch (Exception ex)
+            {
+                __logger.Error("Add To Queue: {0)\n{1}", ex.Message, __record);
+                throw;
+            }
+        }
+        public void WriteQueue(motSocket p)
+        {
+            try
+            {
+                if (__write_queue == null)
+                {
+                    throw new ArgumentNullException("Invalid Queue");
+                }
+
+                __write_queue.Write(p);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public void Commit(motSocket p)
+        {
+            WriteQueue(p);
+        }
 
         protected string __normalize_date(string __date)
         {
+            if(string.IsNullOrEmpty(__date))
+            {
+                throw new ArgumentNullException("Invalid Date Argument");
+            }
             string[] __date_patterns =  // Hope I got them all
                 {
                 "yyyyMMdd",
@@ -182,6 +313,11 @@ namespace motCommonLib
         }
         protected string __normalize_string(string __val)
         {
+            if(string.IsNullOrEmpty(__val))
+            {
+                return string.Empty;
+            }
+
             char[] __junk = { '-', '.', ',', ' ', ';', ':', '(', ')' };
 
             while (__val?.IndexOfAny(__junk) > -1)
@@ -231,7 +367,6 @@ namespace motCommonLib
 
             return __id;
         }
-
         public void checkDependencies(List<Field> __qualifiedTags)
         {
             //
@@ -286,8 +421,12 @@ namespace motCommonLib
 
             __qualifiedTags[0].tagData = __type;
             __qualifiedTags[1].tagData = __action;
-        }
 
+            if(__write_queue != null)
+            {
+                __write_queue.Clear();
+            }
+        }
         protected bool setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
             string __log_data = string.Empty;
@@ -398,7 +537,7 @@ namespace motCommonLib
                 throw;
             }
         }
-        public void Write(motSocket p, List<Field> __qualifiedTags)
+        protected void Write(motSocket p, List<Field> __qualifiedTags)
         {
             try
             {
@@ -420,7 +559,7 @@ namespace motCommonLib
                 Console.Write("Failed to write {0} to port.  Error {1}", __text, e.Message);
             }
         }
-        public void Write(List<Field> __tags)
+        private void Write(List<Field> __tags)
         {
             try
             {
@@ -432,7 +571,7 @@ namespace motCommonLib
                 throw;
             }
         }
-        public void Write(string __str)
+        private void Write(string __str)
         {
             try
             {
@@ -534,7 +673,7 @@ namespace motCommonLib
     }
 
     /// <summary>
-    ///  Drug Record - Drug info with processing rules in a few places
+    ///  Drug Record (Key == E)
     /// </summary>
     public class motDrugRecord : motRecordBase
     {
@@ -627,11 +766,60 @@ namespace motCommonLib
             }
         }
 
+        
+
+        public void AddToQueue()
+        {
+            AddToQueue("E", __qualifiedTags);
+        }
+        public void Write(motSocket p, bool __log_on = false)
+        {
+            try
+            {
+                if (__queue_writes)
+                {
+                    AddToQueue();
+                }
+                else
+                {
+                    Write(p, __qualifiedTags, __log_on);
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Drug record: {0}", e.Message);
+                __logger.Error(__error);
+                Console.Write(__error);
+
+                throw;
+            }
+        }
         public void Clear()
         {
             base.Clear(__qualifiedTags);
         }
-
+        public void setField(string __fieldname, string __val)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public void setField(string __fieldname, string __val, bool __override)
+        {
+            try
+            {
+                base.setField(__qualifiedTags, __val, __fieldname, __override);
+            }
+            catch
+            {
+                throw;
+            }
+        }
         public string RxSys_DrugID
         {
             get
@@ -896,65 +1084,10 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "GenericFor", false);
             }
         }
-
-        public void setField(string __fieldname, string __val)
-        {
-            try
-            {
-                base.setField(__qualifiedTags, __val, __fieldname);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-        public void setField(string __fieldname, string __val, bool __override)
-        {
-            try
-            {
-                base.setField(__qualifiedTags, __val, __fieldname, __override);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public void Write(motSocket p)
-        {
-            try
-            {
-                Write(p, __qualifiedTags);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Drug record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-
-        public void Write(motSocket p, bool __log_on)
-        {
-            try
-            {
-                Write(p, __qualifiedTags, __log_on);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Drug record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
     }
 
     /// <summary>
-    /// Prescriber Record - Practitioners who are licensed to write scrips with field level processing rules where appropriate
+    /// Prescriber Record (Key == C)
     /// </summary>
 
     public class motPrescriberRecord : motRecordBase
@@ -1049,6 +1182,36 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue()
+        {
+            AddToQueue("C", __qualifiedTags);
+        }
+        public void Write(motSocket p, bool __log_on = false)
+        {
+            try
+            {
+                if (__queue_writes)
+                {
+                    AddToQueue();
+                }
+                else
+                {
+                    Write(p, __qualifiedTags, __log_on);
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Prescriber record: {0}", e.Message);
+                __logger.Error(__error);
+                Console.Write(__error);
+
+                throw;
+            }
+        }
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
         public void readDatabaseRecord(motDatabase __db, Query __query)
         {
             if (__db == null || __query == null)
@@ -1064,12 +1227,6 @@ namespace motCommonLib
                 throw;
             }
         }
-
-        public void Clear()
-        {
-            base.Clear(__qualifiedTags);
-        }
-
         public string RxSys_DocID
         {
             get
@@ -1171,7 +1328,10 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value?.ToUpper(), "State");
+                if (!string.IsNullOrEmpty(value))
+                {
+                    setField(__qualifiedTags, value?.ToUpper(), "State");
+                }
             }
         }
         public string PostalCode
@@ -1184,7 +1344,7 @@ namespace motCommonLib
 
             set
             {
-                if (value != null)
+                if (!string.IsNullOrEmpty(value))
                 {
                     while ((bool)value?.Contains("-"))
                     {
@@ -1206,7 +1366,7 @@ namespace motCommonLib
 
             set
             {
-                if (value != null)
+                if (!string.IsNullOrEmpty(value))
                 {
                     while (value.Contains("-"))
                     {
@@ -1326,40 +1486,10 @@ namespace motCommonLib
                 f.tagData += "\nIM: " + value;
             }
         }
-        public void Write(motSocket p, bool __log_on)
-        {
-            try
-            {
-                base.Write(p, __qualifiedTags, __log_on);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Prescriber record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write(motSocket p)
-        {
-            try
-            {
-               base.Write(p, __qualifiedTags);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Prescriber record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
     }
 
     /// <summary>
-    /// Patient Record - The folks getting the meds with field level processing rules where appropriate
+    /// Patient Record (Key == D)
     /// </summary>
     public class motPatientRecord : motRecordBase
     {
@@ -1477,11 +1607,36 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue()
+        {
+            AddToQueue("D", __qualifiedTags);
+        }
+        public void Write(motSocket p, bool __log_on = false)
+        {
+            try
+            {
+                if (__queue_writes)
+                {
+                    AddToQueue();
+                }
+                else
+                {
+                    Write(p, __qualifiedTags, __log_on);
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Patient record: {0}", e.Message);
+                __logger.Error(__error);
+                Console.Write(__error);
+
+                throw;
+            }
+        }
         public void Clear()
         {
             base.Clear(__qualifiedTags);
         }
-
         public void readDatabaseRecord(motDatabase __db, Query __query)
         {
             if (__db == null || __query == null)
@@ -1617,7 +1772,10 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value.ToUpper(), "State");
+                if (!string.IsNullOrEmpty(value))
+                {
+                    setField(__qualifiedTags, value?.ToUpper(), "State");
+                }
             }
         }
         public string PostalCode
@@ -1630,7 +1788,7 @@ namespace motCommonLib
 
             set
             {
-                if (value != null)
+                if (!string.IsNullOrEmpty(value))
                 {
                     while (value.Contains("-"))
                     {
@@ -1651,7 +1809,7 @@ namespace motCommonLib
 
             set
             {
-                if (value != null)
+                if (!string.IsNullOrEmpty(value))
                 {
                     while (value.Contains("-"))
                     {
@@ -2083,12 +2241,15 @@ namespace motCommonLib
 
             set
             {
-                if (value?.ToUpper() != "F" && value?.ToUpper() != "M")
+                if (!string.IsNullOrEmpty(value))
                 {
-                   value = "U";
-                }
+                    if (value?.ToUpper() != "F" && value?.ToUpper() != "M")
+                    {
+                        value = "U";
+                    }
 
-                setField(__qualifiedTags, value, "Gender");
+                    setField(__qualifiedTags, value, "Gender");
+                }
             }
         }
         public string Email
@@ -2107,44 +2268,10 @@ namespace motCommonLib
                 f.tagData += string.Format("\nIM: {0}\n", value);
             }
         }
-        public void Write(motSocket p, bool __log_on)
-        {
-            try
-            {
-                Write(p, __qualifiedTags, __log_on);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Patient record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write(motSocket p)
-        {
-            try
-            {
-                Write(p, __qualifiedTags);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Patient record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write()
-        {
-            base.Write(__qualifiedTags);
-        }
     }
 
     /// <summary>
-    /// Prescription Record - The actual Scrip
+    /// Prescription Record  (Key == G)
     /// </summary>
     public class motPrescriptionRecord : motRecordBase
     {
@@ -2262,25 +2389,35 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue()
+        {
+            AddToQueue("G", __qualifiedTags);
+        }
+        public void Write(motSocket p, bool __log_on = false)
+        {
+            try
+            {
+                if (__queue_writes)
+                {
+                    AddToQueue();
+                }
+                else
+                {
+                    Write(p, __qualifiedTags, __log_on);
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Prescription record: {0}", e.Message);
+                __logger.Error(__error);
+                Console.Write(__error);
 
+                throw;
+            }
+        }
         public void Clear()
         {
             base.Clear(__qualifiedTags);
-        }
-
-        public string RxSys_RxNum
-        {
-            get
-            {
-                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_rxnum")));
-                return f.tagData;
-            }
-
-            set
-            {
-
-                setField(__qualifiedTags, value, "RxSys_RxNum");
-            }
         }
         public void readDatabaseRecord(motDatabase __db, Query __query)
         {
@@ -2295,6 +2432,20 @@ namespace motCommonLib
             catch
             {
                 throw;
+            }
+        }
+        public string RxSys_RxNum
+        {
+            get
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("rxsys_rxnum")));
+                return f.tagData;
+            }
+
+            set
+            {
+
+                setField(__qualifiedTags, value, "RxSys_RxNum");
             }
         }
         public string RxSys_PatID
@@ -2597,44 +2748,10 @@ namespace motCommonLib
                 setField(__qualifiedTags, __normalize_date(value), "AnchorDate");
             }
         }
-        public void Write(motSocket p, bool __log_on)
-        {
-            try
-            {
-                Write(p, __qualifiedTags, __log_on);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Prescription record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write(motSocket p)
-        {
-            try
-            {
-                Write(p, __qualifiedTags);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Prescription record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write()
-        {
-            base.Write(__qualifiedTags);
-        }
     }
 
     /// <summary>
-    /// Location/Facility Record - Not to be confused with the Store record
+    /// Location/Facility Record (Key == B)
     /// </summary>
     public class motLocationRecord : motRecordBase
     {
@@ -2723,6 +2840,36 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue()
+        {
+            AddToQueue("B", __qualifiedTags);
+        }
+        public void Write(motSocket p, bool __log_on = false)
+        {
+            try
+            {
+                if (__queue_writes)
+                {
+                    AddToQueue();
+                }
+                else
+                {
+                    Write(p, __qualifiedTags, __log_on);
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Location record: {0}", e.Message);
+                __logger.Error(__error);
+                Console.Write(__error);
+
+                throw;
+            }
+        }
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
         public void readDatabaseRecord(motDatabase __db, Query __query)
         {
             if (__db == null || __query == null)
@@ -2737,12 +2884,7 @@ namespace motCommonLib
             {
                 throw;
             }
-        }
-
-        public void Clear()
-        {
-            base.Clear(__qualifiedTags);
-        }
+        }        
 
         public string RxSys_LocID
         {
@@ -2846,7 +2988,10 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value?.ToUpper(), "State");
+                if (!string.IsNullOrEmpty(value))
+                {
+                    setField(__qualifiedTags, value?.ToUpper(), "State");
+                }
             }
         }
         public string PostalCode
@@ -2859,7 +3004,7 @@ namespace motCommonLib
 
             set
             {
-                if (value != null)
+                if (!string.IsNullOrEmpty(value))
                 {
                     while (value.Contains("-"))
                     {
@@ -2880,7 +3025,7 @@ namespace motCommonLib
 
             set
             {
-                if (value != null)
+                if (!string.IsNullOrEmpty(value))
                 {
                     while (value.Contains("-"))
                     {
@@ -2954,46 +3099,11 @@ namespace motCommonLib
 
                 setField(__qualifiedTags, Convert.ToString(value), "CycleType");
             }
-
-        }
-        public void Write(motSocket p, bool __log_on)
-        {
-            try
-            {
-                Write(p, __qualifiedTags, __log_on);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Location record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write(motSocket p)
-        {
-            try
-            {
-                Write(p, __qualifiedTags);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Location record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write()
-        {
-            base.Write(__qualifiedTags);
         }
     }
 
     /// <summary>
-    /// Store Record
+    /// Store Record (Key == A)
     /// </summary>
     public class motStoreRecord : motRecordBase
     {
@@ -3081,6 +3191,36 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue()
+        {
+            AddToQueue("A", __qualifiedTags);
+        }
+        public void Write(motSocket p, bool __log_on = false)
+        {
+            try
+            {
+                if (__queue_writes)
+                {
+                    AddToQueue();
+                }
+                else
+                {
+                    Write(p, __qualifiedTags, __log_on);
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write Store record: {0}", e.Message);
+                __logger.Error(__error);
+                Console.Write(__error);
+
+                throw;
+            }
+        }
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
         public void readDatabaseRecord(motDatabase __db, Query __query)
         {
             if (__db == null || __query == null)
@@ -3096,12 +3236,6 @@ namespace motCommonLib
                 throw;
             }
         }
-
-        public void Clear()
-        {
-            base.Clear(__qualifiedTags);
-        }
-
         public string RxSys_StoreID
         {
             get
@@ -3177,7 +3311,10 @@ namespace motCommonLib
             }
             set
             {
-                setField(__qualifiedTags, value?.ToUpper(), "State");
+                if (!string.IsNullOrEmpty(value))
+                {
+                    setField(__qualifiedTags, value?.ToUpper(), "State");
+                }
             }
         }
         public string Zip
@@ -3190,7 +3327,7 @@ namespace motCommonLib
 
             set
             {
-                if (value != null)
+                if (!string.IsNullOrEmpty(value))
                 {
                     while (value.Contains("-"))
                     {
@@ -3240,44 +3377,30 @@ namespace motCommonLib
                 setField(__qualifiedTags, __validate_dea_number(value), "DEANum");
             }
         }
-        public void Write(motSocket p, bool __log_on)
-        {
-            try
-            {
-                Write(p, __qualifiedTags, __log_on);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write Store record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
+        
 
-                throw;
-            }
-        }
-        public void Write(motSocket p)
+        public string WebSite
         {
-            try
+            set
             {
-                Write(p, __qualifiedTags);
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
+                f.tagData += string.Format("\nWebsite: {0}\n", value);
             }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to creawritete Store record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
+            
+        }
 
-                throw;
-            }
-        }
-        public void Write()
+        public string Email
         {
-            base.Write(__qualifiedTags);
+            set
+            {
+                Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
+                f.tagData += string.Format("\nEmail: {0}\n", value);
+            }
         }
     }
 
     /// <summary>
-    /// TimeQtys Record
+    /// TimeQtys Record  (Key == F)
     /// </summary>
     public class motTimeQtysRecord : motRecordBase
     {
@@ -3359,6 +3482,36 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue()
+        {
+            AddToQueue("F", __qualifiedTags);
+        }
+        public void Write(motSocket p, bool __log_on = false)
+        {
+            try
+            {
+                if (__queue_writes)
+                {
+                    AddToQueue();
+                }
+                else
+                {
+                    Write(p, __qualifiedTags, __log_on);
+                }
+            }
+            catch (Exception e)
+            {
+                string __error = string.Format("Failed to write TQ record: {0}", e.Message);
+                __logger.Error(__error);
+                Console.Write(__error);
+
+                throw;
+            }
+        }
+        public void Clear()
+        {
+            base.Clear(__qualifiedTags);
+        }
         public void readDatabaseRecord(motDatabase __db, Query __query)
         {
             if (__db == null || __query == null)
@@ -3374,12 +3527,6 @@ namespace motCommonLib
                 throw;
             }
         }
-
-        public void Clear()
-        {
-            base.Clear(__qualifiedTags);
-        }
-
         public string RxSys_LocID
         {
             get
@@ -3418,40 +3565,6 @@ namespace motCommonLib
             {
                 setField(__qualifiedTags, value, "DoseTimesQtys");
             }
-        }
-        public void Write(motSocket p, bool __log_on)
-        {
-            try
-            {
-                Write(p, __qualifiedTags, __log_on);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write TimeQtys record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write(motSocket p)
-        {
-            try
-            {
-                Write(p, __qualifiedTags);
-            }
-            catch (Exception e)
-            {
-                string __error = string.Format("Failed to write TimeQtys record: {0}", e.Message);
-                __logger.Error(__error);
-                Console.Write(__error);
-
-                throw;
-            }
-        }
-        public void Write()
-        {
-            base.Write(__qualifiedTags);
         }
     }
 }

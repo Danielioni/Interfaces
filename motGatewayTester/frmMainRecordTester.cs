@@ -21,11 +21,11 @@ namespace motGatewayTester
 
     public delegate void __update_event_box_handler(Object __sender, UIupdateArgs __args);
     public delegate void __update_error_box_handler(Object __sender, UIupdateArgs __args);
+    
 
     public partial class frmMainRecordTester : Form
     {
-        Logger __logger;
-
+        public Logger __logger;
         public static Execute __execute { get; set; }
 
         motErrorlLevel __error_level = motErrorlLevel.Error;
@@ -38,8 +38,8 @@ namespace motGatewayTester
         {
             InitializeComponent();
 
-            __logger = LogManager.GetLogger("motProxyUI.Main");
-            __logger.Info("MOT Proxy UI Starting Up");
+            __logger = LogManager.GetLogger("GatewayTester.Main");
+            __logger.Info("MOT Gateway Tester Starting Up");
 
             // Start the fun
             __execute = new Execute();
@@ -163,7 +163,7 @@ namespace motGatewayTester
         {
             rtbEvents.BeginInvoke(new Action(() =>
             {
-                rtbEvents.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                rtbEvents.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__message));
             }));
         }
 
@@ -171,7 +171,8 @@ namespace motGatewayTester
         {
             rtbErrors.BeginInvoke(new Action(() =>
             {
-                rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                rtbErrors.Text = rtbErrors.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                
             }));
 
             __log_len++;

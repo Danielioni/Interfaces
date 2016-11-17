@@ -157,7 +157,8 @@ namespace DelimitedProxy
         {
             rtbEvents.BeginInvoke(new Action(() =>
             {
-                rtbEvents.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                //rtbEvents.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                rtbEvents.Text = rtbEvents.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__message));
             }));
         }
 
@@ -165,7 +166,9 @@ namespace DelimitedProxy
         {
             rtbErrors.BeginInvoke(new Action(() =>
             {
-                rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                //rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                rtbErrors.Text = rtbErrors.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__message));
+                __log_len++;
 
                 if (__log_len > __max_log_len)
                 {
@@ -173,7 +176,94 @@ namespace DelimitedProxy
                 }
             }));
         }
+        #region PopupExpansionWindows 
+        private void rtbEvents_TextChanged(object sender, EventArgs e)
+        {
+            if (frmEvents != null)
+            {
+                rtEvents.Text = rtbEvents.Text;
+            }
+        }
 
+        // ---------------------------------------------------------------
+        Form frmEvents;
+        RichTextBox rtEvents;
+
+        private void frmEvents_Resize(object sender, EventArgs e)
+        {
+            rtEvents.Height = ActiveForm.Height;
+            rtEvents.Width = ActiveForm.Width;
+        }
+
+        private void rtbEvents_DoubleClick(object sender, EventArgs e)
+        {
+            // Figure out which line we're on, get the data stamp and find it in the error window
+            frmEvents = new Form();
+            frmEvents.Icon = ActiveForm.Icon;
+
+            frmEvents.Resize += new EventHandler(frmEvents_Resize);
+
+            rtEvents = new RichTextBox();
+            rtEvents.Font = new Font("Lucida Console", 7.8F);
+
+            frmEvents.Size = ActiveForm.Size;
+            frmEvents.Location = ActiveForm.Location;
+            frmEvents.Text = "System Events";
+
+            rtEvents.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            rtEvents.AutoSize = true;
+            rtEvents.Text = rtbEvents.Text;
+            rtEvents.Height = ActiveForm.Height;
+            rtEvents.Width = ActiveForm.Width;
+
+            frmEvents.Controls.Add(rtEvents);
+            frmEvents.Show();
+        }
+
+        //---------------------------------------------------------------------------
+        Form frmErrors;
+        RichTextBox rtErrors;
+
+        private void rtbErrors_TextChanged(object sender, EventArgs e)
+        {
+            if (frmErrors != null)
+            {
+                rtErrors.Text = rtbErrors.Text;
+            }
+        }
+
+        private void frmErrors_Resize(object sender, EventArgs e)
+        {
+            rtErrors.Height = ActiveForm.Height;
+            rtErrors.Width = ActiveForm.Width;
+        }
+
+        private void rtbErrors_DoubleClick(object sender, EventArgs e)
+        {
+            // Figure out which line we're on, get the data stamp and find it in the error window
+            frmErrors = new Form();
+            frmErrors.Icon = ActiveForm.Icon;
+            frmErrors.Resize += new EventHandler(frmErrors_Resize);
+
+            rtErrors = new RichTextBox();
+            rtErrors.Font = new Font("Lucida Console", 7.8F);
+
+            frmErrors.Size = ActiveForm.Size;
+            frmErrors.Location = ActiveForm.Location;
+            frmErrors.Text = "System Errors";
+
+            rtErrors.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            rtErrors.AutoSize = true;
+            rtErrors.Text = rtbErrors.Text;
+            rtErrors.Height = ActiveForm.Height;
+            rtErrors.Width = ActiveForm.Width;
+
+            frmErrors.Controls.Add(rtErrors);
+            frmErrors.Show();
+        }
+
+        //---------------------------------------------------------------
+        #endregion
         private void cmbErrorLevel_SelectedIndexChanged(object sender, EventArgs e)
         {
             __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
@@ -287,9 +377,23 @@ namespace DelimitedProxy
             }
         }
 
+        private void protocolAN_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void protocolBC_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void protocolES_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
-        public class UIupdateArgs : EventArgs
+    public class UIupdateArgs : EventArgs
     {
         public string __message { get; set; }
         public string timestamp { get; set; }

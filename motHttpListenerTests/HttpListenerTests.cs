@@ -63,7 +63,7 @@ namespace motHttpListener
         {
             string _site = "http://localhost:8080";
             string _query = "?test1=justtesting";
-
+            /*
             try
             {
                 using (var client = new HttpClient())
@@ -83,12 +83,14 @@ namespace motHttpListener
             {
                 throw new Exception("An error occured: " + e.Message);
             }
+            */
 
         }
 
         [TestMethod]
         public async Task SendPost()
         {
+            /*
             string _site = "http://localhost:8080";
            
             var comment = "hello world";
@@ -121,6 +123,7 @@ namespace motHttpListener
                 throw new Exception("An error occured: " + e.Message);
             }
 
+        */
         }
     }
 }

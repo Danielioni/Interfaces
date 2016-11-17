@@ -35,13 +35,86 @@ namespace motRecordTests
     public class __vars
     {
         protected string __gateway_address = "localhost";
-        protected int __port_number = 24049;
+        protected int __port_number = 24042;
         protected motSocket p;
 
         public __vars()
         { }
     }
 
+    [TestClass]
+    public class queueIO
+    {
+        [TestMethod]
+        public void loadQueue()
+        {
+            try
+            {
+                
+                var __queue = new motWriteQueue();
+
+                var __doc = new motPrescriberRecord("Add");
+                var __rx = new motPrescriptionRecord("Add");
+                var __tq = new motTimeQtysRecord("Add");
+
+                __doc.__write_queue = __queue;
+                __doc.__queue_writes = true;
+
+                __rx.__write_queue = __queue;
+                __rx.__queue_writes = true;
+
+                __tq.__write_queue = __queue;
+                __tq.__queue_writes = true;
+
+                __doc.RxSys_DocID = "1025";
+                __doc.FirstName = "Queue";
+                __doc.LastName = "Test2";
+                __doc.DEA_ID = "QT-0123456";
+
+                __doc.AddToQueue();
+
+                __rx.RxSys_DocID = "1024";
+                __rx.RxSys_DrugID = "9231";
+                __rx.RxSys_PatID = "FF00";
+                __rx.RxSys_RxNum = "99999";
+                __rx.DoseScheduleName = "newOne";
+                __rx.Refills = "1";
+                __rx.RxStartDate = "9/12/2016";
+                __rx.RxType = "1";
+                __rx.Sig = "Take when told to.";
+                __rx.QtyDispensed = "30";
+
+                __rx.AddToQueue();
+                __rx.Clear();
+
+                __rx.RxSys_DocID = "1025";
+                __rx.RxSys_DrugID = "66775544411";
+                __rx.RxSys_PatID = "FF00";
+                __rx.RxSys_RxNum = "99998";
+                __rx.DoseScheduleName = "newOne2";
+                __rx.Refills = "1";
+                __rx.RxStartDate = "9/14/2016";
+                __rx.RxType = "1";
+                __rx.Sig = "Take when told to.";
+                __rx.QtyDispensed = "90";
+
+                __rx.AddToQueue();
+
+                __tq.RxSys_LocID = "0";
+                __tq.DoseScheduleName = "newOne";
+                __tq.DoseTimesQtys = "080002.00200002.00";
+
+                __tq.AddToQueue();
+
+                __tq.Commit(new motSocket("localhost", 24041));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to use Queue: {0}", ex.StackTrace);
+                Assert.Fail("Queue Failure: {0}", ex.StackTrace);
+            }
+        }
+    }
     [TestClass]
     public class writeMOTFiles
     {

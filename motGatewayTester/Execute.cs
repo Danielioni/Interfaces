@@ -49,9 +49,9 @@ namespace motGatewayTester
         {
             try
             {
+                __logger = LogManager.GetLogger("GatewayTester.Main");
                 __update_event_ui("Proxy Tester Starting Up");
                 __p = new motSocket(__args.__gateway_address, Convert.ToInt32(__args.__gateway_port));
-                //__s = new motSocket(Convert.ToInt32(__args.__listen_port));
                 __update_event_ui(string.Format("Listening on: {0}:{1}, Sending to: {2}:{3}", __args.__listen_address, __args.__listen_port, __args.__gateway_address, __args.__gateway_port));
             }
             catch (Exception e)
@@ -67,9 +67,7 @@ namespace motGatewayTester
         }
      
         public Execute()
-        {
-            __logger = LogManager.GetLogger("motGatewayTester");
-        }
+        { }
 
         ~Execute()
         { }
