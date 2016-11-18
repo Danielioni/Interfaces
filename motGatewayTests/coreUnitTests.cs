@@ -156,7 +156,7 @@ namespace motCommonLib.Test
                 r.LabelCode = null;
                 r.ProductCode = null;
                 r.TradeName = null;
-                r.Strength = 0;
+                r.Strength = "0";
                 r.Unit = null;
                 r.RxOTC = null;
                 r.DoseForm = null;
@@ -178,7 +178,7 @@ namespace motCommonLib.Test
                 r.LabelCode = "Mumble";
                 r.ProductCode = "1234";
                 r.TradeName = "ALPHAFROG@ 120 MG Tablet";
-                r.Strength = 12;
+                r.Strength = "12";
                 r.Unit = "MG";
                 r.RxOTC = "R";
                 r.DoseForm = "Tablet";

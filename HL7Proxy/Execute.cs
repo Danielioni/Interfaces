@@ -165,7 +165,10 @@ namespace HL7Proxy
             public List<motStoreRecord> __store_list;
             public List<motPrescriberRecord> __doc_list;
 
-            public RecordBundle(bool __auto_truncate)
+            private motWriteQueue __write_queue;
+            protected bool __use_queue = true;
+
+            public RecordBundle(bool __auto_truncate = false)
             {
                 __pr = new motPatientRecord("Add", __auto_truncate);
                 __scrip = new motPrescriptionRecord("Add", __auto_truncate);
@@ -177,50 +180,117 @@ namespace HL7Proxy
                 __tq_list = new List<motTimeQtysRecord>();
                 __store_list = new List<motStoreRecord>();
                 __doc_list = new List<motPrescriberRecord>();
+
+                if (__use_queue)
+                {
+                    __write_queue = new motWriteQueue();
+                    __pr.__write_queue =
+                    __scrip.__write_queue =
+                    __loc.__write_queue =
+                    __doc.__write_queue =
+                    __store.__write_queue =
+                    __drug.__write_queue =
+                        __write_queue;
+                }
+
+                __pr.__queue_writes =
+                __scrip.__queue_writes =
+                __loc.__queue_writes =
+                __doc.__queue_writes =
+                __store.__queue_writes =
+                __drug.__queue_writes =
+                    __use_queue;
             }
 
-            public void Write(motSocket __socket)
+            public void Write()
             {
                 try
                 {
-                    foreach(motStoreRecord __store in __store_list)
+                    if (__use_queue)
                     {
+                        foreach (motStoreRecord __store in __store_list)
+                        {
+                           
+                            __store.AddToQueue(__write_queue);
+                        }
+
+                        foreach (motPrescriberRecord __doc in __doc_list)
+                        {                     
+                            __doc.AddToQueue(__write_queue);
+                        }
+
+                        foreach (motTimeQtysRecord __tq in __tq_list)
+                        {
+                            __tq.AddToQueue(__write_queue);
+                        }
+
+                        __loc.AddToQueue();                                         
+                        __pr.AddToQueue();
+                        __drug.AddToQueue();
+                        __scrip.AddToQueue();
+
+                        Clear();
+                    }
+                    /*
+                    else
+                    { 
+                        foreach (motStoreRecord __store in __store_list)
+                        {
+                            __store.Write(__socket);
+                        }
+
                         __store.Write(__socket);
-                    }
+                        __loc.Write(__socket);
 
-                    __store.Write(__socket);
-                    __loc.Write(__socket);
+                        foreach (motPrescriberRecord __doc in __doc_list)
+                        {
+                            __doc.Write(__socket);
+                        }
 
-                    foreach (motPrescriberRecord __doc in __doc_list)
-                    {
                         __doc.Write(__socket);
+                        __pr.Write(__socket);
+                        __drug.Write(__socket);
+
+                        foreach (motTimeQtysRecord __tq in __tq_list)
+                        {
+                            __tq.Write(__socket);
+                        }
+
+                        __scrip.Write(__socket);
                     }
-
-                    __doc.Write(__socket);
-                    __pr.Write(__socket);
-                    __drug.Write(__socket);
-
-                    foreach (motTimeQtysRecord __tq in __tq_list)
-                    {
-                        __tq.Write(__socket);
-                    }
-
-                    __scrip.Write(__socket);
+                    */
                 }
                 catch
                 { throw; }
             }
             public void Clear()
             {
-                __store.Clear();
+                __store_list.Clear();
                 __loc.Clear();
-                __doc.Clear();
+                __doc_list.Clear();
                 __pr.Clear();
                 __drug.Clear();
                 __tq_list.Clear();
                 __scrip.Clear();
+
+                //if (__use_queue)
+                //{
+                //    __write_queue.Clear();
+                //}
             }
-        }
+
+            public void Commit(motSocket __socket)
+            {
+                try
+                {
+                    __write_queue.Write(__socket);
+                }
+                catch(Exception ex)
+                {
+                    throw ex;
+                }
+            }
+    }
 
         public void __clean_up()
         {
@@ -864,7 +934,8 @@ namespace HL7Proxy
             {
                 if (!string.IsNullOrEmpty(__rxe.Get("RXE.25.1")))
                 {
-                    __recs.__drug.Strength = Convert.ToInt32(__rxe.Get("RXE.25.1"));
+                    //__recs.__drug.Strength = Convert.ToInt32(__rxe.Get("RXE.25.1"));
+                    __recs.__drug.Strength = __rxe.Get("RXE.25.1");
                 }
             }
 
@@ -1026,17 +1097,18 @@ namespace HL7Proxy
 
                     foreach (string __entry in __time_entry_list)
                     {
-                        __recs.__scrip.DoseTimesQtys += string.Format("{0}{1:00.00}", __entry, Convert.ToDouble(string.IsNullOrEmpty(__tq1.Get("TQ1.2.1")) ? "0" : __tq1.Get("TQ1.2.1")));
+                        __recs.__scrip.DoseTimesQtys += string.Format("{0}{1:00.00}", __entry.Length > 4 ? __entry.Substring(0,4) : __entry, 
+                                                                                      Convert.ToDouble(string.IsNullOrEmpty(__tq1.Get("TQ1.2.1")) ? "0" : __tq1.Get("TQ1.2.1")));
                     }
                 }
-                else
+                else  // QS/1 sent a time string that broke stuff - 080000. MOT time valuses
                 {
-                    __recs.__scrip.DoseTimesQtys += string.Format("{0}{1:00.00}", __tq1_4, Convert.ToDouble(string.IsNullOrEmpty(__tq1.Get("TQ1.2.1")) ? "0" : __tq1.Get("TQ1.2.1")));
+                    __recs.__scrip.DoseTimesQtys += string.Format("{0}{1:00.00}", __tq1_4.Length > 4 ? __tq1_4.Substring(0, 4) : __tq1_4,
+                                                                                  Convert.ToDouble(string.IsNullOrEmpty(__tq1.Get("TQ1.2.1")) ? "0" : __tq1.Get("TQ1.2.1")));
                 }
 
                 return __recs.__scrip.DoseTimesQtys;
             }
-
 
             __recs.__scrip.QtyPerDose = __tq1.Get("TQ1.2.1");
             return __recs.__scrip.DoseTimesQtys = __dose_time_qty;
@@ -1092,7 +1164,8 @@ namespace HL7Proxy
             __recs.__drug.DrugName = __zfi.Get("ZFI.4");
             __recs.__drug.GenericFor = __zfi.Get("ZFI-4");
             __recs.__drug.DoseForm = __zfi.Get("ZFI.5");
-            __recs.__drug.Strength = Convert.ToInt32(__zfi.Get("ZFI.6") == null ? "0" : __zfi.Get("ZFI.6"));
+            //__recs.__drug.Strength = Convert.ToInt32(__zfi.Get("ZFI.6") == null ? "0" : __zfi.Get("ZFI.6"));
+            __recs.__drug.Strength = __zfi.Get("ZFI.6");
             __recs.__drug.Unit = __zfi.Get("ZFI.7");
             __recs.__drug.NDCNum = __zfi.Get("ZFI.8");
             __recs.__drug.DrugSchedule = Convert.ToInt32(__lookup.__drugSchedules[(__zfi.Get("ZFI.10") == null ? "0": __zfi.Get("ZFI.10"))]);
@@ -1163,7 +1236,6 @@ namespace HL7Proxy
             }
 
             return __tmp;
-
         }
 
         public MSH __g_msh;
@@ -1286,6 +1358,8 @@ namespace HL7Proxy
 
             try
             {
+                var __socket = new motSocket(__target_ip, __target_port);
+
                 __process_PID(__recs, ADT.__pid);
                 __process_PV1(__recs, ADT.__pv1);
                 __process_PV2(__recs, ADT.__pv2);
@@ -1295,7 +1369,9 @@ namespace HL7Proxy
                 foreach(AL1 __al1 in ADT.__al1) { __recs.__pr.Allergies += __process_AL1(__recs, __al1); }
                 foreach(DG1 __dg1 in ADT.__dg1) { __recs.__pr.DxNotes   += __process_DG1(__recs, __dg1); }
 
-                __recs.Write(new motSocket(__target_ip, __target_port));
+                __recs.Write();
+
+                __recs.Commit(__socket);
             }
             catch (Exception e)
             {
@@ -1315,7 +1391,7 @@ namespace HL7Proxy
             var __allergies = string.Format("Patient Allergies\n");
             var __diagnosis = string.Format("Patient Diagnosis\n");
             var __problem_segment = string.Empty;
-
+            
             SendingApp = __args.__sa;
 
             var __HL7xml = new HL7toXDocumentParser.Parser();
@@ -1327,6 +1403,8 @@ namespace HL7Proxy
 
             try
             {
+                var __socket = new motSocket(__target_ip, __target_port);
+
                 __process_PID(__recs, ADT.__pid);
                 __process_PV1(__recs, ADT.__pv1);
                 __process_PV2(__recs, ADT.__pv2);
@@ -1336,7 +1414,8 @@ namespace HL7Proxy
                 foreach (AL1 __al1 in ADT.__al1) { __recs.__pr.Allergies += __process_AL1(__recs, __al1); }
                 foreach (DG1 __dg1 in ADT.__dg1) { __recs.__pr.DxNotes += __process_DG1(__recs, __dg1); }
 
-                __recs.Write(new motSocket(__target_ip, __target_port));
+                __recs.Write();
+                __recs.Commit(__socket);
             }
             catch (Exception e)
             {
@@ -1357,7 +1436,7 @@ namespace HL7Proxy
             var xDoc = __HL7xml.Parse(__args.__raw_data);
             var OMP = new OMP_O09(xDoc);
 
-            motSocket __p;
+            motSocket __socket;
 
             __message_type = "OMP";
             __event_code = "O09";
@@ -1367,18 +1446,18 @@ namespace HL7Proxy
                 __process_Header(OMP.__header, __recs);
                 __process_Patient(OMP.__patient, __recs);
 
-                __p = new motSocket(__target_ip, __target_port);
-                __recs.__pr.Write(__p);
+                __socket = new motSocket(__target_ip, __target_port);
+                __recs.__pr.Write(__socket);
 
                 __recs.__pr.setField("Action", "Change");
 
                 foreach (Order __order in OMP.__orders)
                 {
                     __process_Order(__order, __recs);
-                    __recs.Write(__p);
-
-                    __recs.__tq_list.Clear();
+                    __recs.Write();
                 }
+
+                __recs.Commit(__socket);
             }
             catch (Exception ex)
             {
@@ -1404,28 +1483,26 @@ namespace HL7Proxy
             var xDoc = __HL7xml.Parse(__args.__raw_data);
             var RDE = new RDE_O11(xDoc);
 
-            motSocket __p;
-
             __message_type = "RDE";
             __event_code = "O11";
 
             try // Process the Patient
             {
+                var __socket = new motSocket(__target_ip, __target_port);
+
                 __process_Header(RDE.__header, __recs);
                 __process_Patient(RDE.__patient, __recs);
-             
-                __p = new motSocket(__target_ip, __target_port);
-                __recs.__pr.Write(__p);
+                __recs.__pr.Write(__socket);
 
-                __recs.__pr.setField("Action", "Change");
+                //__recs.__pr.setField("Action", "Change");
 
                 foreach (Order __order in RDE.__orders)
                 {
                     __process_Order(__order, __recs);
-                    __recs.Write(__p);
-
-                    __recs.__tq_list.Clear();
+                    __recs.Write();
                 }
+
+                __recs.Commit(__socket);
             }
             catch (Exception ex)
             {
@@ -1447,28 +1524,26 @@ namespace HL7Proxy
             var xDoc = __HL7xml.Parse(__args.__raw_data);
             var RDS = new RDS_O13(xDoc);
 
-            motSocket __p;
-
             __message_type = "RDS";
             __event_code = "O13";
 
             try // Process the Patient
             {
-                __process_Header(RDS.__header, __recs);
-                __process_Patient(RDS.__patient, __recs);
+                 var __socket = new motSocket(__target_ip, __target_port);
 
-                __p = new motSocket(__target_ip, __target_port);
-                __recs.__pr.Write(__p);
+                __process_Header(RDS.__header, __recs);
+                __process_Patient(RDS.__patient, __recs);               
+                __recs.__pr.Write(__socket);
 
                 __recs.__pr.setField("Action", "Change");
 
                 foreach (Order __order in RDS.__orders)
                 {
                     __process_Order(__order, __recs);
-                    __recs.Write(__p);
-
-                    __recs.__tq_list.Clear();
+                    __recs.Write();
                 }
+
+                __recs.Commit(__socket);
             }
             catch (Exception ex)
             {

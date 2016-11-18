@@ -192,7 +192,8 @@ namespace motGatewayTester
                     Drug.LabelCode = txtLblCode.Text;
                     Drug.ProductCode = txtProdCode.Text;
                     Drug.TradeName = txtTradename.Text;
-                    Drug.Strength = Convert.ToInt32(txtStrength.Text);
+                    //Drug.Strength = Convert.ToInt32(txtStrength.Text);
+                    Drug.Strength = txtStrength.Text;
                     Drug.Unit = txtUnit.Text;
                     Drug.RxOTC = txtRxOtc.Text;
                     Drug.DoseForm = txtDoseForm.Text;

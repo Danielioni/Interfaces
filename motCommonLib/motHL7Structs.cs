@@ -879,7 +879,11 @@ namespace motCommonLib
         public RDS_O13(XDocument __xdoc) : base()
         {
             string __last_significant_item = "NONE";
+
             __orders = new List<Order>();
+            __header = new Header();
+            __patient = new Patient();
+
             Order __current_order = new Order();
 
             foreach (XElement __xe in __xdoc.Root.Elements())
@@ -1010,6 +1014,11 @@ namespace motCommonLib
                     default:
                         break;
                 }
+            }
+
+            if (__current_order != null)
+            {
+                __orders.Add(__current_order);
             }
         }
 
@@ -1260,7 +1269,7 @@ namespace motCommonLib
         public MSH(XElement __xe) : base(__xe)
         {
             __parsed_list = false;
-            __data = new XDocument(__xe);
+            //__data = new XDocument(__xe);
         }
         public MSH(string __message)
         {

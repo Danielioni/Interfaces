@@ -242,8 +242,9 @@ namespace motCommonLib
                 }
 
                 __write_queue.Write(p);
+                __write_queue.Clear();
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -391,7 +392,7 @@ namespace motCommonLib
 
                 if (__qualifiedTags[i].required && (__qualifiedTags[i].when == f.tagData.ToLower()[0] || __qualifiedTags[i].when == 'k'))  // look for a,c,k
                 {
-                    if (__qualifiedTags[i].tagData == null || __qualifiedTags[i].tagData.Length == 0)
+                    if (string.IsNullOrEmpty(__qualifiedTags[i].tagData))
                     {
                         if (!__auto_truncate)
                         {
@@ -422,10 +423,6 @@ namespace motCommonLib
             __qualifiedTags[0].tagData = __type;
             __qualifiedTags[1].tagData = __action;
 
-            if(__write_queue != null)
-            {
-                __write_queue.Clear();
-            }
         }
         protected bool setField(List<Field> __qualifiedTags, string __val, string __tag)
         {
@@ -765,9 +762,11 @@ namespace motCommonLib
                 throw;
             }
         }
-
-        
-
+        public void AddToQueue(motWriteQueue __queue)
+        {
+            __write_queue = __queue;
+            AddToQueue();
+        }
         public void AddToQueue()
         {
             AddToQueue("E", __qualifiedTags);
@@ -872,17 +871,17 @@ namespace motCommonLib
                 setField(__qualifiedTags, value, "TradeName", false);
             }
         }
-        public int Strength
+        public string Strength
         {
             get
             {
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("strength")));
-                return !string.IsNullOrEmpty(f.tagData) ? Convert.ToInt32(f.tagData) : 0;
+                return f.tagData;
             }
             
             set
             {
-                setField(__qualifiedTags, Convert.ToString(value), "Strength", false);
+                setField(__qualifiedTags, value, "Strength", false);
             }
         }
         public string Unit
@@ -1181,6 +1180,11 @@ namespace motCommonLib
             {
                 throw;
             }
+        }
+        public void AddToQueue(motWriteQueue __queue)
+        {
+            __write_queue = __queue;
+            AddToQueue();
         }
         public void AddToQueue()
         {
@@ -1606,6 +1610,11 @@ namespace motCommonLib
             {
                 throw;
             }
+        }
+        public void AddToQueue(motWriteQueue __queue)
+        {
+            __write_queue = __queue;
+            AddToQueue();
         }
         public void AddToQueue()
         {
@@ -2389,6 +2398,11 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue(motWriteQueue __queue)
+        {
+            __write_queue = __queue;
+            AddToQueue();
+        }
         public void AddToQueue()
         {
             AddToQueue("G", __qualifiedTags);
@@ -2840,6 +2854,11 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue(motWriteQueue __queue)
+        {
+            __write_queue = __queue;
+            AddToQueue();
+        }
         public void AddToQueue()
         {
             AddToQueue("B", __qualifiedTags);
@@ -3191,6 +3210,11 @@ namespace motCommonLib
                 throw;
             }
         }
+        public void AddToQueue(motWriteQueue __queue)
+        {
+            __write_queue = __queue;
+            AddToQueue();
+        }
         public void AddToQueue()
         {
             AddToQueue("A", __qualifiedTags);
@@ -3481,6 +3505,11 @@ namespace motCommonLib
             {
                 throw;
             }
+        }
+        public void AddToQueue(motWriteQueue __queue)
+        {
+            __write_queue = __queue;
+            AddToQueue();
         }
         public void AddToQueue()
         {
