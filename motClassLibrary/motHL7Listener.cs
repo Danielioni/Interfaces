@@ -27,7 +27,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using NLog;
-
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace motInboundLib
 {
@@ -86,6 +87,7 @@ namespace motInboundLib
         private motSocket __socket;
         private Thread    __worker;
         private int       __listener_port = 0;
+        private bool      __use__ssl = false;
 
         List<Dictionary<string, string>> __message_data = new List<Dictionary<string, string>>();
 
@@ -238,14 +240,25 @@ namespace motInboundLib
             __write_message_to_endpoint(__response);
         }
 
-        public void __start_listener(int __port, motSocket.__void_string_delegate __s_callback)
+        public void __start_listener(int __port, motSocket.__void_string_delegate __s_callback, X509Certificate __cert = null)
         {
             try
             {
-                __socket = new motSocket(__port, __s_callback);
-                __worker = new Thread(new ThreadStart(__socket.listen));
-                __worker.Name = "listener";
-                __worker.Start();
+                __socket = new motSocket(__port, __s_callback);           
+                __socket.__use_ssl = __use__ssl;
+
+                if (__use__ssl)
+                {                  
+                    __worker = new Thread(() => __socket.secure_listen(__cert));
+                    __worker.Name = "secure listener";
+                    __worker.Start();
+                }
+                else
+                {
+                    __worker = new Thread(new ThreadStart(__socket.listen));
+                    __worker.Name = "listener";
+                    __worker.Start();
+                }               
             }
             catch (Exception e)
             {
@@ -309,11 +322,11 @@ namespace motInboundLib
             }
         }
 
-        public void __start(motSocket.__void_string_delegate __s_callback)
+        public void __start(motSocket.__void_string_delegate __s_callback, X509Certificate __cert = null)
         {
             try
             {
-                __start_listener(__listener_port, __s_callback);
+                __start_listener(__listener_port, __s_callback, __cert);
                 __logger.Info("HL7 Listener waiting on port: {0}", __listener_port);
             }
             catch (Exception e)
@@ -325,20 +338,22 @@ namespace motInboundLib
             }
         }
 
-        public void __start()
+        public void __start(X509Certificate __cert = null)
         {
             try
             {
-                __start(__parse_message);
+                __start(__parse_message, __cert);
             }
             catch { throw; }
         }
 
-        public HL7SocketListener(int __port)
+        public HL7SocketListener(int __port, bool __use__ssl = false)
         {
             try
             {
+                this.__use__ssl = __use__ssl;
                 __listener_port = __port;
+
                 __logger = LogManager.GetLogger("motInboundLib.HL7Listener");
 
                 __organization = Properties.Settings.Default.Organization;

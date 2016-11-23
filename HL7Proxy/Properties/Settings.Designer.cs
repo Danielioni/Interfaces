@@ -214,5 +214,65 @@ namespace HL7Proxy.Properties {
                 this["FirstDayOfWeek_MOT"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SSLCert {
+            get {
+                return ((string)(this["SSLCert"]));
+            }
+            set {
+                this["SSLCert"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string SSLServerPort {
+            get {
+                return ((string)(this["SSLServerPort"]));
+            }
+            set {
+                this["SSLServerPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseServerSSL {
+            get {
+                return ((bool)(this["UseServerSSL"]));
+            }
+            set {
+                this["UseServerSSL"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string SSLClientPort {
+            get {
+                return ((string)(this["SSLClientPort"]));
+            }
+            set {
+                this["SSLClientPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseClientSSL {
+            get {
+                return ((bool)(this["UseClientSSL"]));
+            }
+            set {
+                this["UseClientSSL"] = value;
+            }
+        }
     }
 }

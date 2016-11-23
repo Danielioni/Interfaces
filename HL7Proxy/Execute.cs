@@ -48,6 +48,8 @@ namespace HL7Proxy
         SendingApplication SendingApp = SendingApplication.Unknown;
 
         HL7SocketListener __listener;
+        HL7SocketListener __s_listener;
+
         public motErrorlLevel __error_level { get; set; } = motErrorlLevel.Error;
 
         //motErrorlLevel __save_error_level = motErrorlLevel.Error;
@@ -64,6 +66,14 @@ namespace HL7Proxy
         volatile string __source_ip = string.Empty;
         volatile int __source_port;
 
+        volatile string __s_target_ip = string.Empty;
+        volatile int __s_target_port;
+        volatile string __s_source_ip = string.Empty;
+        volatile int __s_source_port;
+
+        volatile bool __client_ssl_enabled = false;
+        volatile bool __server_ssl_enabled = false;
+
         //  public void __update_event_ui(string __message)
 
         void __update_ui_event(Object __sender, UIupdateArgs __args)
@@ -76,7 +86,6 @@ namespace HL7Proxy
 
             __event_ui_handler(this, __args);
         }
-
         void __update_ui_error(Object __sender, UIupdateArgs __args)
         {
             //UIupdateArgs __args = new UIupdateArgs();
@@ -89,7 +98,6 @@ namespace HL7Proxy
             __error_ui_handler(this, __args);
 
         }
-
         public void __show_common_event(string __message)
         {
             UIupdateArgs __args = new UIupdateArgs();
@@ -98,7 +106,6 @@ namespace HL7Proxy
 
             __event_ui_handler(this, __args);
         }
-
         public void __show_error_event(string __message)
         {
 
@@ -109,16 +116,43 @@ namespace HL7Proxy
             __error_ui_handler(this, __args);
         }
 
-        // Do the real work here - call delegates to update UI
-
         public void __start_up(ExecuteArgs __args)
         {
+            string __data_state = "a plaintext stream";
+
             try
             {
                 __target_ip = __args.__gateway_address;
                 __target_port = Convert.ToInt32(__args.__gateway_port);
+
                 __source_ip = __args.__listen_address;
                 __source_port = Convert.ToInt32(__args.__listen_port);
+
+                if (__args.__ssl_server)
+                {
+                    __s_source_ip = __args.__ssl_server_port;
+                    __s_source_port = Convert.ToInt32(__args.__ssl_server_port);
+                    __server_ssl_enabled = true;
+                }
+
+                if (__args.__ssl_clent)
+                {
+
+                    __data_state = "an encrypted stream";
+                    __target_port = Convert.ToInt32(__args.__ssl_client_port);
+                    __client_ssl_enabled = true;
+
+                    try
+                    {
+                        // Try and authenticate, turn off client SSL if we can't
+                        var __port_test = new motSocket(__target_ip, __target_port, true);
+                    }
+                    catch
+                    {
+                        __client_ssl_enabled = false;
+                        __target_port = Convert.ToInt32(__args.__gateway_port);
+                    }
+                }
 
                 __error_level = __args.__error_level;
                 __auto_truncate = __args.__auto_truncate;
@@ -127,10 +161,8 @@ namespace HL7Proxy
                 var __lookup = new motLookupTables();
                 __first_day_of_week = __lookup.__first_day_of_week_adj(__args.__rxsys_first_day_of_week, __args.__mot_first_day_of_week);
 
-                // Set up listener and event handlers
+                // Set up listeners and event handlers
                 __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
-
-                //__update_event_ui("HL7 Proxy Starting up");
 
                 __listener.__log_level = __log_level;
                 __listener.__organization = __args.__organization;
@@ -144,10 +176,30 @@ namespace HL7Proxy
 
                 __listener.UpdateEventUI += __update_ui_event;
                 __listener.UpdateErrorUI += __update_ui_error;
-
                 __listener.__start();
 
-                __show_common_event(string.Format("Listening on: {0}:{1}, Sending to: {2}:{3}", __args.__listen_address, __args.__listen_port, __args.__gateway_address, __args.__gateway_port));
+                __show_common_event(string.Format("Listening for plaintext data on: {0}:{1}, Sending to: {2}:{3} as {4}", __args.__listen_address, __args.__listen_port, __args.__gateway_address, __args.__gateway_port, __data_state));
+
+                if (__args.__ssl_server)
+                {
+                    __s_listener = new HL7SocketListener(Convert.ToInt32(__s_source_port), true);
+
+                    __s_listener.__log_level = __log_level;
+                    __s_listener.__organization = __args.__organization;
+                    __s_listener.__processor = __args.__processor;
+
+                    __s_listener.ADT_A01MessageEventReceived += __process_ADT_A01_Event;
+                    __s_listener.ADT_A12MessageEventReceived += __process_ADT_A12_Event;
+                    __s_listener.OMP_O09MessageEventReceived += __process_OMP_O09_Event;
+                    __s_listener.RDE_O11MessageEventReceived += __process_RDE_O11_Event;
+                    __s_listener.RDS_O13MessageEventReceived += __process_RDS_O13_Event;
+
+                    __s_listener.UpdateEventUI += __update_ui_event;
+                    __s_listener.UpdateErrorUI += __update_ui_error;
+                    __s_listener.__start(__args.__ssl_cert);
+
+                    __show_common_event(string.Format("Listening for encrypted data on: {0}:{1}, Sending to: {2}:{3} as {4}", __args.__listen_address, __args.__ssl_server_port, __args.__gateway_address, __args.__gateway_port, __data_state));
+                }
             }
             catch (Exception e)
             {
@@ -159,6 +211,7 @@ namespace HL7Proxy
         {
             __show_common_event("HL7 Proxy Shutting down");
             __listener.__stop();
+            __s_listener.__stop();
         }
 
         public Execute()
@@ -166,8 +219,6 @@ namespace HL7Proxy
             __logger = LogManager.GetLogger("motHL7Proxy");
         }
 
-        ~Execute()
-        { }
 
         // ------------  Start Processing Code ---------------------
 
@@ -224,7 +275,6 @@ namespace HL7Proxy
                 __drug.__queue_writes =
                     __use_queue;
             }
-
             public void Write()
             {
                 try
@@ -233,12 +283,12 @@ namespace HL7Proxy
                     {
                         foreach (motStoreRecord __store in __store_list)
                         {
-                           
+
                             __store.AddToQueue(__write_queue);
                         }
 
                         foreach (motPrescriberRecord __doc in __doc_list)
-                        {                     
+                        {
                             __doc.AddToQueue(__write_queue);
                         }
 
@@ -247,41 +297,13 @@ namespace HL7Proxy
                             __tq.AddToQueue(__write_queue);
                         }
 
-                        __loc.AddToQueue();                                         
+                        __loc.AddToQueue();
                         __pr.AddToQueue();
                         __drug.AddToQueue();
                         __scrip.AddToQueue();
 
                         Clear();
                     }
-                    /*
-                    else
-                    { 
-                        foreach (motStoreRecord __store in __store_list)
-                        {
-                            __store.Write(__socket);
-                        }
-
-                        __store.Write(__socket);
-                        __loc.Write(__socket);
-
-                        foreach (motPrescriberRecord __doc in __doc_list)
-                        {
-                            __doc.Write(__socket);
-                        }
-
-                        __doc.Write(__socket);
-                        __pr.Write(__socket);
-                        __drug.Write(__socket);
-
-                        foreach (motTimeQtysRecord __tq in __tq_list)
-                        {
-                            __tq.Write(__socket);
-                        }
-
-                        __scrip.Write(__socket);
-                    }
-                    */
                 }
                 catch
                 { throw; }
@@ -301,19 +323,18 @@ namespace HL7Proxy
                 //    __write_queue.Clear();
                 //}
             }
-
             public void Commit(motSocket __socket)
             {
                 try
                 {
                     __write_queue.Write(__socket);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw ex;
                 }
             }
-    }
+        }
 
         public void __clean_up()
         {
@@ -497,7 +518,7 @@ namespace HL7Proxy
                 // will support the full range of operations.
                 ///
 
-                
+
                 __pr.SpecialDoses = __global_month[0];
                 __pr.DoseTimesQtys = string.Format("{0}{1:00.00}", __tq1.Get("TQ1.4.1"), __tq1.Get("TQ1.2.1") == null ? 00.00 : Convert.ToDouble(__tq1.Get("TQ1.2.1")));
 
@@ -530,7 +551,6 @@ namespace HL7Proxy
 
             return false;
         }
-
         public string __process_AL1(RecordBundle __recs, AL1 __al1)
         {
             if (__recs == null || __al1 == null)
@@ -685,7 +705,7 @@ namespace HL7Proxy
             // For FrameworkLTC RDE messages, the ORC format is represented as FacilityID\F\PatientID\F\OrnderNum which parses to 
             //  <Facility ID> | <Patient ID> | <Order Number>
             //
-            if(SendingApp == SendingApplication.FrameworkLTE)          
+            if (SendingApp == SendingApplication.FrameworkLTE)
             {
                 char[] __delim = { '|' };
                 string[] __part = __orc.Get("ORC.3.1").Split(__delim);
@@ -719,12 +739,11 @@ namespace HL7Proxy
             __recs.__pr.RxSys_DocID = __recs.__doc.RxSys_DocID;
             __recs.__scrip.RxSys_DocID = __recs.__doc.RxSys_DocID;
         }
-
         private void __process_PID(RecordBundle __recs, PID __pid)
         {
             string __tmp = string.Empty;
 
-            if(__recs == null || __pid == null)
+            if (__recs == null || __pid == null)
             {
                 return;
             }
@@ -745,12 +764,12 @@ namespace HL7Proxy
             // 
 
             // Check to see if there are some 'F's, which would indicate the Framework format
-            if(SendingApp == SendingApplication.FrameworkLTE)
+            if (SendingApp == SendingApplication.FrameworkLTE)
             {
                 char[] __delim = { '|' };
-                
+
                 __tmp = __pid.Get("PID.3.1");
-                if(!string.IsNullOrEmpty(__tmp))
+                if (!string.IsNullOrEmpty(__tmp))
                 {
                     string[] __part = __tmp.Split(__delim);
                     __recs.__pr.RxSys_LocID = __part[0];
@@ -817,8 +836,6 @@ namespace HL7Proxy
             __recs.__doc.FirstName = __pv1.Get("PV1.7.3");
             __recs.__doc.MiddleInitial = __pv1.Get("PV1.7.4");
         }
-
-
         private void __process_PV2(RecordBundle __recs, PV2 __pv2)
         {
             if (__recs == null || __pv2 == null)
@@ -889,7 +906,7 @@ namespace HL7Proxy
             }
 
 
-           
+
 
             if (!string.IsNullOrEmpty(__tmp_doc.RxSys_DocID))
             {
@@ -936,7 +953,6 @@ namespace HL7Proxy
             __recs.__drug.RxSys_DrugID = __rxd.Get("RXD.2.1");
             __recs.__drug.DrugName = __rxd.Get("RXD.2.2");
         }
-
         private void __process_RXE(RecordBundle __recs, RXE __rxe)
         {
             if (__recs == null || __rxe == null)
@@ -1104,7 +1120,7 @@ namespace HL7Proxy
                     if (!string.IsNullOrEmpty(__format))
                     {
                         __recs.__scrip.RxType = "0";
-                        return __recs.__scrip.DoseTimesQtys += string.Format(__format, Convert.ToDouble(string.IsNullOrEmpty(__tq1.Get("TQ1.2.1"))  ? "0" : __tq1.Get("TQ1.2.1")));
+                        return __recs.__scrip.DoseTimesQtys += string.Format(__format, Convert.ToDouble(string.IsNullOrEmpty(__tq1.Get("TQ1.2.1")) ? "0" : __tq1.Get("TQ1.2.1")));
                     }
                 }
                 catch
@@ -1120,7 +1136,7 @@ namespace HL7Proxy
 
                     foreach (string __entry in __time_entry_list)
                     {
-                        __recs.__scrip.DoseTimesQtys += string.Format("{0}{1:00.00}", __entry.Length > 4 ? __entry.Substring(0,4) : __entry, 
+                        __recs.__scrip.DoseTimesQtys += string.Format("{0}{1:00.00}", __entry.Length > 4 ? __entry.Substring(0, 4) : __entry,
                                                                                       Convert.ToDouble(string.IsNullOrEmpty(__tq1.Get("TQ1.2.1")) ? "0" : __tq1.Get("TQ1.2.1")));
                     }
                 }
@@ -1191,11 +1207,10 @@ namespace HL7Proxy
             __recs.__drug.Strength = __zfi.Get("ZFI.6");
             __recs.__drug.Unit = __zfi.Get("ZFI.7");
             __recs.__drug.NDCNum = __zfi.Get("ZFI.8");
-            __recs.__drug.DrugSchedule = Convert.ToInt32(__lookup.__drugSchedules[(__zfi.Get("ZFI.10") == null ? "0": __zfi.Get("ZFI.10"))]);
+            __recs.__drug.DrugSchedule = Convert.ToInt32(__lookup.__drugSchedules[(__zfi.Get("ZFI.10") == null ? "0" : __zfi.Get("ZFI.10"))]);
             __recs.__drug.Route = __zfi.Get("ZFI.11");
             __recs.__drug.ProductCode = __zfi.Get("ZFI.14");
         }
-
         private void __process_CX1(RecordBundle __recs, CX1 __cx1)
         {
             if (__recs == null || __cx1 == null)
@@ -1381,16 +1396,16 @@ namespace HL7Proxy
 
             try
             {
-                var __socket = new motSocket(__target_ip, __target_port);
+                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
 
                 __process_PID(__recs, ADT.__pid);
                 __process_PV1(__recs, ADT.__pv1);
                 __process_PV2(__recs, ADT.__pv2);
                 __process_PD1(__recs, ADT.__pd1);
 
-                foreach(OBX __obx in ADT.__obx) { __process_OBX(__recs, __obx);}
-                foreach(AL1 __al1 in ADT.__al1) { __recs.__pr.Allergies += __process_AL1(__recs, __al1); }
-                foreach(DG1 __dg1 in ADT.__dg1) { __recs.__pr.DxNotes   += __process_DG1(__recs, __dg1); }
+                foreach (OBX __obx in ADT.__obx) { __process_OBX(__recs, __obx); }
+                foreach (AL1 __al1 in ADT.__al1) { __recs.__pr.Allergies += __process_AL1(__recs, __al1); }
+                foreach (DG1 __dg1 in ADT.__dg1) { __recs.__pr.DxNotes += __process_DG1(__recs, __dg1); }
 
                 __recs.Write();
 
@@ -1414,7 +1429,7 @@ namespace HL7Proxy
             var __allergies = string.Format("Patient Allergies\n");
             var __diagnosis = string.Format("Patient Diagnosis\n");
             var __problem_segment = string.Empty;
-            
+
             SendingApp = __args.__sa;
 
             var __HL7xml = new HL7toXDocumentParser.Parser();
@@ -1426,7 +1441,7 @@ namespace HL7Proxy
 
             try
             {
-                var __socket = new motSocket(__target_ip, __target_port);
+                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
 
                 __process_PID(__recs, ADT.__pid);
                 __process_PV1(__recs, ADT.__pv1);
@@ -1469,7 +1484,7 @@ namespace HL7Proxy
                 __process_Header(OMP.__header, __recs);
                 __process_Patient(OMP.__patient, __recs);
 
-                __socket = new motSocket(__target_ip, __target_port);
+                __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
                 __recs.__pr.Write(__socket);
 
                 __recs.__pr.setField("Action", "Change");
@@ -1511,7 +1526,7 @@ namespace HL7Proxy
 
             try // Process the Patient
             {
-                var __socket = new motSocket(__target_ip, __target_port);
+                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
 
                 __process_Header(RDE.__header, __recs);
                 __process_Patient(RDE.__patient, __recs);
@@ -1552,10 +1567,10 @@ namespace HL7Proxy
 
             try // Process the Patient
             {
-                 var __socket = new motSocket(__target_ip, __target_port);
+                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
 
                 __process_Header(RDS.__header, __recs);
-                __process_Patient(RDS.__patient, __recs);               
+                __process_Patient(RDS.__patient, __recs);
                 __recs.__pr.Write(__socket);
 
                 __recs.__pr.setField("Action", "Change");

@@ -35,6 +35,8 @@ using System.Windows.Forms;
 using NLog;
 using motCommonLib;
 using motInboundLib;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace HL7Proxy
 {
@@ -51,6 +53,10 @@ namespace HL7Proxy
         int __max_log_len;
         int __log_len = 0; 
         List<string> lstEvent = new List<string>();
+
+        X509Certificate2Collection  __X_509_collection;
+        X509Certificate2Collection  __X_509_valid_collection;
+        X509Store                   __X_509_store;
 
         protected readonly int __defult_list_width = 1040;
         protected readonly int __default_list_height = 160;
@@ -95,6 +101,10 @@ namespace HL7Proxy
             __max_log_len = Properties.Settings.Default.MaxLogLines;
             txtMaxLogLen.Text = __max_log_len.ToString();
 
+            chkUseServerSSL.Checked = Properties.Settings.Default.UseServerSSL;
+            txtSSLServerPort.Text = Properties.Settings.Default?.SSLServerPort;
+            cmbx509Certificates.Text = __get_cert_name();
+
             btnStop.Enabled = false;
             btnStart.Enabled = true;
         }
@@ -128,6 +138,11 @@ namespace HL7Proxy
                 Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
                 Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
                 Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
+                Properties.Settings.Default.SSLServerPort = txtSSLServerPort.Text;
+                Properties.Settings.Default.UseServerSSL = chkUseServerSSL.Checked;
+                Properties.Settings.Default.SSLClientPort = txtClientSSLPort.Text;
+                Properties.Settings.Default.UseClientSSL = chkUseClientSSL.Checked;
+
                 Properties.Settings.Default.Save();
             }
             else if (tbcMain.SelectedIndex == 1)
@@ -149,6 +164,13 @@ namespace HL7Proxy
 
                 cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
                 cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
+
+                chkUseServerSSL.Checked = Properties.Settings.Default.UseServerSSL;
+                txtSSLServerPort.Text = Properties.Settings.Default.SSLServerPort;
+                cmbx509Certificates.Text = __get_cert_name();
+
+                chkUseClientSSL.Checked = Properties.Settings.Default.UseClientSSL;
+                txtClientSSLPort.Text = Properties.Settings.Default.SSLClientPort;
             }
             else  // Reserved for future use
             {
@@ -156,34 +178,79 @@ namespace HL7Proxy
             }
         }
 
+        private string __get_cert_name()
+        {
+            string __name;
+
+            __X_509_store = new X509Store("MY", StoreLocation.CurrentUser);
+            __X_509_store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+
+            try
+            {
+                __name = __X_509_store.Certificates.Find(X509FindType.FindByThumbprint, Properties.Settings.Default.SSLCert, false)[0].Issuer;
+            }
+            catch
+            {
+                __name = "Select Certificate";
+            }
+
+            __X_509_store.Close();
+            return __name;
+        }
+
         private void btnStart_Click(object sender, EventArgs e)
         {
-            // Start Runtime
-            var __args = new ExecuteArgs();
-            __args.__gateway_address = txtTargetIP.Text;
-            __args.__gateway_port = txtTargetPort.Text;
-            __args.__gateway_uname = txtTargetUname.Text;
-            __args.__gateway_pwd = txtTargetPwd.Text;
-            __args.__listen_address = txtSourceIP.Text;
-            __args.__listen_port = txtSourcePort.Text;
-            __args.__listen_uname = txtSourceUname.Text;
-            __args.__listen_pwd = txtSourcePwd.Text;
+            try
+            {
+                // Start Runtime
+                var __args = new ExecuteArgs();
 
-            __args.__error_level = __error_level;
-            __args.__auto_truncate = chkAutoTruncate.Checked;
+                __args.__gateway_address = txtTargetIP.Text;
+                __args.__gateway_port = txtTargetPort.Text;
+                __args.__gateway_uname = txtTargetUname.Text;
+                __args.__gateway_pwd = txtTargetPwd.Text;
 
-            __args.__organization = txtOrganization.Text;
-            __args.__processor = txtProcessor.Text;
+                __args.__listen_address = txtSourceIP.Text;
+                __args.__listen_port = txtSourcePort.Text;
+                __args.__listen_uname = txtSourceUname.Text;
+                __args.__listen_pwd = txtSourcePwd.Text;
 
-            __args.__rxsys_first_day_of_week = cmbFDOW_RxSys.Text;
-            __args.__mot_first_day_of_week = cmbFDOW_MOT.Text;
+                __args.__error_level = __error_level;
+                __args.__auto_truncate = chkAutoTruncate.Checked;
 
-            btnStop.Enabled = true;
-            btnStart.Enabled = false;
+                __args.__organization = txtOrganization.Text;
+                __args.__processor = txtProcessor.Text;
 
-            __execute.__start_up(__args);
+                __args.__rxsys_first_day_of_week = cmbFDOW_RxSys.Text;
+                __args.__mot_first_day_of_week = cmbFDOW_MOT.Text;
 
-            __listening = true;
+
+                if (chkUseServerSSL.Checked)
+                {
+                    __X_509_store = new X509Store("MY", StoreLocation.CurrentUser);
+                    __X_509_store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+                    __args.__ssl_cert = __X_509_store.Certificates.Find(X509FindType.FindByThumbprint, Properties.Settings.Default.SSLCert, false)[0];
+                    __X_509_store.Close();
+
+                    __args.__ssl_server = chkUseServerSSL.Checked;
+                    __args.__ssl_server_port = txtSSLServerPort.Text;
+                }
+
+                __args.__ssl_clent = chkUseClientSSL.Checked;
+                __args.__ssl_client_port = txtClientSSLPort.Text;
+
+                btnStop.Enabled = true;
+                btnStart.Enabled = false;
+
+                __execute.__start_up(__args);
+
+                __listening = true;
+            }
+            catch
+            {
+                btnStop.Enabled = false;
+                btnStart.Enabled = true;
+            }
         }
 
         private void btnStop_Click(object sender, EventArgs e)
@@ -254,6 +321,10 @@ namespace HL7Proxy
             Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
             Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
             Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
+            Properties.Settings.Default.SSLServerPort = txtSSLServerPort.Text;
+            Properties.Settings.Default.UseServerSSL = chkUseServerSSL.Checked;
+            Properties.Settings.Default.UseClientSSL = chkUseClientSSL.Checked;
+
             Properties.Settings.Default.Save();
 
             Environment.Exit(0);
@@ -444,8 +515,38 @@ namespace HL7Proxy
             }
             */
         }
-    }
 
+        private void cmbx509Certificates_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                __X_509_store = new X509Store("MY", StoreLocation.CurrentUser);
+                __X_509_store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+
+                __X_509_collection = (X509Certificate2Collection)__X_509_store.Certificates;
+                __X_509_valid_collection = (X509Certificate2Collection)__X_509_store.Certificates.Find(X509FindType.FindByTimeValid, DateTime.Now, false);
+                cmbx509Certificates.Items.Clear();
+
+                foreach (X509Certificate2 x in __X_509_valid_collection)
+                {
+                    cmbx509Certificates.Items.Add(x.Issuer);
+                }
+            }
+            catch
+            { }
+        }
+
+        private void chkUseInboundSSL_CheckedChanged(object sender, EventArgs e)
+        {
+            cmbx509Certificates.Enabled = txtSSLServerPort.Enabled = chkUseServerSSL.Checked;
+        }
+
+        private void cmbx509Certificates_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.SSLCert = __X_509_valid_collection[cmbx509Certificates.SelectedIndex].Thumbprint;
+            Properties.Settings.Default.Save();
+        }
+    }
 
     public class ExecuteArgs : EventArgs
     {
@@ -467,5 +568,11 @@ namespace HL7Proxy
 
         public string __organization { get; set; }
         public string __processor { get; set; }
+
+        public X509Certificate __ssl_cert { get; set; }
+        public string __ssl_server_port { get; set; }
+        public string __ssl_client_port { get; set; }
+        public bool __ssl_server { get; set; }
+        public bool __ssl_clent { get; set; }
     }
 }
