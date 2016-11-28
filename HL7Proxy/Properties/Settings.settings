@@ -39,7 +39,7 @@
       <Value Profile="(Default)">Medicine-On-Time</Value>
     </Setting>
     <Setting Name="Processor" Type="System.String" Scope="User">
-      <Value Profile="(Default)">MOT_HL7Gateway</Value>
+      <Value Profile="(Default)">MOT-HL7-Gateway</Value>
     </Setting>
     <Setting Name="MaxLogLines" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10000</Value>
@@ -51,7 +51,7 @@
       <Value Profile="(Default)">Sunday</Value>
     </Setting>
     <Setting Name="SSLCert" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="SSLServerPort" Type="System.String" Scope="User">
       <Value Profile="(Default)">0</Value>

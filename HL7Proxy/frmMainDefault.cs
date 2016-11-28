@@ -187,7 +187,7 @@ namespace HL7Proxy
 
             try
             {
-                __name = __X_509_store.Certificates.Find(X509FindType.FindByThumbprint, Properties.Settings.Default.SSLCert, false)[0].Issuer;
+                __name = __X_509_store.Certificates?.Find(X509FindType.FindByThumbprint, Properties.Settings.Default.SSLCert, false)[0].Issuer;
             }
             catch
             {

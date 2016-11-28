@@ -169,7 +169,7 @@ namespace HL7Proxy.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("MOT_HL7Gateway")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MOT-HL7-Gateway")]
         public string Processor {
             get {
                 return ((string)(this["Processor"]));
@@ -217,7 +217,7 @@ namespace HL7Proxy.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public string SSLCert {
             get {
                 return ((string)(this["SSLCert"]));

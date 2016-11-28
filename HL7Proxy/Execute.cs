@@ -137,8 +137,6 @@ namespace HL7Proxy
 
                 if (__args.__ssl_clent)
                 {
-
-                    __data_state = "an encrypted stream";
                     __target_port = Convert.ToInt32(__args.__ssl_client_port);
                     __client_ssl_enabled = true;
 
@@ -146,6 +144,7 @@ namespace HL7Proxy
                     {
                         // Try and authenticate, turn off client SSL if we can't
                         var __port_test = new motSocket(__target_ip, __target_port, true);
+                        __data_state = "an encrypted stream";
                     }
                     catch
                     {
@@ -210,8 +209,12 @@ namespace HL7Proxy
         public void __shut_down()
         {
             __show_common_event("HL7 Proxy Shutting down");
-            __listener.__stop();
-            __s_listener.__stop();
+
+            if(__listener != null)
+                __listener.__stop();
+
+            if(__s_listener != null)
+                __s_listener.__stop();
         }
 
         public Execute()
@@ -317,11 +320,6 @@ namespace HL7Proxy
                 __drug.Clear();
                 __tq_list.Clear();
                 __scrip.Clear();
-
-                //if (__use_queue)
-                //{
-                //    __write_queue.Clear();
-                //}
             }
             public void Commit(motSocket __socket)
             {

@@ -588,7 +588,13 @@ namespace motCommonLib
                     }
                     catch (AuthenticationException ex)
                     {
-                        __logger.Error("Faild to connect securely to {0}:{1}. Error: {2}", __address, __port, ex.StackTrace);
+                        __logger.Error("[Authentication] Failed to connect securely to {0}:{1}. Error: {2}", __address, __port, ex.StackTrace);
+                        __client.Close();
+                        throw ex;
+                    }
+                    catch(IOException ex)
+                    {
+                        __logger.Error("[SystemIO] Failed to connect securely to {0}:{1}. Error: {2}", __address, __port, ex.StackTrace);
                         __client.Close();
                         throw ex;
                     }
