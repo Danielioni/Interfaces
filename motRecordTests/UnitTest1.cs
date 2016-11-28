@@ -170,7 +170,7 @@ namespace motRecordTests
                 motSocket __p = new motSocket();
                 __p.__address = __gateway_address;
                 __p.__port = 80;
-                __p.open();
+                __p.open_as_client();
             }
             catch
             {
@@ -182,7 +182,7 @@ namespace motRecordTests
                 motSocket __p = new motSocket();
                 __p.__address = __gateway_address;
                 __p.__port = 0;
-                __p.open();
+                __p.open_as_client();
             }
             catch
             {
@@ -194,11 +194,11 @@ namespace motRecordTests
                 motSocket __p = new motSocket();
                 __p.__address = "esmartpass.com";
                 __p.__port = 80;
-                __p.open();
+                __p.open_as_client();
 
                 Console.WriteLine("Successfully opened esmartpass.com:80");
                 __p.close();
-                __p.open();
+                __p.open_as_client();
 
                 motSocket __pq = new motSocket("esmartpass.com", 80);
                 Console.WriteLine("Successfully opened esmartpass.com:80 using int port constructor");

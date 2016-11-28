@@ -42,7 +42,7 @@ namespace motCommonLib.Test
             motSocket __p = new motSocket();
             __p.__address = "localhost";
             __p.__port = 80;
-            __p.open();
+            __p.open_as_client();
         }
     }
 

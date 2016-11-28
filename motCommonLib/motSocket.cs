@@ -558,7 +558,7 @@ namespace motCommonLib
             catch(Exception ex)
             {
                 __logger.Error("Failed to start server on: {0}", __port);
-                throw ex;
+                throw;
             }
         }
         public void open_as_client()
@@ -590,7 +590,7 @@ namespace motCommonLib
                     {
                         __logger.Error("Faild to connect securely to {0}:{1}. Error: {2}", __address, __port, ex.StackTrace);
                         __client.Close();
-                        throw ex;
+                        throw;
                     }
 
                     __ssl_stream.ReadTimeout = TCP_TIMEOUT;
@@ -614,7 +614,7 @@ namespace motCommonLib
             }
             
         }
-        public void open(X509Certificate2 __x_509_cert = null)
+    /*    public void open(X509Certificate2 __x_509_cert = null)
         {
             try
             {
@@ -670,6 +670,6 @@ namespace motCommonLib
 
             __running = true;
             __logger.Info(@"Successfully Opened {0}:{1} for {2}", __address, __port, __open_for_listening ? "Listening" : "Writing");
-        }
-    }
+        }*/
+    }  
 }
