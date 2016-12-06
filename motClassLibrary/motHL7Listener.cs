@@ -172,6 +172,7 @@ namespace motInboundLib
                 switch (__resp.Get("MSH.9.3"))
                 {
                     case "RDE_O11":
+                    case "RDE_011":
                         __ui_args.__event_message = "RDE_011 Message Event";
 
                         __args.__raw_data = __data;
@@ -181,6 +182,8 @@ namespace motInboundLib
                         break;
 
                     case "OMP_O09":
+                    case "OMP_009":
+                    case "OMP_OO9": 
                         __ui_args.__event_message = "OMP_O09 Message Event";
 
                         __args.__raw_data = __data;
@@ -190,6 +193,7 @@ namespace motInboundLib
                         break;
 
                     case "RDS_O13":
+                    case "RDS_013":
                         __ui_args.__event_message = "RDS_013 Message Event";
 
                         __args.__raw_data = __data;
@@ -199,6 +203,7 @@ namespace motInboundLib
                         break;
 
                     case "ADT_A01":
+                    case "ADT_AO1":
                         __ui_args.__event_message = "ADT_A01 Message Event";
 
                         __args.timestamp = DateTime.Now;

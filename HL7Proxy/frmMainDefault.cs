@@ -487,10 +487,12 @@ namespace HL7Proxy
 
         private void frmMainDefault_ResizeBegin(object sender, EventArgs e)
         {
+            /*
             __last_list_width = sgrpStatus.Width;
             __last_list_height = sgrpStatus.Height;
             __last_form_width = frmMainDefault.ActiveForm.Width;
             __last_form_width = frmMainDefault.ActiveForm.Height;
+            */
         }
 
         private void frmMainDefault_Resize(object sender, EventArgs e)

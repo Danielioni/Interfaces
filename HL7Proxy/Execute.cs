@@ -210,11 +210,19 @@ namespace HL7Proxy
         {
             __show_common_event("HL7 Proxy Shutting down");
 
-            if(__listener != null)
-                __listener.__stop();
+            try
+            {
+                if (__listener != null)
+                    __listener.__stop();
 
-            if(__s_listener != null)
-                __s_listener.__stop();
+                if (__s_listener != null)
+                    __s_listener.__stop();
+            }
+            catch(Exception ex)
+            {
+                __logger.Error("HL7 Proxy shutdown failure: {0}", ex.Message);
+                throw;
+            }
         }
 
         public Execute()
@@ -284,16 +292,30 @@ namespace HL7Proxy
                 {
                     if (__use_queue)
                     {
-                        foreach (motStoreRecord __store in __store_list)
+                        if (__store_list.Count > 0)
                         {
-
+                            foreach (motStoreRecord __st in __store_list)
+                            {
+                                __st.AddToQueue(__write_queue);
+                            }
+                        }
+                        else
+                        {
                             __store.AddToQueue(__write_queue);
                         }
 
-                        foreach (motPrescriberRecord __doc in __doc_list)
+                        if (__doc_list.Count > 0)
+                        {
+                            foreach (motPrescriberRecord __d in __doc_list)
+                            {
+                                __d.AddToQueue(__write_queue);
+                            }
+                        }
+                        else
                         {
                             __doc.AddToQueue(__write_queue);
                         }
+
 
                         foreach (motTimeQtysRecord __tq in __tq_list)
                         {
@@ -760,8 +782,8 @@ namespace HL7Proxy
             // PID-2-1, PID-3-1, PID-4-1 have the Patient ID. Sample A01 records have a blank PID-2 and populated 
             // PID-3-1, though the RDE_O11 is the reverse.  Try them both and take what's there.  3-1 wins in a draw
             // 
+            // For QS1 i looks like they send the PID over as the "Alternative" 4-1
 
-            // Check to see if there are some 'F's, which would indicate the Framework format
             if (SendingApp == SendingApplication.FrameworkLTE)
             {
                 char[] __delim = { '|' };
@@ -903,9 +925,6 @@ namespace HL7Proxy
                 }
             }
 
-
-
-
             if (!string.IsNullOrEmpty(__tmp_doc.RxSys_DocID))
             {
                 __recs.__doc_list.Add(__tmp_doc);
@@ -990,15 +1009,25 @@ namespace HL7Proxy
             __recs.__scrip.RxSys_DrugID = __recs.__drug.NDCNum;
             __recs.__scrip.QtyPerDose = __rxe.Get("RXE.3.1");
             __recs.__scrip.RxSys_RxNum = __rxe.Get("RXE.15.1");
-            __recs.__scrip.DoseScheduleName = __rxe.Get("RXE.7.1");
+
+            // Catch a Dose Schedule/Sig misplacement
+            if (!string.IsNullOrEmpty(__rxe.Get("RXE.7.1")) && __rxe.Get("RXE.7.1").Trim().Length > 8)
+            {
+                __recs.__scrip.Sig = __rxe.Get("RXE.7.1");
+            }
+            else
+            {
+                __recs.__scrip.DoseScheduleName = __rxe.Get("RXE.7.1");
+            }
 
             if (!string.IsNullOrEmpty(__rxe.Get("RXE.7.2")))
             {
                 __recs.__scrip.Sig = __rxe.Get("RXE.7.2");
             }
-            else
+            
+            if(string.IsNullOrEmpty(__recs.__scrip.DoseScheduleName))
             {
-                __recs.__scrip.Sig = "Pharmacist Attention - Missing Sig";
+                __recs.__scrip.DoseScheduleName = "CUSTOM";
             }
 
             __recs.__scrip.QtyDispensed = __rxe.Get("RXE.10.1");
@@ -1337,7 +1366,7 @@ namespace HL7Proxy
                     __tmp_tq.DoseScheduleName = __recs.__scrip.DoseScheduleName;
                     __recs.__tq_list.Add(__tmp_tq);
 
-                    __recs.__scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", __tq1_records_processed++, __recs.__scrip.DoseScheduleName);
+                    __recs.__scrip.Comments += string.Format("({0}) Dose Schedule: {1}\n", ++__tq1_records_processed, __recs.__scrip.DoseScheduleName);
                 }
 
                 foreach (RXR __rxr in __order.__rxr)
