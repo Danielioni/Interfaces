@@ -94,7 +94,28 @@ namespace motCommonLib
                 {'t', "TimesQtys" }
             };
 
-            Dictionary<int, string> __prescriber_table = new Dictionary<int, string>()
+            Dictionary<int, KeyValuePair<bool,string>> __prescriber_table_v1 = new Dictionary<int, KeyValuePair<bool, string>>()
+           {
+               {1, new KeyValuePair<bool, string>(false,"DocCode") },
+               {2, new KeyValuePair<bool, string>(true, "LastName") },
+               {3, new KeyValuePair<bool, string>(true, "FirstName") },
+               {4, new KeyValuePair<bool, string>(true, "MiddleInitial") },
+               {5, new KeyValuePair<bool, string>(true, "Address1") },
+               {6, new KeyValuePair<bool, string>(true, "Address2") },
+               {7, new KeyValuePair<bool, string>(true, "City") },
+               {8, new KeyValuePair<bool, string>(true, "State") },
+               {9, new KeyValuePair<bool, string>(true, "Zip") },
+               {10,new KeyValuePair<bool, string>(true, "Phone") },
+               {11,new KeyValuePair<bool, string>(true, "Comments") },
+               {12,new KeyValuePair<bool, string>(true, "DEA_ID") },
+               {13,new KeyValuePair<bool, string>(true, "TPID") },
+               {14,new KeyValuePair<bool, string>(true, "Speciality") },
+               {15,new KeyValuePair<bool, string>(true, "Fax") },
+               {16,new KeyValuePair<bool, string>(true, "PagerInfo") },
+               {17,new KeyValuePair<bool, string>(true, "RxSys_DocID") }
+           };
+
+            Dictionary<int, string> __prescriber_table_v2 = new Dictionary<int, string>()
            {
                {1, "LastName" },
                {2, "FirstName" },
@@ -114,7 +135,34 @@ namespace motCommonLib
                {16,"RxSys_DocID" }
            };
 
-            Dictionary<int, string> __drug_table = new Dictionary<int, string>()
+
+            Dictionary<int, KeyValuePair<bool, string>> __drug_table_v1 = new Dictionary<int, KeyValuePair<bool, string>>()
+           {
+               {1,  new KeyValuePair<bool, string>(false,"Seq_No") },
+               {2,  new KeyValuePair<bool, string>(true,"LblCode") },
+               {3,  new KeyValuePair<bool, string>(true,"ProdCode") },
+               {4,  new KeyValuePair<bool, string>(true,"TradeName") },
+               {5,  new KeyValuePair<bool, string>(true,"Strength") },
+               {6,  new KeyValuePair<bool, string>(true,"Unit") },
+               {7,  new KeyValuePair<bool, string>(true,"RxOtc")},
+               {8,  new KeyValuePair<bool, string>(true,"DoseForm") },
+               {9,  new KeyValuePair<bool, string>(true,"Route") },
+               {10, new KeyValuePair<bool, string>(false,"FirmSeqNo")},
+               {11, new KeyValuePair<bool, string>(true,"DrugSchedule")  },
+               {12, new KeyValuePair<bool, string>(true,"VisualDescription")},
+               {13, new KeyValuePair<bool, string>(true,"DrugName") },
+               {14, new KeyValuePair<bool, string>(true,"ShortName")  },
+               {15, new KeyValuePair<bool, string>(true,"NDCNum") },
+               {16, new KeyValuePair<bool, string>(false,"FDARec")  },
+               {17, new KeyValuePair<bool, string>(false,"SizeFactor") },
+               {18, new KeyValuePair<bool, string>(false,"ShowInPickList") },
+               {19, new KeyValuePair<bool, string>(true,"Template") },
+               {20, new KeyValuePair<bool, string>(true,"ConsultMesg")  },
+               {21, new KeyValuePair<bool, string>(true,"GenericFor") },
+               {22, new KeyValuePair<bool, string>(true,"RxSys_DrugID") }
+           };
+
+            Dictionary<int, string> __drug_table_v2 = new Dictionary<int, string>()
            {
                {1, "LblCode" },
                {2, "ProdCode" },
@@ -136,7 +184,27 @@ namespace motCommonLib
                {18,"RxSys_DrugID" }
            };
 
-            Dictionary<int, string> __location_table = new Dictionary<int, string>()
+            Dictionary<int, KeyValuePair<bool, string>> __location_table_v1 = new Dictionary<int, KeyValuePair<bool, string>>()
+           {
+               {1, new KeyValuePair<bool, string>(true, "RxSys_StoreID") },
+               {2, new KeyValuePair<bool, string>(true, "LocationName") },
+               {3, new KeyValuePair<bool, string>(true, "Address1") },
+               {4, new KeyValuePair<bool, string>(true, "Address2") },
+               {5, new KeyValuePair<bool, string>(true, "City") },
+               {6, new KeyValuePair<bool, string>(true, "State") },
+               {7, new KeyValuePair<bool, string>(true, "Zip") },
+               {8, new KeyValuePair<bool, string>(true, "Phone") },
+               {9, new KeyValuePair<bool, string>(true, "Comments") },
+               {10, new KeyValuePair<bool, string>(false, "ColorTbl") },
+               {11, new KeyValuePair<bool, string>(false, "ImportID") },
+               {12, new KeyValuePair<bool, string>(false, "ShowLotAndExp") },
+               {13, new KeyValuePair<bool, string>(true, "RxSys_LocID") }, // PRNSwitch (wrong usage, fix post read)
+               {14, new KeyValuePair<bool, string>(true, "CycleDays") },
+               {15, new KeyValuePair<bool, string>(true, "CycleType") },
+               {16, new KeyValuePair<bool, string>(false, "RFReminderDays") }
+           };
+
+            Dictionary<int, string> __location_table_v2 = new Dictionary<int, string>()
            {
                {1, "RxSys_StoreID" },
                {2, "LocationName" },
@@ -152,7 +220,56 @@ namespace motCommonLib
                {12,"CycleType" }
            };
 
-            Dictionary<int, string> __patient_table = new Dictionary<int, string>()
+            Dictionary<int, KeyValuePair<bool, string>> __patient_table_v1 = new Dictionary<int, KeyValuePair<bool, string>>()
+           {
+               {1, new KeyValuePair<bool, string>(false, "MOTPatID")  },
+               {2, new KeyValuePair<bool, string>(true,  "RxSys_PatID") },
+               {3, new KeyValuePair<bool, string>(true,  "LastName") },
+               {4, new KeyValuePair<bool, string>(true,  "FirstName") },
+               {5, new KeyValuePair<bool, string>(true,  "MiddleInitial") },
+               {6, new KeyValuePair<bool, string>(true,  "Address1") },
+               {7, new KeyValuePair<bool, string>(true,  "Address2") },
+               {8, new KeyValuePair<bool, string>(true,  "City") },
+               {9, new KeyValuePair<bool, string>(true,  "State") },
+               {10, new KeyValuePair<bool, string>(true, "Zip") },
+               {11, new KeyValuePair<bool, string>(true, "Phone1") },
+               {12, new KeyValuePair<bool, string>(true, "Phone2") },
+               {13, new KeyValuePair<bool, string>(true, "WorkPhone") },
+               {14, new KeyValuePair<bool, string>(true, "RxSys_LocID") }, // LocCode
+               {15, new KeyValuePair<bool, string>(true, "Room") },
+               {16, new KeyValuePair<bool, string>(true, "Comments") },
+               {17, new KeyValuePair<bool, string>(false, "Gender") },  // ColorTbl
+               {18, new KeyValuePair<bool, string>(false, "RFReminder") },  
+               {19, new KeyValuePair<bool, string>(true, "CycleDate") },
+               {20, new KeyValuePair<bool, string>(true, "CycleDays") },
+               {21, new KeyValuePair<bool, string>(true, "CycleType") },
+               {22, new KeyValuePair<bool, string>(true, "Status") },
+               {23, new KeyValuePair<bool, string>(true, "RxSys_LastDoc") },
+               {24, new KeyValuePair<bool, string>(true, "RxSys_PrimaryDoc") },
+               {25, new KeyValuePair<bool, string>(true, "RxSys_AltDoc") },
+               {26, new KeyValuePair<bool, string>(false, "DefTimes") },
+               {27, new KeyValuePair<bool, string>(true, "SSN") },
+               {28, new KeyValuePair<bool, string>(true, "Allergies") },
+               {29, new KeyValuePair<bool, string>(true, "Diet") },
+               {30, new KeyValuePair<bool, string>(true, "DxNotes") },
+               {31, new KeyValuePair<bool, string>(true, "TreatmentNotes") },
+               {32, new KeyValuePair<bool, string>(true, "DOB") },
+               {33, new KeyValuePair<bool, string>(true, "Height") },
+               {34, new KeyValuePair<bool, string>(true, "Weight") },
+               {35, new KeyValuePair<bool, string>(true, "ResponsibleName") },
+               {36, new KeyValuePair<bool, string>(true, "InsName") },
+               {37, new KeyValuePair<bool, string>(true, "InsPNo") },
+               {38, new KeyValuePair<bool, string>(true, "AltInsName") },
+               {39, new KeyValuePair<bool, string>(true, "AltInsPNo") },
+               {40, new KeyValuePair<bool, string>(true, "MCareNum") },
+               {41, new KeyValuePair<bool, string>(true, "MCaidNum") },
+               {42, new KeyValuePair<bool, string>(true, "AdmitDate") },
+               {43, new KeyValuePair<bool, string>(false, "CycleEndDate") },
+               {44, new KeyValuePair<bool, string>(false, "Ok") },
+               {45, new KeyValuePair<bool, string>(true, "ChartOnly") }
+           };
+
+            Dictionary<int, string> __patient_table_v2 = new Dictionary<int, string>()
            {
                {1, "RxSys_PatID" },
                {2, "LastName" },
@@ -195,7 +312,35 @@ namespace motCommonLib
                {39, "ChartOnly" }
            };
 
-            Dictionary<int, string> __rx_table = new Dictionary<int, string>()
+            Dictionary<int, KeyValuePair<bool, string>> __rx_table_v1 = new Dictionary<int, KeyValuePair<bool, string>>()
+           {
+               {1, new KeyValuePair<bool, string>(true, "RxSys_PatID") },
+               {2, new KeyValuePair<bool, string>(false,"MOT_RxID") },
+               {3, new KeyValuePair<bool, string>(true, "RxSys_RxNum") },
+               {4, new KeyValuePair<bool, string>(true, "RxSys_DocID") },
+               {5, new KeyValuePair<bool, string>(true, "Sig") },
+               {6, new KeyValuePair<bool, string>(true, "RxStartDate") },
+               {7, new KeyValuePair<bool, string>(true, "RxStopDate") },
+               {8, new KeyValuePair<bool, string>(true, "DoseScheduleName") },
+               {9, new KeyValuePair<bool, string>(true, "Comments") },
+               {10, new KeyValuePair<bool, string>(true, "Refills") },
+               {11, new KeyValuePair<bool, string>(true, "RxSys_NewRxNum") },
+               {12, new KeyValuePair<bool, string>(true, "Isolate") },
+               {13, new KeyValuePair<bool, string>(true, "MDoMStart") },
+               {14, new KeyValuePair<bool, string>(true, "MDoMEnd") },
+               {15, new KeyValuePair<bool, string>(true, "NDCNum") },
+               {16, new KeyValuePair<bool, string>(false,"Ok") },
+               {17, new KeyValuePair<bool, string>(true, "QtyPerDose") },
+               {18, new KeyValuePair<bool, string>(true, "QtyDispensed") },
+               {19, new KeyValuePair<bool, string>(true, "RxType") },
+               {20, new KeyValuePair<bool, string>(true, "Status") },
+               {21, new KeyValuePair<bool, string>(true, "DoW") },
+               {22, new KeyValuePair<bool, string>(true, "SpecialDoses") },
+               {23, new KeyValuePair<bool, string>(true, "DoseTimesQtys") },
+               {24, new KeyValuePair<bool, string>(true, "RxSys_DrugID") }   //v2 only
+            };
+
+            Dictionary<int, string> __rx_table_v2 = new Dictionary<int, string>()
            {
                {1, "RxSys_PatID" },
                {2, "RxSys_RxNum" },
@@ -242,7 +387,7 @@ namespace motCommonLib
                {3, "DoseTimesQtys" }
             };
 
-            public string parse(string[] __items)
+            public string parse(string[] __items, bool __reading_v1 = false)
             {
                 StringBuilder __tagged_string = new StringBuilder();
                 int i;
@@ -275,12 +420,20 @@ namespace motCommonLib
                         case 'p':
                             for (i = 1; i < __items.Length - 1; i++)  // Length - 1 to compensate for the checksum
                             {
-                                if (i > __prescriber_table.Count)
+                                if (i > __prescriber_table_v1.Count)
                                 {
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __prescriber_table[i], __items[i].Trim()));
+                                if (__reading_v1 && __prescriber_table_v1[i].Key == false)
+                                {
+                                    continue;
+                                }
+
+                                if (__prescriber_table_v1[i].Key == true)
+                                {
+                                    __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __prescriber_table_v1[i].Value, __items[i].Trim()));
+                                }
                             }
                             break;
 
@@ -288,12 +441,20 @@ namespace motCommonLib
                         case 'd':
                             for (i = 1; i < __items.Length - 1; i++)
                             {
-                                if (i > __drug_table.Count)
+                                if (i > __drug_table_v1.Count)
                                 {
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __drug_table[i], __items[i].Trim()));
+                                if (__reading_v1 && __drug_table_v1[i].Key == false)
+                                {
+                                    continue;
+                                }
+
+                                if (__drug_table_v1[i].Key == true)
+                                {
+                                    __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __drug_table_v1[i].Value, __items[i].Trim()));
+                                }
                             }
 
                             break;
@@ -302,12 +463,20 @@ namespace motCommonLib
                         case 'l':
                             for (i = 1; i < __items.Length - 1; i++)
                             {
-                                if (i > __location_table.Count)
+                                if (i > __location_table_v1.Count)
                                 {
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __location_table[i], __items[i].Trim()));
+                                if (__reading_v1 && __location_table_v1[i].Key == false)
+                                {
+                                    continue;
+                                }
+
+                                if (__location_table_v1[i].Key == true)
+                                {
+                                    __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __location_table_v1[i].Value, __items[i].Trim()));
+                                }
                             }
                             break;
 
@@ -315,12 +484,20 @@ namespace motCommonLib
                         case 'a':
                             for (i = 1; i < __items.Length - 1; i++)
                             {
-                                if (i > __patient_table.Count)
+                                if (i > __patient_table_v1.Count)
                                 {
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __patient_table[i], __items[i].Trim()));
+                                if (__reading_v1 && __patient_table_v1[i].Key == false)
+                                {
+                                    continue;
+                                }
+
+                                if (__patient_table_v1[i].Key == true)
+                                {
+                                    __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __patient_table_v1[i].Value, __items[i].Trim()));
+                                }
                             }
                             break;
 
@@ -328,12 +505,44 @@ namespace motCommonLib
                         case 'r':
                             for (i = 1; i < __items.Length - 1; i++)
                             {
-                                if (i > __rx_table.Count)
+                                if (i > __rx_table_v1.Count)
                                 {
                                     break;
                                 }
 
-                                __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __rx_table[i], __items[i].Trim()));
+                                if (__reading_v1 && __rx_table_v1[i].Key == false)
+                                {
+                                    continue;
+                                }
+
+                                if (__rx_table_v1[i].Key == true)
+                                {
+                                    if (__rx_table_v1[i].Value == "DoseTimesQtys" && (__items[i].Trim().Length % 9) != 0)
+                                    {
+                                        // There are two valid formats:
+                                        //            HHHMM0.00
+                                        //            HHMM00.00
+                                        // and everything needs to be transformed to HHMM00.00
+                                        var __transformed = string.Empty;
+                                        var __source = __items[i].Trim();
+                                        var __loops = 9 - (__items[i].Trim().Length % 9);
+                                        var __offset = 0;
+
+
+                                        while (__loops > 0)
+                                        {
+                                            __transformed += __source.Substring(__offset, 4) + "0" + __source.Substring(__offset + 4, 4);
+                                            __offset += 8;
+                                            __loops--;
+                                        }
+
+                                        __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __rx_table_v1[i].Value, __transformed));
+                                    }
+                                    else
+                                    {
+                                        __tagged_string.Append(string.Format("\t<{0}>{1}</{0}>", __rx_table_v1[i].Value, __items[i].Trim()));
+                                    }
+                                }
                             }
                             break;
 
@@ -379,19 +588,27 @@ namespace motCommonLib
             }
         }
 
-        //
+        // MOT Delimited Spec
+        // ------------------
         // AA\xEEData\xEE...\xEENN\xE2  
         //  A = Table and Action Identifiers
         //  N = Checksum
         //  \xEE = field delimiter
         //  \xE2 = record delimiter
         //
-        public void parseDelimited(string inboundData)
+        //  QS/1 Implementation
+        //  -------------------
+        //  AA~Data~...S
+        //  A = Table and Action Identifiers
+        //  ~ = field delimiter
+        //  S = record delimeter
+
+        public void parseDelimited(string inboundData, bool __reading_v1 = false)
         {
             __table_converter __tc = new __table_converter();
 
 
-            char[] __field_delimiter = { '|' };
+            char[] __field_delimiter = { '~' };
             char[] __record_delimiter = { '^' };
             string __table = string.Empty;
 
@@ -403,7 +620,7 @@ namespace motCommonLib
                 try
                 {
                     string[] __fields = __item.Split(__field_delimiter);
-                    __table = __tc.parse(__fields);
+                    __table = __tc.parse(__fields, __reading_v1);
                     parseTagged(__table);
                 }
                 catch

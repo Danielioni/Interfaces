@@ -34,16 +34,17 @@ namespace DelimitedProxy
 {
     public class Execute
     {
-        motSocket __listener;
-        motSocket __gateway;
-        Thread    __worker;
-        string    __gateway_address;
-        string    __gateway_port;
+        private motSocket __socket;
+        private Thread __worker;
+
+        string __gateway_address;
+        string __gateway_port;
 
         Logger __logger = null;
         LogLevel __log_level { get; set; } = LogLevel.Info;
 
         public bool __auto_truncate { get; set; } = false;
+        public bool __use_v1 { get; set; } = false;
 
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
@@ -52,7 +53,7 @@ namespace DelimitedProxy
 
         //motErrorlLevel __save_error_level = motErrorlLevel.Error;
         motLookupTables __lookup = new motLookupTables();
-       
+
         public void __update_event_ui(string __message)
         {
             UIupdateArgs __args = new UIupdateArgs();
@@ -76,7 +77,6 @@ namespace DelimitedProxy
         // Do the real work here - call delegates to update UI
         private void __clean_buffer(byte[] __b_iobuffer)
         {
-
             for (int i = 0; i < __b_iobuffer.Length; i++)
             {
                 // Ugly hack to get around UTF8 Normalization failing to convert properly
@@ -84,9 +84,9 @@ namespace DelimitedProxy
 
                 if (__b_iobuffer[i] == '\xEE')
                 {
-                    __b_iobuffer[i] = (byte)'|';
+                    __b_iobuffer[i] = (byte)'~';
                 }
-                if (__b_iobuffer[i] == '\xE2')
+                if (__b_iobuffer[i] == '\xE2' || __b_iobuffer[i] == '\x0A')
                 {
                     __b_iobuffer[i] = (byte)'^';
                 }
@@ -94,24 +94,25 @@ namespace DelimitedProxy
         }
         void __parse(string __data)
         {
-            __update_event_ui(string.Format("Received Request from {0}", __listener.remoteEndPoint.ToString()));
-            __logger.Info("Data: {0}", __data);
+            Console.WriteLine("Received Request from {0}", __socket.remoteEndPoint.ToString());
+
+            __update_event_ui(string.Format("Received Request from {0}", __socket.remoteEndPoint.ToString()));
+            __logger.Debug("Data: {0}", __data);
 
             try
             {
                 var __parser = new motParser();
 
                 __parser.__log_level = __log_level;
-                __parser.p = new motSocket(__gateway_address, Convert.ToInt32(__gateway_port));
-                __parser.parseDelimited(__data);
-                __parser.p.close();
+                __parser.p = new motSocket(__gateway_address, Convert.ToInt32(__gateway_port), __delimited_protocol_processor);
+                __parser.parseDelimited(__data, __use_v1);
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 __update_error_ui("Failed at __parse: " + ex.Message);
                 __logger.Error("Failed at __parse: {0}", ex.Message);
             }
-            
         }
 
         private bool __delimited_protocol_processor(byte[] __buffer)
@@ -119,7 +120,7 @@ namespace DelimitedProxy
             try
             {
                 // just pass along the response
-                __listener.write_return(__buffer);
+                __socket.write_return(__buffer);
                 return true;
             }
             catch
@@ -140,12 +141,14 @@ namespace DelimitedProxy
                 __gateway_port = __args.__gateway_port;
 
                 int __lp = Convert.ToInt32(__args.__listen_port);
-                __listener = new motSocket(__lp, __parse);
-                __listener.__b_stream_processor = __clean_buffer;
-                __listener.__b_protocol_processor = __delimited_protocol_processor;
+                __socket = new motSocket(__lp, __parse);
+                __socket.__b_stream_processor = __clean_buffer;
+                __socket.__b_protocol_processor = __delimited_protocol_processor;
+
+                __use_v1 = __args.__use_v1;
 
                 // This will start the listener and call the callback 
-                __worker = new Thread(new ThreadStart(__listener.listen));
+                __worker = new Thread(new ThreadStart(__socket.listen));
                 __worker.Name = "listener";
                 __worker.Start();
 
@@ -166,14 +169,13 @@ namespace DelimitedProxy
 
         public void __shut_down()
         {
-            __listener.close();
-            //__gateway.Close();
+            __socket.close();
             __worker.Join();
         }
 
         public Execute()
         {
-            __logger = LogManager.GetLogger("motDelimitedProxy");        
+            __logger = LogManager.GetLogger("motDelimitedProxy");
         }
 
         ~Execute()

@@ -190,5 +190,17 @@ namespace DelimitedProxy.Properties {
                 this["FirstDayOfWeek_MOT"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Use_v1 {
+            get {
+                return ((bool)(this["Use_v1"]));
+            }
+            set {
+                this["Use_v1"] = value;
+            }
+        }
     }
 }

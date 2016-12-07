@@ -285,21 +285,28 @@ namespace motCommonLib
                 {
                     using (__client = __trigger.AcceptTcpClient())
                     {
-                        __stream = __client.GetStream();
-                        __stream.ReadTimeout = TCP_TIMEOUT;
-                        __stream.WriteTimeout = TCP_TIMEOUT;
+                       
 
-                        __remoteEndPoint = __client.Client.RemoteEndPoint;
-                        __localEndPoint = __client.Client.LocalEndPoint;
-                        __logger.Info("Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
-
-                        if (read() > 0)
+                        using (__stream = __client.GetStream())
                         {
-                            __s_callback?.Invoke(__s_iobuffer);
-                        }
+                            __stream.ReadTimeout = TCP_TIMEOUT;
+                            __stream.WriteTimeout = TCP_TIMEOUT;
 
-                        __stream.Close();
-                        __client.Close();
+                            __remoteEndPoint = __client.Client.RemoteEndPoint;
+                            __localEndPoint = __client.Client.LocalEndPoint;
+
+                            __logger.Debug("Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
+
+                            if (read() > 0)
+                            {
+                                __s_callback?.Invoke(__s_iobuffer);
+                            }
+
+                            __stream.Close();
+                            __client.Close();
+
+                            //Thread.Sleep(1);
+                        }
                     }
                 }
                 catch(IOException ex)
@@ -334,6 +341,8 @@ namespace motCommonLib
 
             try
             {
+                Thread.Sleep(1);
+
                 __b_iobuffer = new byte[1024];
                 __s_iobuffer = "";
 
@@ -361,6 +370,8 @@ namespace motCommonLib
 
                         __s_iobuffer += Encoding.UTF8.GetString(__b_iobuffer, 0, __inbytes);
                         __total_bytes += __inbytes;
+
+                        //Thread.Sleep(1);
                     }
                 }
             }
@@ -431,7 +442,7 @@ namespace motCommonLib
                 else
                 {
                     __stream.Write(Encoding.UTF8.GetBytes(__data), 0, __data.Length);
-                }
+                }              
             }
             catch { }
         }

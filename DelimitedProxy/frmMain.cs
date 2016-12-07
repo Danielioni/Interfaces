@@ -81,6 +81,7 @@ namespace DelimitedProxy
             __error_level = motErrorlLevel.Info;
 
             chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
+            chkUseV1.Checked = Properties.Settings.Default.Use_v1;
 
             __max_log_len = Properties.Settings.Default.MaxLogLines;
             txtMaxLogLen.Text = __max_log_len.ToString();
@@ -109,6 +110,7 @@ namespace DelimitedProxy
                 Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
                 Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
                 Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
+                Properties.Settings.Default.Use_v1 = chkUseV1.Checked;
                 Properties.Settings.Default.Save();
             }
             else if (tbcMain.SelectedIndex == 1)
@@ -126,6 +128,7 @@ namespace DelimitedProxy
                 chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
                 cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
                 cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
+                chkUseV1.Checked = Properties.Settings.Default.Use_v1;
 
             }
             else  // Reserved for future use
@@ -155,6 +158,8 @@ namespace DelimitedProxy
                 __args.__mot_first_day_of_week = cmbFDOW_RxSys.Text;
                 __args.__rxsys_first_day_of_week = cmbFDOW_MOT.Text;
 
+                __args.__use_v1 = chkUseV1.Checked;
+
                 btnStop.Enabled = true;
                 btnStart.Enabled = false;
 
@@ -180,7 +185,6 @@ namespace DelimitedProxy
         {
             rtbEvents.BeginInvoke(new Action(() =>
             {
-                //rtbEvents.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
                 rtbEvents.Text = rtbEvents.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__message));
             }));
         }
@@ -189,7 +193,6 @@ namespace DelimitedProxy
         {
             rtbErrors.BeginInvoke(new Action(() =>
             {
-                //rtbErrors.AppendText(string.Format("{0} : {1}", __args.timestamp, __args.__message));
                 rtbErrors.Text = rtbErrors.Text.Insert(0, string.Format("{0} : {1}", __args.timestamp, __args.__message));
                 __log_len++;
 
@@ -214,8 +217,18 @@ namespace DelimitedProxy
 
         private void frmEvents_Resize(object sender, EventArgs e)
         {
-            rtEvents.Height = ActiveForm.Height;
-            rtEvents.Width = ActiveForm.Width;
+            /*
+            try
+            {
+                if (ActiveForm != null)
+                {
+                    rtEvents.Height = ActiveForm.Height;
+                    rtEvents.Width = ActiveForm.Width;
+                }
+            }
+            catch
+            { throw; }
+            */
         }
 
         private void rtbEvents_DoubleClick(object sender, EventArgs e)
@@ -314,6 +327,7 @@ namespace DelimitedProxy
             Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
             Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
             Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
+            Properties.Settings.Default.Use_v1 = chkUseV1.Checked;
             Properties.Settings.Default.Save();
 
             Environment.Exit(0);
@@ -439,5 +453,6 @@ namespace DelimitedProxy
 
         public motErrorlLevel __error_level { get; set; }
         public bool __auto_truncate { get; set; }
+        public bool __use_v1 { get; set; }
     }
 }
