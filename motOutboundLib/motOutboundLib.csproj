@@ -60,6 +60,7 @@
     <Compile Include="motFormattedFileOutput.cs" />
     <Compile Include="motHttpOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SynMed.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\motCommonLib\motCommonLib.csproj">
