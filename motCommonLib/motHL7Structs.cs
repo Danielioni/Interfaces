@@ -607,6 +607,7 @@ namespace motCommonLib
         public ORC __orc;
         public RXO __rxo;
         public RXE __rxe;
+        public RXD __rxd;
         public List<RXR> __rxr;
         public List<NTE> __nte;
         public List<TQ1> __tq1;
@@ -817,6 +818,10 @@ namespace motCommonLib
                         __current_order.__rxc.Add(new RXC(__xe));
                         break;
 
+                    case "RXD":
+                        __current_order.__rxd = new RXD(__xe);
+                        break;
+
                     case "RXE":
                         __current_order.__rxe = new RXE(__xe);
                         __last_significant_item = "RXE";
@@ -972,6 +977,10 @@ namespace motCommonLib
 
                     case "RXC":
                         __current_order.__rxc.Add(new RXC(__xe));
+                        break;
+
+                    case "RXD":
+                        __current_order.__rxd = new RXD(__xe);
                         break;
 
                     case "RXE":
