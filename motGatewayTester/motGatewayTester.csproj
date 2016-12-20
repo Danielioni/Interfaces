@@ -117,6 +117,12 @@
     <Compile Include="frmPrescriberRecord.Designer.cs">
       <DependentUpon>frmPrescriberRecord.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmSynMed.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSynMed.Designer.cs">
+      <DependentUpon>frmSynMed.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmDoseSchedule.resx">
@@ -142,6 +148,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmPrescriberRecord.resx">
       <DependentUpon>frmPrescriberRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSynMed.resx">
+      <DependentUpon>frmSynMed.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

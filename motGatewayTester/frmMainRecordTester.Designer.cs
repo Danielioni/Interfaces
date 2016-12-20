@@ -102,6 +102,8 @@
             this.tbSourceDbUname = new System.Windows.Forms.TextBox();
             this.tbSourceDbPort = new System.Windows.Forms.TextBox();
             this.tbSourceDbAddress = new System.Windows.Forms.TextBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnSynMed = new System.Windows.Forms.Button();
             this.pnlMain.SuspendLayout();
             this.tbcMain.SuspendLayout();
             this.tbpRun.SuspendLayout();
@@ -118,6 +120,7 @@
             this.tbpDBConfig.SuspendLayout();
             this.gbTargetDB.SuspendLayout();
             this.gbSourceDB.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlMain
@@ -145,6 +148,7 @@
             // tbpRun
             // 
             this.tbpRun.BackColor = System.Drawing.SystemColors.Control;
+            this.tbpRun.Controls.Add(this.groupBox1);
             this.tbpRun.Controls.Add(this.gbTestRecords);
             this.tbpRun.Controls.Add(this.btnPrint);
             this.tbpRun.Controls.Add(this.btnSave);
@@ -153,10 +157,10 @@
             this.tbpRun.Controls.Add(this.sgrpStatus);
             this.tbpRun.Controls.Add(this.btnStop);
             this.tbpRun.Controls.Add(this.btnStart);
-            this.tbpRun.Location = new System.Drawing.Point(4, 25);
+            this.tbpRun.Location = new System.Drawing.Point(4, 22);
             this.tbpRun.Name = "tbpRun";
             this.tbpRun.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpRun.Size = new System.Drawing.Size(1103, 679);
+            this.tbpRun.Size = new System.Drawing.Size(1103, 682);
             this.tbpRun.TabIndex = 0;
             this.tbpRun.Text = "Run";
             this.tbpRun.ToolTipText = "Runtime Control";
@@ -301,9 +305,9 @@
             // rtbErrors
             // 
             this.rtbErrors.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbErrors.Location = new System.Drawing.Point(3, 18);
+            this.rtbErrors.Location = new System.Drawing.Point(3, 16);
             this.rtbErrors.Name = "rtbErrors";
-            this.rtbErrors.Size = new System.Drawing.Size(1031, 158);
+            this.rtbErrors.Size = new System.Drawing.Size(1031, 160);
             this.rtbErrors.TabIndex = 0;
             this.rtbErrors.Text = "";
             this.rtbErrors.TextChanged += new System.EventHandler(this.rtbErrors_TextChanged);
@@ -322,9 +326,9 @@
             // rtbEvents
             // 
             this.rtbEvents.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbEvents.Location = new System.Drawing.Point(3, 18);
+            this.rtbEvents.Location = new System.Drawing.Point(3, 16);
             this.rtbEvents.Name = "rtbEvents";
-            this.rtbEvents.Size = new System.Drawing.Size(1031, 142);
+            this.rtbEvents.Size = new System.Drawing.Size(1031, 144);
             this.rtbEvents.TabIndex = 0;
             this.rtbEvents.Text = "";
             // 
@@ -359,10 +363,10 @@
             this.tbpConfig.Controls.Add(this.grpLogging);
             this.tbpConfig.Controls.Add(this.grpTarget);
             this.tbpConfig.Controls.Add(this.grpSource);
-            this.tbpConfig.Location = new System.Drawing.Point(4, 25);
+            this.tbpConfig.Location = new System.Drawing.Point(4, 22);
             this.tbpConfig.Name = "tbpConfig";
             this.tbpConfig.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpConfig.Size = new System.Drawing.Size(1103, 679);
+            this.tbpConfig.Size = new System.Drawing.Size(1103, 682);
             this.tbpConfig.TabIndex = 1;
             this.tbpConfig.Text = "Config";
             this.tbpConfig.ToolTipText = "Configure System";
@@ -391,7 +395,7 @@
             this.chkAutoTruncate.AutoSize = true;
             this.chkAutoTruncate.Location = new System.Drawing.Point(18, 29);
             this.chkAutoTruncate.Name = "chkAutoTruncate";
-            this.chkAutoTruncate.Size = new System.Drawing.Size(120, 21);
+            this.chkAutoTruncate.Size = new System.Drawing.Size(94, 17);
             this.chkAutoTruncate.TabIndex = 0;
             this.chkAutoTruncate.Text = "Auto Truncate";
             this.chkAutoTruncate.UseVisualStyleBackColor = true;
@@ -414,7 +418,7 @@
             this.txtMaxLogLen.Location = new System.Drawing.Point(94, 70);
             this.txtMaxLogLen.MaxLength = 25;
             this.txtMaxLogLen.Name = "txtMaxLogLen";
-            this.txtMaxLogLen.Size = new System.Drawing.Size(100, 22);
+            this.txtMaxLogLen.Size = new System.Drawing.Size(100, 20);
             this.txtMaxLogLen.TabIndex = 15;
             this.txtMaxLogLen.Text = "10000";
             this.txtMaxLogLen.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -424,7 +428,7 @@
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(6, 70);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(81, 17);
+            this.label21.Size = new System.Drawing.Size(63, 13);
             this.label21.TabIndex = 14;
             this.label21.Text = "Max Length";
             // 
@@ -438,7 +442,7 @@
             "All Entries"});
             this.cmbErrorLevel.Location = new System.Drawing.Point(6, 38);
             this.cmbErrorLevel.Name = "cmbErrorLevel";
-            this.cmbErrorLevel.Size = new System.Drawing.Size(155, 24);
+            this.cmbErrorLevel.Size = new System.Drawing.Size(155, 21);
             this.cmbErrorLevel.TabIndex = 9;
             // 
             // grpTarget
@@ -463,7 +467,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(46, 123);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(69, 17);
+            this.label4.Size = new System.Drawing.Size(53, 13);
             this.label4.TabIndex = 7;
             this.label4.Text = "Password";
             // 
@@ -472,7 +476,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(36, 95);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(79, 17);
+            this.label3.Size = new System.Drawing.Size(60, 13);
             this.label3.TabIndex = 6;
             this.label3.Text = "User Name";
             // 
@@ -481,7 +485,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(81, 67);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 17);
+            this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "Port";
             // 
@@ -490,7 +494,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(55, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(60, 17);
+            this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 4;
             this.label1.Text = "Address";
             // 
@@ -498,7 +502,7 @@
             // 
             this.txtTargetPwd.Location = new System.Drawing.Point(124, 121);
             this.txtTargetPwd.Name = "txtTargetPwd";
-            this.txtTargetPwd.Size = new System.Drawing.Size(209, 22);
+            this.txtTargetPwd.Size = new System.Drawing.Size(209, 20);
             this.txtTargetPwd.TabIndex = 7;
             this.txtTargetPwd.UseSystemPasswordChar = true;
             this.txtTargetPwd.WordWrap = false;
@@ -507,7 +511,7 @@
             // 
             this.txtTargetUname.Location = new System.Drawing.Point(124, 93);
             this.txtTargetUname.Name = "txtTargetUname";
-            this.txtTargetUname.Size = new System.Drawing.Size(209, 22);
+            this.txtTargetUname.Size = new System.Drawing.Size(209, 20);
             this.txtTargetUname.TabIndex = 6;
             this.txtTargetUname.WordWrap = false;
             // 
@@ -515,7 +519,7 @@
             // 
             this.txtTargetPort.Location = new System.Drawing.Point(124, 65);
             this.txtTargetPort.Name = "txtTargetPort";
-            this.txtTargetPort.Size = new System.Drawing.Size(209, 22);
+            this.txtTargetPort.Size = new System.Drawing.Size(209, 20);
             this.txtTargetPort.TabIndex = 5;
             this.txtTargetPort.WordWrap = false;
             // 
@@ -523,7 +527,7 @@
             // 
             this.txtTargetIP.Location = new System.Drawing.Point(124, 37);
             this.txtTargetIP.Name = "txtTargetIP";
-            this.txtTargetIP.Size = new System.Drawing.Size(209, 22);
+            this.txtTargetIP.Size = new System.Drawing.Size(209, 20);
             this.txtTargetIP.TabIndex = 4;
             this.txtTargetIP.WordWrap = false;
             // 
@@ -549,7 +553,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(51, 124);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(69, 17);
+            this.label5.Size = new System.Drawing.Size(53, 13);
             this.label5.TabIndex = 11;
             this.label5.Text = "Password";
             // 
@@ -558,7 +562,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(41, 96);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(79, 17);
+            this.label6.Size = new System.Drawing.Size(60, 13);
             this.label6.TabIndex = 10;
             this.label6.Text = "User Name";
             // 
@@ -567,7 +571,7 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(86, 68);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(34, 17);
+            this.label7.Size = new System.Drawing.Size(26, 13);
             this.label7.TabIndex = 9;
             this.label7.Text = "Port";
             // 
@@ -576,7 +580,7 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(60, 38);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(60, 17);
+            this.label8.Size = new System.Drawing.Size(45, 13);
             this.label8.TabIndex = 8;
             this.label8.Text = "Address";
             // 
@@ -584,7 +588,7 @@
             // 
             this.txtSourcePwd.Location = new System.Drawing.Point(129, 121);
             this.txtSourcePwd.Name = "txtSourcePwd";
-            this.txtSourcePwd.Size = new System.Drawing.Size(209, 22);
+            this.txtSourcePwd.Size = new System.Drawing.Size(209, 20);
             this.txtSourcePwd.TabIndex = 3;
             this.txtSourcePwd.UseSystemPasswordChar = true;
             this.txtSourcePwd.WordWrap = false;
@@ -593,7 +597,7 @@
             // 
             this.txtSourceUname.Location = new System.Drawing.Point(129, 93);
             this.txtSourceUname.Name = "txtSourceUname";
-            this.txtSourceUname.Size = new System.Drawing.Size(209, 22);
+            this.txtSourceUname.Size = new System.Drawing.Size(209, 20);
             this.txtSourceUname.TabIndex = 2;
             this.txtSourceUname.WordWrap = false;
             // 
@@ -601,7 +605,7 @@
             // 
             this.txtSourcePort.Location = new System.Drawing.Point(129, 65);
             this.txtSourcePort.Name = "txtSourcePort";
-            this.txtSourcePort.Size = new System.Drawing.Size(209, 22);
+            this.txtSourcePort.Size = new System.Drawing.Size(209, 20);
             this.txtSourcePort.TabIndex = 1;
             this.txtSourcePort.WordWrap = false;
             // 
@@ -609,7 +613,7 @@
             // 
             this.txtSourceIP.Location = new System.Drawing.Point(129, 37);
             this.txtSourceIP.Name = "txtSourceIP";
-            this.txtSourceIP.Size = new System.Drawing.Size(209, 22);
+            this.txtSourceIP.Size = new System.Drawing.Size(209, 20);
             this.txtSourceIP.TabIndex = 0;
             this.txtSourceIP.WordWrap = false;
             // 
@@ -618,10 +622,10 @@
             this.tbpDBConfig.BackColor = System.Drawing.SystemColors.Control;
             this.tbpDBConfig.Controls.Add(this.gbTargetDB);
             this.tbpDBConfig.Controls.Add(this.gbSourceDB);
-            this.tbpDBConfig.Location = new System.Drawing.Point(4, 25);
+            this.tbpDBConfig.Location = new System.Drawing.Point(4, 22);
             this.tbpDBConfig.Name = "tbpDBConfig";
             this.tbpDBConfig.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpDBConfig.Size = new System.Drawing.Size(1103, 679);
+            this.tbpDBConfig.Size = new System.Drawing.Size(1103, 682);
             this.tbpDBConfig.TabIndex = 2;
             this.tbpDBConfig.Text = "DB Config";
             // 
@@ -652,7 +656,7 @@
             this.label19.AutoSize = true;
             this.label19.Location = new System.Drawing.Point(410, 70);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(72, 17);
+            this.label19.Size = new System.Drawing.Size(56, 13);
             this.label19.TabIndex = 19;
             this.label19.Text = "DB  Name";
             // 
@@ -661,7 +665,7 @@
             this.label20.AutoSize = true;
             this.label20.Location = new System.Drawing.Point(368, 42);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(114, 17);
+            this.label20.Size = new System.Drawing.Size(87, 13);
             this.label20.TabIndex = 18;
             this.label20.Text = "DB Server Name";
             // 
@@ -669,7 +673,7 @@
             // 
             this.textBox1.Location = new System.Drawing.Point(498, 67);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(209, 22);
+            this.textBox1.Size = new System.Drawing.Size(209, 20);
             this.textBox1.TabIndex = 17;
             this.textBox1.WordWrap = false;
             // 
@@ -677,7 +681,7 @@
             // 
             this.textBox2.Location = new System.Drawing.Point(498, 37);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(209, 22);
+            this.textBox2.Size = new System.Drawing.Size(209, 20);
             this.textBox2.TabIndex = 16;
             this.textBox2.WordWrap = false;
             // 
@@ -686,7 +690,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(46, 123);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(69, 17);
+            this.label9.Size = new System.Drawing.Size(53, 13);
             this.label9.TabIndex = 7;
             this.label9.Text = "Password";
             // 
@@ -695,7 +699,7 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(36, 95);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(79, 17);
+            this.label10.Size = new System.Drawing.Size(60, 13);
             this.label10.TabIndex = 6;
             this.label10.Text = "User Name";
             // 
@@ -704,7 +708,7 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(81, 67);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(34, 17);
+            this.label11.Size = new System.Drawing.Size(26, 13);
             this.label11.TabIndex = 5;
             this.label11.Text = "Port";
             // 
@@ -713,7 +717,7 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(55, 37);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(60, 17);
+            this.label12.Size = new System.Drawing.Size(45, 13);
             this.label12.TabIndex = 4;
             this.label12.Text = "Address";
             // 
@@ -721,7 +725,7 @@
             // 
             this.tbTargetDbPwd.Location = new System.Drawing.Point(124, 121);
             this.tbTargetDbPwd.Name = "tbTargetDbPwd";
-            this.tbTargetDbPwd.Size = new System.Drawing.Size(209, 22);
+            this.tbTargetDbPwd.Size = new System.Drawing.Size(209, 20);
             this.tbTargetDbPwd.TabIndex = 7;
             this.tbTargetDbPwd.UseSystemPasswordChar = true;
             this.tbTargetDbPwd.WordWrap = false;
@@ -730,7 +734,7 @@
             // 
             this.tbTargetDbUname.Location = new System.Drawing.Point(124, 93);
             this.tbTargetDbUname.Name = "tbTargetDbUname";
-            this.tbTargetDbUname.Size = new System.Drawing.Size(209, 22);
+            this.tbTargetDbUname.Size = new System.Drawing.Size(209, 20);
             this.tbTargetDbUname.TabIndex = 6;
             this.tbTargetDbUname.WordWrap = false;
             // 
@@ -738,7 +742,7 @@
             // 
             this.tbTargetDbPort.Location = new System.Drawing.Point(124, 65);
             this.tbTargetDbPort.Name = "tbTargetDbPort";
-            this.tbTargetDbPort.Size = new System.Drawing.Size(209, 22);
+            this.tbTargetDbPort.Size = new System.Drawing.Size(209, 20);
             this.tbTargetDbPort.TabIndex = 5;
             this.tbTargetDbPort.WordWrap = false;
             // 
@@ -746,7 +750,7 @@
             // 
             this.tbTargetDbAddress.Location = new System.Drawing.Point(124, 37);
             this.tbTargetDbAddress.Name = "tbTargetDbAddress";
-            this.tbTargetDbAddress.Size = new System.Drawing.Size(209, 22);
+            this.tbTargetDbAddress.Size = new System.Drawing.Size(209, 20);
             this.tbTargetDbAddress.TabIndex = 4;
             this.tbTargetDbAddress.WordWrap = false;
             // 
@@ -776,7 +780,7 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(410, 71);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(72, 17);
+            this.label18.Size = new System.Drawing.Size(56, 13);
             this.label18.TabIndex = 15;
             this.label18.Text = "DB  Name";
             // 
@@ -785,7 +789,7 @@
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(368, 43);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(114, 17);
+            this.label17.Size = new System.Drawing.Size(87, 13);
             this.label17.TabIndex = 14;
             this.label17.Text = "DB Server Name";
             // 
@@ -793,7 +797,7 @@
             // 
             this.tbTargetDbName.Location = new System.Drawing.Point(498, 68);
             this.tbTargetDbName.Name = "tbTargetDbName";
-            this.tbTargetDbName.Size = new System.Drawing.Size(209, 22);
+            this.tbTargetDbName.Size = new System.Drawing.Size(209, 20);
             this.tbTargetDbName.TabIndex = 13;
             this.tbTargetDbName.WordWrap = false;
             // 
@@ -801,7 +805,7 @@
             // 
             this.tbTargetDbServerNamr.Location = new System.Drawing.Point(498, 38);
             this.tbTargetDbServerNamr.Name = "tbTargetDbServerNamr";
-            this.tbTargetDbServerNamr.Size = new System.Drawing.Size(209, 22);
+            this.tbTargetDbServerNamr.Size = new System.Drawing.Size(209, 20);
             this.tbTargetDbServerNamr.TabIndex = 12;
             this.tbTargetDbServerNamr.WordWrap = false;
             // 
@@ -810,7 +814,7 @@
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(51, 124);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(69, 17);
+            this.label13.Size = new System.Drawing.Size(53, 13);
             this.label13.TabIndex = 11;
             this.label13.Text = "Password";
             // 
@@ -819,7 +823,7 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(41, 96);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(79, 17);
+            this.label14.Size = new System.Drawing.Size(60, 13);
             this.label14.TabIndex = 10;
             this.label14.Text = "User Name";
             // 
@@ -828,7 +832,7 @@
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(86, 68);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(34, 17);
+            this.label15.Size = new System.Drawing.Size(26, 13);
             this.label15.TabIndex = 9;
             this.label15.Text = "Port";
             // 
@@ -837,7 +841,7 @@
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(60, 38);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(60, 17);
+            this.label16.Size = new System.Drawing.Size(45, 13);
             this.label16.TabIndex = 8;
             this.label16.Text = "Address";
             // 
@@ -845,7 +849,7 @@
             // 
             this.tbSourceDbPwd.Location = new System.Drawing.Point(129, 121);
             this.tbSourceDbPwd.Name = "tbSourceDbPwd";
-            this.tbSourceDbPwd.Size = new System.Drawing.Size(209, 22);
+            this.tbSourceDbPwd.Size = new System.Drawing.Size(209, 20);
             this.tbSourceDbPwd.TabIndex = 3;
             this.tbSourceDbPwd.UseSystemPasswordChar = true;
             this.tbSourceDbPwd.WordWrap = false;
@@ -854,7 +858,7 @@
             // 
             this.tbSourceDbUname.Location = new System.Drawing.Point(129, 93);
             this.tbSourceDbUname.Name = "tbSourceDbUname";
-            this.tbSourceDbUname.Size = new System.Drawing.Size(209, 22);
+            this.tbSourceDbUname.Size = new System.Drawing.Size(209, 20);
             this.tbSourceDbUname.TabIndex = 2;
             this.tbSourceDbUname.WordWrap = false;
             // 
@@ -862,7 +866,7 @@
             // 
             this.tbSourceDbPort.Location = new System.Drawing.Point(129, 65);
             this.tbSourceDbPort.Name = "tbSourceDbPort";
-            this.tbSourceDbPort.Size = new System.Drawing.Size(209, 22);
+            this.tbSourceDbPort.Size = new System.Drawing.Size(209, 20);
             this.tbSourceDbPort.TabIndex = 1;
             this.tbSourceDbPort.WordWrap = false;
             // 
@@ -870,9 +874,29 @@
             // 
             this.tbSourceDbAddress.Location = new System.Drawing.Point(129, 37);
             this.tbSourceDbAddress.Name = "tbSourceDbAddress";
-            this.tbSourceDbAddress.Size = new System.Drawing.Size(209, 22);
+            this.tbSourceDbAddress.Size = new System.Drawing.Size(209, 20);
             this.tbSourceDbAddress.TabIndex = 0;
             this.tbSourceDbAddress.WordWrap = false;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btnSynMed);
+            this.groupBox1.Location = new System.Drawing.Point(653, 501);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(259, 170);
+            this.groupBox1.TabIndex = 21;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "[ Test Devices ]";
+            // 
+            // btnSynMed
+            // 
+            this.btnSynMed.Location = new System.Drawing.Point(17, 32);
+            this.btnSynMed.Name = "btnSynMed";
+            this.btnSynMed.Size = new System.Drawing.Size(94, 42);
+            this.btnSynMed.TabIndex = 0;
+            this.btnSynMed.Text = "SynMed";
+            this.btnSynMed.UseVisualStyleBackColor = true;
+            this.btnSynMed.Click += new System.EventHandler(this.btnSynMed_Click);
             // 
             // frmMainRecordTester
             // 
@@ -911,6 +935,7 @@
             this.gbTargetDB.PerformLayout();
             this.gbSourceDB.ResumeLayout(false);
             this.gbSourceDB.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -990,6 +1015,8 @@
         private System.Windows.Forms.Button btnRx;
         private System.Windows.Forms.Button btnStore;
         private System.Windows.Forms.Button btnTQ;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button btnSynMed;
     }
 }
 

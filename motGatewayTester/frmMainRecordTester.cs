@@ -341,6 +341,12 @@ namespace motGatewayTester
             var __tq = new frmDoseSchedule();
             __tq.Show();
         }
+
+        private void btnSynMed_Click(object sender, EventArgs e)
+        {
+            var __synmed = new frmSynMed();
+            __synmed.Show();
+        }
     }
 
     public class UIupdateArgs : EventArgs

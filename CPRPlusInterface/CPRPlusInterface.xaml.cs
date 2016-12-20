@@ -1097,6 +1097,8 @@ namespace CPRPlusInterface
                     __xTable.Add("QtyPerDose", "QtyPerDose");
                     __xTable.Add("QtyDIspensed", "QtyDispensed");
 
+                    __xTable.Add("DC_Date", "DiscontinueDate");
+
                     string __tag;
                     string __val;
                     string __tmp;
