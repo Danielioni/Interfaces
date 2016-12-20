@@ -211,6 +211,16 @@ namespace motInboundLib
                         __args.__sa = SendingApp;
                         ADT_A01MessageEventReceived(this, __args);
                         break;
+
+                    case "ADT_A08":
+                    case "ADT_AO8":
+                        __ui_args.__event_message = "ADT_A08 Message Event";
+
+                        __args.timestamp = DateTime.Now;
+                        __args.__raw_data = __data;
+                        __args.__sa = SendingApp;
+                        ADT_A01MessageEventReceived(this, __args);
+                        break;
                 }
 
                 ACK __out = new ACK(__resp, __organization, __processor);

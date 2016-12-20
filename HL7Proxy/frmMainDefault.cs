@@ -548,6 +548,7 @@ namespace HL7Proxy
             Properties.Settings.Default.SSLCert = __X_509_valid_collection[cmbx509Certificates.SelectedIndex].Thumbprint;
             Properties.Settings.Default.Save();
         }
+
     }
 
     public class ExecuteArgs : EventArgs

@@ -593,7 +593,7 @@ namespace HL7Proxy
             __problem_segment = "DG1";
 
             return string.Format("Coding Method: {0}\nDiag Code: {1}\nDesc: {2}\nDate: {3}\nType: {4}\nMajor Catagory: {5}\nRelated Group: {6}\n******\n",
-                                               __dg1.Get("DG1.2.1"), __dg1.Get("DG1.3.1"), __dg1.Get("DG1.4.1"), __dg1.Get("DG1.5.1"), __dg1.Get("DG1.6.1"), __dg1.Get("DG1.7.1"), __dg1.Get("DG1.8.1"));
+                                               __dg1.Get("DG1.2.1"), __dg1.Get("DG1.3.1") + " " + __dg1.Get("DG1.3.2") + ":" + __dg1.Get("DG1.3.3"), __dg1.Get("DG1.4.1"), __dg1.Get("DG1.5.1"), __dg1.Get("DG1.6.1"), __dg1.Get("DG1.7.1"), __dg1.Get("DG1.8.1"));
         }
         private string __process_EVN(RecordBundle __recs, EVN __evn)
         {
@@ -969,6 +969,31 @@ namespace HL7Proxy
 
             __recs.__drug.RxSys_DrugID = __rxd.Get("RXD.2.1");
             __recs.__drug.DrugName = __rxd.Get("RXD.2.2");
+           
+
+
+            // This  popped up in McKesson Pharmaserv
+            __recs.__doc.DEA_ID = __rxd.Get("RXD.10.1");
+            __recs.__doc.LastName = __rxd.Get("RXD.10.2");
+            __recs.__doc.FirstName = __rxd.Get("RXD.10.3");
+
+            __recs.__scrip.RxSys_DocID = __rxd.Get("RXD.10.1");
+            __recs.__scrip.DoseScheduleName = __rxd.Get("RXD.15.1");
+            __recs.__scrip.Sig = __rxd.Get("RXD.15.2");
+            __recs.__scrip.QtyPerDose = __rxd.Get("RXD.12.1");
+            __recs.__scrip.Comments = __rxd.Get("RXD.9");
+            __recs.__scrip.Refills = __rxd.Get("RXD.8");
+            __recs.__scrip.RxType = "0";
+
+            __recs.__drug.NDCNum = __rxd.Get("RXD.2.1");
+            __recs.__drug.Unit = __rxd.Get("RXD.5.1");
+            __recs.__drug.DoseForm = __rxd.Get("RXD.6.1");
+            __recs.__drug.TradeName = __rxd.Get("RXD.2.2");
+
+            // Apparently the RXD doesn't identify the patient -- Assume a pid always comes first
+            __recs.__scrip.RxSys_PatID = __recs.__pr.RxSys_PatID;
+
+
         }
         private void __process_RXE(RecordBundle __recs, RXE __rxe)
         {
@@ -1348,6 +1373,7 @@ namespace HL7Proxy
                 __recs.__drug.Clear();
 
                 __process_ORC(__recs, __order.__orc);
+                __process_RXD(__recs, __order.__rxd);
                 __process_RXE(__recs, __order.__rxe);
                 __process_RXO(__recs, __order.__rxo);
 
