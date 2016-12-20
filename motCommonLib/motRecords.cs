@@ -344,24 +344,24 @@ namespace motCommonLib
             {
                 if(__id.Length < 9)
                 {
-                    throw new FormatException("Invalid DEA Number, minimum length is 9. Received " + __id.Length + " in " + __id);
+                    throw new FormatException("REJECTED: Invalid DEA Number, minimum length is 9. Received " + __id.Length + " in " + __id);
                 }
 
                 if (__id.Length > 9)
                 {
-                    throw new FormatException("Invalid DEA Number, maximum length is 9. Received " + __id.Length + " in " + __id);
+                    throw new FormatException("REJECTED: Invalid DEA Number, maximum length is 9. Received " + __id.Length + " in " + __id);
                 }
 
                 if (__id[1] != '9' && !Char.IsLetter(__id[1]))
                 {
-                    throw new FormatException("Invalid DEA Number, the id " + __id.Substring(0, 2) + " in " + __id + " is incorrect");
+                    throw new FormatException("REJECTED: Invalid DEA Number, the id " + __id.Substring(0, 2) + " in " + __id + " is incorrect");
                 }
 
                 for (int i = 2; i < 7; i++)
                 {
                     if (!Char.IsNumber(__id[i]))
                     {
-                        throw new FormatException("Invalid DEA Number, the trailing 6 characters must be digits, not " + __id.Substring(2) + " in " + __id);
+                        throw new FormatException("REJECTED: Invalid DEA Number, the trailing 6 characters must be digits, not " + __id.Substring(2) + " in " + __id);
                     }
                 }
             }

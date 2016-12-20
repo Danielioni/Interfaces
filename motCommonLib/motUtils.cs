@@ -42,7 +42,17 @@ namespace motCommonLib
         Info       // Errors, Warning, and Info
     };
 
+    public class HL7Exception : Exception
+    {
+        public HL7Exception()
+        { }
 
+        public HL7Exception(int code, string message) : base(message)
+        { }
+
+        public HL7Exception(int code, string message, Exception inner) : base(message, inner)
+        { }
+     }
     public class  KeyPair
     { 
         System.TypeCode __type;
