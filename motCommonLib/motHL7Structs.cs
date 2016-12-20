@@ -264,7 +264,7 @@ namespace motCommonLib
                     {
                         return __result;
                     }
-                }                
+                }
             }
 
             return __result;
@@ -278,7 +278,7 @@ namespace motCommonLib
             }
 
             var __result = (from elem in __data.Descendants(__key) select elem.Value).ToList();
-                      
+
             return __result;
         }
 
@@ -338,7 +338,7 @@ namespace motCommonLib
         public List<ROL> __rol;
         public List<DG1> __dg1;
         public List<SFT> __sft;
-    
+
         public List<DB1> __db1;
 
         public List<Dictionary<string, string>> __message_store;
@@ -638,12 +638,12 @@ namespace motCommonLib
 
         public bool Empty()
         {
-            
-            if (__orc == null )
+
+            if (__orc == null)
             {
                 return true;
             }
-            
+
             return false;
         }
     }
@@ -790,7 +790,7 @@ namespace motCommonLib
                         break;
 
                     case "PRT":
-                        
+
                         if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
                         {
                             __patient.__prt.Add(new PRT(__xe));
@@ -799,7 +799,7 @@ namespace motCommonLib
                         {
                             __current_order.__prt.Add(new PRT(__xe));
                         }
-                        
+
                         break;
 
                     case "IN1":
@@ -951,7 +951,7 @@ namespace motCommonLib
                         break;
 
                     case "PRT":
-                        
+
                         if (__last_significant_item == "PID" || __last_significant_item.Contains("PV"))
                         {
                             __patient.__prt.Add(new PRT(__xe));
@@ -960,7 +960,7 @@ namespace motCommonLib
                         {
                             __current_order.__prt.Add(new PRT(__xe));
                         }
-                        
+
                         break;
 
                     case "IN1":
@@ -1255,7 +1255,7 @@ namespace motCommonLib
     public class MSA : HL7_Element_Base
     {
         HL7MessageParser __parser = new HL7MessageParser();
-    
+
         private void __load()
         {
         }
@@ -1266,7 +1266,7 @@ namespace motCommonLib
         public MSA(XElement __xe) : base(__xe)
         {
         }
-      
+
         public MSA(string __message) : base()
         {
             __load();
@@ -1819,7 +1819,35 @@ namespace motCommonLib
             __parser.__parse(__message, __msg_data);
         }
     }
-    public class ACK
+
+    public class HL7Return
+    {
+        protected Dictionary<int, string> Error_Values;
+
+        public HL7Return()
+        {
+            Error_Values = new Dictionary<int, string>()
+            {
+                { 100, @"Segment Sequence Error. The message segments were not in the proper order, or required segments are missing." },
+                { 101, @"Required Field Missing. A mandatory field is missing from a segment." },
+                { 102, @"Data type error. The field contained data of the wrong data type" },
+                { 103, @"Table value. A field of data type ID or IS was compared against the corresponding table, and no match was found." },
+                { 200, @"Unsupported message type. The Message Type is not supported." },
+                { 201, @"Unsupported event code. The Event Code is not supported." },
+                { 202, @"Unsupported processing id. The Processing ID is not supported." },
+                { 203, @"Unsupported version id. The Version ID is not supported."},
+                { 205, @"Duplicate key identifier. The ID of the patient, order, etc., already exists. Used in response to addition transactions (Admit, New Order, etc.)." },
+                { 206, @"Application record locked. The transaction could not be performed at the application storage level, e.g., database locked." },
+                { 207, @"Application internal error. A catch-all for internal errors not explicitly covered by other codes." }
+            };
+        }
+        public bool __include_SFT { get; set; } = false;
+        public bool __include_ERR { get; set; } = false;
+        public bool __include_MSA { get; set; } = true;
+    }
+
+
+    public class ACK : HL7Return
     {
         public string __ack_string { get; set; } = string.Empty;
         public string __clean_ack_string { get; set; } = string.Empty;
@@ -1880,18 +1908,18 @@ namespace motCommonLib
 
         public ACK(MSH __msh)
         {
-            Build(__msh, "MOT-II HL7 Proxy", "Medicine-On-Time");
+            Build(__msh, "Medicine-On-Time HL7 Interface", "Medicine-On-Time");
         }
         public ACK(MSH __msh, string __org)
         {
-            Build(__msh, __org, "MOT-II HL7 Proxy");
+            Build(__msh, __org, "Medicine-On-Time HL7 Interface");
         }
         public ACK(MSH __msh, string __org, string __proc)
         {
             Build(__msh, __org, __proc);
         }
     }
-    public class NAK
+    public class NAK : HL7Return
     {
         public string __nak_string { get; set; } = string.Empty;
         public string __clean_nak_string { get; set; } = string.Empty;
@@ -1956,11 +1984,11 @@ namespace motCommonLib
 
         public NAK(MSH __msh, string __error_code)
         {
-            Build(__msh, __error_code, "Medicine-On-Time", "MOT-II HL7 Proxy");
+            Build(__msh, __error_code, "Medicine-On-Time", "Medicine-On-Time HL7 Interface");
         }
         public NAK(MSH __msh, string __error_code, string __org)
         {
-            Build(__msh, __error_code, __org, "MOT-II HL7 Proxy");
+            Build(__msh, __error_code, __org, "Medicine-On-Time HL7 Interface");
         }
         public NAK(MSH __msh, string __error_code, string __org, string __proc)
         {

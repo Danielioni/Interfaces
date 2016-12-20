@@ -512,9 +512,6 @@ namespace motCommonLib
 
                 for (int i = 0; i < __qualifiedTags.Count; i++)
                 {
-                    // Qualify field requirement
-                    // if required and when == action && is_blank -> throw
-
                     __record += "<" + __qualifiedTags[i].tagName + ">" +
                                       __qualifiedTags[i].tagData + "</" +
                                       __qualifiedTags[i].tagName + ">";
