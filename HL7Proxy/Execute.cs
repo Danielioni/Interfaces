@@ -1472,11 +1472,11 @@ namespace HL7Proxy
 
                 __recs.Commit(__socket);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                __show_error_event(string.Format("ADT_A01 Processing Failure ({0}) -- {1}", __problem_segment, e.Message));
-                __logger.Log(__log_level, "ADT General Processing Failure at ({0}): {1}", __problem_segment, e.Message);
-                throw;
+                __show_error_event(string.Format("ADT_A01 Processing Failure ({0}) -- {1}", __problem_segment, ex.Message));
+                __logger.Log(__log_level, "ADT General Processing Failure at ({0}): {1}", __problem_segment, ex.Message);
+                throw new HL7Exception(199, string.Format("{0}_{1} Processing Failure: {2} - {3}", __message_type, __event_code, __problem_segment, ex.Message), ex);
             }
         }
         void __process_ADT_A12_Event(Object sender, HL7Event7MessageArgs __args)
@@ -1516,10 +1516,10 @@ namespace HL7Proxy
                 __recs.Write();
                 __recs.Commit(__socket);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                __show_error_event(string.Format("ADT_A12 Parse Failure while processing ({0}) -- {1}", __problem_segment, e.Message));
-                throw;
+                __show_error_event(string.Format("ADT_A12 Parse Failure while processing ({0}) -- {1}", __problem_segment, ex.Message));
+                throw new HL7Exception(199, string.Format("{0}_{1} Processing Failure: {2} - {3}", __message_type, __event_code, __problem_segment, ex.Message), ex);
             }
         }
         void __process_OMP_O09_Event(Object sender, HL7Event7MessageArgs __args)
@@ -1560,9 +1560,9 @@ namespace HL7Proxy
             }
             catch (Exception ex)
             {
-                __show_error_event(string.Format("OMP_O09 Processing Failure: {0}", ex.Message));
+                __show_error_event(string.Format("OMP_O09 Processing Failure: {0} - {1}", __problem_segment, ex.Message));
                 __logger.Log(__log_level, "OMP_O09  Processing Failure: {0}", ex.Message);
-                throw;
+                throw new HL7Exception(199, string.Format("{0}_{1} Processing Failure: {2} - {3}", __message_type, __event_code, __problem_segment, ex.Message), ex);
             }
 
         }
@@ -1607,7 +1607,7 @@ namespace HL7Proxy
             {
                 __show_error_event(string.Format("RDE_O11 Parse Failure while processing ({0}) -- {1}", __problem_segment, ex.Message));
                 __logger.Log(__log_level, "RDE_O11 General Processing Failure: {0}", ex.Message);
-                throw;
+                throw new HL7Exception(199, string.Format("{0}_{1} Processing Failure: {2} - {3}", __message_type, __event_code, __problem_segment, ex.Message), ex);
             }
         }
         void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
@@ -1646,9 +1646,9 @@ namespace HL7Proxy
             }
             catch (Exception ex)
             {
-                __show_error_event(string.Format("RDS_O13 Processing Failure: {0}", ex.Message));
-                __logger.Log(__log_level, "RDS_O13  Processing Failure: {0}", ex.Message);
-                throw;
+                __show_error_event(string.Format("RDS_O13 Processing Failure: {0} - {1}", __problem_segment, ex.Message));
+                __logger.Log(__log_level, "RDS_O13  Processing Failure: {0} - {1}", __problem_segment, ex.Message);
+                throw new HL7Exception(199, string.Format("{0}_{1} Processing Failure: {2} - {3}", __message_type, __event_code, __problem_segment, ex.Message), ex);
             }
         }
     }

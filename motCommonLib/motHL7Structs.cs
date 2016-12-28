@@ -1924,7 +1924,7 @@ namespace motCommonLib
         public string __nak_string { get; set; } = string.Empty;
         public string __clean_nak_string { get; set; } = string.Empty;
 
-        public void Build(MSH __msh, string __error_code, string __org, string __proc)
+        public void Build(MSH __msh, string __error_code, string __org, string __proc, string __error_msg = null)
         {
             if (string.IsNullOrEmpty(__org))
             {
@@ -1942,7 +1942,9 @@ namespace motCommonLib
             }
 
             MSH __tmp_msh = __msh;
-            string __time_stamp = DateTime.Now.ToString("yyyyMMddhh");
+            var __time_stamp = DateTime.Now.ToString("yyyyMMddhh");
+            var __error_string = !string.IsNullOrEmpty(__error_msg) ? __error_msg : __tmp_msh.__msg_data["MSH.10"];
+
 
             __tmp_msh.__msg_data["MSH.5"] = __tmp_msh.__msg_data["MSH.3"];
             __tmp_msh.__msg_data["MSH.6"] = __tmp_msh.__msg_data["MSH.4"];
@@ -1963,7 +1965,7 @@ namespace motCommonLib
                            "\r" +
                            @"MSA|" +
                            __error_code + "|" +
-                           __tmp_msh.__msg_data["MSH.10"] + "|" +
+                           __error_string + "|" +
                            '\x1C' +
                            '\x0D';
 
@@ -1979,7 +1981,7 @@ namespace motCommonLib
                            __tmp_msh.__msg_data["MSH.12"] + " | " +
                            "\n\tMSA | " +
                            __error_code + "| " +
-                           __tmp_msh.__msg_data["MSH.10"] + " |\n";
+                           __error_string + " |\n";
         }
 
         public NAK(MSH __msh, string __error_code)
@@ -1990,9 +1992,9 @@ namespace motCommonLib
         {
             Build(__msh, __error_code, __org, "Medicine-On-Time HL7 Interface");
         }
-        public NAK(MSH __msh, string __error_code, string __org, string __proc)
+        public NAK(MSH __msh, string __error_code, string __org, string __proc, string __error_msg = null)
         {
-            Build(__msh, __error_code, __org, __proc);
+            Build(__msh, __error_code, __org, __proc, __error_msg);
         }
     }
 };

@@ -231,25 +231,32 @@ namespace motInboundLib
 
                 UpdateEventUI(this, __ui_args);
             }
-            catch (Exception ex)
+            catch (HL7Exception ex)
             {
                 string __error_code = "AP";
 
                 // Parse the message, look for REJECTED
-                if(ex.Message.Contains("REJECTED"))
+                if (ex.Message.Contains("REJECTED"))
                 {
                     __error_code = "AR";
                 }
 
-                NAK __out = new NAK(__resp, __error_code, __organization, __processor);
+                NAK __out = new NAK(__resp, __error_code, __organization, __processor, ex.Message);
                 __response = __out.__nak_string;
                 __ui_args.__msh_out = __out.__clean_nak_string;
-                __ui_args.__event_message = "REJECTED " + ex.Message;
+                __ui_args.__event_message = ex.Message;
 
                 __logger.Error("HL7 NAK: {0}", __response);
                 __logger.Error("Failed Messasge: {0} Failed Reason: {1}", __data, ex.Message);
 
                 UpdateErrorUI(this, __ui_args);
+            }
+            catch (Exception ex)
+            {
+                NAK __out = new NAK(__resp, "AP", __organization, __processor, "Unknown Processing Error " + ex.Message);
+                __response = __out.__nak_string;
+                __ui_args.__msh_out = "UnKnown Processing Error";
+                __ui_args.__event_message = ex.Message;
             }
 
             __write_message_to_endpoint(__response);
