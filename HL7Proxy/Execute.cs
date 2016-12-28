@@ -969,7 +969,7 @@ namespace HL7Proxy
 
             __recs.__drug.RxSys_DrugID = __rxd.Get("RXD.2.1");
             __recs.__drug.DrugName = __rxd.Get("RXD.2.2");
-           
+            __recs.__drug.Strength = __rxd.Get("RXD.16");
 
 
             // This  popped up in McKesson Pharmaserv
@@ -981,7 +981,14 @@ namespace HL7Proxy
             __recs.__scrip.DoseScheduleName = __rxd.Get("RXD.15.1");
             __recs.__scrip.Sig = __rxd.Get("RXD.15.2");
             __recs.__scrip.QtyPerDose = __rxd.Get("RXD.12.1");
-            __recs.__scrip.Comments = __rxd.Get("RXD.9");
+
+            if(string.IsNullOrEmpty(__rxd.Get("RXD.9")))
+            {
+                __recs.__scrip.Comments = "Patient Notes: ";
+            }
+
+            __recs.__scrip.Comments += "\n" + __rxd.Get("RXD.9");
+
             __recs.__scrip.Refills = __rxd.Get("RXD.8");
             __recs.__scrip.RxType = "0";
 
@@ -992,8 +999,6 @@ namespace HL7Proxy
 
             // Apparently the RXD doesn't identify the patient -- Assume a pid always comes first
             __recs.__scrip.RxSys_PatID = __recs.__pr.RxSys_PatID;
-
-
         }
         private void __process_RXE(RecordBundle __recs, RXE __rxe)
         {
@@ -1400,10 +1405,13 @@ namespace HL7Proxy
                     __recs.__drug.Route = __rxr.Get("RXR.1.2");
                 }
 
-                __recs.__scrip.Comments += "Patient Notes\n";
+                if (string.IsNullOrEmpty(__recs.__scrip.Comments))
+                {
+                    __recs.__scrip.Comments += "Patient Notes:";
+                }
                 foreach (NTE __nte in __order.__nte)
                 {
-                    __recs.__scrip.Comments += string.Format("  {0}) {1}\n", __counter++, __process_NTE(__recs, __nte));
+                    __recs.__scrip.Comments += string.Format("\n  {0}) {1}\n", __counter++, __process_NTE(__recs, __nte));
                 }
 
                 foreach (RXC __rxc in __order.__rxc)
