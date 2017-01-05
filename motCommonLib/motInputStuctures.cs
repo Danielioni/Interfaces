@@ -42,6 +42,7 @@ namespace motCommonLib
     {
         Prescriber = 0,
         Prescription,
+        Patient,
         Drug,
         Facility,
         Store,
