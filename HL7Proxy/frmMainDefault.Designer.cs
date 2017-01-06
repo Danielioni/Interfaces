@@ -43,6 +43,11 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.tbpConfig = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.cmbRxType = new System.Windows.Forms.ComboBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.txtRxSystem_HL7_ID = new System.Windows.Forms.TextBox();
+            this.chkUseMcKessonRetvals = new System.Windows.Forms.CheckBox();
             this.label21 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.txtOrganization = new System.Windows.Forms.TextBox();
@@ -89,7 +94,6 @@
             this.txtSourceIP = new System.Windows.Forms.TextBox();
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.chkUseMcKessonRetvals = new System.Windows.Forms.CheckBox();
             this.pnlMain.SuspendLayout();
             this.tbcMain.SuspendLayout();
             this.tbpRun.SuspendLayout();
@@ -138,10 +142,10 @@
             this.tbpRun.Controls.Add(this.sgrpStatus);
             this.tbpRun.Controls.Add(this.btnStop);
             this.tbpRun.Controls.Add(this.btnStart);
-            this.tbpRun.Location = new System.Drawing.Point(4, 25);
+            this.tbpRun.Location = new System.Drawing.Point(4, 22);
             this.tbpRun.Name = "tbpRun";
             this.tbpRun.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpRun.Size = new System.Drawing.Size(1090, 560);
+            this.tbpRun.Size = new System.Drawing.Size(1090, 563);
             this.tbpRun.TabIndex = 0;
             this.tbpRun.Text = "Run";
             this.tbpRun.ToolTipText = "Runtime Control";
@@ -193,10 +197,10 @@
             this.rtbErrors.BackColor = System.Drawing.SystemColors.Window;
             this.rtbErrors.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbErrors.Font = new System.Drawing.Font("Lucida Console", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbErrors.Location = new System.Drawing.Point(3, 18);
+            this.rtbErrors.Location = new System.Drawing.Point(3, 16);
             this.rtbErrors.Name = "rtbErrors";
             this.rtbErrors.ReadOnly = true;
-            this.rtbErrors.Size = new System.Drawing.Size(1034, 139);
+            this.rtbErrors.Size = new System.Drawing.Size(1034, 141);
             this.rtbErrors.TabIndex = 0;
             this.rtbErrors.Text = "";
             this.rtbErrors.TextChanged += new System.EventHandler(this.rtbErrors_TextChanged);
@@ -218,10 +222,10 @@
             this.rtbEvents.BackColor = System.Drawing.SystemColors.Window;
             this.rtbEvents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbEvents.Font = new System.Drawing.Font("Lucida Console", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbEvents.Location = new System.Drawing.Point(3, 18);
+            this.rtbEvents.Location = new System.Drawing.Point(3, 16);
             this.rtbEvents.Name = "rtbEvents";
             this.rtbEvents.ReadOnly = true;
-            this.rtbEvents.Size = new System.Drawing.Size(1034, 139);
+            this.rtbEvents.Size = new System.Drawing.Size(1034, 141);
             this.rtbEvents.TabIndex = 0;
             this.rtbEvents.Text = "";
             this.rtbEvents.TextChanged += new System.EventHandler(this.rtbEvents_TextChanged);
@@ -260,16 +264,20 @@
             this.tbpConfig.Controls.Add(this.grpLogging);
             this.tbpConfig.Controls.Add(this.grpTarget);
             this.tbpConfig.Controls.Add(this.grpSource);
-            this.tbpConfig.Location = new System.Drawing.Point(4, 25);
+            this.tbpConfig.Location = new System.Drawing.Point(4, 22);
             this.tbpConfig.Name = "tbpConfig";
             this.tbpConfig.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpConfig.Size = new System.Drawing.Size(1090, 560);
+            this.tbpConfig.Size = new System.Drawing.Size(1090, 563);
             this.tbpConfig.TabIndex = 1;
             this.tbpConfig.Text = "Config";
             this.tbpConfig.ToolTipText = "Configure System";
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.label17);
+            this.groupBox3.Controls.Add(this.cmbRxType);
+            this.groupBox3.Controls.Add(this.label16);
+            this.groupBox3.Controls.Add(this.txtRxSystem_HL7_ID);
             this.groupBox3.Controls.Add(this.chkUseMcKessonRetvals);
             this.groupBox3.Controls.Add(this.label21);
             this.groupBox3.Controls.Add(this.label22);
@@ -277,41 +285,97 @@
             this.groupBox3.Controls.Add(this.txtProcessor);
             this.groupBox3.Location = new System.Drawing.Point(413, 250);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(311, 184);
+            this.groupBox3.Size = new System.Drawing.Size(311, 284);
             this.groupBox3.TabIndex = 14;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "[ HL7 ]";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(10, 191);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(93, 13);
+            this.label17.TabIndex = 15;
+            this.label17.Text = "[ RxSystem Type ]";
+            // 
+            // cmbRxType
+            // 
+            this.cmbRxType.Enabled = false;
+            this.cmbRxType.FormattingEnabled = true;
+            this.cmbRxType.Items.AddRange(new object[] {
+            "Automatic",
+            "FrameworkLTE",
+            "Epic",
+            "QS1",
+            "QuickMAR",
+            "RX30",
+            "McKesson Pharmaserve",
+            "McKesson Enterprise",
+            "Unknown"});
+            this.cmbRxType.Location = new System.Drawing.Point(13, 207);
+            this.cmbRxType.Name = "cmbRxType";
+            this.cmbRxType.Size = new System.Drawing.Size(258, 21);
+            this.cmbRxType.TabIndex = 14;
+            this.cmbRxType.Text = "Auto";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(10, 139);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(109, 13);
+            this.label16.TabIndex = 12;
+            this.label16.Text = "[ RxSystem Identifier ]";
+            // 
+            // txtRxSystem_HL7_ID
+            // 
+            this.txtRxSystem_HL7_ID.Location = new System.Drawing.Point(13, 159);
+            this.txtRxSystem_HL7_ID.Name = "txtRxSystem_HL7_ID";
+            this.txtRxSystem_HL7_ID.Size = new System.Drawing.Size(258, 20);
+            this.txtRxSystem_HL7_ID.TabIndex = 13;
+            this.txtRxSystem_HL7_ID.TextChanged += new System.EventHandler(this.txtRxSystem_HL7_ID_TextChanged);
+            // 
+            // chkUseMcKessonRetvals
+            // 
+            this.chkUseMcKessonRetvals.AutoSize = true;
+            this.chkUseMcKessonRetvals.Location = new System.Drawing.Point(13, 244);
+            this.chkUseMcKessonRetvals.Name = "chkUseMcKessonRetvals";
+            this.chkUseMcKessonRetvals.Size = new System.Drawing.Size(228, 17);
+            this.chkUseMcKessonRetvals.TabIndex = 11;
+            this.chkUseMcKessonRetvals.Text = "Extended ACK/NAK (Include ERR in NAK)";
+            this.chkUseMcKessonRetvals.UseVisualStyleBackColor = true;
             // 
             // label21
             // 
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(10, 33);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(105, 17);
+            this.label21.Size = new System.Drawing.Size(101, 13);
             this.label21.TabIndex = 7;
-            this.label21.Text = "[ Organization ]";
+            this.label21.Text = "[ This Organization ]";
             // 
             // label22
             // 
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(10, 84);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(88, 17);
+            this.label22.Size = new System.Drawing.Size(89, 13);
             this.label22.TabIndex = 8;
-            this.label22.Text = "[ Processor ]";
+            this.label22.Text = "[ This Processor ]";
             // 
             // txtOrganization
             // 
             this.txtOrganization.Location = new System.Drawing.Point(13, 53);
             this.txtOrganization.Name = "txtOrganization";
-            this.txtOrganization.Size = new System.Drawing.Size(258, 22);
+            this.txtOrganization.Size = new System.Drawing.Size(258, 20);
             this.txtOrganization.TabIndex = 9;
             // 
             // txtProcessor
             // 
             this.txtProcessor.Location = new System.Drawing.Point(13, 104);
             this.txtProcessor.Name = "txtProcessor";
-            this.txtProcessor.Size = new System.Drawing.Size(258, 22);
+            this.txtProcessor.Size = new System.Drawing.Size(258, 20);
             this.txtProcessor.TabIndex = 10;
             // 
             // groupBox2
@@ -341,7 +405,7 @@
             "Friday"});
             this.cmbFDOW_MOT.Location = new System.Drawing.Point(31, 170);
             this.cmbFDOW_MOT.Name = "cmbFDOW_MOT";
-            this.cmbFDOW_MOT.Size = new System.Drawing.Size(121, 24);
+            this.cmbFDOW_MOT.Size = new System.Drawing.Size(121, 21);
             this.cmbFDOW_MOT.TabIndex = 5;
             this.cmbFDOW_MOT.Text = "Sunday";
             // 
@@ -358,7 +422,7 @@
             "Friday"});
             this.cmbFDOW_RxSys.Location = new System.Drawing.Point(31, 88);
             this.cmbFDOW_RxSys.Name = "cmbFDOW_RxSys";
-            this.cmbFDOW_RxSys.Size = new System.Drawing.Size(121, 24);
+            this.cmbFDOW_RxSys.Size = new System.Drawing.Size(121, 21);
             this.cmbFDOW_RxSys.TabIndex = 4;
             this.cmbFDOW_RxSys.Text = "Sunday";
             // 
@@ -367,7 +431,7 @@
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(28, 150);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(120, 17);
+            this.label13.Size = new System.Drawing.Size(92, 13);
             this.label13.TabIndex = 3;
             this.label13.Text = "First Day of Week";
             // 
@@ -376,7 +440,7 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(28, 68);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(120, 17);
+            this.label12.Size = new System.Drawing.Size(92, 13);
             this.label12.TabIndex = 2;
             this.label12.Text = "First Day of Week";
             // 
@@ -385,7 +449,7 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(10, 123);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(63, 17);
+            this.label11.Size = new System.Drawing.Size(49, 13);
             this.label11.TabIndex = 1;
             this.label11.Text = "Gateway";
             // 
@@ -394,7 +458,7 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(7, 47);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(64, 17);
+            this.label10.Size = new System.Drawing.Size(50, 13);
             this.label10.TabIndex = 0;
             this.label10.Text = "Incoming";
             // 
@@ -432,7 +496,7 @@
             this.chkAutoTruncate.AutoSize = true;
             this.chkAutoTruncate.Location = new System.Drawing.Point(18, 29);
             this.chkAutoTruncate.Name = "chkAutoTruncate";
-            this.chkAutoTruncate.Size = new System.Drawing.Size(120, 21);
+            this.chkAutoTruncate.Size = new System.Drawing.Size(94, 17);
             this.chkAutoTruncate.TabIndex = 0;
             this.chkAutoTruncate.Text = "Auto Truncate";
             this.chkAutoTruncate.UseVisualStyleBackColor = true;
@@ -455,7 +519,7 @@
             this.txtMaxLogLen.Location = new System.Drawing.Point(94, 61);
             this.txtMaxLogLen.MaxLength = 25;
             this.txtMaxLogLen.Name = "txtMaxLogLen";
-            this.txtMaxLogLen.Size = new System.Drawing.Size(100, 22);
+            this.txtMaxLogLen.Size = new System.Drawing.Size(100, 20);
             this.txtMaxLogLen.TabIndex = 13;
             this.txtMaxLogLen.Text = "10000";
             this.txtMaxLogLen.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -465,7 +529,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(6, 61);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(81, 17);
+            this.label9.Size = new System.Drawing.Size(63, 13);
             this.label9.TabIndex = 12;
             this.label9.Text = "Max Length";
             // 
@@ -479,7 +543,7 @@
             "All Entries"});
             this.cmbErrorLevel.Location = new System.Drawing.Point(6, 26);
             this.cmbErrorLevel.Name = "cmbErrorLevel";
-            this.cmbErrorLevel.Size = new System.Drawing.Size(188, 24);
+            this.cmbErrorLevel.Size = new System.Drawing.Size(188, 21);
             this.cmbErrorLevel.TabIndex = 9;
             // 
             // grpTarget
@@ -507,7 +571,7 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(25, 179);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(94, 17);
+            this.label14.Size = new System.Drawing.Size(74, 13);
             this.label14.TabIndex = 17;
             this.label14.Text = "TLS/SSL Port";
             // 
@@ -515,7 +579,7 @@
             // 
             this.txtClientSSLPort.Location = new System.Drawing.Point(124, 177);
             this.txtClientSSLPort.Name = "txtClientSSLPort";
-            this.txtClientSSLPort.Size = new System.Drawing.Size(172, 22);
+            this.txtClientSSLPort.Size = new System.Drawing.Size(172, 20);
             this.txtClientSSLPort.TabIndex = 16;
             this.txtClientSSLPort.Text = "0";
             this.txtClientSSLPort.WordWrap = false;
@@ -525,7 +589,7 @@
             this.chkUseClientSSL.AutoSize = true;
             this.chkUseClientSSL.Location = new System.Drawing.Point(39, 150);
             this.chkUseClientSSL.Name = "chkUseClientSSL";
-            this.chkUseClientSSL.Size = new System.Drawing.Size(115, 21);
+            this.chkUseClientSSL.Size = new System.Drawing.Size(93, 17);
             this.chkUseClientSSL.TabIndex = 18;
             this.chkUseClientSSL.Text = "Use TLS/SSL";
             this.chkUseClientSSL.UseVisualStyleBackColor = true;
@@ -535,7 +599,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(50, 125);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(69, 17);
+            this.label4.Size = new System.Drawing.Size(53, 13);
             this.label4.TabIndex = 7;
             this.label4.Text = "Password";
             // 
@@ -544,7 +608,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(40, 97);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(79, 17);
+            this.label3.Size = new System.Drawing.Size(60, 13);
             this.label3.TabIndex = 6;
             this.label3.Text = "User Name";
             // 
@@ -553,7 +617,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(85, 69);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 17);
+            this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "Port";
             // 
@@ -562,7 +626,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(59, 39);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(60, 17);
+            this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 4;
             this.label1.Text = "Address";
             // 
@@ -570,7 +634,7 @@
             // 
             this.txtTargetPwd.Location = new System.Drawing.Point(124, 121);
             this.txtTargetPwd.Name = "txtTargetPwd";
-            this.txtTargetPwd.Size = new System.Drawing.Size(209, 22);
+            this.txtTargetPwd.Size = new System.Drawing.Size(209, 20);
             this.txtTargetPwd.TabIndex = 7;
             this.txtTargetPwd.UseSystemPasswordChar = true;
             this.txtTargetPwd.WordWrap = false;
@@ -579,7 +643,7 @@
             // 
             this.txtTargetUname.Location = new System.Drawing.Point(124, 93);
             this.txtTargetUname.Name = "txtTargetUname";
-            this.txtTargetUname.Size = new System.Drawing.Size(209, 22);
+            this.txtTargetUname.Size = new System.Drawing.Size(209, 20);
             this.txtTargetUname.TabIndex = 6;
             this.txtTargetUname.WordWrap = false;
             // 
@@ -587,7 +651,7 @@
             // 
             this.txtTargetPort.Location = new System.Drawing.Point(124, 65);
             this.txtTargetPort.Name = "txtTargetPort";
-            this.txtTargetPort.Size = new System.Drawing.Size(172, 22);
+            this.txtTargetPort.Size = new System.Drawing.Size(172, 20);
             this.txtTargetPort.TabIndex = 5;
             this.txtTargetPort.WordWrap = false;
             // 
@@ -595,7 +659,7 @@
             // 
             this.txtTargetIP.Location = new System.Drawing.Point(124, 37);
             this.txtTargetIP.Name = "txtTargetIP";
-            this.txtTargetIP.Size = new System.Drawing.Size(209, 22);
+            this.txtTargetIP.Size = new System.Drawing.Size(209, 20);
             this.txtTargetIP.TabIndex = 4;
             this.txtTargetIP.WordWrap = false;
             // 
@@ -625,7 +689,7 @@
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(25, 227);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(94, 17);
+            this.label15.Size = new System.Drawing.Size(74, 13);
             this.label15.TabIndex = 15;
             this.label15.Text = "TLS/SSL Port";
             // 
@@ -634,7 +698,7 @@
             this.txtSSLServerPort.Enabled = false;
             this.txtSSLServerPort.Location = new System.Drawing.Point(129, 225);
             this.txtSSLServerPort.Name = "txtSSLServerPort";
-            this.txtSSLServerPort.Size = new System.Drawing.Size(172, 22);
+            this.txtSSLServerPort.Size = new System.Drawing.Size(172, 20);
             this.txtSSLServerPort.TabIndex = 14;
             this.txtSSLServerPort.Text = "0";
             this.txtSSLServerPort.WordWrap = false;
@@ -645,7 +709,7 @@
             this.cmbx509Certificates.FormattingEnabled = true;
             this.cmbx509Certificates.Location = new System.Drawing.Point(129, 184);
             this.cmbx509Certificates.Name = "cmbx509Certificates";
-            this.cmbx509Certificates.Size = new System.Drawing.Size(209, 24);
+            this.cmbx509Certificates.Size = new System.Drawing.Size(209, 21);
             this.cmbx509Certificates.TabIndex = 16;
             this.cmbx509Certificates.Text = "Select Certificate";
             this.cmbx509Certificates.SelectionChangeCommitted += new System.EventHandler(this.cmbx509Certificates_SelectionChangeCommitted);
@@ -656,7 +720,7 @@
             this.chkUseServerSSL.AutoSize = true;
             this.chkUseServerSSL.Location = new System.Drawing.Point(44, 154);
             this.chkUseServerSSL.Name = "chkUseServerSSL";
-            this.chkUseServerSSL.Size = new System.Drawing.Size(115, 21);
+            this.chkUseServerSSL.Size = new System.Drawing.Size(93, 17);
             this.chkUseServerSSL.TabIndex = 15;
             this.chkUseServerSSL.Text = "Use TLS/SSL";
             this.chkUseServerSSL.UseVisualStyleBackColor = true;
@@ -667,7 +731,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(50, 125);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(69, 17);
+            this.label5.Size = new System.Drawing.Size(53, 13);
             this.label5.TabIndex = 11;
             this.label5.Text = "Password";
             // 
@@ -676,7 +740,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(40, 97);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(79, 17);
+            this.label6.Size = new System.Drawing.Size(60, 13);
             this.label6.TabIndex = 10;
             this.label6.Text = "User Name";
             // 
@@ -685,7 +749,7 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(85, 69);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(34, 17);
+            this.label7.Size = new System.Drawing.Size(26, 13);
             this.label7.TabIndex = 9;
             this.label7.Text = "Port";
             // 
@@ -694,7 +758,7 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(59, 39);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(60, 17);
+            this.label8.Size = new System.Drawing.Size(45, 13);
             this.label8.TabIndex = 8;
             this.label8.Text = "Address";
             // 
@@ -702,7 +766,7 @@
             // 
             this.txtSourcePwd.Location = new System.Drawing.Point(129, 121);
             this.txtSourcePwd.Name = "txtSourcePwd";
-            this.txtSourcePwd.Size = new System.Drawing.Size(209, 22);
+            this.txtSourcePwd.Size = new System.Drawing.Size(209, 20);
             this.txtSourcePwd.TabIndex = 3;
             this.txtSourcePwd.UseSystemPasswordChar = true;
             this.txtSourcePwd.WordWrap = false;
@@ -711,7 +775,7 @@
             // 
             this.txtSourceUname.Location = new System.Drawing.Point(129, 93);
             this.txtSourceUname.Name = "txtSourceUname";
-            this.txtSourceUname.Size = new System.Drawing.Size(209, 22);
+            this.txtSourceUname.Size = new System.Drawing.Size(209, 20);
             this.txtSourceUname.TabIndex = 2;
             this.txtSourceUname.WordWrap = false;
             // 
@@ -719,7 +783,7 @@
             // 
             this.txtSourcePort.Location = new System.Drawing.Point(129, 65);
             this.txtSourcePort.Name = "txtSourcePort";
-            this.txtSourcePort.Size = new System.Drawing.Size(172, 22);
+            this.txtSourcePort.Size = new System.Drawing.Size(172, 20);
             this.txtSourcePort.TabIndex = 1;
             this.txtSourcePort.WordWrap = false;
             // 
@@ -727,7 +791,7 @@
             // 
             this.txtSourceIP.Location = new System.Drawing.Point(129, 37);
             this.txtSourceIP.Name = "txtSourceIP";
-            this.txtSourceIP.Size = new System.Drawing.Size(209, 22);
+            this.txtSourceIP.Size = new System.Drawing.Size(209, 20);
             this.txtSourceIP.TabIndex = 0;
             this.txtSourceIP.WordWrap = false;
             // 
@@ -741,16 +805,6 @@
             this.saveFileDialog.Filter = "Log Files|*.log|Text Files|*.txt";
             this.saveFileDialog.InitialDirectory = "\"My Documents\"";
             this.saveFileDialog.Title = "Save Error Log";
-            // 
-            // chkUseMcKessonRetvals
-            // 
-            this.chkUseMcKessonRetvals.AutoSize = true;
-            this.chkUseMcKessonRetvals.Location = new System.Drawing.Point(13, 138);
-            this.chkUseMcKessonRetvals.Name = "chkUseMcKessonRetvals";
-            this.chkUseMcKessonRetvals.Size = new System.Drawing.Size(152, 21);
-            this.chkUseMcKessonRetvals.TabIndex = 11;
-            this.chkUseMcKessonRetvals.Text = "Extended ACK/NAK";
-            this.chkUseMcKessonRetvals.UseVisualStyleBackColor = true;
             // 
             // frmMainDefault
             // 
@@ -857,6 +911,10 @@
         private System.Windows.Forms.TextBox txtClientSSLPort;
         private System.Windows.Forms.CheckBox chkUseClientSSL;
         private System.Windows.Forms.CheckBox chkUseMcKessonRetvals;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox txtRxSystem_HL7_ID;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.ComboBox cmbRxType;
     }
 }
 

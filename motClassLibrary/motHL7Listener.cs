@@ -36,13 +36,18 @@ namespace motInboundLib
 
     public enum SendingApplication
     {
+        AutoDiscover = 0,
         FrameworkLTE,
         Epic,
         QS1,
         QuickMAR,
         RX30,
+        Pharmaserve,
+        Enterprise,
         Unknown
     };
+
+
 
     public class HL7Event7MessageArgs : EventArgs
     {
@@ -76,18 +81,32 @@ namespace motInboundLib
     {
         const int TCP_TIMEOUT = 300000;
 
+        Dictionary<SendingApplication, string> __rx_system = new Dictionary<SendingApplication, string>()
+        {
+            {SendingApplication.Enterprise, "Enterprise" },
+            {SendingApplication.Epic, "Epic" },
+            {SendingApplication.FrameworkLTE, "FrameworkLTE" },
+            {SendingApplication.Pharmaserve, "Pharmaserve" },
+            {SendingApplication.QS1,"QS1" },
+            {SendingApplication.RX30, "RX30" },
+            {SendingApplication.Unknown, "Unknown" }
+        };
+
         public string __organization { get; set; }
         public string __processor { get; set; }
+        public string __rxsys_vendor_name { get; set; } = string.Empty;
+        public SendingApplication __rxsys_type { get; set; } = SendingApplication.Unknown;
+
         public string __last_msh { get; set; } = string.Empty;
         public string __last_retval { get; set; } = string.Empty;
         public string __last_event { get; set; } = string.Empty;
 
-        public LogLevel   __log_level { get; set; } = LogLevel.Error;
-        private Logger    __logger;
+        public LogLevel __log_level { get; set; } = LogLevel.Error;
+        private Logger __logger;
         private motSocket __socket;
-        private Thread    __worker;
-        private int       __listener_port = 0;
-        private bool      __use__ssl = false;
+        private Thread __worker;
+        private int __listener_port = 0;
+        private bool __use__ssl = false;
 
         List<Dictionary<string, string>> __message_data = new List<Dictionary<string, string>>();
 
@@ -101,7 +120,7 @@ namespace motInboundLib
         public UpdateUIErrorHandler UpdateErrorUI;
         private UIupdateArgs __ui_args = new UIupdateArgs();
 
-        public SendingApplication SendingApp { get; set; } = SendingApplication.Unknown;
+        
 
         public void __parse_message(string __data)
         {
@@ -110,7 +129,7 @@ namespace motInboundLib
             MSH __resp = null;
             string __response = string.Empty;
 
-            if(!__data.Contains("\x0B") &&
+            if (!__data.Contains("\x0B") &&
                !__data.Contains("\x1C"))
             {
                 // Not our data
@@ -126,29 +145,32 @@ namespace motInboundLib
                 __resp = new MSH(__segments[0]);
                 __ui_args.__msh_in = __segments[0];
 
-              switch(__resp.Get("MSH.3").ToLower())                  
-              {
-                    case "frameworkltc":
-                        SendingApp = SendingApplication.FrameworkLTE;
-                        break;
+                if (__rxsys_type == SendingApplication.AutoDiscover)
+                {
+                    switch (__resp.Get("MSH.3").ToLower())
+                    {
+                        case "frameworkltc":
+                            __rxsys_type = SendingApplication.FrameworkLTE;
+                            break;
 
-                    case "epic":
-                        SendingApp = SendingApplication.Epic;
-                        break;
+                        case "epic":
+                            __rxsys_type = SendingApplication.Epic;
+                            break;
 
-                    default:
-                        SendingApp = SendingApplication.Unknown;
-                        break;
-              }
+                        default:
+                            __rxsys_type = SendingApplication.Unknown;
+                            break;
+                    }
+                }
             }
             catch
             {
                 string __error_code = "AR";
-                __resp = new MSH(@"MSH |^ ~\&|"+
-                    __organization + " | " + 
-                    __processor + 
-                    "| MALFORMED MESSAGE | BAD MESSAGE | "+
-                    DateTime.Now.ToString("yyyyMMddhhmm") + 
+                __resp = new MSH(@"MSH |^ ~\&|" +
+                    __organization + " | " +
+                    __processor +
+                    "| MALFORMED MESSAGE | BAD MESSAGE | " +
+                    DateTime.Now.ToString("yyyyMMddhhmm") +
                     "| 637300 | UNKNOWN | 2 | T | 276 |||||| UNICODE UTF-8 |||||");
 
                 NAK __out = new NAK(__resp, __error_code, __organization, __processor);
@@ -164,7 +186,7 @@ namespace motInboundLib
 
                 throw new Exception("FATAL: Malformed Message");
             }
-          
+
 
             try
             {
@@ -177,18 +199,18 @@ namespace motInboundLib
 
                         __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
-                        __args.__sa = SendingApp;
+                        __args.__sa = __rxsys_type;
                         RDE_O11MessageEventReceived(this, __args);
                         break;
 
                     case "OMP_O09":
                     case "OMP_009":
-                    case "OMP_OO9": 
+                    case "OMP_OO9":
                         __ui_args.__event_message = "OMP_O09 Message Event";
 
                         __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
-                        __args.__sa = SendingApp;
+                        __args.__sa = __rxsys_type;
                         OMP_O09MessageEventReceived(this, __args);
                         break;
 
@@ -198,7 +220,7 @@ namespace motInboundLib
 
                         __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
-                        __args.__sa = SendingApp;
+                        __args.__sa = __rxsys_type;
                         RDS_O13MessageEventReceived(this, __args);
                         break;
 
@@ -208,7 +230,7 @@ namespace motInboundLib
 
                         __args.timestamp = DateTime.Now;
                         __args.__raw_data = __data;
-                        __args.__sa = SendingApp;
+                        __args.__sa = __rxsys_type;
                         ADT_A01MessageEventReceived(this, __args);
                         break;
 
@@ -218,7 +240,7 @@ namespace motInboundLib
 
                         __args.timestamp = DateTime.Now;
                         __args.__raw_data = __data;
-                        __args.__sa = SendingApp;
+                        __args.__sa = __rxsys_type;
                         ADT_A01MessageEventReceived(this, __args);
                         break;
                 }
@@ -266,11 +288,11 @@ namespace motInboundLib
         {
             try
             {
-                __socket = new motSocket(__port, __s_callback);           
+                __socket = new motSocket(__port, __s_callback);
                 __socket.__use_ssl = __use__ssl;
 
                 if (__use__ssl)
-                {                  
+                {
                     __worker = new Thread(() => __socket.secure_listen(__cert));
                     __worker.Name = "secure listener";
                     __worker.Start();
@@ -280,7 +302,7 @@ namespace motInboundLib
                     __worker = new Thread(new ThreadStart(__socket.listen));
                     __worker.Name = "listener";
                     __worker.Start();
-                }               
+                }
             }
             catch (Exception e)
             {
@@ -299,7 +321,7 @@ namespace motInboundLib
                 __socket.close();
                 //__worker.Join();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 string __err = string.Format("An error occurred while attempting to stop the HL7 listener: {0}", ex.Message);
                 __ui_args.__event_message = __err;
@@ -387,7 +409,7 @@ namespace motInboundLib
             }
         }
 
-        
+
         /*
         MSH|^~\&|ADT1|MCM|LABADT|MCM|198808181126|SECURITY|ADT^A01|MSG00001-|P|2.6
         EVN|A01|198808181123
@@ -406,28 +428,28 @@ namespace motInboundLib
         ROL|45^RECORDER^ROLE MASTER LIST|AD|RO|KATE^ELLEN|199505011201
         */
 
-            /// <summary>
-            /// Constructor. Set the field, component, subcompoenent and repeat delimeters. Throw an exception if the messsage  does not include a MSH segment.
-            /// 
-            /// Message Format 
-            /// --------------
-            /// <0x0B> Message Header Segment<0x0D> 
-            /// Event Type Segment<0x0D>
-            /// Patient Identification Segment<0x0D>
-            /// Patient Visit Segment<0x0D>
-            /// Observation/Result Segment<0x0D>
-            /// Patient Allergy Information Segment<0x0D>
-            /// Diagnosis Segment<0x0D>
-            /// <0x1C><0x0D> 
-            /// 
-            /// HL7 Block ASCII Characters HEX Characters
-            /// --------- ---------------- --------------
-            ///   <SB>        <VT>           0x0B           \v
-            ///   <EB>        <FS>           0x1C 
-            ///   <CR>        <CR>           0x0D           \r
-            /// 
-            /// </summary>
-            /// <param name="message"></param>
-        }
+        /// <summary>
+        /// Constructor. Set the field, component, subcompoenent and repeat delimeters. Throw an exception if the messsage  does not include a MSH segment.
+        /// 
+        /// Message Format 
+        /// --------------
+        /// <0x0B> Message Header Segment<0x0D> 
+        /// Event Type Segment<0x0D>
+        /// Patient Identification Segment<0x0D>
+        /// Patient Visit Segment<0x0D>
+        /// Observation/Result Segment<0x0D>
+        /// Patient Allergy Information Segment<0x0D>
+        /// Diagnosis Segment<0x0D>
+        /// <0x1C><0x0D> 
+        /// 
+        /// HL7 Block ASCII Characters HEX Characters
+        /// --------- ---------------- --------------
+        ///   <SB>        <VT>           0x0B           \v
+        ///   <EB>        <FS>           0x1C 
+        ///   <CR>        <CR>           0x0D           \r
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
     }
+}
 

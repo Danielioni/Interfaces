@@ -95,7 +95,8 @@ namespace motCommonLib
 
         private NetworkStream __stream;
         private SslStream __ssl_stream;
-        
+
+        public static Mutex __socket_mutex = null;
 
         public motSocket()
         {
@@ -170,6 +171,11 @@ namespace motCommonLib
             this.__b_protocol_processor = __byte_protocol_processor == null ? __default_protocol_processor : __byte_protocol_processor;
             this.__open_for_listening = false;
 
+            if(__socket_mutex == null)
+            {
+                __socket_mutex = new Mutex();
+            }
+
             __logger = LogManager.GetLogger("motCommonLib.Socket");
 
             try
@@ -190,6 +196,11 @@ namespace motCommonLib
             this.__open_for_listening = false;
 
             __logger = LogManager.GetLogger("motCommonLib.Socket");
+
+            if (__socket_mutex == null)
+            {
+                __socket_mutex = new Mutex();
+            }
 
             try
             {
@@ -448,6 +459,8 @@ namespace motCommonLib
         }
         public bool write(string __data)
         {
+            __socket_mutex.WaitOne();
+
             try
             {
                 byte[] __buffer = new byte[256];
@@ -463,21 +476,29 @@ namespace motCommonLib
                     __stream.Read(__buffer, 0, __buffer.Length);                   
                 }
 
+                __socket_mutex.ReleaseMutex();
+
                 return (bool)__b_protocol_processor?.Invoke(__buffer);
             }
             catch(IOException)
             {
+                __socket_mutex.ReleaseMutex();
+
                 // timeout
                 return false;
             }
             catch (Exception ex)
             {
+                __socket_mutex.ReleaseMutex();
+
                 __logger.Error("write() failed: {0}", ex.Message);
                 throw new Exception("write() failed: " + ex.Message);
             }
         }
         public bool write(byte[] __data)
         {
+            __socket_mutex.WaitOne();
+
             try
             {
                 byte[] __buffer = new byte[256];
@@ -493,15 +514,21 @@ namespace motCommonLib
                     __stream.Read(__buffer, 0, __buffer.Length);
                 }
 
+                __socket_mutex.ReleaseMutex();
+
                 return (bool)__b_protocol_processor?.Invoke(__buffer);
             }
             catch (IOException)
             {
+                __socket_mutex.ReleaseMutex();
+
                 // timeout
                 return false;
             }
             catch (Exception ex)
             {
+                __socket_mutex.ReleaseMutex();
+
                 __logger.Error("write() failed: {0}", ex.Message);
                 throw new Exception("write() failed: " + ex.Message);
             }

@@ -274,5 +274,29 @@ namespace HL7Proxy.Properties {
                 this["UseClientSSL"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RxSystemHL7ID {
+            get {
+                return ((string)(this["RxSystemHL7ID"]));
+            }
+            set {
+                this["RxSystemHL7ID"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Unknown")]
+        public global::motInboundLib.SendingApplication RxSystemType {
+            get {
+                return ((global::motInboundLib.SendingApplication)(this["RxSystemType"]));
+            }
+            set {
+                this["RxSystemType"] = value;
+            }
+        }
     }
 }

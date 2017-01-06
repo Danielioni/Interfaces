@@ -1098,6 +1098,47 @@ namespace motCommonLib
             __parser.__parse(__message, __msg_data);
         }
     }
+    public class ERR : HL7_Element_Base
+    {
+        // McKesson Pharmaserve classifications
+        //ERR  	1	Error Code and Location
+        //ERR	2	Error Location
+        //ERR	3	HL7 Error Code
+        //ERR	4	Severity
+        //ERR	5	Application Error Code
+        //ERR	6	Application Error Parameter
+        //ERR	7	Diagnostic Information
+        //ERR	8	User Message
+        //ERR	9	Inform Person Indicator
+        //ERR	10	Override Type
+        //ERR	11	Override Reason Code
+        //ERR 	12	Help Desk Contact Point
+
+        public string __error_code_and_location { get; set;}
+        public string __error_location { get; set; }
+        public string __hl7_error_code { get; set; }
+        public string __severity { get; set; }
+        public string __application_error_code { get; set; }
+        public string __application_error_param { get; set; }
+        public string __user_mesage { get; set; }
+        public string __inform_person_id { get; set; }
+        public string __override_tape { get; set; }
+        public string __override_reason { get; set; }
+        public string ____help_desk_contact { get; set; }
+
+
+        private void __load()
+        {
+        }
+        public ERR(XElement __xe) : base(__xe)
+        {
+
+        }
+        public ERR() : base()
+        {
+            __load();
+        }
+    }
     public class EVN : HL7_Element_Base
     {
         HL7MessageParser __parser = new HL7MessageParser();

@@ -65,5 +65,11 @@
     <Setting Name="UseClientSSL" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="RxSystemHL7ID" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="RxSystemType" Type="motInboundLib.SendingApplication" Scope="User">
+      <Value Profile="(Default)">Unknown</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -166,6 +166,8 @@ namespace HL7Proxy
                 __listener.__log_level = __log_level;
                 __listener.__organization = __args.__organization;
                 __listener.__processor = __args.__processor;
+                __listener.__rxsys_vendor_name = __args.__rxsys_HL7_id;
+                __listener.__rxsys_type = __args.__rxsys_type;
 
                 __listener.ADT_A01MessageEventReceived += __process_ADT_A01_Event;
                 __listener.ADT_A12MessageEventReceived += __process_ADT_A12_Event;
@@ -1144,7 +1146,7 @@ namespace HL7Proxy
             }
 
             // Get PRN's out of the way first
-            if (__tq1.Get("TQ.9.1") == "PRN")
+            if (__tq1.Get("TQ1.9.1") == "PRN")
             {
                 __recs.__scrip.RxType = "2";
                 __recs.__scrip.QtyPerDose = __tq1.Get("TQ1.2.1");

@@ -54,6 +54,8 @@ namespace HL7Proxy
         int __log_len = 0; 
         List<string> lstEvent = new List<string>();
 
+        SendingApplication __rxsys_sender_type = SendingApplication.Unknown;
+
         X509Certificate2Collection  __X_509_collection;
         X509Certificate2Collection  __X_509_valid_collection;
         X509Store                   __X_509_store;
@@ -88,6 +90,7 @@ namespace HL7Proxy
             txtSourcePort.Text = Properties.Settings.Default.ListenPort;
             txtSourceUname.Text = Properties.Settings.Default.ListenUname;
             txtSourcePwd.Text = Properties.Settings.Default.ListenPwd;
+
             cmbErrorLevel.SelectedIndex = (int)Properties.Settings.Default.ErrorLevel;
             __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
             chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
@@ -97,6 +100,8 @@ namespace HL7Proxy
 
             txtOrganization.Text = Properties.Settings.Default.Organization;
             txtProcessor.Text = Properties.Settings.Default.Processor;
+            txtRxSystem_HL7_ID.Text = Properties.Settings.Default.RxSystemHL7ID;
+            cmbRxType.SelectedIndex = (int)Properties.Settings.Default.RxSystemType;
 
             __max_log_len = Properties.Settings.Default.MaxLogLines;
             txtMaxLogLen.Text = __max_log_len.ToString();
@@ -134,6 +139,8 @@ namespace HL7Proxy
                 Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
                 Properties.Settings.Default.Organization = txtOrganization.Text;
                 Properties.Settings.Default.Processor = txtProcessor.Text;
+                Properties.Settings.Default.RxSystemHL7ID = txtRxSystem_HL7_ID.Text;
+                Properties.Settings.Default.RxSystemType = (SendingApplication)cmbRxType.SelectedIndex;
                 Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
                 Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
                 Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
@@ -157,8 +164,12 @@ namespace HL7Proxy
                 txtSourcePwd.Text = Properties.Settings.Default.ListenPwd;
                 cmbErrorLevel.SelectedIndex = (int)Properties.Settings.Default.ErrorLevel;
                 __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+
                 txtOrganization.Text = Properties.Settings.Default.Organization;
                 txtProcessor.Text = Properties.Settings.Default.Processor;
+                txtRxSystem_HL7_ID.Text = Properties.Settings.Default.RxSystemHL7ID;
+                cmbRxType.SelectedIndex = (int)Properties.Settings.Default.RxSystemType;
+
                 txtMaxLogLen.Text = Properties.Settings.Default.MaxLogLines.ToString();
                 chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
 
@@ -202,6 +213,12 @@ namespace HL7Proxy
         {
             try
             {
+                if(cmbRxType.Enabled && cmbRxType.SelectedIndex == 0)
+                {
+                    var _res = MessageBox.Show("Missing Rx System Type", "Config Error");
+                    return;
+                }
+
                 // Start Runtime
                 var __args = new ExecuteArgs();
 
@@ -220,7 +237,8 @@ namespace HL7Proxy
 
                 __args.__organization = txtOrganization.Text;
                 __args.__processor = txtProcessor.Text;
-
+                __args.__rxsys_HL7_id = txtRxSystem_HL7_ID.Text;
+                __args.__rxsys_type = (SendingApplication)cmbRxType.SelectedIndex;
                 __args.__rxsys_first_day_of_week = cmbFDOW_RxSys.Text;
                 __args.__mot_first_day_of_week = cmbFDOW_MOT.Text;
 
@@ -317,6 +335,8 @@ namespace HL7Proxy
             Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
             Properties.Settings.Default.Organization = txtOrganization.Text;
             Properties.Settings.Default.Processor = txtProcessor.Text;
+            Properties.Settings.Default.RxSystemHL7ID = txtRxSystem_HL7_ID.Text;
+            Properties.Settings.Default.RxSystemType = (SendingApplication)cmbRxType.SelectedIndex;
             Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
             Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
             Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
@@ -549,6 +569,10 @@ namespace HL7Proxy
             Properties.Settings.Default.Save();
         }
 
+        private void txtRxSystem_HL7_ID_TextChanged(object sender, EventArgs e)
+        {
+            cmbRxType.Enabled = txtRxSystem_HL7_ID.Text.Length > 0 ? true : false;
+        }
     }
 
     public class ExecuteArgs : EventArgs
@@ -571,6 +595,8 @@ namespace HL7Proxy
 
         public string __organization { get; set; }
         public string __processor { get; set; }
+        public string __rxsys_HL7_id { get; set; }
+        public SendingApplication __rxsys_type { get; set; }
 
         public X509Certificate __ssl_cert { get; set; }
         public string __ssl_server_port { get; set; }
