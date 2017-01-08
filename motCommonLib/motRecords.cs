@@ -198,6 +198,8 @@ namespace motCommonLib
         public motWriteQueue __write_queue { get; set; } = null;
         public void AddToQueue(string __type, List<Field> __qualifiedTags)
         {
+            int __data_len = 0;
+
             if (__write_queue== null)
             {
                 __logger.Error("Null Queue");
@@ -224,10 +226,20 @@ namespace motCommonLib
                     __record += "<" + __qualifiedTags[i].tagName + ">" +
                                       __qualifiedTags[i].tagData + "</" +
                                       __qualifiedTags[i].tagName + ">";
+
+                    // If there's no data other than Table and Action we should ignore it.
+                    if (__qualifiedTags[i].tagName.ToUpper() != "TABLE" && __qualifiedTags[i].tagName.ToUpper() != "ACTION")
+                    {
+                        __data_len += __qualifiedTags[i].tagData.Length;
+                    }
                 }
 
                 __record += "</Record>";
-                __write_queue.Add(__type, __record);
+
+                if (__data_len > 0)
+                {
+                    __write_queue.Add(__type, __record);
+                }
                 
             }
             catch (Exception ex)
