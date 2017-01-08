@@ -616,11 +616,13 @@ namespace HL7Proxy
             }
 
             __problem_segment = "IN1";
-
-            __recs.__pr.InsName = __in1.Get("IN1.1.4");
+            
+            //                              Ins/Group
+            __recs.__pr.InsPNo = __in1.Get("IN1.1.2") + "/" + __in1.Get("IN1.1.8");
+            __recs.__pr.InsName = __in1.Get("IN1.1.4.1") + "/" + __in1.Get("IN1.1.8.1"); ;
 
             // No Insurancec Policy Number per se, but there is a group name(1-9) and a group number(1-8) 
-            __recs.__pr.InsPNo = __in1.Get("IN1.1.9") + "-" + __in1.Get("IN1.1.8");
+            //__recs.__pr.InsPNo = __in1.Get("IN1.1.9") + "-" + __in1.Get("IN1.1.8");
         }
         private void __process_IN2(RecordBundle __recs, IN2 __in2)
         {

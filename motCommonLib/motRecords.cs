@@ -515,6 +515,7 @@ namespace motCommonLib
         protected void Write(motSocket p, List<Field> __qualifiedTags, bool __do_logging)
         {
             string __record = "<Record>";
+            int __data_len = 0;
 
             if (p == null || __qualifiedTags == null)
             {
@@ -531,13 +532,22 @@ namespace motCommonLib
                     __record += "<" + __qualifiedTags[i].tagName + ">" +
                                       __qualifiedTags[i].tagData + "</" +
                                       __qualifiedTags[i].tagName + ">";
+
+                    // If there's no data other than Table and Action we should ignore it.
+                    if (__qualifiedTags[i].tagName.ToUpper() != "TABLE" && __qualifiedTags[i].tagName.ToUpper() != "ACTION")
+                    {
+                        __data_len += __qualifiedTags[i].tagData.Length;
+                    }
                 }
 
                 __record += "</Record>";
 
-                // Push it to the port
-                p.write(__record);
-                p.write("<EOF/>");
+                if (__data_len > 0)
+                {
+                    // Push it to the port
+                    p.write(__record);
+                    p.write("<EOF/>");
+                }
 
                 __logger.Info(__record);
             }
