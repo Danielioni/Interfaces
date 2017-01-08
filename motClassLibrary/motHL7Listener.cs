@@ -57,7 +57,7 @@ namespace motInboundLib
         //public List<Order> __order_list { get; set; }
         //public Patient __patient { get; set; }
         public string __raw_data;
-        public SendingApplication __sa { get; set; }
+        public SendingApplication __sa { get; set; } = SendingApplication.AutoDiscover;
     }
 
     public delegate void ADT_A01EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
@@ -120,7 +120,7 @@ namespace motInboundLib
         public UpdateUIErrorHandler UpdateErrorUI;
         private UIupdateArgs __ui_args = new UIupdateArgs();
 
-        
+
 
         public void __parse_message(string __data)
         {
@@ -145,21 +145,29 @@ namespace motInboundLib
                 __resp = new MSH(__segments[0]);
                 __ui_args.__msh_in = __segments[0];
 
-                if (__rxsys_type == SendingApplication.AutoDiscover)
+                switch (__resp.Get("MSH.3").ToLower())
                 {
-                    switch (__resp.Get("MSH.3").ToLower())
+                    case "frameworkltc":
+                        __args.__sa = SendingApplication.FrameworkLTE;
+                        break;
+
+                    case "epic":
+                        __args.__sa = SendingApplication.Epic;
+                        break;
+
+                    default:
+                        __args.__sa = SendingApplication.Unknown;
+                        break;
+                }
+
+                // __rx_systype should default to AutoDiscover so we can simultaniously take input from disperate systems. In the 
+                // case where systems don't self-identify the value will be specific and screw up if some other system
+                // trys to send anything.  Catch it here and deal with it
+                if (__rxsys_type != SendingApplication.AutoDiscover && __args.__sa != __rxsys_type)
+                {
+                    if(__args.__sa == SendingApplication.Unknown)
                     {
-                        case "frameworkltc":
-                            __rxsys_type = SendingApplication.FrameworkLTE;
-                            break;
-
-                        case "epic":
-                            __rxsys_type = SendingApplication.Epic;
-                            break;
-
-                        default:
-                            __rxsys_type = SendingApplication.Unknown;
-                            break;
+                        __args.__sa = __rxsys_type;
                     }
                 }
             }
@@ -187,7 +195,6 @@ namespace motInboundLib
                 throw new Exception("FATAL: Malformed Message");
             }
 
-
             try
             {
                 // Figure out what kind of message it is              
@@ -199,18 +206,17 @@ namespace motInboundLib
 
                         __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
-                        __args.__sa = __rxsys_type;
                         RDE_O11MessageEventReceived(this, __args);
                         break;
 
                     case "OMP_O09":
                     case "OMP_009":
                     case "OMP_OO9":
+                    case "OMP_0O9":
                         __ui_args.__event_message = "OMP_O09 Message Event";
 
                         __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
-                        __args.__sa = __rxsys_type;
                         OMP_O09MessageEventReceived(this, __args);
                         break;
 
@@ -220,7 +226,6 @@ namespace motInboundLib
 
                         __args.__raw_data = __data;
                         __args.timestamp = DateTime.Now;
-                        __args.__sa = __rxsys_type;
                         RDS_O13MessageEventReceived(this, __args);
                         break;
 
@@ -230,7 +235,15 @@ namespace motInboundLib
 
                         __args.timestamp = DateTime.Now;
                         __args.__raw_data = __data;
-                        __args.__sa = __rxsys_type;
+                        ADT_A01MessageEventReceived(this, __args);
+                        break;
+
+                    case "ADT_A06":
+                    case "ADT_AO6":
+                        __ui_args.__event_message = "ADT_A06 Message Event";
+
+                        __args.timestamp = DateTime.Now;
+                        __args.__raw_data = __data;
                         ADT_A01MessageEventReceived(this, __args);
                         break;
 
@@ -240,8 +253,11 @@ namespace motInboundLib
 
                         __args.timestamp = DateTime.Now;
                         __args.__raw_data = __data;
-                        __args.__sa = __rxsys_type;
                         ADT_A01MessageEventReceived(this, __args);
+                        break;
+
+                    default:
+                        throw new HL7Exception(201, __resp.Get("MSH.9.3") + " - Unhandled Message Type");
                         break;
                 }
 
@@ -249,7 +265,7 @@ namespace motInboundLib
                 __response = __out.__ack_string;
                 __ui_args.__msh_out = __out.__clean_ack_string;
 
-                __logger.Info("HL7 ACK: {0}", __response);
+                __logger.Debug("HL7 ACK: {0}", __response);
 
                 UpdateEventUI(this, __ui_args);
             }
@@ -279,9 +295,12 @@ namespace motInboundLib
                 __response = __out.__nak_string;
                 __ui_args.__msh_out = "UnKnown Processing Error";
                 __ui_args.__event_message = ex.Message;
+
+                UpdateErrorUI(this, __ui_args);
             }
 
             __write_message_to_endpoint(__response);
+
         }
 
         public void __start_listener(int __port, motSocket.__void_string_delegate __s_callback, X509Certificate __cert = null)
@@ -299,7 +318,7 @@ namespace motInboundLib
                 }
                 else
                 {
-                    __worker = new Thread(new ThreadStart(__socket.listen));
+                    __worker = new Thread(new ThreadStart(__socket.listen_async));
                     __worker.Name = "listener";
                     __worker.Start();
                 }
@@ -333,9 +352,10 @@ namespace motInboundLib
 
         public void __write_message_to_endpoint(string __msg)
         {
+            //Console.WriteLine("Firing message to {0} on Thread {1}", __socket.remoteEndPoint, Thread.CurrentThread.Name);
             try
             {
-                __socket.write(__msg);
+                __socket.write_return(__msg);
                 __socket.flush();
             }
             catch (Exception e)

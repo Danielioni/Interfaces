@@ -102,6 +102,11 @@ namespace motCommonLib
         {
             __logger = LogManager.GetLogger("motCommonLib.Socket");
             __logger.Info("Constructed with no parameters");
+
+            if (__socket_mutex == null)
+            {
+                __socket_mutex = new Mutex();
+            }
         }
         /// <summary>
         /// motSocket for listening (localhost:port) with data handler
@@ -112,6 +117,11 @@ namespace motCommonLib
         {
             __open_for_listening = true;
             __logger = LogManager.GetLogger("motCommonLib.Socket");
+
+            if (__socket_mutex == null)
+            {
+                __socket_mutex = new Mutex();
+            }
 
             try
             {
@@ -133,6 +143,11 @@ namespace motCommonLib
             __logger = LogManager.GetLogger("motCommonLib.Socket");
             __open_for_listening = true;
 
+            if (__socket_mutex == null)
+            {
+                __socket_mutex = new Mutex();
+            }
+
             try
             {
                 this.__port = __port;
@@ -149,7 +164,7 @@ namespace motCommonLib
         }
         public static bool __validate_server_certificate(object __sender, X509Certificate __server_cert, X509Chain __cert_chain, SslPolicyErrors __ssl_policy_errors)
         {
-            if(__ssl_policy_errors == SslPolicyErrors.None)
+            if (__ssl_policy_errors == SslPolicyErrors.None)
             {
                 return true;
             }
@@ -171,7 +186,7 @@ namespace motCommonLib
             this.__b_protocol_processor = __byte_protocol_processor == null ? __default_protocol_processor : __byte_protocol_processor;
             this.__open_for_listening = false;
 
-            if(__socket_mutex == null)
+            if (__socket_mutex == null)
             {
                 __socket_mutex = new Mutex();
             }
@@ -187,7 +202,7 @@ namespace motCommonLib
                 throw;
             }
         }
-        public motSocket(string __address, int __port, bool __secure_connection,  __bool_byte_delegate __byte_protocol_processor = null)
+        public motSocket(string __address, int __port, bool __secure_connection, __bool_byte_delegate __byte_protocol_processor = null)
         {
             this.__port = __port;
             this.__address = __address;
@@ -220,12 +235,187 @@ namespace motCommonLib
             {
                 return __remoteEndPoint;
             }
+
+            set
+            {
+                this.remoteEndPoint = value;
+            }
         }
         public EndPoint localEndPoint
         {
             get
             {
                 return __localEndPoint;
+            }
+        }
+        public void async_handler(IAsyncResult __ar)
+        {            
+            Thread.CurrentThread.Name = "*** IMPATIENT FRED ***";
+            //Console.WriteLine("async_handler on Thread: {0}", Thread.CurrentThread.Name);
+
+            try
+            {
+                TcpListener __l = (TcpListener)__ar.AsyncState;
+
+                var __client = __l.EndAcceptTcpClient(__ar);
+                var __lstream = __client.GetStream();
+
+                __logger.Debug("Received connection from {0}", __client.Client.RemoteEndPoint);
+                __remoteEndPoint = __client.Client.RemoteEndPoint;
+                __localEndPoint = __client.Client.LocalEndPoint;
+
+                int __inbytes = 0;
+                int __total_bytes = 0;
+                int __count = 0;
+                
+                try
+                {
+                    //Thread.Sleep(1);
+
+                    __b_iobuffer = new byte[1024];
+                    __s_iobuffer = "";
+
+                    while (!__lstream.DataAvailable)
+                    {
+                        if(__count > 99)
+                        {
+                            throw new Exception("No data in stream ...");
+                        }
+
+                        //Console.WriteLine("Waiting for data ... {0}", __count++);
+                        Thread.Sleep(1);
+                    }
+
+                    while (__lstream.DataAvailable)
+                    {
+                        __inbytes = __lstream.Read(__b_iobuffer, 0, __b_iobuffer.Length);
+                        __b_stream_processor?.Invoke(__b_iobuffer);
+                        __s_iobuffer += Encoding.UTF8.GetString(__b_iobuffer, 0, __inbytes);
+                        __total_bytes += __inbytes;
+                    }
+                }
+                catch (IOException)
+                {
+                    // timeout
+                }
+                catch (Exception ex)
+                {
+                    __logger.Error("async read() failed: {0}", ex.Message);
+                    throw new Exception("async read() failed: " + ex.Message);
+                }
+
+                if (__total_bytes > 0)
+                {
+                    // Assign the local stream to the global and process
+                    __stream = __lstream;
+
+                    Task t = Task.Run(() =>
+                    {
+                        Thread.CurrentThread.Name = "*** SON OF IMPATIENT FRED ***";
+                        __s_callback?.Invoke(__s_iobuffer);
+                        //Console.WriteLine("Done with asyc_handler Task");
+                    });              
+                }
+
+                //Console.WriteLine("Triggering mutex");
+                tcpClientConnected.Set();
+            }
+            catch
+            {
+                tcpClientConnected.Set();
+                return;
+            }
+        }
+
+        private X509Certificate __x_509_cert;
+
+        public void secure_async_handler(IAsyncResult __ar)
+        {
+            try
+            {
+                TcpListener __l = (TcpListener)__ar.AsyncState;
+
+                var __client = __l.EndAcceptTcpClient(__ar);
+                var __lstream = new SslStream(__client.GetStream(), false);
+                __ssl_stream.AuthenticateAsServer(__x_509_cert, false, SslProtocols.Tls, true);
+
+                int __inbytes = 0;
+                int __total_bytes = 0;
+
+                try
+                {
+                    Thread.Sleep(1);
+
+                    __b_iobuffer = new byte[1024];
+                    __s_iobuffer = "";
+
+                    do
+                    {
+                        __inbytes = __ssl_stream.Read(__b_iobuffer, 0, __b_iobuffer.Length);
+                        __b_stream_processor?.Invoke(__b_iobuffer);
+                        __s_iobuffer += Encoding.UTF8.GetString(__b_iobuffer, 0, __inbytes);
+                        __total_bytes += __inbytes;
+
+                    }
+                    while (__inbytes > 0);
+                }
+                catch (IOException)
+                {
+                    // timeout
+                }
+                catch (Exception ex)
+                {
+                    __logger.Error("read() failed: {0}", ex.Message);
+                    throw new Exception("read() failed: " + ex.Message);
+                }
+
+                // Assuming we can stop blocking the port, probably wrong thinking
+                tcpClientConnected.Set();
+
+                if (__total_bytes > 0)
+                {
+                    __ssl_stream = __lstream;
+                    __s_callback?.Invoke(__s_iobuffer);
+                }
+
+                __lstream.Close();
+                __client.Close();
+            }
+            catch
+            {
+                tcpClientConnected.Set();
+                return;
+            }
+        }
+        public ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
+
+        public void listen_async()
+        {
+            while (__running)
+            {
+                tcpClientConnected.Reset();
+                __trigger.BeginAcceptTcpClient(new AsyncCallback(async_handler), __trigger);
+
+                //Console.WriteLine("BeginAcceptTcpClient");
+
+                tcpClientConnected.WaitOne();
+            }
+        }
+
+        public void secure_listen_async(X509Certificate __x_509_cert)
+        {
+            if (__x_509_cert == null)
+            {
+                throw new ArgumentNullException("Missing X509 Certificate");
+            }
+
+            this.__x_509_cert = __x_509_cert;
+
+            while(__running)
+            {
+                tcpClientConnected.Reset();
+                __trigger.BeginAcceptTcpClient(new AsyncCallback(secure_async_handler), __trigger);
+                tcpClientConnected.WaitOne();
             }
         }
         public void secure_listen(X509Certificate __x_509_cert)
@@ -262,11 +452,11 @@ namespace motCommonLib
 
                         __ssl_stream.Close();
                         __client.Close();
-                    }              
+                    }
                 }
                 catch (IOException ex)
                 {
-                    __logger.Error("Create secure stream I/O error: " + ex.StackTrace);                   
+                    __logger.Error("Create secure stream I/O error: " + ex.StackTrace);
                 }
                 catch (AuthenticationException ex)
                 {
@@ -280,7 +470,7 @@ namespace motCommonLib
                 }
                 catch (SocketException ex)
                 {
-                    Console.WriteLine(ex.Message);                
+                    Console.WriteLine(ex.Message);
                 }
             }
         }
@@ -294,10 +484,8 @@ namespace motCommonLib
             {
                 try
                 {
-                    using (__client = __trigger.AcceptTcpClient())
+                    using (var __client = __trigger.AcceptTcpClient())
                     {
-                       
-
                         using (__stream = __client.GetStream())
                         {
                             __stream.ReadTimeout = TCP_TIMEOUT;
@@ -308,6 +496,8 @@ namespace motCommonLib
 
                             __logger.Debug("Accepted connection from remote endpoint {0}", __remoteEndPoint.ToString());
 
+                            //__stream = __new_stream;
+
                             if (read() > 0)
                             {
                                 __s_callback?.Invoke(__s_iobuffer);
@@ -315,12 +505,10 @@ namespace motCommonLib
 
                             __stream.Close();
                             __client.Close();
-
-                            //Thread.Sleep(1);
                         }
                     }
                 }
-                catch(IOException ex)
+                catch (IOException ex)
                 {
                     // maybe a timeout
                 }
@@ -386,7 +574,7 @@ namespace motCommonLib
                     }
                 }
             }
-            catch(IOException)
+            catch (IOException)
             {
                 // timeout
             }
@@ -428,6 +616,8 @@ namespace motCommonLib
         }
         public void write_return(byte[] __data)
         {
+            __socket_mutex.WaitOne();
+
             try
             {
                 if (__use_ssl)
@@ -441,9 +631,13 @@ namespace motCommonLib
             }
             catch
             { }
+
+            __socket_mutex.ReleaseMutex();
         }
         public void write_return(string __data)
         {
+            __socket_mutex.WaitOne();
+
             try
             {
                 if (__use_ssl)
@@ -453,9 +647,11 @@ namespace motCommonLib
                 else
                 {
                     __stream.Write(Encoding.UTF8.GetBytes(__data), 0, __data.Length);
-                }              
+                }
             }
             catch { }
+
+            __socket_mutex.ReleaseMutex();
         }
         public bool write(string __data)
         {
@@ -473,14 +669,14 @@ namespace motCommonLib
                 else
                 {
                     __stream.Write(Encoding.UTF8.GetBytes(__data), 0, __data.Length);
-                    __stream.Read(__buffer, 0, __buffer.Length);                   
+                    __stream.Read(__buffer, 0, __buffer.Length);
                 }
 
                 __socket_mutex.ReleaseMutex();
 
                 return (bool)__b_protocol_processor?.Invoke(__buffer);
             }
-            catch(IOException)
+            catch (IOException)
             {
                 __socket_mutex.ReleaseMutex();
 
@@ -593,9 +789,9 @@ namespace motCommonLib
                 __open_for_listening = true;
                 __running = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                __logger.Error("Failed to start server on: {0}", __port);
+                __logger.Error("Failed to start server on: {0} : {1}", __port, ex.Message);
                 throw;
             }
         }
@@ -614,7 +810,7 @@ namespace motCommonLib
                         __hostname = __address;
                     }
 
-                    __ssl_stream = new SslStream(   __client.GetStream(),
+                    __ssl_stream = new SslStream(__client.GetStream(),
                                                     false,
                                                     new RemoteCertificateValidationCallback(__validate_server_certificate),
                                                     null
@@ -630,7 +826,7 @@ namespace motCommonLib
                         __client.Close();
                         throw ex;
                     }
-                    catch(IOException ex)
+                    catch (IOException ex)
                     {
                         __logger.Error("[SystemIO] Failed to connect securely to {0}:{1}. Error: {2}", __address, __port, ex.StackTrace);
                         __client.Close();
@@ -656,64 +852,64 @@ namespace motCommonLib
             {
                 throw;
             }
-            
+
         }
-    /*    public void open(X509Certificate2 __x_509_cert = null)
-        {
-            try
+        /*    public void open(X509Certificate2 __x_509_cert = null)
             {
-                if (__open_for_listening)
+                try
                 {
-                    __trigger = new TcpListener(IPAddress.Any, __port);
-                    __trigger.Start();
-                }
-                else
-                {
-                    __client = new TcpClient(this.__address, __port);
-
-                    if (__use_ssl)
+                    if (__open_for_listening)
                     {
-                        __ssl_stream = new SslStream(__client.GetStream(), false);
-                        __ssl_stream.ReadTimeout = TCP_TIMEOUT;
-                        __ssl_stream.WriteTimeout = TCP_TIMEOUT;
-
-                        __remoteEndPoint = __client.Client.RemoteEndPoint;
-                        __localEndPoint = __client.Client.LocalEndPoint;
-
-                        __ssl_stream.AuthenticateAsServer(__x_509_cert, false, SslProtocols.Tls, true);
+                        __trigger = new TcpListener(IPAddress.Any, __port);
+                        __trigger.Start();
                     }
                     else
                     {
-                        __stream = __client.GetStream();
+                        __client = new TcpClient(this.__address, __port);
+
+                        if (__use_ssl)
+                        {
+                            __ssl_stream = new SslStream(__client.GetStream(), false);
+                            __ssl_stream.ReadTimeout = TCP_TIMEOUT;
+                            __ssl_stream.WriteTimeout = TCP_TIMEOUT;
+
+                            __remoteEndPoint = __client.Client.RemoteEndPoint;
+                            __localEndPoint = __client.Client.LocalEndPoint;
+
+                            __ssl_stream.AuthenticateAsServer(__x_509_cert, false, SslProtocols.Tls, true);
+                        }
+                        else
+                        {
+                            __stream = __client.GetStream();
+                        }
+
+                        __stream.ReadTimeout = TCP_TIMEOUT;
+                        __stream.WriteTimeout = TCP_TIMEOUT;
+
+                        __remoteEndPoint = __client.Client.RemoteEndPoint;
+                        __localEndPoint = __client.Client.LocalEndPoint;
                     }
 
-                    __stream.ReadTimeout = TCP_TIMEOUT;
-                    __stream.WriteTimeout = TCP_TIMEOUT;
-
-                    __remoteEndPoint = __client.Client.RemoteEndPoint;
-                    __localEndPoint = __client.Client.LocalEndPoint;
+                    __running = true;
+                }
+                catch (AuthenticationException ex)
+                {
+                    __logger.Fatal(@"Failed to authenticate socket: " + __address + " / " + __port + " " + ex.Message);
+                    throw new Exception(@"Failed to authenticate socket: " + __address + " / " + __port + ex.Message);
+                }
+                catch (SocketException ex)
+                {
+                    __logger.Fatal(@"Failed to open socket: " + __address + " / " + __port + " " + ex.Message);
+                    throw new Exception(@"Failed to open socket: " + __address + " / " + __port + ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    __logger.Fatal(@"Failed to open socket: " + __address + " / " + __port + " " + ex.Message);
+                    throw new Exception(@"Failed to open socket: " + __address + "/" + __port + " " + ex.Message);
                 }
 
                 __running = true;
-            }
-            catch (AuthenticationException ex)
-            {
-                __logger.Fatal(@"Failed to authenticate socket: " + __address + " / " + __port + " " + ex.Message);
-                throw new Exception(@"Failed to authenticate socket: " + __address + " / " + __port + ex.Message);
-            }
-            catch (SocketException ex)
-            {
-                __logger.Fatal(@"Failed to open socket: " + __address + " / " + __port + " " + ex.Message);
-                throw new Exception(@"Failed to open socket: " + __address + " / " + __port + ex.Message);
-            }
-            catch (Exception ex)
-            {
-                __logger.Fatal(@"Failed to open socket: " + __address + " / " + __port + " " + ex.Message);
-                throw new Exception(@"Failed to open socket: " + __address + "/" + __port + " " + ex.Message);
-            }
-
-            __running = true;
-            __logger.Info(@"Successfully Opened {0}:{1} for {2}", __address, __port, __open_for_listening ? "Listening" : "Writing");
-        }*/
-    }  
+                __logger.Info(@"Successfully Opened {0}:{1} for {2}", __address, __port, __open_for_listening ? "Listening" : "Writing");
+            }*/
+    }
 }

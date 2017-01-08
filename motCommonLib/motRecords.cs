@@ -32,6 +32,7 @@ using RestSharp.Authenticators;
 using RestSharp.Serializers;
 using motCommonLib;
 using System.Globalization;
+using System.Threading.Tasks;
 
 /// <summary>
 /// motRecords - Abstractions for all the record types that the Medicine-On-Time Legacy interface supports.  Classes are constructed 
@@ -151,16 +152,19 @@ namespace motCommonLib
 
             try
             {
-                // Push it to the port
-                foreach (KeyValuePair<string,string> __record in __records)
+                Task.Run(() =>
                 {
-                    __socket.write(__record.Value);
-                }
+                    // Push it to the port
+                    foreach (KeyValuePair<string, string> __record in __records)
+                    {
+                        __socket.write(__record.Value);
+                    }
 
-                __socket.write("<EOF/>");
+                    __socket.write("<EOF/>");
 
-                // Flush
-                __records.Clear();
+                    // Flush
+                    __records.Clear();
+                });
                 
             }
             catch(Exception ex)

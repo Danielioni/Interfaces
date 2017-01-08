@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Text.RegularExpressions;
@@ -773,12 +774,15 @@ namespace motCommonLib
         }
         public void Write(string inboundData)
         {
-            if (p == null || !p.write(inboundData))
+            Task.Run(() =>
             {
-                // Need to do better than this, need to retrieve the error code at least     
-                logger.Log(__log_level, @"Failed to write to gateway");
-                throw new Exception(@"Failed to write to gateway");
-            }
+                if (p == null || !p.write(inboundData))
+                {
+                    // Need to do better than this, need to retrieve the error code at least     
+                    logger.Log(__log_level, @"Failed to write to gateway");
+                    throw new Exception(@"Failed to write to gateway");
+                }
+            });
         }
         public motParser()
         {
