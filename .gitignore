@@ -215,5 +215,6 @@ ModelManifest.xml
 *.snk
 *.pfx
 *.crt
+*.cmd
 
 /HL7toXDocumentParser/

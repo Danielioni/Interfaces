@@ -19,9 +19,27 @@ using Mot.Shared.Model.Rxes.RxRegimens;
 
 //using motCommonLib;
 
+/// <summary>
+/// The Primary SynMed interface
+///     
+///     It supports both Legacy and Next with each filling the appropriate database interfaces and sharing a common output class
+///     
+/// </summary>
 
 namespace motOutboundLib
 {
+    public interface ISynMedLogin
+    {
+    }
+
+    public interface ISynMedQuery
+    {
+    }
+
+    public interface ISynMedBuild
+    {
+    }
+
     public class SynMed
     {
         private static IContainer container;
@@ -91,9 +109,9 @@ namespace motOutboundLib
 
                 //Authentication service will automatically store access_token and refresh_token and re-issue them when they are about to expire.
                 authService = container.Resolve<IAuthenticationService>();
-               
+
                 setup(__pathname);
-               
+
             }
             catch
             { throw; }
@@ -130,7 +148,7 @@ namespace motOutboundLib
                 using (var scope = container.BeginLifetimeScope())
                 {
 
-                    var query = scope.Resolve<IEntityQuery<Patient>>();                  
+                    var query = scope.Resolve<IEntityQuery<Patient>>();
 
                     var __patients = await query.QueryAsync(new QueryParameters<Patient>(pt => pt.DueDate <= new DateTimeOffset(__cycle_start) && !pt.ChartOnly && !pt.IsHidden,
                                                                                          p => p.Rxes,
@@ -146,7 +164,7 @@ namespace motOutboundLib
                             if (__patient.Rxes.Count > 0)
                             {
                                 TimeSpan __ts = __patient.CurrentCycleEndDate - __patient.CurrentCycleStartDate;
-                                
+
                                 //await Write(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, (DateTime)__patient.DateOfBirth, __cycle_start, __ts.Days + 1);
 
                                 __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, (DateTime)__patient.DateOfBirth, __cycle_start, __ts.Days + 1);
@@ -160,9 +178,9 @@ namespace motOutboundLib
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw;  
+                throw;
             }
         }
 
@@ -233,7 +251,7 @@ namespace motOutboundLib
     {
         public string __name { get; set; }
         public bool __mandatory { get; set; } = false;
-        public object __data {  get;  set; }
+        public object __data { get; set; }
         public int __length { get; set; }
         public SynMedField(string __name, object __data, bool __mandatory, int __length = 0)
         {
@@ -664,12 +682,12 @@ namespace motOutboundLib
         public void WriteByPatient()
         { }
 
-        public void WriteRxCollection(IEnumerable<Rx> __rxes, string __file_name,  Patient __patient = null)
+        public void WriteRxCollection(IEnumerable<Rx> __rxes, string __file_name, Patient __patient = null)
         {
             DateTime __base_date = __cycle_start_date;
             __filename = __file_name;
             int __save_cycle_length = 0;
-            
+
 
             try
             {
@@ -695,7 +713,7 @@ namespace motOutboundLib
                     foreach (DoseScheduleItem __dose in __rx.RxDosageRegimen.DoseSchedule.DoseScheduleItems)
                     {
                         if (__rx.IsActive)
-                        {                        
+                        {
 
                             for (int __day = 0; __day < __cycle_length; __day++)
                             {

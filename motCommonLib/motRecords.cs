@@ -277,6 +277,11 @@ namespace motCommonLib
             {
                 throw new ArgumentNullException("Invalid Date Argument");
             }
+
+            // Extract the date pard
+            string[] __date_only = __date.Split(' ');
+
+
             string[] __date_patterns =  // Hope I got them all
                 {
                 "yyyyMMdd",
@@ -305,9 +310,19 @@ namespace motCommonLib
                 "d/M/yyyy",
           
                 "MM/dd/yyyy",
+                "MM/dd/yyyy hh:mm:ss tt",
+                "MM/dd/yyyy h:mm:ss tt",
+                "MM/dd/yyyy hh:m:ss tt",
+                "MM/dd/yyyy h:m:ss tt",
+
                 "MM/d/yyyy",
-                "M/dd/yyyy",               
+                "MM/d/yyyy hh:mm:ss tt",
+
+                "M/dd/yyyy",
+                "M/dd/yyyy hh:mm:ss tt",
+
                 "M/d/yyyy",
+                "M/d/yyyy hh:mm:ss tt",
 
                 "yyyy-MM-dd",
                 "yyyy-M-dd",
@@ -321,12 +336,12 @@ namespace motCommonLib
             };
 
             DateTime __dt;
-            if (DateTime.TryParseExact(__date, __date_patterns, CultureInfo.InvariantCulture, DateTimeStyles.None, out __dt))
+            if (DateTime.TryParseExact(__date_only[0], __date_patterns, CultureInfo.InvariantCulture, DateTimeStyles.None, out __dt))
             {
                 return __dt.ToString("yyyy-MM-dd"); // return MOT Legacy Gateway Format
             }
 
-            return __date;
+            return __date_only[0];
         }
         protected string __normalize_string(string __val)
         {
