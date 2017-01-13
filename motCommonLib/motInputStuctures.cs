@@ -31,10 +31,12 @@ namespace motCommonLib
 {
     public enum motInputStuctures
     {
-        __inputDelimted = 0,
+        __auto = 0,
+        __inputDelimted,
         __inputTagged,
         __inputXML,
         __inputJSON,
+        __inputPARADA,
         __inputUndefined
     }
 

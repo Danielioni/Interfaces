@@ -651,12 +651,12 @@ namespace motCommonLib
             }
             catch (JsonReaderException e)
             {
-                logger.Log(__log_level, @"JSON Reader Error: {0}", e.Message);
+                logger.Error(@"JSON Reader Error: {0}", e.Message);
                 throw new System.Exception("JSON Reader error " + e.Message);
             }
             catch (JsonSerializationException e)
             {
-                logger.Log(__log_level, @"JSON Serialization Error: {0}", e.Message);
+                logger.Error(@"JSON Serialization Error: {0}", e.Message);
                 throw new System.Exception("JSON Serialization error: " + e.Message);
             }
         }
@@ -740,12 +740,12 @@ namespace motCommonLib
             }
             catch (System.Xml.XmlException e)
             {
-                logger.Log(__log_level, @"XML Parse Failure " + e.Message);
+                logger.Error(@"XML Parse Failure " + e.Message);
                 throw new System.Exception(@"XML Parse Failure " + e.Message);
             }
             catch (System.FormatException e)
             {
-                logger.Log(__log_level, @"XML Format Error " + e.Message);
+                logger.Error(@"XML Format Error " + e.Message);
                 throw new System.Exception(@"XML Parse Error " + e.Message);
             }
 
@@ -772,6 +772,238 @@ namespace motCommonLib
                 throw;
             }
         }
+
+
+        /// <summary>
+        /// ParseParada input file format to support BestRx, its just a delimited file with each line representing a complete record
+        /// </summary>
+        /// <param name="__data"></param>
+        /// 
+
+        /*
+            0) Patient Name (last, first)
+            1) Patient Record Number (in BestRx)
+            2) Facility Name
+            3) Patient's Unit
+            4) Patient Location/Floor
+            5) Patient Room
+            6) Patient Bed
+            7) Drug NDC
+            8) Brand Drug Name
+            9) Generic Drug name
+            10) Admin Date (for PRN this will be blank)
+            11) Admin Time (for PRN this will be "1200"
+            12) Admin Qty (for PRN this will be "1")
+            13) Drug Strength
+            14) Prescriber Name
+            15) Rx Number
+            16) Aux Warning 1
+            17) Aux Warning 2
+            18) Sig Directions (chars 1-50)
+            19) Sig Directions (chars 51-100)
+            20) Sig Directions (chars 101-150)
+            21) Sig Directions (chars 151-200)
+            22) Order Type (P=PRN, U=Unit Dose, M=Multi Dose
+            23) Refill Number (0=original fill, 1=first refill, etc)
+            24) Total number of doses for Rx in the file
+            25) Value for barcode (you can ignore this) 
+         */
+               
+        // (0)DONUT, FRED~
+        // (1)25731~
+        // (2)SPRINGFIELD RETIREMENT CASTLE~
+        // (3)~
+        // (4)2~
+        // (5)201~
+        // (6)13~
+        // (7)12280040130~
+        // (8)JANUVIA 100 MG TABLET~
+        // (9)~
+        // (10)20170111~
+        // (11)0730~
+        // (12)2~
+        // (13)~
+        // (14)MICHELLE SMITH~
+        // (15)8880442~
+        // (16)~
+        // (17)~
+        // (18)TAKE 2 TABLETS 4 TIMES A DAY|TOME 2 TABLETAS CUATR~
+        // (19)OS VECES AL DIA~
+        // (20)~
+        // (21)~
+        // (22)M~
+        // (23)00~
+        // (24)112~
+        // (25)8880442_00_1/112~
+
+       // (0)DOE, JOHN ~(1)25731~(2)SPRINGFIELD RETIREMENT CASTLE~(3)~(4)2~(5)201~(6)13~(7)68180041109~(8)AVAPRO 150 MG TABLET~(9)IRBESARTAN 150 MG TABLET~(10)20170204~0730~1~~MICHELLE SMITH ~8880440~INFORME piel o reaccion alergica.~NO conducir si mareado o vision borrosa.~TAKE 1 TABLET DAILY IN THE MORNING ~~~~M~00~28~8880440_00_25/28~
+        public void ParseParada(string __data)
+        {
+            string[] __name;
+            string[] __rows = __data.Split('\n');
+            string  __last_scrip = string.Empty;
+            string  __last_dose_qty = string.Empty;
+            string  __last_dose_time = string.Empty;
+            bool __first_scrip = true;
+            List<string> __dose_times = new List<string>();
+            int __name_version = 1;
+
+            var __scrip = new motPrescriptionRecord("Add");
+            var __patient = new motPatientRecord("Add");
+            var __facility = new motLocationRecord("Add");
+            var __drug = new motDrugRecord("Add");
+            var __doc = new motPrescriberRecord("Add");
+
+            /*
+            var __write_queue = new motWriteQueue();
+            __patient.__write_queue =
+            __scrip.__write_queue =
+            __facility.__write_queue =
+            __doc.__write_queue =
+            __drug.__write_queue =
+                __write_queue;
+              */
+
+            try
+            {
+                foreach (var __row in __rows)  // This will generate new records for every row - need to optimize
+                {
+                    if (__row.Length > 0)
+                    {
+                        string[] __raw_record = __row.Split('~');  // There's no guarntee that each field has data but the count is right
+
+                        if (__last_scrip != __raw_record[15]) // Start a new scrip
+                        {
+                            if (__first_scrip == false)  // Commit the previous scrip
+                            {
+                                //__scrip.Commit(p);
+
+                                if (__dose_times.Count > 1)
+                                {
+                                    // Build and write TQ Record
+                                    var __tq = new motTimeQtysRecord("Add");
+
+                                    // New name
+                                    __tq.DoseScheduleName = __facility.LocationName?.Substring(0, 3) + __name_version.ToString();
+                                    __name_version++;
+
+                                    // Fill the record
+                                    __tq.RxSys_LocID = __patient.RxSys_LocID;
+                                    __tq.DoseTimesQtys = __scrip.DoseTimesQtys;
+
+                                    // Assign the DoseSchcedulw name to the scrip & clear the scrip DoseTimeSchedule
+                                    __scrip.DoseScheduleName = __tq.DoseScheduleName;
+                                    __scrip.DoseTimesQtys = "";
+
+                                    // Write the record
+                                    //__tq.AddToQueue();
+                                    __tq.Write(p);
+                                    __tq.Clear();
+                                }
+
+                                __doc.Write(p);
+                                __facility.Write(p);
+                                __drug.Write(p);
+                                __patient.Write(p);
+                                __scrip.Write(p);
+
+                                __doc.Clear();
+                                __facility.Clear();
+                                __drug.Clear();
+                                __patient.Clear();
+                                __scrip.Clear();
+
+                                //__scrip.Commit(p);
+                            }
+
+                            __first_scrip = false;
+                            __last_scrip = __raw_record[15];
+                            __dose_times.Clear();
+
+                            __name = __raw_record[0].Split(',');
+                            __patient.LastName = __name[0];
+                            __patient.FirstName = __name[1];
+                            __patient.RxSys_LocID = __raw_record[2]?.Trim()?.Substring(0, 4);
+                            __patient.RxSys_PatID = __raw_record[1];
+                            __patient.Room = __raw_record[4];
+
+
+                            __facility.LocationName = __raw_record[2];
+                            __facility.RxSys_LocID = __raw_record[2]?.Trim()?.Substring(0, 4);
+
+                            __drug.NDCNum = __raw_record[7];
+                            __drug.RxSys_DrugID = __raw_record[7];
+                            __drug.TradeName = __raw_record[8]; // Trade name  [8] AVAPRO 150 MG TABLET 
+                            __drug.DrugName = __raw_record[9];  // Generic Name[9] IRBESARTAN 150 MG TABLET
+
+                            if (!string.IsNullOrEmpty(__raw_record[8]))
+                            {
+                                string[] __raw_drug = __raw_record[8].Split(' ');
+                                __drug.Strength = __raw_drug[1];
+                                __drug.Unit = __raw_drug[2];
+                                __drug.DoseForm = __raw_drug[3];
+                            }
+
+                            if (!string.IsNullOrEmpty(__raw_record[9]))
+                            {
+                                string[] __raw_drug = __raw_record[9].Split(' ');
+                                __drug.Strength = __raw_drug[1];
+                                __drug.Unit = __raw_drug[2];
+                                __drug.DoseForm = __raw_drug[3];
+                            }
+
+                            string[] __doc_name = __raw_record[14].Split(' ');
+                            __doc.FirstName = __doc_name[0]?.Trim();
+                            __doc.LastName = __doc_name[1]?.Trim();
+                            __doc.RxSys_DocID = __doc_name[0]?.Trim()?.Substring(0, 3) + __doc_name[1]?.Trim()?.Substring(0, 3);
+                            __patient.RxSys_DocID = __doc.RxSys_DocID;
+
+
+                            __scrip.RxSys_RxNum = __raw_record[15];
+                            __scrip.RxSys_PatID = __patient.RxSys_PatID;
+                            __scrip.RxSys_DocID = __patient.RxSys_DocID;
+                            __scrip.RxStartDate = __raw_record[10];
+                            __scrip.DoseTimesQtys = string.Format("{0:0000}{1:00.00}", Convert.ToInt32(__raw_record[11]), Convert.ToDouble(__raw_record[12]));
+                            __scrip.QtyPerDose = __raw_record[12];
+                            __scrip.QtyDispensed = __raw_record[24];
+                            __scrip.Sig = string.Format("{0}\n{1}\n{2}\n{3}", __raw_record[18], __raw_record[19], __raw_record[20], __raw_record[2]);
+                            __scrip.Refills = __raw_record[23];
+                            __scrip.RxSys_DrugID = __drug.NDCNum;
+                            __scrip.RxType = __raw_record[22].Trim().ToUpper() == "P" ? "2" : "1";
+
+                            __last_dose_time = __raw_record[11];
+                            __last_dose_qty = __raw_record[12];
+                            __dose_times.Add(__last_dose_time);
+
+
+                            //__patient.AddToQueue();
+                            //__facility.AddToQueue();
+                            //__drug.AddToQueue();
+                            //__scrip.AddToQueue();
+                        }
+                        else
+                        {
+                            if (__last_dose_time != __raw_record[11] || __last_dose_qty != __raw_record[12])
+                            {
+                                if (!__dose_times.Contains(__raw_record[11]))  // Create a new TQ Dose Schedule here!!
+                                {
+                                    __scrip.DoseTimesQtys += string.Format("{0:0000}{1:00.00}", Convert.ToInt32(__raw_record[11]), Convert.ToDouble(__raw_record[12]));
+
+                                    __last_dose_qty = __raw_record[12];
+                                    __last_dose_time = __raw_record[11];
+                                    __dose_times.Add(__last_dose_time);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                logger.Error("Error parsing Parada record {0}.  {1}", __data, ex.Message);
+            }
+
+        }
         public void Write(string inboundData)
         {
             Task.Run(() =>
@@ -779,7 +1011,7 @@ namespace motCommonLib
                 if (p == null || !p.write(inboundData))
                 {
                     // Need to do better than this, need to retrieve the error code at least     
-                    logger.Log(__log_level, @"Failed to write to gateway");
+                    logger.Error(@"Failed to write to gateway");
                     throw new Exception(@"Failed to write to gateway");
                 }
             });
@@ -819,12 +1051,18 @@ namespace motCommonLib
                     return;
                 }
 
-                logger.Log(__log_level, "Unidentified file type");
+                if(inputStream.Contains("~\n"))
+                {
+                    ParseParada(inputStream);
+                    return;
+                }
+
+                logger.Error("Unidentified file type");
                 throw new Exception("Unidentified file type");
             }
             catch (Exception e)
             {
-                logger.Log(__log_level, "Parse failure: {0}", e.Message);
+                logger.Error("Parse failure: {0}", e.Message);
                 throw new Exception("Parse failure: {0}" + e.Message);
             }
         }
@@ -839,7 +1077,7 @@ namespace motCommonLib
                 {
                     case motInputStuctures.__inputXML:
                         parseXML(inputStream);
-                        logger.Log(__log_level, "Completed XML processing");
+                        logger.Info("Completed XML processing");
                         break;
 
                     case motInputStuctures.__inputJSON:
@@ -857,6 +1095,11 @@ namespace motCommonLib
                         logger.Info("Completed Tagged File processing");
                         break;
 
+                    case motInputStuctures.__inputPARADA:
+                        ParseParada(inputStream);
+                        logger.Info("Completed Parda file processng");
+                        break;
+
                     case motInputStuctures.__inputUndefined:
                         logger.Info("Unknown File Type");
                         break;
@@ -867,7 +1110,7 @@ namespace motCommonLib
             }
             catch (Exception e)
             {
-                logger.Log(__log_level, "Constuctor failure: {0}\n{1}", e.Message, e.StackTrace);
+                logger.Error("Constuctor failure: {0}\n{1}", e.Message, e.StackTrace);
                 throw;
             }
         }

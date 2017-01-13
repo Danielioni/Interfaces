@@ -90,7 +90,7 @@ namespace motInboundLib
                         try
                         {
                             sr = new StreamReader(__fileName);
-                            motParser p = new motParser(pt, sr.ReadToEnd());
+                            motParser p = new motParser(pt, sr.ReadToEnd(),motInputStuctures.__inputPARADA);
                             sr.Close();
                             File.Delete(__fileName);
                         }
@@ -129,12 +129,19 @@ namespace motInboundLib
 
         public motFileSystemListener(string dirName, string address, string port)
         {
-            if (!System.IO.Directory.Exists(dirName))
+            if (!string.IsNullOrEmpty(dirName) || !string.IsNullOrEmpty(address) || !string.IsNullOrEmpty(port))
             {
-                System.IO.Directory.CreateDirectory(dirName);
-            }
+                if (!System.IO.Directory.Exists(dirName))
+                {
+                    System.IO.Directory.CreateDirectory(dirName);
+                }
 
-            watchDirectory(dirName, address, port);
+                watchDirectory(dirName, address, port);
+            }
+            else
+            {
+                throw new NullReferenceException("NULL parameter");
+            }
         }
     }
 }

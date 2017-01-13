@@ -22,7 +22,7 @@ namespace motWell
 
         public void startWatching()
         {
-            __fsw = new motFileSystemListener("C:/MOT_IO", "127.0.0.1", "24041");
+            __fsw = new motFileSystemListener("C:/MOT_IO", "127.0.0.1", "24042");
         }
 
         public void stopWatching()

@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
-using System.Resources;
 
 
 using Autofac;
 using Mot.Client.Sdk;
 using Mot.Shared.Framework;
-using Mot.Shared.Model.Users;
 using Mot.Shared.Model.Patients;
-using Mot.Shared.Model.Cards;
 using Mot.Shared.Model.Rxes;
 using Mot.Shared.Model.Rxes.RxRegimens;
 
@@ -42,7 +38,7 @@ namespace motOutboundLib
 
     public class SynMed
     {
-        private static IContainer container;
+        public static IContainer container;
         private SynMedTable __table;
         private IEnumerable<Patient> __patients;
         //public Patient __patient;
@@ -197,7 +193,6 @@ namespace motOutboundLib
                 {
                     var query1 = scope.Resolve<IEntityQuery<Rx>>();
 
-
                     if (!string.IsNullOrEmpty(__middle_initial))
                     {
 
@@ -212,7 +207,7 @@ namespace motOutboundLib
                                                     r => r.Store,
                                                     r => r.Patient.Facility)
                                         );
-
+                        
                         __table = new SynMedTable(__last_name, __first_name, __middle_initial, __patient_dob, __cycle_start_date, __cycle_length);
                         __table.WriteRxCollection(rxes, __file_name);
                     }
@@ -682,7 +677,23 @@ namespace motOutboundLib
         public void WriteByPatient()
         { }
 
-        public void WriteRxCollection(IEnumerable<Rx> __rxes, string __file_name, Patient __patient = null)
+        public async void GetDoseRegimen(Rx __rx)
+        {
+
+            using (var scope = SynMed.container.BeginLifetimeScope())
+            {
+                var itemsQuery = scope.Resolve<IEntityQuery<RxAlternatingItem>>();
+
+                var container2 = __rx.RxDosageRegimen as IAlternatingItemsContainer;
+
+                if (container2 != null && container2.AlternatingItems == null)
+                {
+                    container2.AlternatingItems = (await itemsQuery.QueryAsync(new QueryParameters<RxAlternatingItem>(item => item.RxDosageRegimenId == container2.Id))).ToList();
+                }
+            }
+        }
+
+        public async void WriteRxCollection(IEnumerable<Rx> __rxes, string __file_name, Patient __patient = null)
         {
             DateTime __base_date = __cycle_start_date;
             __filename = __file_name;
@@ -701,20 +712,29 @@ namespace motOutboundLib
                     DateTime __start_date = __rx.Patient.DueDate;
                     DateTime __current_date = __start_date;
 
+                    var __alternating_regimen = __rx.RxDosageRegimen as IAlternatingItemsContainer;
+
                     if (!__rx.RxDosageRegimen.IsCycleType)
                     {
-                        var __titrate = __rx.RxDosageRegimen as RxWeeklyTitratingRegimen;
+                        using (var scope = SynMed.container.BeginLifetimeScope())
+                        {
+                            var itemsQuery = scope.Resolve<IEntityQuery<RxAlternatingItem>>();
+                            
+                            if (__alternating_regimen != null && __alternating_regimen.AlternatingItems == null)
+                            {
+                                __alternating_regimen.AlternatingItems = (await itemsQuery.QueryAsync(new QueryParameters<RxAlternatingItem>(
+                                    item => item.RxDosageRegimenId == __alternating_regimen.Id))).ToList();
+                            }
+                        }
 
-                        RxWeeklyTitratingRegimen RxWeeklyTitratingRegimen = (RxWeeklyTitratingRegimen)__rx.RxDosageRegimen;
-                        __save_cycle_length = __cycle_length;
-                        __cycle_length = __rx.RxDosageRegimen.DoseSchedule.DoseScheduleItems.Count;
+                        //__save_cycle_length = __cycle_length;
+                        //__cycle_length = __alternating_regimen.AlternatingItems[0].Doses.Length;
                     }
 
                     foreach (DoseScheduleItem __dose in __rx.RxDosageRegimen.DoseSchedule.DoseScheduleItems)
                     {
                         if (__rx.IsActive)
                         {
-
                             for (int __day = 0; __day < __cycle_length; __day++)
                             {
                                 var __new_row = new SynMedRow();
@@ -723,7 +743,16 @@ namespace motOutboundLib
                                 __new_row.ADMINISTRATION_DATE = string.Format("{0:yyyyMMdd}", __current_date);
                                 __new_row.ADMINISTRATION_TIME = string.Format("{0:00}:{1:00}", __dose.GetTimespan().Hours, __dose.GetTimespan().Minutes);
                                 __new_row.LOCAL_DRUG_ID = __rx.Drug.NdcNumber;
-                                __new_row.DRUG_QUANTITY = (int)__dose.Dose;
+
+                                if (!__rx.RxDosageRegimen.IsCycleType)
+                                {
+                                    __new_row.DRUG_QUANTITY = (int)__alternating_regimen.AlternatingItems[0].Doses[__day];
+                                }
+                                else
+                                {
+                                    __new_row.DRUG_QUANTITY = (int)__dose.Dose;
+                                }
+
                                 __new_row.DRUG_DESCRIPTION = __rx.Drug.DosageCupName;
                                 __new_row.DISPLAY_NAME = __rx.Drug.DosageCupName;
                                 __new_row.EXTERNAL_DRUG_FLAG = (__rx.IsBulk || __rx.IsChartOnly) ? "Y" : "N";
