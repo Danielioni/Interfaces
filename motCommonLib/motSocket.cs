@@ -676,9 +676,11 @@ namespace motCommonLib
 
                 return (bool)__b_protocol_processor?.Invoke(__buffer);
             }
-            catch (IOException)
+            catch (IOException ex)
             {
                 __socket_mutex.ReleaseMutex();
+
+                __logger.Error("write() failed: {0}", ex.Message);
 
                 // timeout
                 return false;

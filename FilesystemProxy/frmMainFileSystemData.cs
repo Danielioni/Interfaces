@@ -350,25 +350,12 @@ namespace FilesystemProxy
         #endregion
 
         private void btnSelectFile_Click(object sender, EventArgs e)
-        {
-            
-             OpenFileDialog __ofd = new OpenFileDialog();
-            __ofd.Multiselect = true;
-            __ofd.InitialDirectory = @"C:\MOT_IO";
-            
-            if(__ofd.ShowDialog() == DialogResult.OK && (__ofd.FileName.Length> 0 || __ofd.FileNames.Length > 0))
+        {         
+             FolderBrowserDialog __ofd = new FolderBrowserDialog();
+                  
+            if(__ofd.ShowDialog() == DialogResult.OK && ( __ofd.SelectedPath.Length > 0))
             {
-                if(__ofd.FileNames.Length > 0)
-                {
-                    foreach(string __dirname in __ofd.FileNames)
-                    {
-                        txtListDirectories.Text += __dirname;
-                    }
-                }
-                else
-                {
-                    txtListDirectories.Text = __ofd.FileName;
-                }
+                    txtListDirectories.Text = __ofd.SelectedPath;
             }
         }
 
@@ -393,11 +380,11 @@ namespace FilesystemProxy
         }
     }
 
-    public class UIupdateArgs : EventArgs
-    {
-        public string __event_message { get; set; }
-        public string timestamp { get; set; }
-    }
+    //public class UIupdateArgs : EventArgs
+    //{
+    //    public string __event_message { get; set; }
+    //    public string timestamp { get; set; }
+    //}
 
     public class ExecuteArgs : EventArgs
     {

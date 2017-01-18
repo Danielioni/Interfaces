@@ -854,15 +854,14 @@ namespace motCommonLib
             var __drug = new motDrugRecord("Add");
             var __doc = new motPrescriberRecord("Add");
 
-            /*
+            
             var __write_queue = new motWriteQueue();
             __patient.__write_queue =
             __scrip.__write_queue =
             __facility.__write_queue =
             __doc.__write_queue =
             __drug.__write_queue =
-                __write_queue;
-              */
+            __write_queue;              
 
             try
             {
@@ -876,8 +875,6 @@ namespace motCommonLib
                         {
                             if (__first_scrip == false)  // Commit the previous scrip
                             {
-                                //__scrip.Commit(p);
-
                                 if (__dose_times.Count > 1)
                                 {
                                     // Build and write TQ Record
@@ -896,24 +893,17 @@ namespace motCommonLib
                                     __scrip.DoseTimesQtys = "";
 
                                     // Write the record
-                                    //__tq.AddToQueue();
-                                    __tq.Write(p);
-                                    __tq.Clear();
+                                    __tq.__write_queue = __write_queue;
+                                    __tq.AddToQueue();
                                 }
 
-                                __doc.Write(p);
-                                __facility.Write(p);
-                                __drug.Write(p);
-                                __patient.Write(p);
-                                __scrip.Write(p);
+                                __scrip.Commit(p);
 
                                 __doc.Clear();
                                 __facility.Clear();
                                 __drug.Clear();
                                 __patient.Clear();
-                                __scrip.Clear();
-
-                                //__scrip.Commit(p);
+                                __scrip.Clear();                         
                             }
 
                             __first_scrip = false;
@@ -927,30 +917,105 @@ namespace motCommonLib
                             __patient.RxSys_PatID = __raw_record[1];
                             __patient.Room = __raw_record[4];
 
-
                             __facility.LocationName = __raw_record[2];
                             __facility.RxSys_LocID = __raw_record[2]?.Trim()?.Substring(0, 4);
 
                             __drug.NDCNum = __raw_record[7];
                             __drug.RxSys_DrugID = __raw_record[7];
+
+                            if (__drug.NDCNum == "0")
+                            {
+                                // It's something goofy like a compound; ignoreit
+                                logger.Warn("Ignoring thig with NDC == 0 named {0}", __raw_record[8]);
+                                continue;
+
+                                //__scrip.ChartOnly = "1";
+                                //__drug.NDCNum = "00000000000";
+                                //var __rand = new Random();
+                                //__drug.RxSys_DrugID = __rand.Next().ToString();
+                                //__drug.DefaultIsolate = 1;
+                            }
+
+                            
                             __drug.TradeName = __raw_record[8]; // Trade name  [8] AVAPRO 150 MG TABLET 
                             __drug.DrugName = __raw_record[9];  // Generic Name[9] IRBESARTAN 150 MG TABLET
+                            __drug.GenericFor = __raw_record[8];
+
+                            // Make sure there's something in the tradename field
+                            if(string.IsNullOrEmpty(__raw_record[8]))
+                            {
+                                __drug.TradeName = __drug.DrugName;
+                            }
+                            if(string.IsNullOrEmpty(__raw_record[9]))
+                            {
+                                __drug.DrugName = __raw_record[8];
+                            }
+                           
+
 
                             if (!string.IsNullOrEmpty(__raw_record[8]))
                             {
                                 string[] __raw_drug = __raw_record[8].Split(' ');
-                                __drug.Strength = __raw_drug[1];
-                                __drug.Unit = __raw_drug[2];
-                                __drug.DoseForm = __raw_drug[3];
+
+                                if (__raw_drug.Length < 4)
+                                {
+                                    // Something is mashed together, most likely suspect is Units
+                                    if (__raw_drug[1].ToUpper().Contains("MG"))
+                                    {
+                                        __drug.Strength = __raw_drug[1];
+
+                                        int __offset = __raw_drug[1].ToUpper().IndexOf("MG");
+                                        __drug.Unit = __raw_drug[1].Substring(__offset, 2);
+
+                                        __drug.DoseForm = __raw_drug[2];
+                                    }
+                                    else
+                                    {
+                                        __drug.Strength = "Unkown";
+                                        __drug.Unit = "Unknown";
+                                        __drug.DoseForm = "Unkown";
+                                    }
+                                }
+                                else
+                                {
+                                    __drug.Strength = __raw_drug[1];
+                                    __drug.Unit = __raw_drug[2];
+                                    __drug.DoseForm = __raw_drug[3];
+                                }
                             }
 
                             if (!string.IsNullOrEmpty(__raw_record[9]))
                             {
                                 string[] __raw_drug = __raw_record[9].Split(' ');
-                                __drug.Strength = __raw_drug[1];
-                                __drug.Unit = __raw_drug[2];
-                                __drug.DoseForm = __raw_drug[3];
+
+                                if (__raw_drug.Length < 4)
+                                {
+                                    // Something is mashed together, most likely suspect is Units
+                                    if (__raw_drug[1].ToUpper().Contains("MG"))
+                                    {
+                                        __drug.Strength = __raw_drug[1];
+
+                                        int __offset = __raw_drug[1].ToUpper().IndexOf("MG");
+                                        __drug.Unit = __raw_drug[1].Substring(__offset, 2);
+
+                                        __drug.DoseForm = __raw_drug[2];
+                                    }
+                                    else
+                                    {
+                                        __drug.Strength = "Unkown";
+                                        __drug.Unit = "Unknown";
+                                        __drug.DoseForm = "Unkown";
+                                    }
+                                }
+                                else
+                                {
+                                    __drug.Strength = __raw_drug[1];
+                                    __drug.Unit = __raw_drug[2];
+                                    __drug.DoseForm = __raw_drug[3];
+                                }
                             }
+
+                            __drug.ShortName = __drug.DrugName?.Substring(0, Math.Min(16,__drug.DrugName.Length));
 
                             string[] __doc_name = __raw_record[14].Split(' ');
                             __doc.FirstName = __doc_name[0]?.Trim();
@@ -958,15 +1023,23 @@ namespace motCommonLib
                             __doc.RxSys_DocID = __doc_name[0]?.Trim()?.Substring(0, 3) + __doc_name[1]?.Trim()?.Substring(0, 3);
                             __patient.RxSys_DocID = __doc.RxSys_DocID;
 
-
                             __scrip.RxSys_RxNum = __raw_record[15];
                             __scrip.RxSys_PatID = __patient.RxSys_PatID;
                             __scrip.RxSys_DocID = __patient.RxSys_DocID;
-                            __scrip.RxStartDate = __raw_record[10];
+
+                            if (string.IsNullOrEmpty(__raw_record[10]))  // It's a PRN
+                            {
+                                __scrip.RxStartDate = string.Format("{0:yyyyMMdd}", DateTime.Now);
+                            }
+                            else
+                            {
+                                __scrip.RxStartDate = __raw_record[10];
+                            }
+
                             __scrip.DoseTimesQtys = string.Format("{0:0000}{1:00.00}", Convert.ToInt32(__raw_record[11]), Convert.ToDouble(__raw_record[12]));
                             __scrip.QtyPerDose = __raw_record[12];
                             __scrip.QtyDispensed = __raw_record[24];
-                            __scrip.Sig = string.Format("{0}\n{1}\n{2}\n{3}", __raw_record[18], __raw_record[19], __raw_record[20], __raw_record[2]);
+                            __scrip.Sig = string.Format("{0}{1}{2}{3}", __raw_record[18], __raw_record[19], __raw_record[20], __raw_record[2]);
                             __scrip.Refills = __raw_record[23];
                             __scrip.RxSys_DrugID = __drug.NDCNum;
                             __scrip.RxType = __raw_record[22].Trim().ToUpper() == "P" ? "2" : "1";
@@ -976,10 +1049,11 @@ namespace motCommonLib
                             __dose_times.Add(__last_dose_time);
 
 
-                            //__patient.AddToQueue();
-                            //__facility.AddToQueue();
-                            //__drug.AddToQueue();
-                            //__scrip.AddToQueue();
+                            __doc.AddToQueue(); 
+                            __patient.AddToQueue();
+                            __facility.AddToQueue();
+                            __drug.AddToQueue();
+                            __scrip.AddToQueue();
                         }
                         else
                         {
@@ -987,7 +1061,20 @@ namespace motCommonLib
                             {
                                 if (!__dose_times.Contains(__raw_record[11]))  // Create a new TQ Dose Schedule here!!
                                 {
-                                    __scrip.DoseTimesQtys += string.Format("{0:0000}{1:00.00}", Convert.ToInt32(__raw_record[11]), Convert.ToDouble(__raw_record[12]));
+                                    // Kludge
+                                    string __test = string.Format("{0:0000}", Convert.ToInt32(__raw_record[11]));
+
+                                    if (__test.Substring(2, 2) == "15" ||
+                                        __test.Substring(2, 2) == "45")
+                                    {
+                                        __test = __test.Replace(__test.Substring(2, 2), "00");
+                                        __scrip.DoseTimesQtys += string.Format("{0}{1:00.00}", __test, Convert.ToDouble(__raw_record[12]));
+
+                                    }
+                                    else
+                                    {
+                                        __scrip.DoseTimesQtys += string.Format("{0:0000}{1:00.00}", Convert.ToInt32(__raw_record[11]), Convert.ToDouble(__raw_record[12]));
+                                    }
 
                                     __last_dose_qty = __raw_record[12];
                                     __last_dose_time = __raw_record[11];
@@ -1001,20 +1088,21 @@ namespace motCommonLib
             catch(Exception ex)
             {
                 logger.Error("Error parsing Parada record {0}.  {1}", __data, ex.Message);
+                throw;
             }
 
         }
         public void Write(string inboundData)
         {
-            Task.Run(() =>
-            {
+            //Task.Run(() =>
+            //{
                 if (p == null || !p.write(inboundData))
                 {
                     // Need to do better than this, need to retrieve the error code at least     
                     logger.Error(@"Failed to write to gateway");
                     throw new Exception(@"Failed to write to gateway");
                 }
-            });
+            //});
         }
         public motParser()
         {
@@ -1051,7 +1139,7 @@ namespace motCommonLib
                     return;
                 }
 
-                if(inputStream.Contains("~\n"))
+                if(inputStream.Contains("~\r"))
                 {
                     ParseParada(inputStream);
                     return;

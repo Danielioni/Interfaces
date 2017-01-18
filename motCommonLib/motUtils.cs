@@ -34,6 +34,17 @@ using NLog;
 
 namespace motCommonLib
 {
+    public class UIupdateArgs : EventArgs
+    {
+        public string __event_message { get; set; }
+        public string __msh_in { get; set; }
+        public string __msh_out { get; set; }
+        public string timestamp { get; set; }
+    }
+
+    public delegate void UpdateUIEventHandler(object __sender, UIupdateArgs __args);
+    public delegate void UpdateUIErrorHandler(object __sender, UIupdateArgs __args);
+
     public enum motErrorlLevel
     {
         Off = 0,

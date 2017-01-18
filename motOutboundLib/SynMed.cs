@@ -65,7 +65,7 @@ namespace motOutboundLib
                     __csv_header += __fieldnames[i].Name.ToString();
                     if (i < __fieldnames.Length - 1)
                     {
-                        __csv_header += ",";
+                        __csv_header += ";";
                     }
                 }
 
@@ -207,7 +207,7 @@ namespace motOutboundLib
                                                     r => r.Store,
                                                     r => r.Patient.Facility)
                                         );
-                        
+
                         __table = new SynMedTable(__last_name, __first_name, __middle_initial, __patient_dob, __cycle_start_date, __cycle_length);
                         __table.WriteRxCollection(rxes, __file_name);
                     }
@@ -263,325 +263,333 @@ namespace motOutboundLib
         public SynMedRow()
         {
             __field_list = new List<SynMedField>();
+
+            Type __SynMedFieldData = typeof(SynMedRow);
+            PropertyInfo[] __field_data = __SynMedFieldData.GetProperties();
+
+            //foreach (var __f in __field_data)
+            //{
+            //    __f.SetValue(this,"");
+            //}
         }
         public string RECORD_TYPE
         {
-            get { return (string)__field_list.Find(f => f.__name == "RECORD_TYPE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "RECORD_TYPE")?.__data; }
             set { __field_list.Add(new SynMedField("RECORD_TYPE", value, false, 5)); }
         }
         public string ADMINISTRATION_DATE
         {
-            get { return (string)__field_list.Find(f => f.__name == "ADMINISTRATION_DATE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "ADMINISTRATION_DATE")?.__data; }
             set { __field_list.Add(new SynMedField("ADMINISTRATION_DATE", value, true, 10)); }
         }
         public string ADMINISTRATION_TIME
         {
-            get { return (string)__field_list.Find(f => f.__name == "ADMINISTRATION_TIME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "ADMINISTRATION_TIME")?.__data; }
             set { __field_list.Add(new SynMedField("ADMINISTRATION_TIME", value, true, 11)); }
         }
         public string LOCAL_DRUG_ID
         {
-            get { return (string)__field_list.Find(f => f.__name == "LOCAL_DRUG_ID").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "LOCAL_DRUG_ID")?.__data; }
             set { __field_list.Add(new SynMedField("LOCAL_DRUG_ID", value, true, 15)); }
         }
-        public int DRUG_QUANTITY
+        public string DRUG_QUANTITY
         {
-            get { return (int)__field_list.Find(f => f.__name == "DRUG_QUANTITY").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "DRUG_QUANTITY")?.__data; }
             set { __field_list.Add(new SynMedField("DRUG_QUANTITY", value, true)); }
         }
         public string DRUG_DESCRIPTION
         {
-            get { return (string)__field_list.Find(f => f.__name == "DRUG_DESCRIPTION").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "DRUG_DESCRIPTION")?.__data; }
             set { __field_list.Add(new SynMedField("DRUG_DESCRIPTION", value, true, 75)); }
         }
         public string DISPLAY_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "DISPLAY_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "DISPLAY_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("DISPLAY_NAME", value, false, 75)); }
         }
         public string EXTERNAL_DRUG_FLAG
         {
-            get { return (string)__field_list.Find(f => f.__name == "EXTERNAL_DRUG_FLAG").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "EXTERNAL_DRUG_FLAG")?.__data; }
             set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("EXTERNAL_DRUG_FLAG", value, false, 1)); }
         }
         public string NOT_IN_BLISTER
         {
-            get { return (string)__field_list.Find(f => f.__name == "NOT_IN_BLISTER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "NOT_IN_BLISTER")?.__data; }
             set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("NOT_IN_BLISTER", value, false, 1)); }
         }
         public string PRESCRIPTION_NUMBER
         {
-            get { return (string)__field_list.Find(f => f.__name == "PRESCRIPTION_NUMBER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PRESCRIPTION_NUMBER")?.__data; }
             set { __field_list.Add(new SynMedField("PRESCRIPTION_NUMBER", value, true, 15)); }
         }
         public string PATIENT_ID
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_ID").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_ID")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_ID", value, true, 10)); }
         }
         public string PATIENT_FULL_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_FULL_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_FULL_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_FULL_NAME", value, true, 50)); }
         }
         public string PATIENT_LANGUAGE
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_LANGUAGE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_LANGUAGE")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_LANGUAGE", value, false, 3)); }
         }
         public string PATIENT_FIRST_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_FIRST_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_FIRST_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_FIRST_NAME", value, false, 25)); }
         }
         public string PATIENT_LAST_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_LAST_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_LAST_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_LAST_NAME", value, false, 25)); }
         }
         public string PATIENT_MOTHER_LAST_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_MOTHER_LAST_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_MOTHER_LAST_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_MOTHER_LAST_NAME", value, false, 20)); }
         }
         public string PATIENT_ADDRESS
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_ADDRESS").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_ADDRESS")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_ADDRESS", value, false, 50)); }
         }
         public string PATIENT_CITY
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_CITY").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_CITY")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_CITY", value, false, 50)); }
         }
         public string PATIENT_STATE
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_STATE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_STATE")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_STATE", value, false, 50)); }
         }
         public string PATIENT_ZIP_CODE
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_ZIP_CODE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_ZIP_CODE")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_ZIP_CODE", value, false, 25)); }
         }
         public string PATIENT_COUNTRY
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_COUNTRY").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_COUNTRY")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_COUNTRY", value, false, 50)); }
         }
         public string PATIENT_BIN_NUMBER
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_BIN_NUMBER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_BIN_NUMBER")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_BIN_NUMBER", value, false, 10)); }
         }
         public string PATIENT_PHONE_NUMBER
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_PHONE_NUMBER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_PHONE_NUMBER")?.__data; }
             set { __field_list?.Add(new SynMedField("PATIENT_PHONE_NUMBER", value, false, 25)); }
         }
         public string PATIENT_BIRTH_DATE
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_BIRTH_DATE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_BIRTH_DATE")?.__data; }
             set { __field_list.Add(new SynMedField("PATIENT_BIRTH_DATE", value, false, 25)); }
         }
         public string PATIENT_WITH_PRN
         {
-            get { return (string)__field_list.Find(f => f.__name == "PATIENT_PHONE_NUMBER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_PHONE_NUMBER")?.__data; }
             set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("PATIENT_PHONE_NUMBER", value, false, 1)); }
         }
-        public int QTY_PER_ADMINISTRATION
+        public string QTY_PER_ADMINISTRATION
         {
-            get { return (int)__field_list.Find(f => f.__name == "QTY_PER_ADMINISTRATION").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "QTY_PER_ADMINISTRATION")?.__data; }
             set { __field_list.Add(new SynMedField("QTY_PER_ADMINISTRATION", value, false)); }
         }
-        public int ADMINISTRATION_PER_DAY
+        public string ADMINISTRATION_PER_DAY
         {
-            get { return (int)__field_list.Find(f => f.__name == "ADMINISTRATION_PER_DAY").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "ADMINISTRATION_PER_DAY")?.__data; }
             set { __field_list.Add(new SynMedField("ADMINISTRATION_PER_DAY", value, false)); }
         }
-        public int DAY_LAPSE
+        public string DAY_LAPSE
         {
-            get { return (int)__field_list.Find(f => f.__name == "DAY_LAPSE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "DAY_LAPSE")?.__data; }
             set { __field_list.Add(new SynMedField("DAY_LAPSE", value, false)); }
         }
         public string PERIOD_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PERIOD_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("PERIOD_NAME", value, false, 8)); }
         }
         public string PERIOD_BEGINNING_TIME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PERIOD_BEGINNING_TIME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_BEGINNING_TIME")?.__data; }
             set { __field_list.Add(new SynMedField("PERIOD_BEGINNING_TIME", value, false)); }
         }
         public string PERIOD_ENDING_TIME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PERIOD_ENDING_TIME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_ENDING_TIME")?.__data; }
             set { __field_list.Add(new SynMedField("PERIOD_ENDING_TIME", value, false)); }
         }
-        public int PERIOD_ORDER
+        public string PERIOD_ORDER
         {
-            get { return (int)__field_list.Find(f => f.__name == "PERIOD_ORDER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_ORDER")?.__data; }
             set { __field_list.Add(new SynMedField("PERIOD_ORDER", value, false)); }
         }
         public string IS_HOUR_DRIVEN
         {
-            get { return (string)__field_list.Find(f => f.__name == "IS_HOUR_DRIVEN").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "IS_HOUR_DRIVEN")?.__data; }
             set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("IS_HOUR_DRIVEN", value, false, 1)); }
         }
         public string INSTITUTION_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "INSTITUTION_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("INSTITUTION_NAME", value, false, 30)); }
         }
         public string INSTITUTION_UNIT_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "INSTITUTION_UNIT_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_UNIT_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("INSTITUTION_UNIT_NAME", value, false, 25)); }
         }
         public string INSTITUTION_FLOOR_LEVEL
         {
-            get { return (string)__field_list.Find(f => f.__name == "INSTITUTION_FLOOR_LEVEL").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_FLOOR_LEVEL")?.__data; }
             set { __field_list.Add(new SynMedField("INSTITUTION_FLOOR_LEVEL", value, false, 15)); }
         }
         public string INSTITUTION_ROOM_NUMBER
         {
-            get { return (string)__field_list.Find(f => f.__name == "INSTITUTION_ROOM_NUMBER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_ROOM_NUMBER")?.__data; }
             set { __field_list.Add(new SynMedField("INSTITUTION_ROOM_NUMBER", value, false, 15)); }
         }
         public string INSTITUTION_BED_NUMBER
         {
-            get { return (string)__field_list.Find(f => f.__name == "INSTITUTION_BED_NUMBER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_BED_NUMBER")?.__data; }
             set { __field_list.Add(new SynMedField("INSTITUTION_BED_NUMBER", value, false, 15)); }
         }
         public string PHYSICIAN_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PHYSICIAN_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PHYSICIAN_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("PHYSICIAN_NAME", value, false, 25)); }
         }
         public string PHYSICIAN_LICENCE
         {
-            get { return (string)__field_list.Find(f => f.__name == "PHYSICIAN_LICENCE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PHYSICIAN_LICENCE")?.__data; }
             set { __field_list.Add(new SynMedField("PHYSICIAN_LICENCE", value, false, 15)); }
         }
         public string PHARMACIST_NAME
         {
-            get { return (string)__field_list.Find(f => f.__name == "PHARMACIST_NAME").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PHARMACIST_NAME")?.__data; }
             set { __field_list.Add(new SynMedField("PHARMACIST_NAME", value, false, 30)); }
         }
-        public int REFILL_QUANTITY
+        public string REFILL_QUANTITY
         {
-            get { return (int)__field_list.Find(f => f.__name == "REFILL_QUANTITY").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "REFILL_QUANTITY")?.__data; }
             set { __field_list.Add(new SynMedField("REFILL_QUANTITY", value, false)); }
         }
         public string FIRST_REFILL_DATE
         {
-            get { return (string)__field_list.Find(f => f.__name == "FIRST_REFILL_DATE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "FIRST_REFILL_DATE")?.__data; }
             set { __field_list.Add(new SynMedField("FIRST_REFILL_DATE", value, false)); }
         }
         public string LAST_REFILL_DATE
         {
-            get { return (string)__field_list.Find(f => f.__name == "LAST_REFILL_DATE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "LAST_REFILL_DATE")?.__data; }
             set { __field_list.Add(new SynMedField("LAST_REFILL_DATE", value, false)); }
         }
-        public int COST
+        public string COST
         {
-            get { return (int)__field_list.Find(f => f.__name == "COST").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "COST")?.__data; }
             set { __field_list.Add(new SynMedField("COST", value, false)); }
         }
         public string PRESCRIPTION_INSTRUCTION
         {
-            get { return (string)__field_list.Find(f => f.__name == "PRESCRIPTION_INSTRUCTION").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PRESCRIPTION_INSTRUCTION")?.__data; }
             set { __field_list.Add(new SynMedField("PRESCRIPTION_INSTRUCTION", value, false, 90)); }
         }
         public string PRESCRIPTION_COMMENT
         {
-            get { return (string)__field_list.Find(f => f.__name == "PRESCRIPTION_COMMENT").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PRESCRIPTION_COMMENT")?.__data; }
             set { __field_list.Add(new SynMedField("PRESCRIPTION_COMMENT", value, false, 75)); }
         }
         public string REORDER_NUMBER
         {
-            get { return (string)__field_list.Find(f => f.__name == "REORDER_NUMBER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "REORDER_NUMBER")?.__data; }
             set { __field_list.Add(new SynMedField("REORDER_NUMBER", value, false, 25)); }
         }
         public string INSTRUCTION_REASON
         {
-            get { return (string)__field_list.Find(f => f.__name == "INSTRUCTION_REASON").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "INSTRUCTION_REASON")?.__data; }
             set { __field_list.Add(new SynMedField("INSTRUCTION_REASON", value, false, 35)); }
         }
         public string GROUP_TITLE
         {
-            get { return (string)__field_list.Find(f => f.__name == "GROUP_TITLE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "GROUP_TITLE")?.__data; }
             set { __field_list.Add(new SynMedField("GROUP_TITLE", value, false, 50)); }
         }
         public string CARD_NOTE_01
         {
-            get { return (string)__field_list.Find(f => f.__name == "CARD_NOTE_01").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "CARD_NOTE_01")?.__data; }
             set { __field_list.Add(new SynMedField("CARD_NOTE_01", value, false, 35)); }
         }
         public string CARD_NOTE_02
         {
-            get { return (string)__field_list.Find(f => f.__name == "CARD_NOTE_02").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "CARD_NOTE_02")?.__data; }
             set { __field_list.Add(new SynMedField("CARD_NOTE_02", value, false, 35)); }
         }
         public string CELL_NOTE
         {
-            get { return (string)__field_list.Find(f => f.__name == "CELL_NOTE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "CELL_NOTE")?.__data; }
             set { __field_list.Add(new SynMedField("CELL_NOTE", value, false, 35)); }
         }
         public string PHARMACY_ACCREDITATION_NUMBER
         {
-            get { return (string)__field_list.Find(f => f.__name == "PHARMACY_ACCREDITATION_NUMBER").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PHARMACY_ACCREDITATION_NUMBER")?.__data; }
             set { __field_list.Add(new SynMedField("PHARMACY_ACCREDITATION_NUMBER", value, false, 35)); }
         }
         public string ORDER_ID
         {
-            get { return (string)__field_list.Find(f => f.__name == "ORDER_ID").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "ORDER_ID")?.__data; }
             set { __field_list.Add(new SynMedField("ORDER_ID", value, false, 10)); }
         }
         public string CYCLE_BASE_DATE
         {
-            get { return (string)__field_list.Find(f => f.__name == "CYCLE_BASE_DATE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "CYCLE_BASE_DATE")?.__data; }
             set { __field_list.Add(new SynMedField("CYCLE_BASE_DATE", value, false)); }
         }
-        public int CYCLE_LENGTH
+        public string CYCLE_LENGTH
         {
-            get { return (int)__field_list.Find(f => f.__name == "CYCLE_LENGTH").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "CYCLE_LENGTH")?.__data; }
             set { __field_list.Add(new SynMedField("CYCLE_LENGTH", value, false)); }
         }
         public string CYCLE_FIRST_DAY_FIXED
         {
-            get { return (string)__field_list.Find(f => f.__name == "CYCLE_FIRST_DAY_FIXED").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "CYCLE_FIRST_DAY_FIXED")?.__data; }
             set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("CYCLE_FIRST_DAY_FIXED", value, false, 1)); }
         }
         public string PERIOD_NAME_01
         {
-            get { return (string)__field_list.Find(f => f.__name == "PERIOD_NAME_01").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_01")?.__data; }
             set { __field_list.Add(new SynMedField("PERIOD_NAME_01", value, false, 8)); }
         }
         public string PERIOD_NAME_02
         {
-            get { return (string)__field_list.Find(f => f.__name == "PERIOD_NAME_02").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_02")?.__data; }
             set { __field_list.Add(new SynMedField("PERIOD_NAME_02", value, false, 8)); }
         }
         public string PERIOD_NAME_03
         {
-            get { return (string)__field_list.Find(f => f.__name == "PERIOD_NAME_01").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_01")?.__data; }
             set { __field_list.Add(new SynMedField("PERIOD_NAME_01", value, false, 8)); }
         }
         public string PERIOD_NAME_04
         {
-            get { return (string)__field_list.Find(f => f.__name == "PERIOD_NAME_04").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_04")?.__data; }
             set { __field_list.Add(new SynMedField("PERIOD_NAME_04", value, false, 8)); }
         }
         public string ONE_MAR_DOSE_ID
         {
-            get { return (string)__field_list.Find(f => f.__name == "ONE_MAR_DOSE_ID").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "ONE_MAR_DOSE_ID")?.__data; }
             set { __field_list.Add(new SynMedField("ONE_MAR_DOSE_ID", value, false, 2)); }
         }
         public string ONE_MAR_WEB_SITE
         {
-            get { return (string)__field_list.Find(f => f.__name == "ONE_MAR_WEB_SITE").__data; }
+            get { return (string)__field_list.Find(f => f?.__name == "ONE_MAR_WEB_SITE")?.__data; }
             set { __field_list.Add(new SynMedField("ONE_MAR_WEB_SITE", value, false, 2)); }
         }
 
@@ -598,7 +606,7 @@ namespace motOutboundLib
 
                 foreach (var __f in __field_data)
                 {
-                    __csv_row += __f.GetValue(this, null) + ",";
+                    __csv_row += __f.GetValue(this, null) + ";";
                 }
 
                 __csv_row = __csv_row.Substring(0, __csv_row.Length - 2);
@@ -677,28 +685,92 @@ namespace motOutboundLib
         public void WriteByPatient()
         { }
 
-        public async void GetDoseRegimen(Rx __rx)
+        public void fillRow(SynMedRow __new_row, Rx __rx, DateTime __base_date, DateTime __current_date, DoseScheduleItem __dose)
         {
+            __new_row.RECORD_TYPE = "15";
+            __new_row.ADMINISTRATION_DATE = string.Format("{0:yyyyMMdd}", __current_date);
+            __new_row.ADMINISTRATION_TIME = string.Format("{0:00}:{1:00}", __dose.GetTimespan().Hours, __dose.GetTimespan().Minutes);
 
-            using (var scope = SynMed.container.BeginLifetimeScope())
+            // Strip the '-' out of the NDC
+            string NDC = __rx.Drug.NdcNumber;
+
+            while ((bool)NDC?.Contains("-"))
             {
-                var itemsQuery = scope.Resolve<IEntityQuery<RxAlternatingItem>>();
-
-                var container2 = __rx.RxDosageRegimen as IAlternatingItemsContainer;
-
-                if (container2 != null && container2.AlternatingItems == null)
-                {
-                    container2.AlternatingItems = (await itemsQuery.QueryAsync(new QueryParameters<RxAlternatingItem>(item => item.RxDosageRegimenId == container2.Id))).ToList();
-                }
+                NDC = NDC.Remove(NDC.IndexOf("-"), 1);
             }
+
+            __new_row.LOCAL_DRUG_ID = NDC;
+
+            __new_row.DRUG_DESCRIPTION = __rx.Drug.DosageCupName;
+            __new_row.DISPLAY_NAME = __rx.Drug.DosageCupName;
+
+            // It's unclear how to do BULK scrips, maybe we just don't send them
+            // __new_row.EXTERNAL_DRUG_FLAG = (__rx.IsBulk || __rx.IsChartOnly) ? "Y" : "N";
+            __new_row.EXTERNAL_DRUG_FLAG = "";
+            __new_row.NOT_IN_BLISTER = (__rx.IsBulk || __rx.IsChartOnly || __rx.RxDosageRegimen.IsPrn) ? "Y" : "N";
+
+            __new_row.PRESCRIPTION_NUMBER = __rx.RxSystemId;
+            __new_row.PATIENT_ID = __rx.PatientId.ToString();
+            __new_row.PATIENT_FULL_NAME = string.Format("{0} {1} {2}", __rx.Patient.FirstName, __rx.Patient.MiddleInitial, __rx.Patient.LastName);
+            __new_row.PATIENT_LANGUAGE = "";
+            __new_row.PATIENT_FIRST_NAME = __patient_first_name;
+            __new_row.PATIENT_LAST_NAME = __patient_last_name;
+            __new_row.PATIENT_MOTHER_LAST_NAME = "";
+            __new_row.PATIENT_ADDRESS = __rx.Patient.Address.Address1;
+            __new_row.PATIENT_CITY = __rx.Patient.Address.City;
+            __new_row.PATIENT_STATE = __state[(int)__rx.Patient.Address.State];
+            __new_row.PATIENT_ZIP_CODE = __rx.Patient.Address.PostalCode;
+            __new_row.PATIENT_COUNTRY = "";
+            __new_row.PATIENT_BIN_NUMBER = "";
+            __new_row.PATIENT_PHONE_NUMBER = __rx.Patient.Phones?.FirstOrDefault().ToString();
+            __new_row.PATIENT_BIRTH_DATE = string.Format("{0:yyyyMMdd}", __rx.Patient.DateOfBirth);
+
+            __new_row.PERIOD_NAME = "";
+            __new_row.PERIOD_BEGINNING_TIME = "";   // string.Format("{0:yyyyMMdd}", DateTime.Now);
+            __new_row.PERIOD_ENDING_TIME = "";      // string.Format("{0:hh:mm}", DateTime.Now);
+            __new_row.PERIOD_ORDER = "0";
+            __new_row.IS_HOUR_DRIVEN = "";
+
+            __new_row.INSTITUTION_NAME = __rx.Patient.Facility.Name;
+            __new_row.INSTITUTION_UNIT_NAME = "";
+            __new_row.INSTITUTION_FLOOR_LEVEL = "";
+            __new_row.INSTITUTION_ROOM_NUMBER = __rx.Patient.Room;
+            __new_row.INSTITUTION_BED_NUMBER = "";
+
+            __new_row.PHYSICIAN_NAME = string.Format(" {0} {1} {2}", __rx.Prescriber.FirstName, __rx.Prescriber.MiddleInitial, __rx.Prescriber.LastName);
+            __new_row.PHYSICIAN_LICENCE = __rx.Prescriber.Dea;
+
+            __new_row.PHARMACIST_NAME = "";
+            __new_row.REFILL_QUANTITY = "0";
+            __new_row.FIRST_REFILL_DATE = string.Format("{0:yyyyMMdd}", DateTime.Now);
+            __new_row.LAST_REFILL_DATE = string.Format("{0:yyyyMMdd}", DateTime.Now);
+            __new_row.COST = "0";
+            __new_row.PRESCRIPTION_INSTRUCTION = __rx.CardSig;
+            __new_row.PRESCRIPTION_COMMENT = "";
+            __new_row.REORDER_NUMBER = "";
+            __new_row.INSTRUCTION_REASON = "";
+            __new_row.GROUP_TITLE = "";
+            __new_row.CARD_NOTE_01 = "";
+            __new_row.CARD_NOTE_02 = "";
+            __new_row.CELL_NOTE = "";
+            __new_row.PHARMACY_ACCREDITATION_NUMBER = __rx.Store.Dea;
+            __new_row.ORDER_ID = "";
+            __new_row.CYCLE_BASE_DATE = string.Format("{0:yyyyMMdd}", __base_date);
+            __new_row.CYCLE_LENGTH = __cycle_length.ToString();
+            __new_row.CYCLE_FIRST_DAY_FIXED = "";
+
+            __new_row.ONE_MAR_DOSE_ID = "";
+            __new_row.ONE_MAR_WEB_SITE = "";
+
+            __table_rows.Add(__new_row);
         }
 
         public async void WriteRxCollection(IEnumerable<Rx> __rxes, string __file_name, Patient __patient = null)
         {
             DateTime __base_date = __cycle_start_date;
             __filename = __file_name;
-            int __save_cycle_length = 0;
-
+            //int __save_cycle_length = 0;
+            //SynMedRow __new_row;
 
             try
             {
@@ -713,111 +785,70 @@ namespace motOutboundLib
                     DateTime __current_date = __start_date;
 
                     var __alternating_regimen = __rx.RxDosageRegimen as IAlternatingItemsContainer;
+                    
 
-                    if (!__rx.RxDosageRegimen.IsCycleType)
+                    if (!__rx.RxDosageRegimen.IsCycleType && !__rx.RxDosageRegimen.IsPrn)
                     {
                         using (var scope = SynMed.container.BeginLifetimeScope())
                         {
                             var itemsQuery = scope.Resolve<IEntityQuery<RxAlternatingItem>>();
-                            
+
                             if (__alternating_regimen != null && __alternating_regimen.AlternatingItems == null)
                             {
                                 __alternating_regimen.AlternatingItems = (await itemsQuery.QueryAsync(new QueryParameters<RxAlternatingItem>(
                                     item => item.RxDosageRegimenId == __alternating_regimen.Id))).ToList();
                             }
                         }
-
-                        //__save_cycle_length = __cycle_length;
-                        //__cycle_length = __alternating_regimen.AlternatingItems[0].Doses.Length;
                     }
 
-                    foreach (DoseScheduleItem __dose in __rx.RxDosageRegimen.DoseSchedule.DoseScheduleItems)
+                    
+                    if (__rx.IsActive)
                     {
-                        if (__rx.IsActive)
+                        foreach (DoseScheduleItem __dose in __rx.RxDosageRegimen.DoseSchedule.DoseScheduleItems)
                         {
-                            for (int __day = 0; __day < __cycle_length; __day++)
+                            if (!__rx.RxDosageRegimen.IsCycleType)  // Any Alternating Schedule
                             {
-                                var __new_row = new SynMedRow();
-
-                                __new_row.RECORD_TYPE = "15";
-                                __new_row.ADMINISTRATION_DATE = string.Format("{0:yyyyMMdd}", __current_date);
-                                __new_row.ADMINISTRATION_TIME = string.Format("{0:00}:{1:00}", __dose.GetTimespan().Hours, __dose.GetTimespan().Minutes);
-                                __new_row.LOCAL_DRUG_ID = __rx.Drug.NdcNumber;
-
-                                if (!__rx.RxDosageRegimen.IsCycleType)
+                                for (int __day = 0; __day < __cycle_length; __day++)
                                 {
-                                    __new_row.DRUG_QUANTITY = (int)__alternating_regimen.AlternatingItems[0].Doses[__day];
+                                    if ((int)__alternating_regimen.AlternatingItems[0].Doses[__day] > 0)
+                                    {
+                                        SynMedRow __new_row = new SynMedRow();
+                                        __new_row.DRUG_QUANTITY = __alternating_regimen.AlternatingItems[0].Doses[__day].ToString();
+                                        fillRow(__new_row, __rx, __base_date, __current_date, __dose);
+                                    }
                                 }
-                                else
-                                {
-                                    __new_row.DRUG_QUANTITY = (int)__dose.Dose;
-                                }
-
-                                __new_row.DRUG_DESCRIPTION = __rx.Drug.DosageCupName;
-                                __new_row.DISPLAY_NAME = __rx.Drug.DosageCupName;
-                                __new_row.EXTERNAL_DRUG_FLAG = (__rx.IsBulk || __rx.IsChartOnly) ? "Y" : "N";
-                                __new_row.NOT_IN_BLISTER = (__rx.IsBulk || __rx.IsChartOnly) ? "Y" : "N";
-                                __new_row.PRESCRIPTION_NUMBER = __rx.RxSystemId;
-                                __new_row.PATIENT_ID = __rx.PatientId.ToString();
-                                __new_row.PATIENT_FULL_NAME = string.Format("{0} {1} {2}", __rx.Patient.FirstName, __rx.Patient.MiddleInitial, __rx.Patient.LastName);
-                                __new_row.PATIENT_LANGUAGE = "";
-                                __new_row.PATIENT_FIRST_NAME = __patient_first_name;
-                                __new_row.PATIENT_LAST_NAME = __patient_last_name;
-                                __new_row.PATIENT_MOTHER_LAST_NAME = "";
-                                __new_row.PATIENT_ADDRESS = __rx.Patient.Address.Address1;
-                                __new_row.PATIENT_CITY = __rx.Patient.Address.City;
-                                __new_row.PATIENT_STATE = __state[(int)__rx.Patient.Address.State];
-                                __new_row.PATIENT_ZIP_CODE = __rx.Patient.Address.PostalCode;
-                                __new_row.PATIENT_COUNTRY = "";
-                                __new_row.PATIENT_BIN_NUMBER = "";
-                                __new_row.PATIENT_PHONE_NUMBER = __rx.Patient.Phones?.FirstOrDefault().ToString();
-                                __new_row.PATIENT_BIRTH_DATE = string.Format("{0:yyyyMMdd}", __rx.Patient.DateOfBirth);
-                                __new_row.PATIENT_WITH_PRN = __rx.RxDosageRegimen.IsPrn ? "Y" : "N";
-                                __new_row.QTY_PER_ADMINISTRATION = 0;
-                                __new_row.ADMINISTRATION_PER_DAY = 0;
-                                __new_row.DAY_LAPSE = 0;
-                                __new_row.PERIOD_NAME = "";
-                                __new_row.PERIOD_BEGINNING_TIME = string.Format("{0:yyyyMMdd}", DateTime.Now);
-                                __new_row.PERIOD_ENDING_TIME = string.Format("{0:hh:mm}", DateTime.Now);
-                                __new_row.PERIOD_ORDER = 0;
-                                __new_row.IS_HOUR_DRIVEN = "";
-                                __new_row.INSTITUTION_NAME = __rx.Patient.Facility.Name;
-                                __new_row.INSTITUTION_UNIT_NAME = "";
-                                __new_row.INSTITUTION_FLOOR_LEVEL = "";
-                                __new_row.INSTITUTION_ROOM_NUMBER = __rx.Patient.Room;
-                                __new_row.INSTITUTION_BED_NUMBER = "";
-                                __new_row.PHYSICIAN_NAME = string.Format(" {0} {1} {2}", __rx.Prescriber.FirstName, __rx.Prescriber.MiddleInitial, __rx.Prescriber.LastName);
-                                __new_row.PHYSICIAN_LICENCE = __rx.Prescriber.Dea;
-                                __new_row.PHARMACIST_NAME = "";
-                                __new_row.REFILL_QUANTITY = 0;
-                                __new_row.FIRST_REFILL_DATE = string.Format("{0:yyyyMMdd}", DateTime.Now);
-                                __new_row.LAST_REFILL_DATE = string.Format("{0:yyyyMMdd}", DateTime.Now);
-                                __new_row.COST = 0;
-                                __new_row.PRESCRIPTION_INSTRUCTION = __rx.CardSig;
-                                __new_row.PRESCRIPTION_COMMENT = "";
-                                __new_row.REORDER_NUMBER = "";
-                                __new_row.INSTRUCTION_REASON = "";
-                                __new_row.GROUP_TITLE = "";
-                                __new_row.CARD_NOTE_01 = "";
-                                __new_row.CARD_NOTE_02 = "";
-                                __new_row.CELL_NOTE = "";
-                                __new_row.PHARMACY_ACCREDITATION_NUMBER = __rx.Store.Dea;
-                                __new_row.ORDER_ID = "";
-                                __new_row.CYCLE_BASE_DATE = string.Format("{0:yyyyMMdd}", __base_date);
-                                __new_row.CYCLE_LENGTH = __cycle_length;
-                                __new_row.CYCLE_FIRST_DAY_FIXED = "";
-                                __new_row.PERIOD_NAME_01 = "";
-                                __new_row.PERIOD_NAME_02 = "";
-                                __new_row.PERIOD_NAME_03 = "";
-                                __new_row.PERIOD_NAME_04 = "";
-                                __new_row.ONE_MAR_DOSE_ID = "";
-                                __new_row.ONE_MAR_WEB_SITE = "";
-
-                                __table_rows.Add(__new_row);
-
-                                __current_date = __current_date.AddDays(1);
+                            }
+                            else
+                            {
+                                SynMedRow __new_row = new SynMedRow();
+                                fillRow(__new_row, __rx, __base_date, __current_date, __dose);  // Any Cycle Schedule
                             }
                         }
+
+                        if (__rx.RxDosageRegimen.IsPrn)  // Falls through to here because PRN DoseScheduleItems == 0
+                        {
+                            var __prn_regimen = __rx.RxDosageRegimen as RxPrnRegimen;
+                            IOrderedEnumerable<DoseScheduleItem> __dose_schedule_items;
+                            __dose_schedule_items = __prn_regimen.GetScheduleItems();
+
+                            if(__dose_schedule_items != null)
+                            {                             
+                                foreach(var __dose in __dose_schedule_items)
+                                {
+                                    SynMedRow __new_row = new SynMedRow();                                 
+                                                                        
+                                    __new_row.PATIENT_WITH_PRN = "Y";
+                                    __new_row.QTY_PER_ADMINISTRATION = __dose.Dose.ToString();
+                                    __new_row.ADMINISTRATION_PER_DAY = (__rx.QuantityWritten / __cycle_length).ToString();
+                                    __new_row.ADMINISTRATION_TIME = string.Format("{0:00}:{1:00}", __dose.GetTimespan().Hours, __dose.GetTimespan().Minutes);
+                                    __new_row.DAY_LAPSE = "0";
+
+                                    fillRow(__new_row, __rx, __base_date, __current_date, __dose);
+                                }
+                            }                           
+                        }
+                     
+                        __current_date = __current_date.AddDays(1);
                     }
                 }
 

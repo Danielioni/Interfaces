@@ -115,7 +115,7 @@ namespace motCommonLib
     }
     public class motWriteQueue
     {
-        
+
         private List<KeyValuePair<string, string>> __records { get; set; } = null;
         public motWriteQueue()
         {
@@ -123,51 +123,47 @@ namespace motCommonLib
         }
         ~motWriteQueue()
         {
-            if(__records != null)
+            if (__records != null)
             {
                 __records.Clear();
             }
         }
 
-        private int compare(KeyValuePair<string,string> a, KeyValuePair<string, string> b)
+        private int compare(KeyValuePair<string, string> a, KeyValuePair<string, string> b)
         {
             return string.Compare(a.Key, b.Key);
         }
         public void Add(string __type, string __record)
         {
-            if(string.IsNullOrEmpty(__type) || string.IsNullOrEmpty(__record))
+            if (string.IsNullOrEmpty(__type) || string.IsNullOrEmpty(__record))
             {
                 throw new ArgumentNullException("motQueue.Add NULL argument");
             }
 
-            __records.Add(new KeyValuePair<string,string>(__type, __record));
-            __records.Sort(compare); 
+            __records.Add(new KeyValuePair<string, string>(__type, __record));
+            __records.Sort(compare);
         }
         public void Write(motSocket __socket)
         {
-            if(__socket == null)
+            if (__socket == null)
             {
                 throw new ArgumentNullException("motQueue Null Socket Argument");
             }
 
             try
             {
-                Task.Run(() =>
+                // Push it to the port
+                foreach (KeyValuePair<string, string> __record in __records)
                 {
-                    // Push it to the port
-                    foreach (KeyValuePair<string, string> __record in __records)
-                    {
-                        __socket.write(__record.Value);
-                    }
+                    __socket.write(__record.Value);
+                }
 
-                    __socket.write("<EOF/>");
+                //__socket.write("<EOF/>");
 
-                    // Flush
-                    __records.Clear();
-                });
-                
+                // Flush
+                __records.Clear();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Failed to write queue: " + ex.StackTrace);
             }
@@ -183,9 +179,9 @@ namespace motCommonLib
     /// </summary>
     public class motRecordBase
     {
-        protected string    __dsn;
-        protected string    __tableAction;
-        protected Logger    __logger = LogManager.GetLogger("motCommonLib.Record");
+        protected string __dsn;
+        protected string __tableAction;
+        protected Logger __logger = LogManager.GetLogger("motCommonLib.Record");
         protected motSocket __default = null;
 
 
@@ -200,7 +196,7 @@ namespace motCommonLib
         {
             int __data_len = 0;
 
-            if (__write_queue== null)
+            if (__write_queue == null)
             {
                 __logger.Error("Null Queue");
                 throw new ArgumentNullException("Invalid Queue");
@@ -240,7 +236,7 @@ namespace motCommonLib
                 {
                     __write_queue.Add(__type, __record);
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -273,7 +269,7 @@ namespace motCommonLib
 
         protected string __normalize_date(string __date)
         {
-            if(string.IsNullOrEmpty(__date))
+            if (string.IsNullOrEmpty(__date))
             {
                 throw new ArgumentNullException("Invalid Date Argument");
             }
@@ -308,7 +304,7 @@ namespace motCommonLib
                 "dd/M/yyyy",
                 "d/MM/yyyy",
                 "d/M/yyyy",
-          
+
                 "MM/dd/yyyy",
                 "MM/dd/yyyy hh:mm:ss tt",
                 "MM/dd/yyyy h:mm:ss tt",
@@ -345,7 +341,7 @@ namespace motCommonLib
         }
         protected string __normalize_string(string __val)
         {
-            if(string.IsNullOrEmpty(__val))
+            if (string.IsNullOrEmpty(__val))
             {
                 return string.Empty;
             }
@@ -361,7 +357,7 @@ namespace motCommonLib
         }
         public string __validate_dea_number(string __id)
         {
-            if(string.IsNullOrEmpty(__id))
+            if (string.IsNullOrEmpty(__id))
             {
                 return string.Empty;
             }
@@ -373,7 +369,7 @@ namespace motCommonLib
 
             if (__strong_validation == true)
             {
-                if(__id.Length < 9)
+                if (__id.Length < 9)
                 {
                     throw new FormatException("REJECTED: Invalid DEA Number, minimum length is 9. Received " + __id.Length + " in " + __id);
                 }
@@ -487,7 +483,7 @@ namespace motCommonLib
                 __val = __val?.Substring(0, f.maxLen);
             }
 
-            f.tagData = string.IsNullOrEmpty(__val)  ? string.Empty : __val;
+            f.tagData = string.IsNullOrEmpty(__val) ? string.Empty : __val;
 
             return true;
         }
@@ -767,7 +763,7 @@ namespace motCommonLib
                 throw;
             }
         }
-        public motDrugRecord(string Action,  bool AutoTruncate) : base()
+        public motDrugRecord(string Action, bool AutoTruncate) : base()
         {
             __auto_truncate = AutoTruncate;
 
@@ -916,7 +912,7 @@ namespace motCommonLib
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("strength")));
                 return f.tagData;
             }
-            
+
             set
             {
                 setField(__qualifiedTags, value, "Strength", false);
@@ -2941,7 +2937,7 @@ namespace motCommonLib
             {
                 throw;
             }
-        }        
+        }
 
         public string RxSys_LocID
         {
@@ -3208,7 +3204,7 @@ namespace motCommonLib
             }
         }
 
-        public motStoreRecord(string Action,  bool AutoTruncate) : base()
+        public motStoreRecord(string Action, bool AutoTruncate) : base()
         {
             __auto_truncate = AutoTruncate;
 
@@ -3439,7 +3435,7 @@ namespace motCommonLib
                 setField(__qualifiedTags, __validate_dea_number(value), "DEANum");
             }
         }
-        
+
 
         public string WebSite
         {
@@ -3448,7 +3444,7 @@ namespace motCommonLib
                 Field f = __qualifiedTags?.Find(x => x.tagName.ToLower().Contains(("comments")));
                 f.tagData += string.Format("\nWebsite: {0}\n", value);
             }
-            
+
         }
 
         public string Email

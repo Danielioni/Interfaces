@@ -66,16 +66,7 @@ namespace motInboundLib
     public delegate void RDE_O11EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
     public delegate void RDS_013EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
 
-    public class UIupdateArgs : EventArgs
-    {
-        public string __event_message { get; set; }
-        public string __msh_in { get; set; }
-        public string __msh_out { get; set; }
-        public string timestamp { get; set; }
-    }
-
-    public delegate void UpdateUIEventHandler(Object __sender, UIupdateArgs __args);
-    public delegate void UpdateUIErrorHandler(Object __sender, UIupdateArgs __args);
+   
 
     public class HL7SocketListener
     {

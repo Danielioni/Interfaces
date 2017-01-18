@@ -142,6 +142,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SQLServerDatabase", "DunnMe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesystemProxy", "FilesystemProxy\FilesystemProxy.csproj", "{1D28A7E0-F47A-4653-B9AA-B94266E31CFD}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "FilesystemProxyInstaller", "FilesystemProxyInstaller\FilesystemProxyInstaller.vdproj", "{DCB4AD55-6E2A-4F6D-8150-D312675EE653}"
+EndProject
 Global
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
@@ -295,6 +297,10 @@ Global
 		{1D28A7E0-F47A-4653-B9AA-B94266E31CFD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D28A7E0-F47A-4653-B9AA-B94266E31CFD}.Release|x86.ActiveCfg = Release|Any CPU
 		{1D28A7E0-F47A-4653-B9AA-B94266E31CFD}.Release|x86.Build.0 = Release|Any CPU
+		{DCB4AD55-6E2A-4F6D-8150-D312675EE653}.Debug|Any CPU.ActiveCfg = Debug
+		{DCB4AD55-6E2A-4F6D-8150-D312675EE653}.Debug|x86.ActiveCfg = Debug
+		{DCB4AD55-6E2A-4F6D-8150-D312675EE653}.Release|Any CPU.ActiveCfg = Release
+		{DCB4AD55-6E2A-4F6D-8150-D312675EE653}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -323,5 +329,6 @@ Global
 		{350C754B-3E6F-4F06-A123-2945D108EDEC} = {82CC8ABD-1DD7-4DD3-B000-3E76F552CB8B}
 		{44E97D50-2E31-458A-AA6B-933550E3D15F} = {64B1FA3D-6797-4DC4-93C4-BB7ED35D013C}
 		{1D28A7E0-F47A-4653-B9AA-B94266E31CFD} = {95965FB8-B47F-4E4F-A249-1ED718D88EB9}
+		{DCB4AD55-6E2A-4F6D-8150-D312675EE653} = {64B1FA3D-6797-4DC4-93C4-BB7ED35D013C}
 	EndGlobalSection
 EndGlobal

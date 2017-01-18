@@ -30,7 +30,7 @@ using System.Text;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
-
+using NLog;
 
 namespace motInboundLib
 {
@@ -40,10 +40,15 @@ namespace motInboundLib
     {
         motSocket pt;
 
+        public UpdateUIEventHandler UpdateEventUI;
+        public UpdateUIErrorHandler UpdateErrorUI;
+        private UIupdateArgs __ui_args = new UIupdateArgs();
+
         public void writeData()
         {
         }
 
+        
         private void openPort(string address, string port)
         {
             try
@@ -60,16 +65,17 @@ namespace motInboundLib
         public void watchDirectory(string __dir_name)
         {
             watchDirectory(__dir_name, "localhost", "24042");
-        }
+        }      
 
-        private void watchDirectory(string dirName, string __address, string __port)
+        public void watchDirectory(string dirName, string __address, string __port)
         {
+            Logger __logger = LogManager.GetLogger("FileSystemWatcher");
 
             try
             {
                 openPort(__address, __port);            
             }
-            catch
+            catch(Exception ex)
             {            
                 throw;
             }
@@ -93,8 +99,12 @@ namespace motInboundLib
                             motParser p = new motParser(pt, sr.ReadToEnd(),motInputStuctures.__inputPARADA);
                             sr.Close();
                             File.Delete(__fileName);
+
+                            __ui_args.timestamp = DateTime.Now.ToString();
+                            __ui_args.__event_message = string.Format("Successfully Processed {0}", __fileName);
+                            UpdateEventUI(this, __ui_args);
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             sr.Close();
                             if (!File.Exists(__fileName + ".FAILED"))
@@ -105,6 +115,12 @@ namespace motInboundLib
                             {
                                 File.Delete(__fileName);
                             }
+
+                            __ui_args.timestamp = DateTime.Now.ToString();
+                            __ui_args.__event_message = string.Format("Failed While Processing {0} : {1}", __fileName, ex.Message);
+                            UpdateErrorUI(this, __ui_args);
+
+                            __logger.Error("Failed While Processing {0} : {1}", __fileName, ex.Message);
                         }
                     }
                 }
@@ -136,7 +152,7 @@ namespace motInboundLib
                     System.IO.Directory.CreateDirectory(dirName);
                 }
 
-                watchDirectory(dirName, address, port);
+                //watchDirectory(dirName, address, port);
             }
             else
             {

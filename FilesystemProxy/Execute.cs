@@ -40,10 +40,12 @@ namespace FilesystemProxy
     /// 
     public class Execute
     {
-        motSocket __listener;
-        motSocket __gateway;
+        //motSocket __listener;
+        //motSocket __gateway;
         Thread __worker;
         ExecuteArgs __args;
+
+        motFileSystemListener __fsl;
 
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
@@ -56,7 +58,8 @@ namespace FilesystemProxy
         Logger __logger = null;
         LogLevel __log_level { get; set; } = LogLevel.Error;
 
-        public void __update_event_ui(Object __sender, UIupdateArgs __args)
+
+        void __update_ui_event(object __sender, UIupdateArgs __args)
         {
             __args.timestamp = DateTime.Now.ToString();
             __args.__event_message += "\n";
@@ -64,7 +67,7 @@ namespace FilesystemProxy
             __event_ui_handler(this, __args);
         }
 
-        public void __update_error_ui(Object __sender, UIupdateArgs __args)
+        void __update_ui_error(object __sender, UIupdateArgs __args)
         {
 
             __args.timestamp = DateTime.Now.ToString();
@@ -102,13 +105,16 @@ namespace FilesystemProxy
 
             try
             {
+                __fsl = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port);
 
-                __worker = new Thread(() => new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port));
+                __fsl.UpdateEventUI += __update_ui_event;
+                __fsl.UpdateErrorUI += __update_ui_error;
+
+                __worker = new Thread(() => __fsl.watchDirectory(__args.__directory, __args.__gateway_address, __args.__gateway_port));
                 __worker.Name = "filesystem listener";
                 __worker.Start();
 
                 __show_common_event("Started listening to directory: " + __args.__directory);
-
             }
             catch(Exception ex)
             {
@@ -118,16 +124,11 @@ namespace FilesystemProxy
 
         public void __shut_down()
         {
-            if (__listener != null)
-            {
-                __listener.close();
-                __show_common_event("Structured Data Proxy Shutting down");
-            }
         }
 
         public Execute()
         {
-            __logger = LogManager.GetLogger("StructuredDataProxy");
+            __logger = LogManager.GetLogger("FileSystemProxy");
         }
 
         ~Execute()
