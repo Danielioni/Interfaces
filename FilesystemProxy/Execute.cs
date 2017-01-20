@@ -105,7 +105,7 @@ namespace FilesystemProxy
 
             try
             {
-                __fsl = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port);
+                __fsl = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port, __args.__file_type);
 
                 __fsl.UpdateEventUI += __update_ui_event;
                 __fsl.UpdateErrorUI += __update_ui_error;

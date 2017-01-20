@@ -681,9 +681,10 @@ namespace motCommonLib
                 __socket_mutex.ReleaseMutex();
 
                 __logger.Error("write() failed: {0}", ex.Message);
+                throw new Exception("write() failed: " + ex.Message);
 
                 // timeout
-                return false;
+                //return false;
             }
             catch (Exception ex)
             {

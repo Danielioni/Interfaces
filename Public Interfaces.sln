@@ -142,7 +142,7 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SQLServerDatabase", "DunnMe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesystemProxy", "FilesystemProxy\FilesystemProxy.csproj", "{1D28A7E0-F47A-4653-B9AA-B94266E31CFD}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "FilesystemProxyInstaller", "FilesystemProxyInstaller\FilesystemProxyInstaller.vdproj", "{DCB4AD55-6E2A-4F6D-8150-D312675EE653}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "FilesystemProxy", "FilesystemProxyInstaller\FilesystemProxyInstaller.vdproj", "{DCB4AD55-6E2A-4F6D-8150-D312675EE653}"
 EndProject
 Global
 	GlobalSection(Performance) = preSolution

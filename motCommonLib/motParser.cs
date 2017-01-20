@@ -1108,7 +1108,7 @@ namespace motCommonLib
         {
             logger = LogManager.GetLogger("motInboundLib.Parser");
         }
-        public motParser(motSocket _p, string inputStream)
+        public void parseByGuess(motSocket _p, string inputStream)
         {
             p = _p;
             logger = LogManager.GetLogger("motInboundLib.Parser");
@@ -1154,6 +1154,15 @@ namespace motCommonLib
                 throw new Exception("Parse failure: {0}" + e.Message);
             }
         }
+        public motParser(motSocket __p, string inputStream)
+        {
+            try
+            {
+                parseByGuess(__p, inputStream);
+            }
+            catch { throw; }
+        }
+
         public motParser(motSocket _p, string inputStream, motInputStuctures __type)
         {
             p = _p;
@@ -1163,6 +1172,10 @@ namespace motCommonLib
             {
                 switch (__type)
                 {
+                    case motInputStuctures.__auto:
+                        parseByGuess(_p, inputStream);
+                        break;
+
                     case motInputStuctures.__inputXML:
                         parseXML(inputStream);
                         logger.Info("Completed XML processing");

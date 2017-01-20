@@ -44,6 +44,8 @@ namespace motInboundLib
         public UpdateUIErrorHandler UpdateErrorUI;
         private UIupdateArgs __ui_args = new UIupdateArgs();
 
+        private motInputStuctures __file_type;
+
         public void writeData()
         {
         }
@@ -71,17 +73,18 @@ namespace motInboundLib
         {
             Logger __logger = LogManager.GetLogger("FileSystemWatcher");
 
-            try
-            {
-                openPort(__address, __port);            
-            }
-            catch(Exception ex)
-            {            
-                throw;
-            }
-
+            
             while (true)
             {
+                try
+                {
+                    openPort(__address, __port);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+
                 Thread.Sleep(1024);
 
                 if (Directory.GetFiles(dirName) != null)
@@ -96,7 +99,7 @@ namespace motInboundLib
                         try
                         {
                             sr = new StreamReader(__fileName);
-                            motParser p = new motParser(pt, sr.ReadToEnd(),motInputStuctures.__inputPARADA);
+                            motParser p = new motParser(new motSocket(__address, Convert.ToInt32(__port)), sr.ReadToEnd(), __file_type);
                             sr.Close();
                             File.Delete(__fileName);
 
@@ -143,10 +146,12 @@ namespace motInboundLib
             watchDirectory(dirName);
         }
 
-        public motFileSystemListener(string dirName, string address, string port)
+        public motFileSystemListener(string dirName, string address, string port, motInputStuctures __file_type)
         {
             if (!string.IsNullOrEmpty(dirName) || !string.IsNullOrEmpty(address) || !string.IsNullOrEmpty(port))
             {
+                this.__file_type = __file_type;
+
                 if (!System.IO.Directory.Exists(dirName))
                 {
                     System.IO.Directory.CreateDirectory(dirName);

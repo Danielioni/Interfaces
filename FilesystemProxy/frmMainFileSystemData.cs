@@ -51,13 +51,24 @@ namespace FilesystemProxy
             txtTargetPwd.Text = Properties.Settings.Default.GatewayPwd;
 
             txtListDirectories.Text = Properties.Settings.Default.DirList;
-            __filetype = (motInputStuctures)Properties.Settings.Default.FileType;
            
             cmbErrorLevel.SelectedIndex = (int)Properties.Settings.Default.ErrorLevel;
             chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
 
             __max_log_len = Properties.Settings.Default.MaxLogLines;
             txtMaxLogLen.Text = __max_log_len.ToString();
+
+            __filetype = (motInputStuctures)Properties.Settings.Default.FileType;
+
+            // Find the right Radio Button
+            foreach (RadioButton __radio in grpFileType.Controls)
+            {
+                if (__radio.TabIndex > 0 && __radio.TabIndex == (int)__filetype-2)
+                {
+                    __radio.Checked = true;
+                    break;
+                }
+            }
         }
 
         private void frmMainDefault_FormClosed(object sender, FormClosedEventArgs e)
@@ -104,6 +115,16 @@ namespace FilesystemProxy
 
                 txtListDirectories.Text = Properties.Settings.Default.DirList;
                 __filetype = (motInputStuctures)Properties.Settings.Default.FileType;
+
+                // Find the right Radio Button
+                foreach(RadioButton __radio in grpFileType.Controls)
+                {
+                    if(__radio.TabIndex == (int)__filetype)
+                    {
+                        __radio.Checked = true;
+                        break;
+                    }
+                }
             }
             else  // Reserved for future use
             {
@@ -258,7 +279,7 @@ namespace FilesystemProxy
             __args.__gateway_uname = txtTargetUname.Text;
             __args.__gateway_pwd = txtTargetPwd.Text;
             __args.__auto_truncate = chkAutoTruncate.Checked;
-            __args.__filetype = __filetype;
+            __args.__file_type = __filetype;
             __args.__directory = txtListDirectories.Text;
 
             __execute.__start_up(__args);
@@ -388,14 +409,13 @@ namespace FilesystemProxy
 
     public class ExecuteArgs : EventArgs
     {
-       public motInputStuctures __filetype { get; set; }
+       public motInputStuctures __file_type { get; set; }
         public string __gateway_address { get; set; }
         public string __gateway_port { get; set; }
         public string __gateway_uname { get; set; }
         public string __gateway_pwd { get; set; }
         public LogLevel __log_level { get; set; }
         public string __directory;
-
         List<string> __directories = new List<string>();
         public bool __auto_truncate { get; set; }
 
