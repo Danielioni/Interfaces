@@ -60,6 +60,9 @@ namespace FilesystemProxy
 
             __filetype = (motInputStuctures)Properties.Settings.Default.FileType;
 
+            chkDebug.Checked = Properties.Settings.Default.DebugMode;
+            chkSendEOF.Checked = Properties.Settings.Default.SendEOF;
+
             // Find the right Radio Button
             foreach (RadioButton __radio in grpFileType.Controls)
             {
@@ -81,6 +84,9 @@ namespace FilesystemProxy
             Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
             Properties.Settings.Default.DirList = txtListDirectories.Text;
             Properties.Settings.Default.FileType = (int)__filetype;
+            Properties.Settings.Default.SendEOF = chkSendEOF.Checked;
+            Properties.Settings.Default.DebugMode = chkDebug.Checked;
+
             Properties.Settings.Default.Save();
 
             Environment.Exit(0);
@@ -100,6 +106,8 @@ namespace FilesystemProxy
                 Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
                 Properties.Settings.Default.DirList = txtListDirectories.Text;
                 Properties.Settings.Default.FileType = (int)__filetype;
+                Properties.Settings.Default.SendEOF = chkSendEOF.Checked;
+                Properties.Settings.Default.DebugMode = chkDebug.Checked;
 
                 Properties.Settings.Default.Save();
             }
@@ -116,6 +124,9 @@ namespace FilesystemProxy
                 txtListDirectories.Text = Properties.Settings.Default.DirList;
                 __filetype = (motInputStuctures)Properties.Settings.Default.FileType;
 
+                chkDebug.Checked = Properties.Settings.Default.DebugMode;
+                chkSendEOF.Checked = Properties.Settings.Default.SendEOF;
+
                 // Find the right Radio Button
                 foreach(RadioButton __radio in grpFileType.Controls)
                 {
@@ -131,7 +142,6 @@ namespace FilesystemProxy
                 return;
             }
         }
-
 
         private void cmbErrorLevel_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -281,6 +291,8 @@ namespace FilesystemProxy
             __args.__auto_truncate = chkAutoTruncate.Checked;
             __args.__file_type = __filetype;
             __args.__directory = txtListDirectories.Text;
+            __args.__send_eof = chkSendEOF.Checked;
+            __args.__debug_mode = chkDebug.Checked;
 
             __execute.__start_up(__args);
 
@@ -418,6 +430,8 @@ namespace FilesystemProxy
         public string __directory;
         List<string> __directories = new List<string>();
         public bool __auto_truncate { get; set; }
+        public bool __send_eof { get; set; }
+        public bool __debug_mode { get; set; }
 
     }
 }

@@ -43,6 +43,8 @@ namespace motInboundLib
         public UpdateUIEventHandler UpdateEventUI;
         public UpdateUIErrorHandler UpdateErrorUI;
         private UIupdateArgs __ui_args = new UIupdateArgs();
+        public bool __send_eof { get; set; }
+        public bool __debug_mode { get; set; }
 
         private motInputStuctures __file_type;
 
@@ -61,6 +63,18 @@ namespace motInboundLib
             {
                 Console.WriteLine(e.Message);
                 throw;
+            }
+        }
+
+        public bool __process_return(byte[] __data)
+        {
+            if (__data[0] != 0x6)
+            {
+                throw new Exception("Data IO Error: " + __data[0]);
+            }
+            else
+            {
+                return true;
             }
         }
 
@@ -86,11 +100,16 @@ namespace motInboundLib
                     foreach (string __fileName in __fileEntries)
                     {
                         if (__fileName.Contains(".FAILED"))
+                        {
                             continue;
+                        }
+
                         try
                         {
                             sr = new StreamReader(__fileName);
-                            motParser p = new motParser(new motSocket(__address, Convert.ToInt32(__port)), sr.ReadToEnd(), __file_type);
+                            
+                            motParser p = new motParser(new motSocket(__address, Convert.ToInt32(__port), __process_return), sr.ReadToEnd(), __file_type, __send_eof, __debug_mode);
+
                             sr.Close();
                             File.Delete(__fileName);
 
@@ -105,10 +124,10 @@ namespace motInboundLib
                             {
                                 File.Move(__fileName, __fileName + ".FAILED");
                             }
-                            else
-                            {
-                                File.Delete(__fileName);
-                            }
+                            //else
+                            //{
+                            //     File.Delete(__fileName);
+                            //}
 
                             __ui_args.timestamp = DateTime.Now.ToString();
                             __ui_args.__event_message = string.Format("Failed While Processing {0} : {1}", __fileName, ex.Message);
@@ -137,11 +156,13 @@ namespace motInboundLib
             watchDirectory(dirName);
         }
 
-        public motFileSystemListener(string dirName, string address, string port, motInputStuctures __file_type)
+        public motFileSystemListener(string dirName, string address, string port, motInputStuctures __file_type, bool __send_eof = false, bool __debug_mode = false)
         {
             if (!string.IsNullOrEmpty(dirName) || !string.IsNullOrEmpty(address) || !string.IsNullOrEmpty(port))
             {
                 this.__file_type = __file_type;
+                this.__debug_mode = __debug_mode;
+                this.__send_eof = __send_eof;
 
                 if (!System.IO.Directory.Exists(dirName))
                 {
@@ -152,7 +173,7 @@ namespace motInboundLib
             }
             else
             {
-                throw new NullReferenceException("NULL parameter");
+                throw new ArgumentNullException("NULL parameter");
             }
         }
     }

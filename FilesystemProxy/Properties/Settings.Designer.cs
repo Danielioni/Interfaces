@@ -130,5 +130,29 @@ namespace FilesystemProxy.Properties {
                 this["FileType"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SendEOF {
+            get {
+                return ((bool)(this["SendEOF"]));
+            }
+            set {
+                this["SendEOF"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DebugMode {
+            get {
+                return ((bool)(this["DebugMode"]));
+            }
+            set {
+                this["DebugMode"] = value;
+            }
+        }
     }
 }

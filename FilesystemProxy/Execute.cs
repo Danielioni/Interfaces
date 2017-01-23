@@ -52,6 +52,8 @@ namespace FilesystemProxy
 
         public motErrorlLevel __error_level { get; set; } = motErrorlLevel.Error;
         public bool __auto_truncate { get; set; } = false;
+        public bool __debug_mode { get; set; } = false;
+        public bool __send_eof { get; set; } = false;
 
         motLookupTables __lookup = new motLookupTables();
 
@@ -99,13 +101,17 @@ namespace FilesystemProxy
         public void __parse_data(string data)
         { }
 
+        
         public void __start_up(ExecuteArgs __args)
         {
             this.__args = __args;
 
             try
             {
-                __fsl = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port, __args.__file_type);
+                __send_eof = __args.__send_eof;
+                __debug_mode = __args.__debug_mode;
+
+                __fsl = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port, __args.__file_type, __args.__send_eof, __args.__debug_mode);
 
                 __fsl.UpdateEventUI += __update_ui_event;
                 __fsl.UpdateErrorUI += __update_ui_error;
@@ -114,7 +120,7 @@ namespace FilesystemProxy
                 __worker.Name = "filesystem listener";
                 __worker.Start();
 
-                __show_common_event("Started listening to directory: " + __args.__directory);
+                __show_common_event("Started listening to directory: " + __args.__directory + " and sending to gateway at: " + __args.__gateway_address + "/" + __args.__gateway_port);
             }
             catch(Exception ex)
             {

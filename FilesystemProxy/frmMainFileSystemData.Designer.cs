@@ -49,6 +49,8 @@
             this.rbtAuto = new System.Windows.Forms.RadioButton();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.gbSwitches = new System.Windows.Forms.GroupBox();
+            this.chkDebug = new System.Windows.Forms.CheckBox();
+            this.chkSendEOF = new System.Windows.Forms.CheckBox();
             this.chkAutoTruncate = new System.Windows.Forms.CheckBox();
             this.grpLogging = new System.Windows.Forms.GroupBox();
             this.txtMaxLogLen = new System.Windows.Forms.TextBox();
@@ -282,12 +284,10 @@
             // rbtBestRx
             // 
             this.rbtBestRx.AutoSize = true;
-            this.rbtBestRx.Checked = true;
             this.rbtBestRx.Location = new System.Drawing.Point(39, 101);
             this.rbtBestRx.Name = "rbtBestRx";
             this.rbtBestRx.Size = new System.Drawing.Size(59, 17);
             this.rbtBestRx.TabIndex = 3;
-            this.rbtBestRx.TabStop = true;
             this.rbtBestRx.Text = "BestRx";
             this.rbtBestRx.UseVisualStyleBackColor = true;
             this.rbtBestRx.CheckedChanged += new System.EventHandler(this.rbtBestRx_CheckedChanged);
@@ -299,7 +299,6 @@
             this.rbtJSON.Name = "rbtJSON";
             this.rbtJSON.Size = new System.Drawing.Size(53, 17);
             this.rbtJSON.TabIndex = 2;
-            this.rbtJSON.TabStop = true;
             this.rbtJSON.Text = "JSON";
             this.rbtJSON.UseVisualStyleBackColor = true;
             this.rbtJSON.CheckedChanged += new System.EventHandler(this.rbtJSON_CheckedChanged);
@@ -311,7 +310,6 @@
             this.rbtXML.Name = "rbtXML";
             this.rbtXML.Size = new System.Drawing.Size(47, 17);
             this.rbtXML.TabIndex = 1;
-            this.rbtXML.TabStop = true;
             this.rbtXML.Text = "XML";
             this.rbtXML.UseVisualStyleBackColor = true;
             this.rbtXML.CheckedChanged += new System.EventHandler(this.rbtXML_CheckedChanged);
@@ -319,6 +317,7 @@
             // rbtAuto
             // 
             this.rbtAuto.AutoSize = true;
+            this.rbtAuto.Checked = true;
             this.rbtAuto.Location = new System.Drawing.Point(39, 32);
             this.rbtAuto.Name = "rbtAuto";
             this.rbtAuto.Size = new System.Drawing.Size(98, 17);
@@ -339,6 +338,8 @@
             // 
             // gbSwitches
             // 
+            this.gbSwitches.Controls.Add(this.chkDebug);
+            this.gbSwitches.Controls.Add(this.chkSendEOF);
             this.gbSwitches.Controls.Add(this.chkAutoTruncate);
             this.gbSwitches.Location = new System.Drawing.Point(455, 190);
             this.gbSwitches.Name = "gbSwitches";
@@ -347,10 +348,30 @@
             this.gbSwitches.TabStop = false;
             this.gbSwitches.Text = "[ Options ]";
             // 
+            // chkDebug
+            // 
+            this.chkDebug.AutoSize = true;
+            this.chkDebug.Location = new System.Drawing.Point(18, 64);
+            this.chkDebug.Name = "chkDebug";
+            this.chkDebug.Size = new System.Drawing.Size(88, 17);
+            this.chkDebug.TabIndex = 2;
+            this.chkDebug.Text = "Debug Mode";
+            this.chkDebug.UseVisualStyleBackColor = true;
+            // 
+            // chkSendEOF
+            // 
+            this.chkSendEOF.AutoSize = true;
+            this.chkSendEOF.Location = new System.Drawing.Point(18, 42);
+            this.chkSendEOF.Name = "chkSendEOF";
+            this.chkSendEOF.Size = new System.Drawing.Size(92, 17);
+            this.chkSendEOF.TabIndex = 1;
+            this.chkSendEOF.Text = "Send <EOF/>";
+            this.chkSendEOF.UseVisualStyleBackColor = true;
+            // 
             // chkAutoTruncate
             // 
             this.chkAutoTruncate.AutoSize = true;
-            this.chkAutoTruncate.Location = new System.Drawing.Point(18, 29);
+            this.chkAutoTruncate.Location = new System.Drawing.Point(18, 22);
             this.chkAutoTruncate.Name = "chkAutoTruncate";
             this.chkAutoTruncate.Size = new System.Drawing.Size(94, 17);
             this.chkAutoTruncate.TabIndex = 0;
@@ -896,6 +917,8 @@
         private System.Windows.Forms.TextBox tbSourceDbUname;
         private System.Windows.Forms.TextBox tbSourceDbPort;
         private System.Windows.Forms.TextBox tbSourceDbAddress;
+        private System.Windows.Forms.CheckBox chkDebug;
+        private System.Windows.Forms.CheckBox chkSendEOF;
     }
 }
 

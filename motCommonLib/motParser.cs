@@ -44,6 +44,8 @@ namespace motCommonLib
 
         private Logger logger;
         public LogLevel __log_level { get; set; } = LogLevel.Error;
+        public bool __send_eof { get; set; }
+        public bool __debug_mode { get; set; }
 
         public void parseTagged(string inboundData)
         {
@@ -95,7 +97,7 @@ namespace motCommonLib
                 {'t', "TimesQtys" }
             };
 
-            Dictionary<int, KeyValuePair<bool,string>> __prescriber_table_v1 = new Dictionary<int, KeyValuePair<bool, string>>()
+            Dictionary<int, KeyValuePair<bool, string>> __prescriber_table_v1 = new Dictionary<int, KeyValuePair<bool, string>>()
            {
                {1, new KeyValuePair<bool, string>(false,"DocCode") },
                {2, new KeyValuePair<bool, string>(true, "LastName") },
@@ -240,7 +242,7 @@ namespace motCommonLib
                {15, new KeyValuePair<bool, string>(true, "Room") },
                {16, new KeyValuePair<bool, string>(true, "Comments") },
                {17, new KeyValuePair<bool, string>(false, "Gender") },  // ColorTbl
-               {18, new KeyValuePair<bool, string>(false, "RFReminder") },  
+               {18, new KeyValuePair<bool, string>(false, "RFReminder") },
                {19, new KeyValuePair<bool, string>(true, "CycleDate") },
                {20, new KeyValuePair<bool, string>(true, "CycleDays") },
                {21, new KeyValuePair<bool, string>(true, "CycleType") },
@@ -808,7 +810,7 @@ namespace motCommonLib
             24) Total number of doses for Rx in the file
             25) Value for barcode (you can ignore this) 
          */
-               
+
         // (0)DONUT, FRED~
         // (1)25731~
         // (2)SPRINGFIELD RETIREMENT CASTLE~
@@ -836,14 +838,14 @@ namespace motCommonLib
         // (24)112~
         // (25)8880442_00_1/112~
 
-       // (0)DOE, JOHN ~(1)25731~(2)SPRINGFIELD RETIREMENT CASTLE~(3)~(4)2~(5)201~(6)13~(7)68180041109~(8)AVAPRO 150 MG TABLET~(9)IRBESARTAN 150 MG TABLET~(10)20170204~0730~1~~MICHELLE SMITH ~8880440~INFORME piel o reaccion alergica.~NO conducir si mareado o vision borrosa.~TAKE 1 TABLET DAILY IN THE MORNING ~~~~M~00~28~8880440_00_25/28~
+        // (0)DOE, JOHN ~(1)25731~(2)SPRINGFIELD RETIREMENT CASTLE~(3)~(4)2~(5)201~(6)13~(7)68180041109~(8)AVAPRO 150 MG TABLET~(9)IRBESARTAN 150 MG TABLET~(10)20170204~0730~1~~MICHELLE SMITH ~8880440~INFORME piel o reaccion alergica.~NO conducir si mareado o vision borrosa.~TAKE 1 TABLET DAILY IN THE MORNING ~~~~M~00~28~8880440_00_25/28~
         public void ParseParada(string __data)
         {
             string[] __name;
             string[] __rows = __data.Split('\n');
-            string  __last_scrip = string.Empty;
-            string  __last_dose_qty = string.Empty;
-            string  __last_dose_time = string.Empty;
+            string __last_scrip = string.Empty;
+            string __last_dose_qty = string.Empty;
+            string __last_dose_time = string.Empty;
             bool __first_scrip = true;
             List<string> __dose_times = new List<string>();
             int __name_version = 1;
@@ -854,14 +856,17 @@ namespace motCommonLib
             var __drug = new motDrugRecord("Add");
             var __doc = new motPrescriberRecord("Add");
 
-            
+
             var __write_queue = new motWriteQueue();
             __patient.__write_queue =
             __scrip.__write_queue =
             __facility.__write_queue =
             __doc.__write_queue =
             __drug.__write_queue =
-            __write_queue;              
+            __write_queue;
+
+            __write_queue.__send_eof = __send_eof;
+            __write_queue.__log_records = __debug_mode;
 
             try
             {
@@ -903,7 +908,7 @@ namespace motCommonLib
                                 __facility.Clear();
                                 __drug.Clear();
                                 __patient.Clear();
-                                __scrip.Clear();                         
+                                __scrip.Clear();
                             }
 
                             __first_scrip = false;
@@ -936,21 +941,21 @@ namespace motCommonLib
                                 //__drug.DefaultIsolate = 1;
                             }
 
-                            
+
                             __drug.TradeName = __raw_record[8]; // Trade name  [8] AVAPRO 150 MG TABLET 
                             __drug.DrugName = __raw_record[9];  // Generic Name[9] IRBESARTAN 150 MG TABLET
                             __drug.GenericFor = __raw_record[8];
 
                             // Make sure there's something in the tradename field
-                            if(string.IsNullOrEmpty(__raw_record[8]))
+                            if (string.IsNullOrEmpty(__raw_record[8]))
                             {
                                 __drug.TradeName = __drug.DrugName;
                             }
-                            if(string.IsNullOrEmpty(__raw_record[9]))
+                            if (string.IsNullOrEmpty(__raw_record[9]))
                             {
                                 __drug.DrugName = __raw_record[8];
                             }
-                           
+
 
 
                             if (!string.IsNullOrEmpty(__raw_record[8]))
@@ -1015,7 +1020,7 @@ namespace motCommonLib
                                 }
                             }
 
-                            __drug.ShortName = __drug.DrugName?.Substring(0, Math.Min(16,__drug.DrugName.Length));
+                            __drug.ShortName = __drug.DrugName?.Substring(0, Math.Min(16, __drug.DrugName.Length));
 
                             string[] __doc_name = __raw_record[14].Split(' ');
                             __doc.FirstName = __doc_name[0]?.Trim();
@@ -1049,7 +1054,7 @@ namespace motCommonLib
                             __dose_times.Add(__last_dose_time);
 
 
-                            __doc.AddToQueue(); 
+                            __doc.AddToQueue();
                             __patient.AddToQueue();
                             __facility.AddToQueue();
                             __drug.AddToQueue();
@@ -1085,7 +1090,7 @@ namespace motCommonLib
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error("Error parsing Parada record {0}.  {1}", __data, ex.Message);
                 throw;
@@ -1094,15 +1099,30 @@ namespace motCommonLib
         }
         public void Write(string inboundData)
         {
-            //Task.Run(() =>
-            //{
-                if (p == null || !p.write(inboundData))
+            if (p == null)
+            {
+                throw new ArgumentNullException("Invalid Socket Reference");
+            }
+
+            try
+            {
+                p.write(inboundData);
+
+                if (__send_eof)
                 {
-                    // Need to do better than this, need to retrieve the error code at least     
-                    logger.Error(@"Failed to write to gateway");
-                    throw new Exception(@"Failed to write to gateway");
+                    p.write("<EOF/>");
                 }
-            //});
+
+                if (__debug_mode)
+                {
+                    logger.Debug(inboundData);
+                }
+            }
+            catch(Exception ex)
+            {
+                logger.Error(@"Failed to write to gateway");
+                throw new Exception(@"Failed to write to gateway: " + ex.Message );
+            }
         }
         public motParser()
         {
@@ -1139,7 +1159,7 @@ namespace motCommonLib
                     return;
                 }
 
-                if(inputStream.Contains("~\r"))
+                if (inputStream.Contains("~\r"))
                 {
                     ParseParada(inputStream);
                     return;
@@ -1163,9 +1183,18 @@ namespace motCommonLib
             catch { throw; }
         }
 
-        public motParser(motSocket _p, string inputStream, motInputStuctures __type)
+        public motParser(motSocket p, string inputStream, motInputStuctures __type, bool __send_eof = false, bool __debug_mode = false)
         {
-            p = _p;
+
+            if (p == null)
+            {
+                throw new ArgumentNullException("Invalid Socket Reference");
+            }
+
+            this.p = p;
+            this.__send_eof = __send_eof;
+            this.__debug_mode = __debug_mode;
+
             logger = LogManager.GetLogger("motInboundLib.Parser");
 
             try
@@ -1173,7 +1202,7 @@ namespace motCommonLib
                 switch (__type)
                 {
                     case motInputStuctures.__auto:
-                        parseByGuess(_p, inputStream);
+                        parseByGuess(p, inputStream);
                         break;
 
                     case motInputStuctures.__inputXML:
