@@ -76,15 +76,6 @@ namespace motInboundLib
             
             while (true)
             {
-                try
-                {
-                    openPort(__address, __port);
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-
                 Thread.Sleep(1024);
 
                 if (Directory.GetFiles(dirName) != null)
