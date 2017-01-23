@@ -117,6 +117,8 @@ namespace motCommonLib
     {
 
         private List<KeyValuePair<string, string>> __records { get; set; } = null;
+        public bool __send_eof { get; set; } = false;
+
         public motWriteQueue()
         {
             __records = new List<KeyValuePair<string, string>>();
@@ -158,7 +160,10 @@ namespace motCommonLib
                     __socket.write(__record.Value);
                 }
 
-                //__socket.write("<EOF/>");
+                if (__send_eof)
+                {
+                    __socket.write("<EOF/>");
+                }
 
                 // Flush
                 __records.Clear();
@@ -188,6 +193,7 @@ namespace motCommonLib
         public bool __log_records { get; set; } = false;
         public bool __auto_truncate { get; set; } = false;
         public bool __strong_validation { get; set; } = true;
+        public bool __send_eof { get; set; } = false;
 
         // External Ordered Queue
         public bool __queue_writes { get; set; } = false;
@@ -513,7 +519,7 @@ namespace motCommonLib
                     throw new Exception(__log_data);
                 }
 
-                __log_data = string.Format("Autotruncated Oferflowed Field at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
+                __log_data = string.Format("Autotruncated Overflowed Field at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
                 __logger.Warn(__log_data);
 
                 __val = __val?.Substring(0, f.maxLen);
@@ -557,7 +563,11 @@ namespace motCommonLib
                 {
                     // Push it to the port
                     p.write(__record);
-                    p.write("<EOF/>");
+
+                    if (__send_eof)
+                    {
+                        p.write("<EOF/>");
+                    }
                 }
 
                 __logger.Info(__record);

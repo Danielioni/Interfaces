@@ -109,14 +109,15 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.txtFileName = new System.Windows.Forms.TextBox();
-            this.cbTaggedTestRecord = new System.Windows.Forms.CheckBox();
-            this.cbDelimitedTestRecord = new System.Windows.Forms.CheckBox();
             this.cbSendTaggedRecord = new System.Windows.Forms.CheckBox();
             this.cbSendDelimitedRecord = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtFileName = new System.Windows.Forms.TextBox();
+            this.cbTaggedTestRecord = new System.Windows.Forms.CheckBox();
+            this.cbDelimitedTestRecord = new System.Windows.Forms.CheckBox();
+            this.chkSendEOF = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.gbSwitches.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -128,9 +129,9 @@
             this.groupBox1.Controls.Add(this.rbChange);
             this.groupBox1.Controls.Add(this.rbAdd);
             this.groupBox1.Location = new System.Drawing.Point(17, 10);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(295, 51);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
@@ -140,7 +141,7 @@
             // 
             this.rbDelete.AutoSize = true;
             this.rbDelete.Location = new System.Drawing.Point(181, 18);
-            this.rbDelete.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rbDelete.Margin = new System.Windows.Forms.Padding(2);
             this.rbDelete.Name = "rbDelete";
             this.rbDelete.Size = new System.Drawing.Size(56, 17);
             this.rbDelete.TabIndex = 2;
@@ -153,7 +154,7 @@
             // 
             this.rbChange.AutoSize = true;
             this.rbChange.Location = new System.Drawing.Point(100, 17);
-            this.rbChange.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rbChange.Margin = new System.Windows.Forms.Padding(2);
             this.rbChange.Name = "rbChange";
             this.rbChange.Size = new System.Drawing.Size(62, 17);
             this.rbChange.TabIndex = 1;
@@ -167,7 +168,7 @@
             this.rbAdd.AutoSize = true;
             this.rbAdd.Checked = true;
             this.rbAdd.Location = new System.Drawing.Point(22, 18);
-            this.rbAdd.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rbAdd.Margin = new System.Windows.Forms.Padding(2);
             this.rbAdd.Name = "rbAdd";
             this.rbAdd.Size = new System.Drawing.Size(44, 17);
             this.rbAdd.TabIndex = 0;
@@ -189,7 +190,7 @@
             // txtRxSys_PatID
             // 
             this.txtRxSys_PatID.Location = new System.Drawing.Point(128, 82);
-            this.txtRxSys_PatID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRxSys_PatID.Margin = new System.Windows.Forms.Padding(2);
             this.txtRxSys_PatID.Name = "txtRxSys_PatID";
             this.txtRxSys_PatID.Size = new System.Drawing.Size(240, 20);
             this.txtRxSys_PatID.TabIndex = 1;
@@ -198,7 +199,7 @@
             // txtRxNum
             // 
             this.txtRxNum.Location = new System.Drawing.Point(128, 105);
-            this.txtRxNum.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRxNum.Margin = new System.Windows.Forms.Padding(2);
             this.txtRxNum.Name = "txtRxNum";
             this.txtRxNum.Size = new System.Drawing.Size(240, 20);
             this.txtRxNum.TabIndex = 2;
@@ -217,7 +218,7 @@
             // txtRxSys_DocID
             // 
             this.txtRxSys_DocID.Location = new System.Drawing.Point(128, 128);
-            this.txtRxSys_DocID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRxSys_DocID.Margin = new System.Windows.Forms.Padding(2);
             this.txtRxSys_DocID.Name = "txtRxSys_DocID";
             this.txtRxSys_DocID.Size = new System.Drawing.Size(240, 20);
             this.txtRxSys_DocID.TabIndex = 3;
@@ -235,7 +236,7 @@
             // txtDrug_ID
             // 
             this.txtDrug_ID.Location = new System.Drawing.Point(128, 150);
-            this.txtDrug_ID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDrug_ID.Margin = new System.Windows.Forms.Padding(2);
             this.txtDrug_ID.Name = "txtDrug_ID";
             this.txtDrug_ID.Size = new System.Drawing.Size(240, 20);
             this.txtDrug_ID.TabIndex = 4;
@@ -253,7 +254,7 @@
             // txtSig
             // 
             this.txtSig.Location = new System.Drawing.Point(128, 175);
-            this.txtSig.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtSig.Margin = new System.Windows.Forms.Padding(2);
             this.txtSig.Multiline = true;
             this.txtSig.Name = "txtSig";
             this.txtSig.Size = new System.Drawing.Size(240, 19);
@@ -274,7 +275,7 @@
             // txtRxStartDate
             // 
             this.txtRxStartDate.Location = new System.Drawing.Point(128, 197);
-            this.txtRxStartDate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRxStartDate.Margin = new System.Windows.Forms.Padding(2);
             this.txtRxStartDate.Name = "txtRxStartDate";
             this.txtRxStartDate.Size = new System.Drawing.Size(240, 20);
             this.txtRxStartDate.TabIndex = 6;
@@ -292,7 +293,7 @@
             // txtRxStopDate
             // 
             this.txtRxStopDate.Location = new System.Drawing.Point(128, 220);
-            this.txtRxStopDate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRxStopDate.Margin = new System.Windows.Forms.Padding(2);
             this.txtRxStopDate.Name = "txtRxStopDate";
             this.txtRxStopDate.Size = new System.Drawing.Size(240, 20);
             this.txtRxStopDate.TabIndex = 7;
@@ -310,7 +311,7 @@
             // txtDiscontinueDate
             // 
             this.txtDiscontinueDate.Location = new System.Drawing.Point(128, 243);
-            this.txtDiscontinueDate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDiscontinueDate.Margin = new System.Windows.Forms.Padding(2);
             this.txtDiscontinueDate.Name = "txtDiscontinueDate";
             this.txtDiscontinueDate.Size = new System.Drawing.Size(240, 20);
             this.txtDiscontinueDate.TabIndex = 8;
@@ -328,7 +329,7 @@
             // txtDoseScheduleName
             // 
             this.txtDoseScheduleName.Location = new System.Drawing.Point(128, 266);
-            this.txtDoseScheduleName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDoseScheduleName.Margin = new System.Windows.Forms.Padding(2);
             this.txtDoseScheduleName.Name = "txtDoseScheduleName";
             this.txtDoseScheduleName.Size = new System.Drawing.Size(240, 20);
             this.txtDoseScheduleName.TabIndex = 9;
@@ -347,7 +348,7 @@
             // txtRefills
             // 
             this.txtRefills.Location = new System.Drawing.Point(128, 311);
-            this.txtRefills.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRefills.Margin = new System.Windows.Forms.Padding(2);
             this.txtRefills.Name = "txtRefills";
             this.txtRefills.Size = new System.Drawing.Size(240, 20);
             this.txtRefills.TabIndex = 11;
@@ -365,7 +366,7 @@
             // txtChartOnly
             // 
             this.txtChartOnly.Location = new System.Drawing.Point(494, 290);
-            this.txtChartOnly.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtChartOnly.Margin = new System.Windows.Forms.Padding(2);
             this.txtChartOnly.Name = "txtChartOnly";
             this.txtChartOnly.Size = new System.Drawing.Size(240, 20);
             this.txtChartOnly.TabIndex = 25;
@@ -383,7 +384,7 @@
             // txtRxType
             // 
             this.txtRxType.Location = new System.Drawing.Point(494, 85);
-            this.txtRxType.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRxType.Margin = new System.Windows.Forms.Padding(2);
             this.txtRxType.Name = "txtRxType";
             this.txtRxType.Size = new System.Drawing.Size(240, 20);
             this.txtRxType.TabIndex = 16;
@@ -401,7 +402,7 @@
             // txtIsolate
             // 
             this.txtIsolate.Location = new System.Drawing.Point(128, 357);
-            this.txtIsolate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtIsolate.Margin = new System.Windows.Forms.Padding(2);
             this.txtIsolate.Name = "txtIsolate";
             this.txtIsolate.Size = new System.Drawing.Size(240, 20);
             this.txtIsolate.TabIndex = 15;
@@ -419,7 +420,7 @@
             // txtComments
             // 
             this.txtComments.Location = new System.Drawing.Point(128, 288);
-            this.txtComments.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtComments.Margin = new System.Windows.Forms.Padding(2);
             this.txtComments.Multiline = true;
             this.txtComments.Name = "txtComments";
             this.txtComments.Size = new System.Drawing.Size(240, 19);
@@ -440,7 +441,7 @@
             // txtAnchorDate
             // 
             this.txtAnchorDate.Location = new System.Drawing.Point(494, 313);
-            this.txtAnchorDate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtAnchorDate.Margin = new System.Windows.Forms.Padding(2);
             this.txtAnchorDate.Name = "txtAnchorDate";
             this.txtAnchorDate.Size = new System.Drawing.Size(240, 20);
             this.txtAnchorDate.TabIndex = 26;
@@ -448,7 +449,7 @@
             // txtMDOMStart
             // 
             this.txtMDOMStart.Location = new System.Drawing.Point(494, 108);
-            this.txtMDOMStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtMDOMStart.Margin = new System.Windows.Forms.Padding(2);
             this.txtMDOMStart.Name = "txtMDOMStart";
             this.txtMDOMStart.Size = new System.Drawing.Size(240, 20);
             this.txtMDOMStart.TabIndex = 17;
@@ -466,7 +467,7 @@
             // txtMDOMStop
             // 
             this.txtMDOMStop.Location = new System.Drawing.Point(494, 131);
-            this.txtMDOMStop.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtMDOMStop.Margin = new System.Windows.Forms.Padding(2);
             this.txtMDOMStop.Name = "txtMDOMStop";
             this.txtMDOMStop.Size = new System.Drawing.Size(240, 20);
             this.txtMDOMStop.TabIndex = 18;
@@ -484,7 +485,7 @@
             // txtQtyPerDose
             // 
             this.txtQtyPerDose.Location = new System.Drawing.Point(494, 154);
-            this.txtQtyPerDose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtQtyPerDose.Margin = new System.Windows.Forms.Padding(2);
             this.txtQtyPerDose.Name = "txtQtyPerDose";
             this.txtQtyPerDose.Size = new System.Drawing.Size(240, 20);
             this.txtQtyPerDose.TabIndex = 19;
@@ -502,7 +503,7 @@
             // txtQtyDispensed
             // 
             this.txtQtyDispensed.Location = new System.Drawing.Point(494, 176);
-            this.txtQtyDispensed.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtQtyDispensed.Margin = new System.Windows.Forms.Padding(2);
             this.txtQtyDispensed.Name = "txtQtyDispensed";
             this.txtQtyDispensed.Size = new System.Drawing.Size(240, 20);
             this.txtQtyDispensed.TabIndex = 20;
@@ -520,7 +521,7 @@
             // txtStatus
             // 
             this.txtStatus.Location = new System.Drawing.Point(494, 199);
-            this.txtStatus.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtStatus.Margin = new System.Windows.Forms.Padding(2);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.Size = new System.Drawing.Size(240, 20);
             this.txtStatus.TabIndex = 21;
@@ -538,7 +539,7 @@
             // txtDOW
             // 
             this.txtDOW.Location = new System.Drawing.Point(494, 222);
-            this.txtDOW.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDOW.Margin = new System.Windows.Forms.Padding(2);
             this.txtDOW.Name = "txtDOW";
             this.txtDOW.Size = new System.Drawing.Size(240, 20);
             this.txtDOW.TabIndex = 22;
@@ -557,7 +558,7 @@
             // txtSpecialDoses
             // 
             this.txtSpecialDoses.Location = new System.Drawing.Point(494, 245);
-            this.txtSpecialDoses.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtSpecialDoses.Margin = new System.Windows.Forms.Padding(2);
             this.txtSpecialDoses.Name = "txtSpecialDoses";
             this.txtSpecialDoses.Size = new System.Drawing.Size(240, 20);
             this.txtSpecialDoses.TabIndex = 23;
@@ -576,7 +577,7 @@
             // txtDoseTimesQtys
             // 
             this.txtDoseTimesQtys.Location = new System.Drawing.Point(494, 267);
-            this.txtDoseTimesQtys.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDoseTimesQtys.Margin = new System.Windows.Forms.Padding(2);
             this.txtDoseTimesQtys.Name = "txtDoseTimesQtys";
             this.txtDoseTimesQtys.Size = new System.Drawing.Size(240, 20);
             this.txtDoseTimesQtys.TabIndex = 24;
@@ -595,7 +596,7 @@
             // btnGo
             // 
             this.btnGo.Location = new System.Drawing.Point(620, 10);
-            this.btnGo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnGo.Margin = new System.Windows.Forms.Padding(2);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(142, 51);
             this.btnGo.TabIndex = 81;
@@ -605,11 +606,12 @@
             // 
             // gbSwitches
             // 
+            this.gbSwitches.Controls.Add(this.chkSendEOF);
             this.gbSwitches.Controls.Add(this.checkBox1);
             this.gbSwitches.Location = new System.Drawing.Point(316, 10);
-            this.gbSwitches.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.gbSwitches.Margin = new System.Windows.Forms.Padding(2);
             this.gbSwitches.Name = "gbSwitches";
-            this.gbSwitches.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.gbSwitches.Padding = new System.Windows.Forms.Padding(2);
             this.gbSwitches.Size = new System.Drawing.Size(295, 51);
             this.gbSwitches.TabIndex = 82;
             this.gbSwitches.TabStop = false;
@@ -619,7 +621,7 @@
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(22, 19);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(124, 17);
             this.checkBox1.TabIndex = 0;
@@ -870,7 +872,7 @@
             // txtRxSys_NewRxNum
             // 
             this.txtRxSys_NewRxNum.Location = new System.Drawing.Point(128, 334);
-            this.txtRxSys_NewRxNum.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRxSys_NewRxNum.Margin = new System.Windows.Forms.Padding(2);
             this.txtRxSys_NewRxNum.Name = "txtRxSys_NewRxNum";
             this.txtRxSys_NewRxNum.Size = new System.Drawing.Size(240, 20);
             this.txtRxSys_NewRxNum.TabIndex = 12;
@@ -906,53 +908,13 @@
             this.groupBox2.Controls.Add(this.cbTaggedTestRecord);
             this.groupBox2.Controls.Add(this.cbDelimitedTestRecord);
             this.groupBox2.Location = new System.Drawing.Point(128, 393);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(548, 76);
             this.groupBox2.TabIndex = 204;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "[ Generate Test Record ]";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(306, 19);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(55, 13);
-            this.label7.TabIndex = 3;
-            this.label7.Text = "Filename: ";
-            // 
-            // txtFileName
-            // 
-            this.txtFileName.Location = new System.Drawing.Point(365, 18);
-            this.txtFileName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.txtFileName.Name = "txtFileName";
-            this.txtFileName.Size = new System.Drawing.Size(162, 20);
-            this.txtFileName.TabIndex = 2;
-            // 
-            // cbTaggedTestRecord
-            // 
-            this.cbTaggedTestRecord.AutoSize = true;
-            this.cbTaggedTestRecord.Location = new System.Drawing.Point(190, 21);
-            this.cbTaggedTestRecord.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.cbTaggedTestRecord.Name = "cbTaggedTestRecord";
-            this.cbTaggedTestRecord.Size = new System.Drawing.Size(63, 17);
-            this.cbTaggedTestRecord.TabIndex = 1;
-            this.cbTaggedTestRecord.Text = "Tagged";
-            this.cbTaggedTestRecord.UseVisualStyleBackColor = true;
-            // 
-            // cbDelimitedTestRecord
-            // 
-            this.cbDelimitedTestRecord.AutoSize = true;
-            this.cbDelimitedTestRecord.Location = new System.Drawing.Point(89, 20);
-            this.cbDelimitedTestRecord.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.cbDelimitedTestRecord.Name = "cbDelimitedTestRecord";
-            this.cbDelimitedTestRecord.Size = new System.Drawing.Size(69, 17);
-            this.cbDelimitedTestRecord.TabIndex = 0;
-            this.cbDelimitedTestRecord.Text = "Delimited";
-            this.cbDelimitedTestRecord.UseVisualStyleBackColor = true;
             // 
             // cbSendTaggedRecord
             // 
@@ -993,6 +955,58 @@
             this.label9.Size = new System.Drawing.Size(57, 13);
             this.label9.TabIndex = 8;
             this.label9.Text = "Create File";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(306, 19);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(55, 13);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Filename: ";
+            // 
+            // txtFileName
+            // 
+            this.txtFileName.Location = new System.Drawing.Point(365, 18);
+            this.txtFileName.Margin = new System.Windows.Forms.Padding(2);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(162, 20);
+            this.txtFileName.TabIndex = 2;
+            // 
+            // cbTaggedTestRecord
+            // 
+            this.cbTaggedTestRecord.AutoSize = true;
+            this.cbTaggedTestRecord.Location = new System.Drawing.Point(190, 21);
+            this.cbTaggedTestRecord.Margin = new System.Windows.Forms.Padding(2);
+            this.cbTaggedTestRecord.Name = "cbTaggedTestRecord";
+            this.cbTaggedTestRecord.Size = new System.Drawing.Size(63, 17);
+            this.cbTaggedTestRecord.TabIndex = 1;
+            this.cbTaggedTestRecord.Text = "Tagged";
+            this.cbTaggedTestRecord.UseVisualStyleBackColor = true;
+            // 
+            // cbDelimitedTestRecord
+            // 
+            this.cbDelimitedTestRecord.AutoSize = true;
+            this.cbDelimitedTestRecord.Location = new System.Drawing.Point(89, 20);
+            this.cbDelimitedTestRecord.Margin = new System.Windows.Forms.Padding(2);
+            this.cbDelimitedTestRecord.Name = "cbDelimitedTestRecord";
+            this.cbDelimitedTestRecord.Size = new System.Drawing.Size(69, 17);
+            this.cbDelimitedTestRecord.TabIndex = 0;
+            this.cbDelimitedTestRecord.Text = "Delimited";
+            this.cbDelimitedTestRecord.UseVisualStyleBackColor = true;
+            // 
+            // chkSendEOF
+            // 
+            this.chkSendEOF.AutoSize = true;
+            this.chkSendEOF.Checked = true;
+            this.chkSendEOF.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSendEOF.Location = new System.Drawing.Point(177, 19);
+            this.chkSendEOF.Name = "chkSendEOF";
+            this.chkSendEOF.Size = new System.Drawing.Size(92, 17);
+            this.chkSendEOF.TabIndex = 2;
+            this.chkSendEOF.Text = "Send <EOF/>";
+            this.chkSendEOF.UseVisualStyleBackColor = true;
             // 
             // frmRxRecord
             // 
@@ -1076,7 +1090,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "frmRxRecord";
             this.Text = "Rx Record";
             this.groupBox1.ResumeLayout(false);
@@ -1180,5 +1194,6 @@
         private System.Windows.Forms.CheckBox cbSendDelimitedRecord;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.CheckBox chkSendEOF;
     }
 }

@@ -46,6 +46,8 @@ namespace motGatewayTester
         {
             try
             {
+                TQ.__send_eof = chkSendEOF.Checked;
+
                 if ((cbDelimitedTestRecord.Checked || cbTaggedTestRecord.Checked) && txtFileName.Text.Length > 0)
                 {
                     List<KeyValuePair<string, string>> __key_data = new List<KeyValuePair<string, string>>();

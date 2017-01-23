@@ -67,14 +67,15 @@
             this.rbChange = new System.Windows.Forms.RadioButton();
             this.rbAdd = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cbSendTaggedRecord = new System.Windows.Forms.CheckBox();
+            this.cbSendDelimitedRecord = new System.Windows.Forms.CheckBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtFileName = new System.Windows.Forms.TextBox();
             this.cbTaggedTestRecord = new System.Windows.Forms.CheckBox();
             this.cbDelimitedTestRecord = new System.Windows.Forms.CheckBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.cbSendDelimitedRecord = new System.Windows.Forms.CheckBox();
-            this.cbSendTaggedRecord = new System.Windows.Forms.CheckBox();
+            this.chkSendEOF = new System.Windows.Forms.CheckBox();
             this.gbSwitches.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -182,11 +183,12 @@
             // 
             // gbSwitches
             // 
+            this.gbSwitches.Controls.Add(this.chkSendEOF);
             this.gbSwitches.Controls.Add(this.checkBox1);
             this.gbSwitches.Location = new System.Drawing.Point(303, 8);
-            this.gbSwitches.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.gbSwitches.Margin = new System.Windows.Forms.Padding(2);
             this.gbSwitches.Name = "gbSwitches";
-            this.gbSwitches.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.gbSwitches.Padding = new System.Windows.Forms.Padding(2);
             this.gbSwitches.Size = new System.Drawing.Size(295, 51);
             this.gbSwitches.TabIndex = 241;
             this.gbSwitches.TabStop = false;
@@ -196,7 +198,7 @@
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(22, 19);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(124, 17);
             this.checkBox1.TabIndex = 0;
@@ -207,7 +209,7 @@
             // btnGo
             // 
             this.btnGo.Location = new System.Drawing.Point(606, 8);
-            this.btnGo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnGo.Margin = new System.Windows.Forms.Padding(2);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(142, 51);
             this.btnGo.TabIndex = 240;
@@ -218,7 +220,7 @@
             // txtDEANum
             // 
             this.txtDEANum.Location = new System.Drawing.Point(258, 307);
-            this.txtDEANum.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDEANum.Margin = new System.Windows.Forms.Padding(2);
             this.txtDEANum.Name = "txtDEANum";
             this.txtDEANum.Size = new System.Drawing.Size(240, 20);
             this.txtDEANum.TabIndex = 229;
@@ -237,7 +239,7 @@
             // txtFax
             // 
             this.txtFax.Location = new System.Drawing.Point(258, 284);
-            this.txtFax.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtFax.Margin = new System.Windows.Forms.Padding(2);
             this.txtFax.Name = "txtFax";
             this.txtFax.Size = new System.Drawing.Size(240, 20);
             this.txtFax.TabIndex = 221;
@@ -256,7 +258,7 @@
             // txtPhone
             // 
             this.txtPhone.Location = new System.Drawing.Point(258, 262);
-            this.txtPhone.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtPhone.Margin = new System.Windows.Forms.Padding(2);
             this.txtPhone.Name = "txtPhone";
             this.txtPhone.Size = new System.Drawing.Size(240, 20);
             this.txtPhone.TabIndex = 219;
@@ -275,7 +277,7 @@
             // txtZip
             // 
             this.txtZip.Location = new System.Drawing.Point(258, 239);
-            this.txtZip.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtZip.Margin = new System.Windows.Forms.Padding(2);
             this.txtZip.Name = "txtZip";
             this.txtZip.Size = new System.Drawing.Size(240, 20);
             this.txtZip.TabIndex = 217;
@@ -294,7 +296,7 @@
             // txtState
             // 
             this.txtState.Location = new System.Drawing.Point(258, 216);
-            this.txtState.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtState.Margin = new System.Windows.Forms.Padding(2);
             this.txtState.Name = "txtState";
             this.txtState.Size = new System.Drawing.Size(240, 20);
             this.txtState.TabIndex = 215;
@@ -313,7 +315,7 @@
             // txtCity
             // 
             this.txtCity.Location = new System.Drawing.Point(258, 193);
-            this.txtCity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtCity.Margin = new System.Windows.Forms.Padding(2);
             this.txtCity.Multiline = true;
             this.txtCity.Name = "txtCity";
             this.txtCity.Size = new System.Drawing.Size(240, 19);
@@ -333,7 +335,7 @@
             // txtAddress2
             // 
             this.txtAddress2.Location = new System.Drawing.Point(258, 169);
-            this.txtAddress2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtAddress2.Margin = new System.Windows.Forms.Padding(2);
             this.txtAddress2.Name = "txtAddress2";
             this.txtAddress2.Size = new System.Drawing.Size(240, 20);
             this.txtAddress2.TabIndex = 211;
@@ -352,7 +354,7 @@
             // txtAddress1
             // 
             this.txtAddress1.Location = new System.Drawing.Point(258, 146);
-            this.txtAddress1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtAddress1.Margin = new System.Windows.Forms.Padding(2);
             this.txtAddress1.Name = "txtAddress1";
             this.txtAddress1.Size = new System.Drawing.Size(240, 20);
             this.txtAddress1.TabIndex = 209;
@@ -371,7 +373,7 @@
             // txtStoreName
             // 
             this.txtStoreName.Location = new System.Drawing.Point(258, 124);
-            this.txtStoreName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtStoreName.Margin = new System.Windows.Forms.Padding(2);
             this.txtStoreName.Name = "txtStoreName";
             this.txtStoreName.Size = new System.Drawing.Size(240, 20);
             this.txtStoreName.TabIndex = 207;
@@ -390,7 +392,7 @@
             // txtRxSys_StoreID
             // 
             this.txtRxSys_StoreID.Location = new System.Drawing.Point(258, 101);
-            this.txtRxSys_StoreID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtRxSys_StoreID.Margin = new System.Windows.Forms.Padding(2);
             this.txtRxSys_StoreID.Name = "txtRxSys_StoreID";
             this.txtRxSys_StoreID.Size = new System.Drawing.Size(240, 20);
             this.txtRxSys_StoreID.TabIndex = 205;
@@ -412,9 +414,9 @@
             this.groupBox1.Controls.Add(this.rbChange);
             this.groupBox1.Controls.Add(this.rbAdd);
             this.groupBox1.Location = new System.Drawing.Point(4, 8);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(295, 51);
             this.groupBox1.TabIndex = 203;
             this.groupBox1.TabStop = false;
@@ -424,7 +426,7 @@
             // 
             this.rbDelete.AutoSize = true;
             this.rbDelete.Location = new System.Drawing.Point(181, 18);
-            this.rbDelete.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rbDelete.Margin = new System.Windows.Forms.Padding(2);
             this.rbDelete.Name = "rbDelete";
             this.rbDelete.Size = new System.Drawing.Size(56, 17);
             this.rbDelete.TabIndex = 2;
@@ -437,7 +439,7 @@
             // 
             this.rbChange.AutoSize = true;
             this.rbChange.Location = new System.Drawing.Point(100, 17);
-            this.rbChange.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rbChange.Margin = new System.Windows.Forms.Padding(2);
             this.rbChange.Name = "rbChange";
             this.rbChange.Size = new System.Drawing.Size(62, 17);
             this.rbChange.TabIndex = 1;
@@ -451,7 +453,7 @@
             this.rbAdd.AutoSize = true;
             this.rbAdd.Checked = true;
             this.rbAdd.Location = new System.Drawing.Point(22, 18);
-            this.rbAdd.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rbAdd.Margin = new System.Windows.Forms.Padding(2);
             this.rbAdd.Name = "rbAdd";
             this.rbAdd.Size = new System.Drawing.Size(44, 17);
             this.rbAdd.TabIndex = 0;
@@ -471,13 +473,53 @@
             this.groupBox2.Controls.Add(this.cbTaggedTestRecord);
             this.groupBox2.Controls.Add(this.cbDelimitedTestRecord);
             this.groupBox2.Location = new System.Drawing.Point(90, 352);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(548, 68);
             this.groupBox2.TabIndex = 255;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "[ Generate Test Record ]";
+            // 
+            // cbSendTaggedRecord
+            // 
+            this.cbSendTaggedRecord.AutoSize = true;
+            this.cbSendTaggedRecord.Location = new System.Drawing.Point(183, 40);
+            this.cbSendTaggedRecord.Margin = new System.Windows.Forms.Padding(2);
+            this.cbSendTaggedRecord.Name = "cbSendTaggedRecord";
+            this.cbSendTaggedRecord.Size = new System.Drawing.Size(63, 17);
+            this.cbSendTaggedRecord.TabIndex = 7;
+            this.cbSendTaggedRecord.Text = "Tagged";
+            this.cbSendTaggedRecord.UseVisualStyleBackColor = true;
+            // 
+            // cbSendDelimitedRecord
+            // 
+            this.cbSendDelimitedRecord.AutoSize = true;
+            this.cbSendDelimitedRecord.Location = new System.Drawing.Point(82, 40);
+            this.cbSendDelimitedRecord.Margin = new System.Windows.Forms.Padding(2);
+            this.cbSendDelimitedRecord.Name = "cbSendDelimitedRecord";
+            this.cbSendDelimitedRecord.Size = new System.Drawing.Size(69, 17);
+            this.cbSendDelimitedRecord.TabIndex = 6;
+            this.cbSendDelimitedRecord.Text = "Delimited";
+            this.cbSendDelimitedRecord.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 40);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(70, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Send Record";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 19);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(57, 13);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Create File";
             // 
             // label7
             // 
@@ -492,7 +534,7 @@
             // txtFileName
             // 
             this.txtFileName.Location = new System.Drawing.Point(365, 18);
-            this.txtFileName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtFileName.Margin = new System.Windows.Forms.Padding(2);
             this.txtFileName.Name = "txtFileName";
             this.txtFileName.Size = new System.Drawing.Size(162, 20);
             this.txtFileName.TabIndex = 2;
@@ -501,7 +543,7 @@
             // 
             this.cbTaggedTestRecord.AutoSize = true;
             this.cbTaggedTestRecord.Location = new System.Drawing.Point(183, 19);
-            this.cbTaggedTestRecord.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbTaggedTestRecord.Margin = new System.Windows.Forms.Padding(2);
             this.cbTaggedTestRecord.Name = "cbTaggedTestRecord";
             this.cbTaggedTestRecord.Size = new System.Drawing.Size(63, 17);
             this.cbTaggedTestRecord.TabIndex = 1;
@@ -512,52 +554,24 @@
             // 
             this.cbDelimitedTestRecord.AutoSize = true;
             this.cbDelimitedTestRecord.Location = new System.Drawing.Point(82, 19);
-            this.cbDelimitedTestRecord.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbDelimitedTestRecord.Margin = new System.Windows.Forms.Padding(2);
             this.cbDelimitedTestRecord.Name = "cbDelimitedTestRecord";
             this.cbDelimitedTestRecord.Size = new System.Drawing.Size(69, 17);
             this.cbDelimitedTestRecord.TabIndex = 0;
             this.cbDelimitedTestRecord.Text = "Delimited";
             this.cbDelimitedTestRecord.UseVisualStyleBackColor = true;
             // 
-            // label5
+            // chkSendEOF
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 19);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(57, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Create File";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 40);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(70, 13);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "Send Record";
-            // 
-            // cbSendDelimitedRecord
-            // 
-            this.cbSendDelimitedRecord.AutoSize = true;
-            this.cbSendDelimitedRecord.Location = new System.Drawing.Point(82, 40);
-            this.cbSendDelimitedRecord.Margin = new System.Windows.Forms.Padding(2);
-            this.cbSendDelimitedRecord.Name = "cbSendDelimitedRecord";
-            this.cbSendDelimitedRecord.Size = new System.Drawing.Size(69, 17);
-            this.cbSendDelimitedRecord.TabIndex = 6;
-            this.cbSendDelimitedRecord.Text = "Delimited";
-            this.cbSendDelimitedRecord.UseVisualStyleBackColor = true;
-            // 
-            // cbSendTaggedRecord
-            // 
-            this.cbSendTaggedRecord.AutoSize = true;
-            this.cbSendTaggedRecord.Location = new System.Drawing.Point(183, 40);
-            this.cbSendTaggedRecord.Margin = new System.Windows.Forms.Padding(2);
-            this.cbSendTaggedRecord.Name = "cbSendTaggedRecord";
-            this.cbSendTaggedRecord.Size = new System.Drawing.Size(63, 17);
-            this.cbSendTaggedRecord.TabIndex = 7;
-            this.cbSendTaggedRecord.Text = "Tagged";
-            this.cbSendTaggedRecord.UseVisualStyleBackColor = true;
+            this.chkSendEOF.AutoSize = true;
+            this.chkSendEOF.Checked = true;
+            this.chkSendEOF.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSendEOF.Location = new System.Drawing.Point(176, 19);
+            this.chkSendEOF.Name = "chkSendEOF";
+            this.chkSendEOF.Size = new System.Drawing.Size(92, 17);
+            this.chkSendEOF.TabIndex = 2;
+            this.chkSendEOF.Text = "Send <EOF/>";
+            this.chkSendEOF.UseVisualStyleBackColor = true;
             // 
             // frmStoreRecord
             // 
@@ -599,7 +613,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "frmStoreRecord";
             this.Text = "Store Record";
             this.gbSwitches.ResumeLayout(false);
@@ -660,5 +674,6 @@
         private System.Windows.Forms.CheckBox cbSendDelimitedRecord;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox chkSendEOF;
     }
 }
