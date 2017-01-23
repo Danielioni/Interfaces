@@ -247,6 +247,14 @@ namespace motInboundLib
                         ADT_A01MessageEventReceived(this, __args);
                         break;
 
+                    case "ADT_A12":
+                        __ui_args.__event_message = "ADT_A12 Message Event";
+
+                        __args.timestamp = DateTime.Now;
+                        __args.__raw_data = __data;
+                        ADT_A12MessageEventReceived(this, __args);
+                        break;
+
                     default:
                         throw new HL7Exception(201, __resp.Get("MSH.9.3") + " - Unhandled Message Type");
                         break;

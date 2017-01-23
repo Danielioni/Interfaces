@@ -59,6 +59,9 @@ namespace HL7Proxy
         public LogLevel __log_level { get; set; } = LogLevel.Info;   // For debugging. Set to Error for production
 
         public bool __auto_truncate { get; set; } = false;
+        public bool __send_eof { get; set; } = false;
+        public bool __debug_mode { get; set; } = false;
+
         volatile bool __logging = false;
 
         volatile string __target_ip = string.Empty;
@@ -155,6 +158,8 @@ namespace HL7Proxy
 
                 __error_level = __args.__error_level;
                 __auto_truncate = __args.__auto_truncate;
+                __send_eof = __args.__send_eof;
+                __debug_mode = __args.__debug_mode;
 
                 // Surprising how confusing this can be  - Ordinal is 0 for Sunday, if Monday is 0, Sunday = 7
                 var __lookup = new motLookupTables();
@@ -254,9 +259,19 @@ namespace HL7Proxy
 
             private motWriteQueue __write_queue;
             protected bool __use_queue = true;
+            public bool __send_eof { get; set;}
+            public bool __debug_mode { get; set; }
 
-            public RecordBundle(bool __auto_truncate = false)
+            public bool __set_debug(bool on)
             {
+                __write_queue.__log_records = on;
+                return __write_queue.__log_records;
+            }
+
+            public RecordBundle(bool __auto_truncate = false, bool __send_eof = false)
+            {
+                this.__send_eof = __send_eof; 
+
                 __pr = new motPatientRecord("Add", __auto_truncate);
                 __scrip = new motPrescriptionRecord("Add", __auto_truncate);
                 __doc = new motPrescriberRecord("Add", __auto_truncate);
@@ -278,6 +293,8 @@ namespace HL7Proxy
                     __store.__write_queue =
                     __drug.__write_queue =
                         __write_queue;
+
+                    __write_queue.__send_eof = __send_eof;
                 }
 
                 __pr.__queue_writes =
@@ -287,6 +304,23 @@ namespace HL7Proxy
                 __store.__queue_writes =
                 __drug.__queue_writes =
                     __use_queue;
+
+                __pr.__send_eof =
+                __scrip.__send_eof =
+                __loc.__send_eof =
+                __doc.__send_eof =
+                __store.__send_eof =
+                __drug.__send_eof =
+                    __send_eof;
+
+                __pr.__auto_truncate =
+                __scrip.__auto_truncate =
+                __loc.__auto_truncate =
+                __doc.__auto_truncate =
+                __store.__auto_truncate =
+                __drug.__auto_truncate =
+                    __auto_truncate;
+
             }
             public void Write()
             {
@@ -298,6 +332,7 @@ namespace HL7Proxy
                         {
                             foreach (motStoreRecord __st in __store_list)
                             {
+                                __st.__send_eof = __send_eof;
                                 __st.AddToQueue(__write_queue);
                             }
                         }
@@ -310,6 +345,7 @@ namespace HL7Proxy
                         {
                             foreach (motPrescriberRecord __d in __doc_list)
                             {
+                                __d.__send_eof = __send_eof;
                                 __d.AddToQueue(__write_queue);
                             }
                         }
@@ -321,6 +357,7 @@ namespace HL7Proxy
 
                         foreach (motTimeQtysRecord __tq in __tq_list)
                         {
+                            __tq.__send_eof = __send_eof;
                             __tq.AddToQueue(__write_queue);
                         }
 
@@ -1439,10 +1476,23 @@ namespace HL7Proxy
 
             return true;
         }
+
+        bool __return_processor(byte[] __data)
+        {
+            if(__data[0] != 0x6)
+            {
+                throw new Exception("Data IO Failed [" + __data + "]");
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         void __process_ADT_A01_Event(Object sender, HL7Event7MessageArgs __args)
         {
             //__update_event_ui("Received ADT_A01 Event");
-            var __recs = new RecordBundle(__auto_truncate);
+            var __recs = new RecordBundle(__auto_truncate, __send_eof);
             var __time_qty = string.Empty;
             var __tmp = string.Empty;
             var __next_of_kin = string.Format("Next Of Kin\n");
@@ -1451,6 +1501,9 @@ namespace HL7Proxy
             var __problem_segment = string.Empty;
 
             SendingApp = __args.__sa;
+
+            __recs.__set_debug(__debug_mode);
+            
 
             var __HL7xml = new HL7toXDocumentParser.Parser();
             var xDoc = __HL7xml.Parse(__args.__raw_data);
@@ -1461,7 +1514,7 @@ namespace HL7Proxy
 
             try
             {
-                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
+                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled, __return_processor);
 
                 __process_PID(__recs, ADT.__pid);
                 __process_PV1(__recs, ADT.__pv1);
@@ -1487,7 +1540,7 @@ namespace HL7Proxy
         {
             //__update_event_ui("Received ADT_A12 Event");
 
-            var __recs = new RecordBundle(__auto_truncate);
+            var __recs = new RecordBundle(__auto_truncate, __send_eof);
             var __time_qty = string.Empty;
             var __tmp = string.Empty;
             var __next_of_kin = string.Format("Next Of Kin\n");
@@ -1496,6 +1549,7 @@ namespace HL7Proxy
             var __problem_segment = string.Empty;
 
             SendingApp = __args.__sa;
+            __recs.__set_debug(__debug_mode);
 
             var __HL7xml = new HL7toXDocumentParser.Parser();
             var xDoc = __HL7xml.Parse(__args.__raw_data);
@@ -1506,7 +1560,7 @@ namespace HL7Proxy
 
             try
             {
-                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
+                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled, __return_processor);
 
                 __process_PID(__recs, ADT.__pid);
                 __process_PV1(__recs, ADT.__pv1);
@@ -1528,12 +1582,13 @@ namespace HL7Proxy
         }
         void __process_OMP_O09_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            var __recs = new RecordBundle(__auto_truncate);
+            var __recs = new RecordBundle(__auto_truncate, __send_eof);
             var __time_qty = string.Empty;
             var __dose_time_qty = string.Empty;
             var __tmp = string.Empty;
 
             SendingApp = __args.__sa;
+            __recs.__set_debug(__debug_mode);
 
             var __HL7xml = new HL7toXDocumentParser.Parser();
             var xDoc = __HL7xml.Parse(__args.__raw_data);
@@ -1549,7 +1604,7 @@ namespace HL7Proxy
                 __process_Header(OMP.__header, __recs);
                 __process_Patient(OMP.__patient, __recs);
 
-                __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
+                __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled, __return_processor);
                 __recs.__pr.Write(__socket);
 
                 __recs.__pr.setField("Action", "Change");
@@ -1575,12 +1630,13 @@ namespace HL7Proxy
         // TODO:  CHeck the Framework SPec for where the order types live
         void __process_RDE_O11_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            var __recs = new RecordBundle(__auto_truncate);
+            var __recs = new RecordBundle(__auto_truncate, __send_eof);
             var __time_qty = string.Empty;
             var __dose_time_qty = string.Empty;
             var __tmp = string.Empty;
 
             SendingApp = __args.__sa;
+            __recs.__set_debug(__debug_mode);
 
             var __HL7xml = new HL7toXDocumentParser.Parser();
             var xDoc = __HL7xml.Parse(__args.__raw_data);
@@ -1591,7 +1647,7 @@ namespace HL7Proxy
 
             try // Process the Patient
             {
-                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
+                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled, __return_processor);
 
                 __process_Header(RDE.__header, __recs);
                 __process_Patient(RDE.__patient, __recs);
@@ -1616,13 +1672,14 @@ namespace HL7Proxy
         }
         void __process_RDS_O13_Event(Object sender, HL7Event7MessageArgs __args)
         {
-            var __recs = new RecordBundle(__auto_truncate);
+            var __recs = new RecordBundle(__auto_truncate, __send_eof);
             var __time_qty = string.Empty;
             var __dose_time_qty = string.Empty;
             var __tmp = string.Empty;
             var __HL7xml = new HL7toXDocumentParser.Parser();
 
             SendingApp = __args.__sa;
+            __recs.__set_debug(__debug_mode);
 
             var xDoc = __HL7xml.Parse(__args.__raw_data);
             var RDS = new RDS_O13(xDoc);
@@ -1632,7 +1689,7 @@ namespace HL7Proxy
 
             try // Process the Patient
             {
-                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled);
+                var __socket = new motSocket(__target_ip, __target_port, __client_ssl_enabled, __return_processor);
 
                 __process_Header(RDS.__header, __recs);
                 __process_Patient(RDS.__patient, __recs);

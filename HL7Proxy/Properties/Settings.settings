@@ -71,5 +71,11 @@
     <Setting Name="RxSystemType" Type="motInboundLib.SendingApplication" Scope="User">
       <Value Profile="(Default)">Unknown</Value>
     </Setting>
+    <Setting Name="SendEOF" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DebugMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

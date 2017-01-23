@@ -118,10 +118,13 @@ namespace motCommonLib
 
         private List<KeyValuePair<string, string>> __records { get; set; } = null;
         public bool __send_eof { get; set; } = false;
+        public bool __log_records { get; set; } = false;
+        private Logger __logger;
 
         public motWriteQueue()
         {
             __records = new List<KeyValuePair<string, string>>();
+            __logger = LogManager.GetLogger("WriteQueue.Record");
         }
         ~motWriteQueue()
         {
@@ -158,6 +161,11 @@ namespace motCommonLib
                 foreach (KeyValuePair<string, string> __record in __records)
                 {
                     __socket.write(__record.Value);
+
+                    if(__log_records)
+                    {
+                        __logger.Debug(__record);
+                    }
                 }
 
                 if (__send_eof)

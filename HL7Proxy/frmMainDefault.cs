@@ -93,7 +93,10 @@ namespace HL7Proxy
 
             cmbErrorLevel.SelectedIndex = (int)Properties.Settings.Default.ErrorLevel;
             __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
+
             chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
+            chkSendEOF.Checked = Properties.Settings.Default.SendEOF;
+            chkDebug.Checked = Properties.Settings.Default.DebugMode;
 
             cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
             cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
@@ -143,6 +146,8 @@ namespace HL7Proxy
                 Properties.Settings.Default.RxSystemType = (SendingApplication)cmbRxType.SelectedIndex;
                 Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
                 Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+                Properties.Settings.Default.SendEOF = chkSendEOF.Checked;
+                Properties.Settings.Default.DebugMode = chkDebug.Checked;
                 Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
                 Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
                 Properties.Settings.Default.SSLServerPort = txtSSLServerPort.Text;
@@ -172,6 +177,8 @@ namespace HL7Proxy
 
                 txtMaxLogLen.Text = Properties.Settings.Default.MaxLogLines.ToString();
                 chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
+                chkSendEOF.Checked = Properties.Settings.Default.SendEOF;
+                chkDebug.Checked = Properties.Settings.Default.DebugMode;
 
                 cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
                 cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
@@ -234,6 +241,8 @@ namespace HL7Proxy
 
                 __args.__error_level = __error_level;
                 __args.__auto_truncate = chkAutoTruncate.Checked;
+                __args.__send_eof = chkSendEOF.Checked;
+                __args.__debug_mode = chkDebug.Checked;
 
                 __args.__organization = txtOrganization.Text;
                 __args.__processor = txtProcessor.Text;
@@ -339,11 +348,13 @@ namespace HL7Proxy
             Properties.Settings.Default.RxSystemType = (SendingApplication)cmbRxType.SelectedIndex;
             Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
             Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+            Properties.Settings.Default.DebugMode = chkDebug.Checked;
             Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
             Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
             Properties.Settings.Default.SSLServerPort = txtSSLServerPort.Text;
             Properties.Settings.Default.UseServerSSL = chkUseServerSSL.Checked;
             Properties.Settings.Default.UseClientSSL = chkUseClientSSL.Checked;
+            Properties.Settings.Default.SendEOF = chkSendEOF.Checked;
 
             Properties.Settings.Default.Save();
 
@@ -573,6 +584,17 @@ namespace HL7Proxy
         {
             cmbRxType.Enabled = txtRxSystem_HL7_ID.Text.Length > 0 ? true : false;
         }
+
+        private void chkSendEOF_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.SendEOF = chkSendEOF.Checked;
+            Properties.Settings.Default.Save();
+
+            if (__listening)
+            {
+                __execute.__send_eof = chkSendEOF.Checked;
+            }
+        }
     }
 
     public class ExecuteArgs : EventArgs
@@ -592,6 +614,8 @@ namespace HL7Proxy
 
         public motErrorlLevel __error_level { get; set; }
         public bool __auto_truncate { get; set; }
+        public bool __send_eof { get; set; }
+        public bool __debug_mode { get; set; }
 
         public string __organization { get; set; }
         public string __processor { get; set; }

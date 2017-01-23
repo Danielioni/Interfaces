@@ -62,6 +62,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.gbSwitches = new System.Windows.Forms.GroupBox();
+            this.chkSendEOF = new System.Windows.Forms.CheckBox();
             this.chkAutoTruncate = new System.Windows.Forms.CheckBox();
             this.grpLogging = new System.Windows.Forms.GroupBox();
             this.txtMaxLogLen = new System.Windows.Forms.TextBox();
@@ -94,6 +95,7 @@
             this.txtSourceIP = new System.Windows.Forms.TextBox();
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.chkDebug = new System.Windows.Forms.CheckBox();
             this.pnlMain.SuspendLayout();
             this.tbcMain.SuspendLayout();
             this.tbpRun.SuspendLayout();
@@ -483,6 +485,8 @@
             // 
             // gbSwitches
             // 
+            this.gbSwitches.Controls.Add(this.chkDebug);
+            this.gbSwitches.Controls.Add(this.chkSendEOF);
             this.gbSwitches.Controls.Add(this.chkAutoTruncate);
             this.gbSwitches.Location = new System.Drawing.Point(413, 146);
             this.gbSwitches.Name = "gbSwitches";
@@ -491,10 +495,21 @@
             this.gbSwitches.TabStop = false;
             this.gbSwitches.Text = "[ Options ]";
             // 
+            // chkSendEOF
+            // 
+            this.chkSendEOF.AutoSize = true;
+            this.chkSendEOF.Location = new System.Drawing.Point(18, 42);
+            this.chkSendEOF.Name = "chkSendEOF";
+            this.chkSendEOF.Size = new System.Drawing.Size(149, 17);
+            this.chkSendEOF.TabIndex = 1;
+            this.chkSendEOF.Text = "Send <EOF/> to Gateway";
+            this.chkSendEOF.UseVisualStyleBackColor = true;
+            this.chkSendEOF.CheckedChanged += new System.EventHandler(this.chkSendEOF_CheckedChanged);
+            // 
             // chkAutoTruncate
             // 
             this.chkAutoTruncate.AutoSize = true;
-            this.chkAutoTruncate.Location = new System.Drawing.Point(18, 29);
+            this.chkAutoTruncate.Location = new System.Drawing.Point(18, 20);
             this.chkAutoTruncate.Name = "chkAutoTruncate";
             this.chkAutoTruncate.Size = new System.Drawing.Size(94, 17);
             this.chkAutoTruncate.TabIndex = 0;
@@ -806,6 +821,16 @@
             this.saveFileDialog.InitialDirectory = "\"My Documents\"";
             this.saveFileDialog.Title = "Save Error Log";
             // 
+            // chkDebug
+            // 
+            this.chkDebug.AutoSize = true;
+            this.chkDebug.Location = new System.Drawing.Point(18, 63);
+            this.chkDebug.Name = "chkDebug";
+            this.chkDebug.Size = new System.Drawing.Size(110, 17);
+            this.chkDebug.TabIndex = 2;
+            this.chkDebug.Text = "Use Debug Mode";
+            this.chkDebug.UseVisualStyleBackColor = true;
+            // 
             // frmMainDefault
             // 
             this.AcceptButton = this.btnStart;
@@ -915,6 +940,8 @@
         private System.Windows.Forms.TextBox txtRxSystem_HL7_ID;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ComboBox cmbRxType;
+        private System.Windows.Forms.CheckBox chkSendEOF;
+        private System.Windows.Forms.CheckBox chkDebug;
     }
 }
 
