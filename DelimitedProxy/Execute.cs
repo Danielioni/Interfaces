@@ -45,6 +45,8 @@ namespace DelimitedProxy
 
         public bool __auto_truncate { get; set; } = false;
         public bool __use_v1 { get; set; } = false;
+        public bool __send_eof { get; set; } = false;
+        public bool __debug_mode { get; set; } = false;
 
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
@@ -104,7 +106,10 @@ namespace DelimitedProxy
                 var __parser = new motParser();
 
                 __parser.__log_level = __log_level;
+                __parser.__debug_mode = __debug_mode;
+                __parser.__send_eof = __send_eof;
                 __parser.p = new motSocket(__gateway_address, Convert.ToInt32(__gateway_port), __delimited_protocol_processor);
+
                 __parser.parseDelimited(__data, __use_v1);
 
             }
@@ -146,6 +151,8 @@ namespace DelimitedProxy
                 __socket.__b_protocol_processor = __delimited_protocol_processor;
 
                 __use_v1 = __args.__use_v1;
+                __send_eof = __args.__send_eof;
+                __debug_mode = __args.__debug_mode;
 
                 // This will start the listener and call the callback 
                 __worker = new Thread(new ThreadStart(__socket.listen));

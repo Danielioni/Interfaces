@@ -68,14 +68,28 @@ namespace motInboundLib
 
         public bool __process_return(byte[] __data)
         {
-            if (__data[0] != 0x6)
+            switch(__data[0])
             {
-                throw new Exception("Data IO Error: " + __data[0]);
+                case 0x06:
+                    break;
+
+                case 0x0A:
+                    throw new Exception("Record Write Error:  Invalid Table Type (0x0A)");
+
+                case 0x0B:
+                    throw new Exception("Record Write Error: Invalid Process Type (0x0B)");
+
+                case 0x0C:
+                    throw new Exception("Record Write Error: <RECORD> Tags Missing (0x0C)");
+
+                case 0x0D:
+                    throw new Exception("Record Write Error: Empty Record (0x0D)");
+
+                default:
+                    throw new Exception("Record Write Error:  Unknown (" + __data[0] + ")");
             }
-            else
-            {
-                return true;
-            }
+
+            return true;
         }
 
         public void watchDirectory(string __dir_name)
@@ -124,10 +138,11 @@ namespace motInboundLib
                             {
                                 File.Move(__fileName, __fileName + ".FAILED");
                             }
-                            //else
-                            //{
-                            //     File.Delete(__fileName);
-                            //}
+
+                            if (File.Exists(__fileName))
+                            {
+                                 File.Delete(__fileName);
+                            }
 
                             __ui_args.timestamp = DateTime.Now.ToString();
                             __ui_args.__event_message = string.Format("Failed While Processing {0} : {1}", __fileName, ex.Message);

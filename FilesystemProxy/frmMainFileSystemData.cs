@@ -63,10 +63,11 @@ namespace FilesystemProxy
             chkDebug.Checked = Properties.Settings.Default.DebugMode;
             chkSendEOF.Checked = Properties.Settings.Default.SendEOF;
 
+           
             // Find the right Radio Button
             foreach (RadioButton __radio in grpFileType.Controls)
             {
-                if (__radio.TabIndex > 0 && __radio.TabIndex == (int)__filetype-2)
+                if (__radio.TabIndex > 0 && __radio.TabIndex == (int)__filetype)
                 {
                     __radio.Checked = true;
                     break;
@@ -410,6 +411,16 @@ namespace FilesystemProxy
         private void rbtBestRx_CheckedChanged(object sender, EventArgs e)
         {
             __filetype = motInputStuctures.__inputPARADA;
+        }
+
+        private void rbMotDelimited_CheckedChanged(object sender, EventArgs e)
+        {
+            __filetype = motInputStuctures.__inputDelimted;
+        }
+
+        private void rbMOTTagged_CheckedChanged(object sender, EventArgs e)
+        {
+            __filetype = motInputStuctures.__inputTagged;
         }
     }
 

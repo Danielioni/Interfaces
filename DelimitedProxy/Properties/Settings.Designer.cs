@@ -202,5 +202,41 @@ namespace DelimitedProxy.Properties {
                 this["Use_v1"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SendEOF {
+            get {
+                return ((bool)(this["SendEOF"]));
+            }
+            set {
+                this["SendEOF"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DebugMode {
+            get {
+                return ((bool)(this["DebugMode"]));
+            }
+            set {
+                this["DebugMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ResponseProtocol {
+            get {
+                return ((int)(this["ResponseProtocol"]));
+            }
+            set {
+                this["ResponseProtocol"] = value;
+            }
+        }
     }
 }

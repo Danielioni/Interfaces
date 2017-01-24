@@ -390,6 +390,52 @@ namespace motCommonLib
                {3, "DoseTimesQtys" }
             };
 
+            public bool is_v1(string inputString)
+            {
+                // byte[1] == P && delim_count == 17
+                // byte[1] == D && delim_count == 21
+                // byte[1] == L && delim_count == 16
+                // byte[1] == A && delim_count == 45
+                // byte[1] == R && delim_count == 24
+                string[] __rows = null;
+
+                if (inputString.Contains('\xE2'))
+                {
+                    __rows = inputString.Split('\xE2');
+
+                    foreach (string __row in __rows)
+                    {
+                        if (__row.Substring(1, 1).ToUpper() == "P" && __row.Count(x => x == '\xEE') == 17 ||
+                            __row.Substring(1, 1).ToUpper() == "D" && __row.Count(x => x == '\xEE') == 21 ||
+                            __row.Substring(1, 1).ToUpper() == "L" && __row.Count(x => x == '\xEE') == 16 ||
+                            __row.Substring(1, 1).ToUpper() == "A" && __row.Count(x => x == '\xEE') == 45 ||
+                            __row.Substring(1, 1).ToUpper() == "R" && __row.Count(x => x == '\xEE') == 24)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else if (inputString.Contains("S\r") && inputString.Count(x => x == '~') > 3)
+                {
+                    __rows = inputString.Split('S');
+
+                    foreach (string __row in __rows)
+                    {
+                        if (__row.Substring(1, 1).ToUpper() == "P" && __row.Count(x => x == '~') == 17 ||
+                            __row.Substring(1, 1).ToUpper() == "D" && __row.Count(x => x == '~') == 21 ||
+                            __row.Substring(1, 1).ToUpper() == "L" && __row.Count(x => x == '~') == 16 ||
+                            __row.Substring(1, 1).ToUpper() == "A" && __row.Count(x => x == '~') == 45 ||
+                            __row.Substring(1, 1).ToUpper() == "R" && __row.Count(x => x == '~') == 24)
+                        {
+                            return true;
+                        }
+                    }
+
+                }
+
+                return false;
+            }
+
             public string parse(string[] __items, bool __reading_v1 = false)
             {
                 StringBuilder __tagged_string = new StringBuilder();
@@ -1118,10 +1164,10 @@ namespace motCommonLib
                     logger.Debug(inboundData);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(@"Failed to write to gateway");
-                throw new Exception(@"Failed to write to gateway: " + ex.Message );
+                throw new Exception(@"Failed to write to gateway: " + ex.Message);
             }
         }
         public motParser()
@@ -1165,13 +1211,20 @@ namespace motCommonLib
                     return;
                 }
 
+                if (inputStream.Contains('\xEE') && inputStream.Contains('\xE2') ||   // MOT DElimited Spec
+                   inputStream.Contains('~') && inputStream.Contains("S\r"))      // QS1 DElimited Spec
+                {
+                    parseDelimited(inputStream);
+                    return;
+                }
+
                 logger.Error("Unidentified file type");
                 throw new Exception("Unidentified file type");
             }
             catch (Exception e)
             {
                 logger.Error("Parse failure: {0}", e.Message);
-                throw new Exception("Parse failure: {0}" + e.Message);
+                throw new Exception("Parse failure: " + e.Message);
             }
         }
         public motParser(motSocket __p, string inputStream)

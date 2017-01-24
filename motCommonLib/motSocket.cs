@@ -672,9 +672,13 @@ namespace motCommonLib
                     __stream.Read(__buffer, 0, __buffer.Length);
                 }
 
+                var __retval = (bool)__b_protocol_processor?.Invoke(__buffer);
+
                 __socket_mutex.ReleaseMutex();
 
-                return (bool)__b_protocol_processor?.Invoke(__buffer);
+                return __retval;
+
+                //return (bool)__b_protocol_processor?.Invoke(__buffer);
             }
             catch (IOException ex)
             {

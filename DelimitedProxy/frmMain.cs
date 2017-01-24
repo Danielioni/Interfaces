@@ -77,6 +77,9 @@ namespace DelimitedProxy
             cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
             cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
 
+            chkSendEOF.Checked = Properties.Settings.Default.SendEOF;
+            chkDebugMode.Checked = Properties.Settings.Default.DebugMode;
+
             //__error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
             __error_level = motErrorlLevel.Info;
 
@@ -86,10 +89,18 @@ namespace DelimitedProxy
             __max_log_len = Properties.Settings.Default.MaxLogLines;
             txtMaxLogLen.Text = __max_log_len.ToString();
 
+            // Find the right Radio Button
+            foreach (RadioButton __radio in grpProtocol.Controls)
+            {
+                if (__radio.TabIndex > 0 && __radio.TabIndex == Properties.Settings.Default.ResponseProtocol)
+                {
+                    __radio.Checked = true;
+                    break;
+                }
+            }
+
             btnStop.Enabled = false;
             btnStart.Enabled = true;
-
-
         }
 
 
@@ -111,6 +122,18 @@ namespace DelimitedProxy
                 Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
                 Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
                 Properties.Settings.Default.Use_v1 = chkUseV1.Checked;
+                Properties.Settings.Default.SendEOF = chkSendEOF.Checked;
+                Properties.Settings.Default.DebugMode = chkDebugMode.Checked;
+
+                foreach (RadioButton __radio in grpProtocol.Controls)
+                {
+                    if (__radio.Checked)  
+                    {
+                        Properties.Settings.Default.ResponseProtocol = __radio.TabIndex;
+                        break;
+                    }
+                }
+
                 Properties.Settings.Default.Save();
             }
             else if (tbcMain.SelectedIndex == 1)
@@ -129,6 +152,17 @@ namespace DelimitedProxy
                 cmbFDOW_RxSys.Text = Properties.Settings.Default.FirstDayOfWeek_RxSys;
                 cmbFDOW_MOT.Text = Properties.Settings.Default.FirstDayOfWeek_MOT;
                 chkUseV1.Checked = Properties.Settings.Default.Use_v1;
+                chkSendEOF.Checked = Properties.Settings.Default.SendEOF;
+                chkDebugMode.Checked = Properties.Settings.Default.DebugMode;
+
+                foreach (RadioButton __radio in grpProtocol.Controls)
+                {
+                    if (__radio.TabIndex > 0 && __radio.TabIndex == Properties.Settings.Default.ResponseProtocol)
+                    {
+                        __radio.Checked = true;
+                        break;
+                    }
+                }
 
             }
             else  // Reserved for future use
@@ -159,6 +193,8 @@ namespace DelimitedProxy
                 __args.__rxsys_first_day_of_week = cmbFDOW_MOT.Text;
 
                 __args.__use_v1 = chkUseV1.Checked;
+                __args.__send_eof = chkSendEOF.Checked;
+                __args.__debug_mode = chkDebugMode.Checked;
 
                 btnStop.Enabled = true;
                 btnStart.Enabled = false;
@@ -328,6 +364,18 @@ namespace DelimitedProxy
             Properties.Settings.Default.FirstDayOfWeek_RxSys = cmbFDOW_RxSys.Text;
             Properties.Settings.Default.FirstDayOfWeek_MOT = cmbFDOW_MOT.Text;
             Properties.Settings.Default.Use_v1 = chkUseV1.Checked;
+            Properties.Settings.Default.SendEOF = chkSendEOF.Checked;
+            Properties.Settings.Default.DebugMode = chkDebugMode.Checked;
+
+            foreach (RadioButton __radio in grpProtocol.Controls)
+            {
+                if (__radio.Checked)
+                {
+                    Properties.Settings.Default.ResponseProtocol = __radio.TabIndex;
+                    break;
+                }
+            }
+
             Properties.Settings.Default.Save();
 
             Environment.Exit(0);
@@ -454,5 +502,7 @@ namespace DelimitedProxy
         public motErrorlLevel __error_level { get; set; }
         public bool __auto_truncate { get; set; }
         public bool __use_v1 { get; set; }
+        public bool __send_eof { get; set; }
+        public bool __debug_mode { get; set; }
     }
 }
