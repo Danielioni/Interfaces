@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using motCommonLib;
 using NLog;
+using System.Text.RegularExpressions;
 
 namespace DelimitedProxy
 {
@@ -78,7 +79,7 @@ namespace DelimitedProxy
 
         // Do the real work here - call delegates to update UI
         private void __clean_buffer(byte[] __b_iobuffer)
-        {
+        {          
             for (int i = 0; i < __b_iobuffer.Length; i++)
             {
                 // Ugly hack to get around UTF8 Normalization failing to convert properly

@@ -77,7 +77,7 @@ namespace motInboundLib
                     throw new Exception("Record Write Error:  Invalid Table Type (0x0A)");
 
                 case 0x0B:
-                    throw new Exception("Record Write Error: Invalid Process Type (0x0B)");
+                    throw new Exception("Record Write Error: Invalid Action Type (0x0B)");
 
                 case 0x0C:
                     throw new Exception("Record Write Error: <RECORD> Tags Missing (0x0C)");

@@ -647,13 +647,42 @@ namespace motCommonLib
         //
         //  QS/1 Implementation
         //  -------------------
-        //  AA~Data~...S
+        //  AA~Data~..[0-9]{10}S
         //  A = Table and Action Identifiers
         //  ~ = field delimiter
         //  S = record delimeter
+        public string __pre_parse_QS1(string inboundData)
+        {
+            // The QS/1 interpretation of the Delimited spec replaces '\xEE' with '~' and '\xE2' with 'S'
+            // The following pattern represents the 10 digit checksum followd by an 'S'
+            string __qs1_pattern = "\\d{10}S";
+            string __replace = string.Empty;
+
+            Match __match = Regex.Match(inboundData, __qs1_pattern);
+            if (__match.Success)
+            {
+                while (__match.Success)
+                {
+                    __replace = inboundData.Substring(__match.Index, __match.Length - 1) + '^';
+                    inboundData = inboundData.Replace(inboundData.Substring(__match.Index, __match.Length), __replace);
+                    __match = Regex.Match(inboundData, __qs1_pattern);
+                }
+
+                return inboundData;
+            }
+
+            return string.Empty;
+        }
 
         public void parseDelimited(string inboundData, bool __reading_v1 = false)
         {
+            string __ret = __pre_parse_QS1(inboundData);
+            if(__ret != string.Empty)
+            {
+                inboundData = __ret;
+                __reading_v1 = true; 
+            }
+
             __table_converter __tc = new __table_converter();
 
 
