@@ -36,16 +36,22 @@ using NLog;
 
 namespace motCommonLib
 {
-    public class motParser
+    public class motParser : IDisposable
     {
         public motInputStuctures __type { get; set; }
 
-        public motSocket p { get; set; } = null;
+        public motSocket __socket { get; set; } = null;
 
         private Logger logger;
         public LogLevel __log_level { get; set; } = LogLevel.Error;
         public bool __send_eof { get; set; }
         public bool __debug_mode { get; set; }
+        public bool __auto_truncate { get; set; }
+
+        public void Dispose()
+        {
+            __socket.Dispose();         
+        }
 
         public void parseTagged(string inboundData)
         {
@@ -925,11 +931,11 @@ namespace motCommonLib
             List<string> __dose_times = new List<string>();
             int __name_version = 1;
 
-            var __scrip = new motPrescriptionRecord("Add");
-            var __patient = new motPatientRecord("Add");
-            var __facility = new motLocationRecord("Add");
-            var __drug = new motDrugRecord("Add");
-            var __doc = new motPrescriberRecord("Add");
+            var __scrip = new motPrescriptionRecord("Add", __auto_truncate);
+            var __patient = new motPatientRecord("Add", __auto_truncate);
+            var __facility = new motLocationRecord("Add", __auto_truncate);
+            var __drug = new motDrugRecord("Add", __auto_truncate);
+            var __doc = new motPrescriberRecord("Add", __auto_truncate);
 
 
             var __write_queue = new motWriteQueue();
@@ -940,8 +946,9 @@ namespace motCommonLib
             __drug.__write_queue =
             __write_queue;
 
-            __write_queue.__send_eof = __send_eof;
+            __write_queue.__send_eof = false;  // Has to be off so we don't lose the socket.
             __write_queue.__log_records = __debug_mode;
+          
 
             try
             {
@@ -958,7 +965,7 @@ namespace motCommonLib
                                 if (__dose_times.Count > 1)
                                 {
                                     // Build and write TQ Record
-                                    var __tq = new motTimeQtysRecord("Add");
+                                    var __tq = new motTimeQtysRecord("Add", __auto_truncate);
 
                                     // New name
                                     __tq.DoseScheduleName = __facility.LocationName?.Substring(0, 3) + __name_version.ToString();
@@ -977,7 +984,9 @@ namespace motCommonLib
                                     __tq.AddToQueue();
                                 }
 
-                                __scrip.Commit(p);
+                                Console.WriteLine("Committing on Thread {0}", Thread.CurrentThread.Name);
+
+                                __scrip.Commit(__socket);
 
                                 __doc.Clear();
                                 __facility.Clear();
@@ -1164,6 +1173,10 @@ namespace motCommonLib
                         }
                     }
                 }
+
+                // Clean up and tell the gateway we're done
+                Console.WriteLine("Writting <EOF/>");
+                __write_queue.WriteEOF(__socket);
             }
             catch (Exception ex)
             {
@@ -1174,18 +1187,18 @@ namespace motCommonLib
         }
         public void Write(string inboundData)
         {
-            if (p == null)
+            if (__socket == null)
             {
                 throw new ArgumentNullException("Invalid Socket Reference");
             }
 
             try
             {
-                p.write(inboundData);
+                __socket.write(inboundData);
 
                 if (__send_eof)
                 {
-                    p.write("<EOF/>");
+                    __socket.write("<EOF/>");
                 }
 
                 if (__debug_mode)
@@ -1195,19 +1208,13 @@ namespace motCommonLib
             }
             catch (Exception ex)
             {
-                logger.Error(@"Failed to write to gateway");
-                throw new Exception(@"Failed to write to gateway: " + ex.Message);
+                logger.Error("Failed to write to gateway: {0}", ex.Message);
+                throw new Exception("Failed to write to gateway: " + ex.Message);
             }
         }
-        public motParser()
+       
+        public void parseByGuess(string inputStream)
         {
-            logger = LogManager.GetLogger("motInboundLib.Parser");
-        }
-        public void parseByGuess(motSocket _p, string inputStream)
-        {
-            p = _p;
-            logger = LogManager.GetLogger("motInboundLib.Parser");
-
             try
             {
                 //
@@ -1240,8 +1247,13 @@ namespace motCommonLib
                     return;
                 }
 
-                if (inputStream.Contains('\xEE') && inputStream.Contains('\xE2') ||   // MOT DElimited Spec
-                   inputStream.Contains('~') && inputStream.Contains("S\r"))      // QS1 DElimited Spec
+                if (inputStream.Contains('\xEE') && inputStream.Contains('\xE2'))   // MOT Delimited                   
+                {
+                    parseDelimited(inputStream);
+                    return;
+                }               
+                    
+                if(Regex.Match(inputStream, "\\d{10}S").Success)    // QS/1 Delimited
                 {
                     parseDelimited(inputStream);
                     return;
@@ -1250,32 +1262,47 @@ namespace motCommonLib
                 logger.Error("Unidentified file type");
                 throw new Exception("Unidentified file type");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                logger.Error("Parse failure: {0}", e.Message);
-                throw new Exception("Parse failure: " + e.Message);
+                logger.Error("Parse failure: {0}", ex.Message);
+                throw new Exception("Parse failure: " + ex.Message);
             }
         }
-        public motParser(motSocket __p, string inputStream)
+        public motParser()
         {
+            logger = LogManager.GetLogger("motInboundLib.Parser");
+        }
+        public motParser(motSocket __socket, string inputStream, bool __auto_truncate)
+        {
+            if(__socket == null)
+            {
+                throw new ArgumentNullException("NULL Socket passed to motParser");
+            }
+
+            this.__socket = __socket;
+            this.__auto_truncate = __auto_truncate;
+
+            logger = LogManager.GetLogger("motInboundLib.Parser");
+
             try
             {
-                parseByGuess(__p, inputStream);
+                parseByGuess(inputStream);
             }
             catch { throw; }
         }
 
-        public motParser(motSocket p, string inputStream, motInputStuctures __type, bool __send_eof = false, bool __debug_mode = false)
+        public motParser(motSocket __socket, string inputStream, motInputStuctures __type, bool __auto_truncate, bool __send_eof = false, bool __debug_mode = false)
         {
 
-            if (p == null)
+            if (__socket == null)
             {
-                throw new ArgumentNullException("Invalid Socket Reference");
+                throw new ArgumentNullException("NULL Socket passed to motParser");
             }
 
-            this.p = p;
+            this.__socket = __socket;
             this.__send_eof = __send_eof;
             this.__debug_mode = __debug_mode;
+            this.__auto_truncate = __auto_truncate; 
 
             logger = LogManager.GetLogger("motInboundLib.Parser");
 
@@ -1284,7 +1311,7 @@ namespace motCommonLib
                 switch (__type)
                 {
                     case motInputStuctures.__auto:
-                        parseByGuess(p, inputStream);
+                        parseByGuess(inputStream);
                         break;
 
                     case motInputStuctures.__inputXML:
@@ -1320,11 +1347,16 @@ namespace motCommonLib
                         break;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                logger.Error("Constuctor failure: {0}\n{1}", e.Message, e.StackTrace);
+                logger.Error("Constuctor failure: {0}\n{1}", ex.Message, ex.StackTrace);
                 throw;
             }
+        }
+
+        ~motParser()
+        {
+            Dispose();
         }
     }
 }

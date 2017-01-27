@@ -50,7 +50,6 @@ namespace FilesystemProxy
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
 
-        public motErrorlLevel __error_level { get; set; } = motErrorlLevel.Error;
         public bool __auto_truncate { get; set; } = false;
         public bool __debug_mode { get; set; } = false;
         public bool __send_eof { get; set; } = false;
@@ -110,8 +109,9 @@ namespace FilesystemProxy
             {
                 __send_eof = __args.__send_eof;
                 __debug_mode = __args.__debug_mode;
+                __auto_truncate = __args.__auto_truncate;
 
-                __fsl = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port, __args.__file_type, __args.__send_eof, __args.__debug_mode);
+                __fsl = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port, __args.__file_type, __args.__auto_truncate, __args.__send_eof, __args.__debug_mode);
 
                 __fsl.UpdateEventUI += __update_ui_event;
                 __fsl.UpdateErrorUI += __update_ui_error;

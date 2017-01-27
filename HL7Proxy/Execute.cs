@@ -655,8 +655,8 @@ namespace HL7Proxy
             __problem_segment = "IN1";
             
             //                              Ins/Group
-            __recs.__pr.InsPNo = __in1.Get("IN1.1.2") + "/" + __in1.Get("IN1.1.8");
-            __recs.__pr.InsName = __in1.Get("IN1.1.4.1") + "/" + __in1.Get("IN1.1.8.1"); ;
+            __recs.__pr.InsPNo = __in1.Get("IN1.2") + "/" + __in1.Get("IN1.8");
+            __recs.__pr.InsName = __in1.Get("IN1.4.1") + "/" + __in1.Get("IN1.8.1"); ;
 
             // No Insurancec Policy Number per se, but there is a group name(1-9) and a group number(1-8) 
             //__recs.__pr.InsPNo = __in1.Get("IN1.1.9") + "-" + __in1.Get("IN1.1.8");
@@ -865,6 +865,10 @@ namespace HL7Proxy
             if (__pid.Get("PID.7").Length >= 8)
             {
                 __recs.__pr.DOB = __pid.Get("PID.7.1")?.Substring(0, 8);  // Remove the timestamp
+            }
+            else
+            {
+                __recs.__pr.DOB = __pid.Get("PID.7.1");
             }
 
             if (!string.IsNullOrEmpty(__pid.Get("PID.8.1")))
@@ -1519,11 +1523,16 @@ namespace HL7Proxy
                 __process_PID(__recs, ADT.__pid);
                 __process_PV1(__recs, ADT.__pv1);
                 __process_PV2(__recs, ADT.__pv2);
-                __process_PD1(__recs, ADT.__pd1);
+                __process_PD1(__recs, ADT.__pd1);  
+                __process_IN1(__recs, ADT.__in1[0]);
 
                 foreach (OBX __obx in ADT.__obx) { __process_OBX(__recs, __obx); }
                 foreach (AL1 __al1 in ADT.__al1) { __recs.__pr.Allergies += __process_AL1(__recs, __al1); }
                 foreach (DG1 __dg1 in ADT.__dg1) { __recs.__pr.DxNotes += __process_DG1(__recs, __dg1); }
+                
+                foreach (IN2 __in2 in ADT.__in2) { __process_IN2(__recs, __in2); }
+                foreach (NK1 __nk1 in ADT.__nk1) { __recs.__pr.ResponisbleName += __process_NK1(__recs, __nk1); }
+
 
                 __recs.Write();
 

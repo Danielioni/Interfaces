@@ -109,7 +109,7 @@ namespace DelimitedProxy
                 __parser.__log_level = __log_level;
                 __parser.__debug_mode = __debug_mode;
                 __parser.__send_eof = __send_eof;
-                __parser.p = new motSocket(__gateway_address, Convert.ToInt32(__gateway_port), __delimited_protocol_processor);
+                __parser.__socket = new motSocket(__gateway_address, Convert.ToInt32(__gateway_port), __delimited_protocol_processor);
 
                 __parser.parseDelimited(__data, __use_v1);
 
@@ -154,6 +154,8 @@ namespace DelimitedProxy
                 __use_v1 = __args.__use_v1;
                 __send_eof = __args.__send_eof;
                 __debug_mode = __args.__debug_mode;
+                __auto_truncate = __args.__auto_truncate;
+                
 
                 // This will start the listener and call the callback 
                 __worker = new Thread(new ThreadStart(__socket.listen));

@@ -338,6 +338,9 @@ namespace motCommonLib
         public List<ROL> __rol;
         public List<DG1> __dg1;
         public List<SFT> __sft;
+        public List<IN1> __in1;
+        public List<IN2> __in2;
+        public List<NK1> __nk1;
 
         public List<DB1> __db1;
 
@@ -351,6 +354,9 @@ namespace motCommonLib
             __rol = new List<ROL>();
             __db1 = new List<DB1>();
             __sft = new List<SFT>();
+            __in1 = new List<IN1>();
+            __in2 = new List<IN2>();
+            __nk1 = new List<NK1>();
 
             foreach (XElement __xe in __xdoc.Root.Elements())
             {
@@ -384,8 +390,20 @@ namespace motCommonLib
                         __gt1 = new GT1(__xe);
                         break;
 
+                    case "IN1":
+                        __in1.Add(new IN1(__xe));
+                        break;
+
+                    case "IN2":
+                        __in2.Add(new IN2(__xe));
+                        break;
+
                     case "MSH":
                         __msh = new MSH(__xe);
+                        break;
+
+                    case "NK1":
+                        __nk1.Add(new NK1(__xe));
                         break;
 
                     case "OBX":

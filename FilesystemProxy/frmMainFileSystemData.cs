@@ -283,35 +283,41 @@ namespace FilesystemProxy
         #region StartStop
         private void btnStart_Click(object sender, EventArgs e)
         {
-            // Start Runtime
-            var __args = new ExecuteArgs();
-            __args.__gateway_address = txtTargetIP.Text;
-            __args.__gateway_port = txtTargetPort.Text;
-            __args.__gateway_uname = txtTargetUname.Text;
-            __args.__gateway_pwd = txtTargetPwd.Text;
-            __args.__auto_truncate = chkAutoTruncate.Checked;
-            __args.__file_type = __filetype;
-            __args.__directory = txtListDirectories.Text;
-            __args.__send_eof = chkSendEOF.Checked;
-            __args.__debug_mode = chkDebug.Checked;
+            if (!__listening)
+            {
+                // Start Runtime
+                var __args = new ExecuteArgs();
+                __args.__gateway_address = txtTargetIP.Text;
+                __args.__gateway_port = txtTargetPort.Text;
+                __args.__gateway_uname = txtTargetUname.Text;
+                __args.__gateway_pwd = txtTargetPwd.Text;
+                __args.__auto_truncate = chkAutoTruncate.Checked;
+                __args.__file_type = __filetype;
+                __args.__directory = txtListDirectories.Text;
+                __args.__send_eof = chkSendEOF.Checked;
+                __args.__debug_mode = chkDebug.Checked;
 
-            __execute.__start_up(__args);
+                __execute.__start_up(__args);
 
-            btnStop.Enabled = true;
-            btnStart.Enabled = false;
+                btnStop.Enabled = true;
+                btnStart.Enabled = false;
 
-            __listening = true;
+                __listening = true;
+            }
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            // Stop Runtime
-            __execute.__shut_down();
+            if (__listening)
+            {
+                // Stop Runtime
+                __execute.__shut_down();
 
-            btnStop.Enabled = false;
-            btnStart.Enabled = true;
+                btnStop.Enabled = false;
+                btnStart.Enabled = true;
 
-            __listening = false;
+                __listening = false;
+            }
 
         }
         #endregion

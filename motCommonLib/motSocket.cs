@@ -36,16 +36,14 @@ using NLog;
 
 namespace motCommonLib
 {
-    public class motSocket
+    public class motSocket : IDisposable
     {
         [ThreadStatic]
         private bool __running = false;
-
         private string __s_iobuffer { get; set; } = string.Empty;
         private byte[] __b_iobuffer { get; set; }
         public bool __use_ssl { get; set; } = false;
         public int __port { get; set; } = 0;
-
         private string __internal_address = string.Empty;
         public string __address
         {
@@ -69,34 +67,27 @@ namespace motCommonLib
                 __open_for_listening = false;
             }
         }
-
         public int TCP_TIMEOUT { get; set; } = 5000;
-
         private TcpClient __client;
         private TcpListener __trigger;
-
         private EndPoint __remoteEndPoint;
         private EndPoint __localEndPoint;
-
         private Logger __logger;
-
         public delegate void __void_string_delegate(string __data);
         public delegate void __void_byte_delegate(byte[] __data);
-
         public delegate bool __bool_string_delegate(string __data);
         public delegate bool __bool_byte_delegate(byte[] __data);
-
         public __void_string_delegate __s_callback { get; set; } = null;
         public __void_byte_delegate __b_stream_processor { get; set; } = null;
         public __bool_string_delegate __s_protocol_processor { get; set; } = null;
         public __bool_byte_delegate __b_protocol_processor { get; set; } = __default_protocol_processor;
-
         bool __open_for_listening = false;
-
         private NetworkStream __stream;
         private SslStream __ssl_stream;
-
         public static Mutex __socket_mutex = null;
+        public ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
+        private X509Certificate __x_509_cert;
+
 
         public motSocket()
         {
@@ -228,6 +219,7 @@ namespace motCommonLib
         }
         ~motSocket()
         {
+            Dispose();
         }
         public EndPoint remoteEndPoint
         {
@@ -326,9 +318,6 @@ namespace motCommonLib
                 return;
             }
         }
-
-        private X509Certificate __x_509_cert;
-
         public void secure_async_handler(IAsyncResult __ar)
         {
             try
@@ -359,14 +348,16 @@ namespace motCommonLib
                     }
                     while (__inbytes > 0);
                 }
-                catch (IOException)
+                catch (IOException ex)
                 {
+                    __logger.Error("read() failed: {0}", ex.Message);
+                    throw;
                     // timeout
                 }
                 catch (Exception ex)
                 {
                     __logger.Error("read() failed: {0}", ex.Message);
-                    throw new Exception("read() failed: " + ex.Message);
+                    throw;  // new Exception("read() failed: " + ex.Message);
                 }
 
                 // Assuming we can stop blocking the port, probably wrong thinking
@@ -387,8 +378,6 @@ namespace motCommonLib
                 return;
             }
         }
-        public ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
-
         public void listen_async()
         {
             while (__running)
@@ -401,7 +390,6 @@ namespace motCommonLib
                 tcpClientConnected.WaitOne();
             }
         }
-
         public void secure_listen_async(X509Certificate __x_509_cert)
         {
             if (__x_509_cert == null)
@@ -538,6 +526,8 @@ namespace motCommonLib
             int __inbytes = 0;
             int __total_bytes = 0;
 
+            __socket_mutex.WaitOne();
+
             try
             {
                 Thread.Sleep(1);
@@ -573,21 +563,29 @@ namespace motCommonLib
                         //Thread.Sleep(1);
                     }
                 }
+
+                __socket_mutex.ReleaseMutex();
+
+                return __total_bytes;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                __socket_mutex.ReleaseMutex();
+                __logger.Error("read() failed: {0}", ex.Message);
+                throw;
                 // timeout
             }
             catch (Exception ex)
             {
+                __socket_mutex.ReleaseMutex();
                 __logger.Error("read() failed: {0}", ex.Message);
-                throw new Exception("read() failed: " + ex.Message);
-            }
-
-            return __total_bytes;
+                throw; // new Exception("read() failed: " + ex.Message);
+            }           
         }
         public int read(ref byte[] __b_buffer, int __index, int __count)
         {
+            __socket_mutex.WaitOne();
+
             try
             {
                 int __r_count = 0;
@@ -603,10 +601,13 @@ namespace motCommonLib
                     __b_stream_processor?.Invoke(__b_iobuffer);
                 }
 
+                __socket_mutex.ReleaseMutex();
+
                 return __r_count;
             }
             catch
             {
+                __socket_mutex.ReleaseMutex();
                 return 0;
             }
         }
@@ -918,5 +919,24 @@ namespace motCommonLib
                 __running = true;
                 __logger.Info(@"Successfully Opened {0}:{1} for {2}", __address, __port, __open_for_listening ? "Listening" : "Writing");
             }*/
+
+        public void Dispose()
+        {
+            if (__open_for_listening)
+            {
+                __trigger.Stop();
+                __trigger.Server.Dispose();
+            }
+            else
+            {
+                __client.Dispose();
+                __stream.Dispose();
+
+                if(__use_ssl)
+                {
+                    __ssl_stream.Dispose();
+                }
+            }
+        }
     }
 }

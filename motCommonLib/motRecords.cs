@@ -168,7 +168,11 @@ namespace motCommonLib
                     }
                 }
 
-                if (__send_eof)
+                // If this is true it will write an <EOF/> at the end of every queue dump. That's
+                // fine if the socket is Disposed and recreated at every use, but if it's multiple
+                // reads and dumps from an input, that say, has 20 patients and their scrips, then the 
+                // socket closing each time forces an error
+                if (__send_eof)  
                 {
                     __socket.write("<EOF/>");
                 }
@@ -179,6 +183,22 @@ namespace motCommonLib
             catch (Exception ex)
             {
                 throw new Exception("Failed to write queue: " + ex.StackTrace);
+            }
+        }
+        public void WriteEOF(motSocket __socket)
+        {
+            if (__socket == null)
+            {
+                throw new ArgumentNullException("motQueue Null Socket Argument");
+            }
+
+            try
+            {
+                __socket.write("<EOF/>");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to write queue <EOF/>: " + ex.StackTrace);
             }
         }
         public void Clear()
@@ -280,7 +300,6 @@ namespace motCommonLib
         {
             WriteQueue(p);
         }
-
         protected string __normalize_date(string __date)
         {
             if (string.IsNullOrEmpty(__date))
@@ -501,7 +520,7 @@ namespace motCommonLib
 
             return true;
         }
-        protected bool setField(List<Field> __qualifiedTags, string __val, string __tag, bool __truncate)
+        protected bool setField(List<Field> __qualifiedTags, string __val, string __tag, bool __override_truncate)
         {
             string __log_data = string.Empty;
 
@@ -520,7 +539,7 @@ namespace motCommonLib
 
             if (!string.IsNullOrEmpty(__val) && __val.ToString().Length > f.maxLen)
             {
-                if (!__truncate)
+                if (__auto_truncate && __override_truncate)
                 {
                     __log_data = string.Format("Field Overflow at: <{0}>, Data: {1}. Maxlen = {2} but got: {3}", __tag, __val, f.maxLen, __val.ToString().Length);
                     __logger.Error(__log_data);
@@ -881,7 +900,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "RxSys_DrugID", false);
+                setField(__qualifiedTags, value, "RxSys_DrugID");
             }
         }
         public string LabelCode
@@ -894,7 +913,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "LblCode", false);
+                setField(__qualifiedTags, value, "LblCode");
             }
         }
         public string ProductCode
@@ -907,7 +926,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "ProdCode", false);
+                setField(__qualifiedTags, value, "ProdCode");
             }
         }
         public string TradeName
@@ -920,7 +939,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "TradeName", false);
+                setField(__qualifiedTags, value, "TradeName");
             }
         }
         public string Strength
@@ -933,7 +952,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "Strength", false);
+                setField(__qualifiedTags, value, "Strength");
             }
         }
         public string Unit
@@ -946,7 +965,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "Unit", false);
+                setField(__qualifiedTags, value, "Unit");
             }
         }
         public string RxOTC
@@ -959,7 +978,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "RxOTC", false);
+                setField(__qualifiedTags, value, "RxOTC");
             }
         }
         public string DoseForm
@@ -972,7 +991,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "DoseForm", false);
+                setField(__qualifiedTags, value, "DoseForm");
             }
         }
         public string Route
@@ -985,7 +1004,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "Route", false);
+                setField(__qualifiedTags, value, "Route");
             }
         }
         public int DrugSchedule
@@ -1003,7 +1022,7 @@ namespace motCommonLib
                     throw new Exception("Drug Schedule must be 2-7");
                 }
 
-                setField(__qualifiedTags, Convert.ToString(value), "DrugSchedule", false);
+                setField(__qualifiedTags, Convert.ToString(value), "DrugSchedule");
             }
         }
         public string VisualDescription
@@ -1016,7 +1035,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "VisualDescription", false);
+                setField(__qualifiedTags, value, "VisualDescription");
             }
         }
         public string DrugName
@@ -1041,7 +1060,7 @@ namespace motCommonLib
                     return;
                 }
 
-                setField(__qualifiedTags, value, "DrugName", false);
+                setField(__qualifiedTags, value, "DrugName");
             }
         }
         public string ShortName
@@ -1054,7 +1073,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "ShortName", false);
+                setField(__qualifiedTags, value, "ShortName");
             }
         }
         public string NDCNum
@@ -1067,7 +1086,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, __normalize_string(value), "NDCNum", false);
+                setField(__qualifiedTags, __normalize_string(value), "NDCNum");
             }
         }
         public int SizeFactor
@@ -1080,7 +1099,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, Convert.ToString(value), "SizeFactor", false);
+                setField(__qualifiedTags, Convert.ToString(value), "SizeFactor");
             }
         }
         public string Template
@@ -1093,7 +1112,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "Template", false);
+                setField(__qualifiedTags, value, "Template");
             }
         }
         public int DefaultIsolate
@@ -1106,7 +1125,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, Convert.ToString(value), "DefaultIsolate", false);
+                setField(__qualifiedTags, Convert.ToString(value), "DefaultIsolate");
             }
         }
         public string ConsultMsg
@@ -1119,7 +1138,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "ConsultMsg", false);
+                setField(__qualifiedTags, value, "ConsultMsg");
             }
         }
         public string GenericFor
@@ -1132,7 +1151,7 @@ namespace motCommonLib
 
             set
             {
-                setField(__qualifiedTags, value, "GenericFor", false);
+                setField(__qualifiedTags, value, "GenericFor");
             }
         }
     }
