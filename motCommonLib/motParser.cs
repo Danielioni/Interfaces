@@ -1174,9 +1174,12 @@ namespace motCommonLib
                     }
                 }
 
-                // Clean up and tell the gateway we're done
-                Console.WriteLine("Writting <EOF/>");
-                __write_queue.WriteEOF(__socket);
+                if (__send_eof)
+                {
+                    // Clean up and tell the gateway we're done - this fails a lot for some reason
+                    Console.WriteLine("Writing <EOF/>");
+                    __write_queue.WriteEOF(__socket);
+                }
             }
             catch (Exception ex)
             {

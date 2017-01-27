@@ -36,16 +36,17 @@ namespace motInboundLib
 {
     using motCommonLib;
 
-    public class motFileSystemListener
+    public class motFileSystemListener : IDisposable
     {
-        motSocket pt;
-
         public UpdateUIEventHandler UpdateEventUI;
         public UpdateUIErrorHandler UpdateErrorUI;
         private UIupdateArgs __ui_args = new UIupdateArgs();
+
         public bool __send_eof { get; set; }
         public bool __debug_mode { get; set; }
         public bool __auto_truncate { get; set; }
+
+        public bool __listen { get; set; } = false;
 
         private motInputStuctures __file_type;
 
@@ -53,23 +54,14 @@ namespace motInboundLib
         {
         }
 
-        
-        private void openPort(string address, string port)
+        public void Dispose()
         {
-            try
-            {
-                pt = new motSocket(address, Convert.ToInt32(port));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
+            __listen = false;
         }
 
         public bool __process_return(byte[] __data)
         {
-            switch(__data[0])
+            switch (__data[0])
             {
                 case 0x06:
                     break;
@@ -96,74 +88,76 @@ namespace motInboundLib
         public void watchDirectory(string __dir_name)
         {
             watchDirectory(__dir_name, "localhost", "24042");
-        }      
+        }
 
         public void watchDirectory(string dirName, string __address, string __port)
         {
             Logger __logger = LogManager.GetLogger("FileSystemWatcher");
+            __listen = true;
 
-            
-            while (true)
+            using (var __socket = new motSocket(__address, Convert.ToInt32(__port), __process_return))
             {
-                Thread.Sleep(1024);
-
-                if (Directory.GetFiles(dirName) != null)
+                while (__listen)
                 {
-                    string[] __fileEntries = Directory.GetFiles(dirName);
-                    StreamReader sr = null;
+                    Thread.Sleep(1024);
 
-                    foreach (string __fileName in __fileEntries)
+                    if (Directory.GetFiles(dirName) != null)
                     {
-                        if (__fileName.Contains(".FAILED"))
-                        {
-                            continue;
-                        }
+                        string[] __fileEntries = Directory.GetFiles(dirName);
 
-                        try
+                        foreach (string __fileName in __fileEntries)
                         {
-                            sr = new StreamReader(__fileName); 
-
-                            using (var __socket = new motSocket(__address, Convert.ToInt32(__port), __process_return))
+                            if (__fileName.Contains(".FAILED"))
                             {
-                                new motParser(__socket, sr.ReadToEnd(), __file_type, __auto_truncate, __send_eof, __debug_mode);                           
-                                sr.Close();
+                                continue;
+                            }
+
+                            try
+                            {
+                                using (var sr = new StreamReader(__fileName))
+                                {
+                                    var __mp = new motParser(__socket, sr.ReadToEnd(), __file_type, __auto_truncate, __send_eof, __debug_mode);
+
+                                    __ui_args.timestamp = DateTime.Now.ToString();
+                                    __ui_args.__event_message = string.Format("Successfully Processed {0}", __fileName);
+                                    UpdateEventUI(this, __ui_args);
+
+                                }
+
                                 File.Delete(__fileName);
                             }
-
-                            __ui_args.timestamp = DateTime.Now.ToString();
-                            __ui_args.__event_message = string.Format("Successfully Processed {0}", __fileName);
-                            UpdateEventUI(this, __ui_args);
-                        }
-                        catch(Exception ex)
-                        {
-                            sr.Close();
-                            if (!File.Exists(__fileName + ".FAILED"))
+                            catch (Exception ex)
                             {
-                                File.Move(__fileName, __fileName + ".FAILED");
+                                if (!File.Exists(__fileName + ".FAILED"))
+                                {
+                                    File.Move(__fileName, __fileName + ".FAILED");
+                                }
+
+                                if (File.Exists(__fileName))
+                                {
+                                    File.Delete(__fileName);
+                                }
+
+                                __ui_args.timestamp = DateTime.Now.ToString();
+                                __ui_args.__event_message = string.Format("Failed While Processing {0} : {1}", __fileName, ex.Message);
+                                UpdateErrorUI(this, __ui_args);
+
+                                __logger.Error("Failed While Processing {0} : {1}", __fileName, ex.Message);
                             }
-
-                            if (File.Exists(__fileName))
-                            {
-                                 File.Delete(__fileName);
-                            }
-
-                            __ui_args.timestamp = DateTime.Now.ToString();
-                            __ui_args.__event_message = string.Format("Failed While Processing {0} : {1}", __fileName, ex.Message);
-                            UpdateErrorUI(this, __ui_args);
-
-                            __logger.Error("Failed While Processing {0} : {1}", __fileName, ex.Message);
                         }
                     }
                 }
             }
+
+            Console.WriteLine("Exiting Thread {0}", Thread.CurrentThread.Name);
         }
+
 
 
         public motFileSystemListener()
         {
             watchDirectory(Directory.GetCurrentDirectory());
         }
-
         public motFileSystemListener(string dirName)
         {
             if (!System.IO.Directory.Exists(dirName))
@@ -173,7 +167,6 @@ namespace motInboundLib
 
             watchDirectory(dirName);
         }
-
         public motFileSystemListener(string dirName, string address, string port, motInputStuctures __file_type, bool __auto_truncate = false, bool __send_eof = false, bool __debug_mode = false)
         {
             if (!string.IsNullOrEmpty(dirName) || !string.IsNullOrEmpty(address) || !string.IsNullOrEmpty(port))
@@ -194,6 +187,11 @@ namespace motInboundLib
             {
                 throw new ArgumentNullException("NULL parameter");
             }
+        }
+
+        ~motFileSystemListener()
+        {
+            Dispose();
         }
     }
 }

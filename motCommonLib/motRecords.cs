@@ -172,10 +172,10 @@ namespace motCommonLib
                 // fine if the socket is Disposed and recreated at every use, but if it's multiple
                 // reads and dumps from an input, that say, has 20 patients and their scrips, then the 
                 // socket closing each time forces an error
-                if (__send_eof)  
-                {
-                    __socket.write("<EOF/>");
-                }
+                //if (__send_eof)  
+                //{
+                //    __socket.write("<EOF/>");
+                //}
 
                 // Flush
                 __records.Clear();
@@ -192,13 +192,16 @@ namespace motCommonLib
                 throw new ArgumentNullException("motQueue Null Socket Argument");
             }
 
-            try
+            if (__send_eof)
             {
-                __socket.write("<EOF/>");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to write queue <EOF/>: " + ex.StackTrace);
+                try
+                {
+                    __socket.write("<EOF/>");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to write queue <EOF/>: " + ex.StackTrace);
+                }
             }
         }
         public void Clear()

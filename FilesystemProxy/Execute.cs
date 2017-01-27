@@ -40,12 +40,10 @@ namespace FilesystemProxy
     /// 
     public class Execute
     {
-        //motSocket __listener;
-        //motSocket __gateway;
         Thread __worker;
         ExecuteArgs __args;
 
-        motFileSystemListener __fsl;
+        motFileSystemListener __listener;
 
         public __update_event_box_handler __event_ui_handler;
         public __update_error_box_handler __error_ui_handler;
@@ -111,16 +109,18 @@ namespace FilesystemProxy
                 __debug_mode = __args.__debug_mode;
                 __auto_truncate = __args.__auto_truncate;
 
-                __fsl = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port, __args.__file_type, __args.__auto_truncate, __args.__send_eof, __args.__debug_mode);
+                using (__listener = new motFileSystemListener(__args.__directory, __args.__gateway_address, __args.__gateway_port, __args.__file_type, __args.__auto_truncate, __args.__send_eof, __args.__debug_mode))
+                {
 
-                __fsl.UpdateEventUI += __update_ui_event;
-                __fsl.UpdateErrorUI += __update_ui_error;
+                    __listener.UpdateEventUI += __update_ui_event;
+                    __listener.UpdateErrorUI += __update_ui_error;
 
-                __worker = new Thread(() => __fsl.watchDirectory(__args.__directory, __args.__gateway_address, __args.__gateway_port));
-                __worker.Name = "filesystem listener";
-                __worker.Start();
+                    __worker = new Thread(() => __listener.watchDirectory(__args.__directory, __args.__gateway_address, __args.__gateway_port));
+                    __worker.Name = "filesystem listener";
+                    __worker.Start();
 
-                __show_common_event("Started listening to directory: " + __args.__directory + " and sending to gateway at: " + __args.__gateway_address + "/" + __args.__gateway_port);
+                    __show_common_event("Started listening to directory: " + __args.__directory + " and sending to gateway at: " + __args.__gateway_address + "/" + __args.__gateway_port);
+                }
             }
             catch(Exception ex)
             {
@@ -130,6 +130,7 @@ namespace FilesystemProxy
 
         public void __shut_down()
         {
+            __listener.__listen = false;
         }
 
         public Execute()
