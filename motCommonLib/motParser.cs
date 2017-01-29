@@ -50,7 +50,7 @@ namespace motCommonLib
 
         public void Dispose()
         {
-            __socket.Dispose();         
+            __socket.Dispose();
         }
 
         public void parseTagged(string inboundData)
@@ -683,10 +683,10 @@ namespace motCommonLib
         public void parseDelimited(string inboundData, bool __reading_v1 = false)
         {
             string __ret = __pre_parse_QS1(inboundData);
-            if(__ret != string.Empty)
+            if (__ret != string.Empty)
             {
                 inboundData = __ret;
-                __reading_v1 = true; 
+                __reading_v1 = true;
             }
 
             __table_converter __tc = new __table_converter();
@@ -863,6 +863,8 @@ namespace motCommonLib
         /// <param name="__data"></param>
         /// 
 
+
+
         /*
             0) Patient Name (last, first)
             1) Patient Record Number (in BestRx)
@@ -919,6 +921,116 @@ namespace motCommonLib
         // (24)112~
         // (25)8880442_00_1/112~
 
+        private static class __drug_name
+        {
+            static public string __name;
+            static public string __strength;
+            static public string __unit;
+            static public string __form;
+
+            static public bool __parse_exact(string __source)
+            {
+                string[] __parts;
+
+                // ALENDRONATE SODIUM 35 MG TABLET
+                //  __part[0] = ALENDRONATE
+                //  __part[1] = SODIUM
+                //  __part[2] = 35
+                //  __part[3] = MG
+                //  __part[4] = TABLET
+                //  ROSUVASTATIN TB 10MG 30
+                //  __part[0] = ROUSUVASTATIN
+                //  __part[1] = TB
+                //  __part[2] = 10MG
+                //  __part[3] = 30
+                //  IRBESARTAN 150 MG TABLET
+                //  __part[0] = IRBESARTAN
+                //  __part[1] = 150
+                //  __part[2] = MG
+                //  __part[3] = TABLET
+
+
+                string __mashed_pattern = @"[[\d]+[A-Za-z]+";                                           // Matches mashed drug units --> 10MG
+                string __mashed_number = @"[[\d]+";
+                string __mashed_unit = @"[[A-Za-z]+";
+                string __standard_pattern = @"[A-Za-z]+\s[\0-9]+\s[A-za-z]+\s[A-za-z]+";                // IRBESARTAN 150 MG TABLET
+                string __standard_mashed_pattern = @"[A-Za-z]+\s[\0-9]+[A-za-z]+\s[A-za-z]+";           // IRBESARTAN 150MG TABLET
+                string __split_name_pattern = @"[A-Za-z]+\s[A-Za-z]+\s[\0-9]+\s[A-za-z]+\s[A-za-z]+";   // ALENDRONATE SODIUM 35 MG TABLET
+                string __split_mashed_pattern = @"[A-Za-z]+\s[A-Za-z]+\s[\0-9]+[A-za-z]+\s[A-za-z]+";   // ALENDRONATE SODIUM 35MG TABLET
+                string __post_mashed = @"[A-Za-z]+\s[A-Za-z]+\s[\0-9]+\s[A-Za-z]+";
+                string __oyster = @"[A-Za-z]+\s[A-Za-z]+\s[A-Za-z]+\s[\0-9]+-[\0-9]+\s[A-Za-z]+-[A-Za-z]+\s[A-Za-z]+";  // OYSTER SHELL CALCIUM 500-200 MG-IU TABLET
+                string __asprin = @"[A-Za-z]+\s[A-Za-z]+\s[A-Za-z]+\s[\0-9]+\s[A-Za-z]+\s[A-Za-z]+";
+
+                // Normalize spaces
+                while(__source.Contains("  "))
+                {
+                    __source = __source.Replace("  ", " ");
+                }
+
+                // Crack the pieces apart if needed
+                if (Regex.Match(__source, __mashed_pattern).Success)
+                {
+                    var __number = Regex.Match(__source, __mashed_number);
+                    __source = __source.Insert(__number.Index + __number.Length, " ");
+                }
+                // Try to match a basic patterns
+
+                if (Regex.Match(__source, __asprin).Success)
+                {
+                    __parts = __source.Split(' ');
+                    __name = __parts[0] + " " + __parts[1] + " " + __parts[2];
+                    __strength = __parts[3];
+                    __unit = __parts[4];
+                    __form = __parts[5];
+                    return true;
+
+                }
+                if (Regex.Match(__source, __split_name_pattern).Success)
+                {
+                    __parts = __source.Split(' ');
+                    __name = __parts[0] + " " + __parts[1];
+                    __strength = __parts[2];
+                    __unit = __parts[3];
+                    __form = __parts[4];
+                    return true;
+                }
+
+                if (Regex.Match(__source, __standard_pattern).Success)
+                {
+                    __parts = __source.Split(' ');
+                    __name = __parts[0];
+                    __strength = __parts[1];
+                    __unit = __parts[2];
+                    __form = __parts[3];
+                    return true;
+                }
+                
+
+                if(Regex.Match(__source, __oyster).Success)
+                {
+                    __parts = __source.Split(' ');
+                    __name = __parts[0] + " " + __parts[1] + __parts[2];
+                    __strength = __parts[3];
+                    __unit = __parts[4];
+                    __form = __parts[5];
+                    return true;
+                }
+
+
+                if (Regex.Match(__source, __post_mashed).Success)
+                {
+                    __parts = __source.Split(' ');
+                    __name = __parts[0] + " " + __parts[1];
+                    __strength = __parts[2];
+                    __unit = __parts[3];
+                    __form = "Form Unk";
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         // (0)DOE, JOHN ~(1)25731~(2)SPRINGFIELD RETIREMENT CASTLE~(3)~(4)2~(5)201~(6)13~(7)68180041109~(8)AVAPRO 150 MG TABLET~(9)IRBESARTAN 150 MG TABLET~(10)20170204~0730~1~~MICHELLE SMITH ~8880440~INFORME piel o reaccion alergica.~NO conducir si mareado o vision borrosa.~TAKE 1 TABLET DAILY IN THE MORNING ~~~~M~00~28~8880440_00_25/28~
         public void ParseParada(string __data)
         {
@@ -927,7 +1039,10 @@ namespace motCommonLib
             string __last_scrip = string.Empty;
             string __last_dose_qty = string.Empty;
             string __last_dose_time = string.Empty;
+            string __temp_trade_name = string.Empty;
             bool __first_scrip = true;
+            bool __committed = false;
+
             List<string> __dose_times = new List<string>();
             int __name_version = 1;
 
@@ -944,17 +1059,25 @@ namespace motCommonLib
             __facility.__write_queue =
             __doc.__write_queue =
             __drug.__write_queue =
-            __write_queue;
+                __write_queue;
+
+            __patient.__queue_writes =
+            __scrip.__queue_writes =
+            __facility.__queue_writes =
+            __doc.__queue_writes =
+            __drug.__queue_writes =
+                true;
 
             __write_queue.__send_eof = false;  // Has to be off so we don't lose the socket.
             __write_queue.__log_records = __debug_mode;
-          
+
 
             try
             {
+
                 foreach (var __row in __rows)  // This will generate new records for every row - need to optimize
                 {
-                    if (__row.Length > 0)
+                    if (__row.Length > 0)  // --- The latest test file has a trailing "\r" and a messed up drug name,  need to address both
                     {
                         string[] __raw_record = __row.Split('~');  // There's no guarntee that each field has data but the count is right
 
@@ -987,6 +1110,7 @@ namespace motCommonLib
                                 Console.WriteLine("Committing on Thread {0}", Thread.CurrentThread.Name);
 
                                 __scrip.Commit(__socket);
+                                __committed = true;
 
                                 __doc.Clear();
                                 __facility.Clear();
@@ -995,18 +1119,29 @@ namespace motCommonLib
                                 __scrip.Clear();
                             }
 
-                            __first_scrip = false;
+                            __first_scrip = __committed = false;
                             __last_scrip = __raw_record[15];
                             __dose_times.Clear();
 
                             __name = __raw_record[0].Split(',');
-                            __patient.LastName = __name[0];
-                            __patient.FirstName = __name[1];
+                            __patient.LastName = __name[0].Trim();
+                            __patient.FirstName = __name[1].Trim();
                             __patient.RxSys_LocID = __raw_record[2]?.Trim()?.Substring(0, 4);
                             __patient.RxSys_PatID = __raw_record[1];
                             __patient.Room = __raw_record[4];
+                            __patient.Address1 = "Address 1";
+                            __patient.Address2 = "Address 2";
+                            __patient.City = "City";
+                            __patient.State = "UK";
+                            __patient.Zip = "999991111";
+                            __patient.Status = 1;
 
                             __facility.LocationName = __raw_record[2];
+                            __facility.Address1 = "Address 1";
+                            __facility.Address2 = "Address 2";
+                            __facility.City = "City";
+                            __facility.State = "UK";
+                            __facility.Zip = "999991111";
                             __facility.RxSys_LocID = __raw_record[2]?.Trim()?.Substring(0, 4);
 
                             __drug.NDCNum = __raw_record[7];
@@ -1014,7 +1149,7 @@ namespace motCommonLib
 
                             if (__drug.NDCNum == "0")
                             {
-                                // It's something goofy like a compound; ignoreit
+                                // It's something goofy like a compound; ignore it
                                 logger.Warn("Ignoring thig with NDC == 0 named {0}", __raw_record[8]);
                                 continue;
 
@@ -1025,96 +1160,73 @@ namespace motCommonLib
                                 //__drug.DefaultIsolate = 1;
                             }
 
+                            //
+                            // Some funny stuff happens here as the umber of items from the split is varible - we've seen 2,3,4, & 5
+                            // Examples
+                            //          -- Trade And Generic Pair - Each 4 items, same format {[name][strength][unit][route]}
+                            //          AVAPRO 150 MG TABLE
+                            //          IRBESARTAN 150 MG TABLET
+                            //
+                            //          -- Trade and Generic Name - 4 items for each but different strength formats
+                            //          CRESTOR 10 MG TABLET
+                            //          ROSUVASTATIN TB 10MG 30          
+                            //
+                            //          -- Trade and Generic Name  - 4 items for trade, 5 for Generic
+                            //          ZOLOFT 100 MG TABLET
+                            //          SERTRALINE HCL 100 MG TABLET
+                            //
+                            //          -- Trade and Generic Name - 6 items for Trade, 5 for Generic
+                            //          500 + D 500-200 MG-IU TABLET
+                            //          OYSTER SHELL CALCIUM 500-200 MG
+                            //
+                            //          Another Trade and Genmeric Name with 4 items for the Trade and 5 for the generic
+                            //          FOSAMAX 35 MG TABLET
+                            //          ALENDRONATE SODIUM 35 MG TABLET
+                            //
+                            //  Note that it's also only required to have one or the other, not both
+                            //
+                            //
+                            //  Push everything down into a structure and have it return a struct defining both
 
-                            __drug.TradeName = __raw_record[8]; // Trade name  [8] AVAPRO 150 MG TABLET 
-                            __drug.DrugName = __raw_record[9];  // Generic Name[9] IRBESARTAN 150 MG TABLET
-                            __drug.GenericFor = __raw_record[8];
+                            __temp_trade_name = string.Empty;
 
-                            // Make sure there's something in the tradename field
-                            if (string.IsNullOrEmpty(__raw_record[8]))
+                            if (__drug_name.__parse_exact(__raw_record[8]))
                             {
-                                __drug.TradeName = __drug.DrugName;
-                            }
-                            if (string.IsNullOrEmpty(__raw_record[9]))
-                            {
-                                __drug.DrugName = __raw_record[8];
-                            }
+                                __drug.TradeName = __drug.DrugName = string.Format("{0} {1} {2} {3}", __drug_name.__name, __drug_name.__strength, __drug_name.__unit, __drug_name.__form);
+                                __drug.ShortName = string.Format("{0} {1} {2}", __drug_name.__name, __drug_name.__strength, __drug_name.__unit);
+                                __drug.Unit = __drug_name.__unit;
+                                __drug.Strength = __drug_name.__strength;
+                                __drug.DoseForm = __drug_name.__form;
 
+                                __temp_trade_name = string.Format("{0} {1} {2} {3}", __drug_name.__name, __drug_name.__strength, __drug_name.__unit, __drug_name.__form);
 
-
-                            if (!string.IsNullOrEmpty(__raw_record[8]))
-                            {
-                                string[] __raw_drug = __raw_record[8].Split(' ');
-
-                                if (__raw_drug.Length < 4)
-                                {
-                                    // Something is mashed together, most likely suspect is Units
-                                    if (__raw_drug[1].ToUpper().Contains("MG"))
-                                    {
-                                        __drug.Strength = __raw_drug[1];
-
-                                        int __offset = __raw_drug[1].ToUpper().IndexOf("MG");
-                                        __drug.Unit = __raw_drug[1].Substring(__offset, 2);
-
-                                        __drug.DoseForm = __raw_drug[2];
-                                    }
-                                    else
-                                    {
-                                        __drug.Strength = "Unkown";
-                                        __drug.Unit = "Unknown";
-                                        __drug.DoseForm = "Unkown";
-                                    }
-                                }
-                                else
-                                {
-                                    __drug.Strength = __raw_drug[1];
-                                    __drug.Unit = __raw_drug[2];
-                                    __drug.DoseForm = __raw_drug[3];
-                                }
                             }
 
-                            if (!string.IsNullOrEmpty(__raw_record[9]))
+                            if (__drug_name.__parse_exact(__raw_record[9]))
                             {
-                                string[] __raw_drug = __raw_record[9].Split(' ');
-
-                                if (__raw_drug.Length < 4)
-                                {
-                                    // Something is mashed together, most likely suspect is Units
-                                    if (__raw_drug[1].ToUpper().Contains("MG"))
-                                    {
-                                        __drug.Strength = __raw_drug[1];
-
-                                        int __offset = __raw_drug[1].ToUpper().IndexOf("MG");
-                                        __drug.Unit = __raw_drug[1].Substring(__offset, 2);
-
-                                        __drug.DoseForm = __raw_drug[2];
-                                    }
-                                    else
-                                    {
-                                        __drug.Strength = "Unkown";
-                                        __drug.Unit = "Unknown";
-                                        __drug.DoseForm = "Unkown";
-                                    }
-                                }
-                                else
-                                {
-                                    __drug.Strength = __raw_drug[1];
-                                    __drug.Unit = __raw_drug[2];
-                                    __drug.DoseForm = __raw_drug[3];
-                                }
-                            }
-
-                            __drug.ShortName = __drug.DrugName?.Substring(0, Math.Min(16, __drug.DrugName.Length));
+                                __drug.TradeName = __drug.DrugName = string.Format("{0} {1} {2} {3}", __drug_name.__name, __drug_name.__strength, __drug_name.__unit, __drug_name.__form);
+                                __drug.ShortName = string.Format("{0} {1} {2}", __drug_name.__name, __drug_name.__strength, __drug_name.__unit);
+                                __drug.Unit = __drug_name.__unit;
+                                __drug.Strength = __drug_name.__strength;
+                                __drug.DoseForm = __drug_name.__form;
+                                __drug.GenericFor = __temp_trade_name;
+                            }                    
 
                             string[] __doc_name = __raw_record[14].Split(' ');
                             __doc.FirstName = __doc_name[0]?.Trim();
                             __doc.LastName = __doc_name[1]?.Trim();
+                            __doc.Address1 = "Address 1";
+                            __doc.Address2 = "Address 2";
+                            __doc.City = "City";
+                            __doc.State = "UK";
+                            __doc.Zip = "999991111";
                             __doc.RxSys_DocID = __doc_name[0]?.Trim()?.Substring(0, 3) + __doc_name[1]?.Trim()?.Substring(0, 3);
                             __patient.RxSys_DocID = __doc.RxSys_DocID;
 
                             __scrip.RxSys_RxNum = __raw_record[15];
                             __scrip.RxSys_PatID = __patient.RxSys_PatID;
                             __scrip.RxSys_DocID = __patient.RxSys_DocID;
+                            __scrip.Status = "1";
 
                             if (string.IsNullOrEmpty(__raw_record[10]))  // It's a PRN
                             {
@@ -1128,7 +1240,7 @@ namespace motCommonLib
                             __scrip.DoseTimesQtys = string.Format("{0:0000}{1:00.00}", Convert.ToInt32(__raw_record[11]), Convert.ToDouble(__raw_record[12]));
                             __scrip.QtyPerDose = __raw_record[12];
                             __scrip.QtyDispensed = __raw_record[24];
-                            __scrip.Sig = string.Format("{0}{1}{2}{3}", __raw_record[18], __raw_record[19], __raw_record[20], __raw_record[2]);
+                            __scrip.Sig = string.Format("{0}{1}{2}\n{3}", __raw_record[18], __raw_record[19], __raw_record[20], __raw_record[2]);
                             __scrip.Refills = __raw_record[23];
                             __scrip.RxSys_DrugID = __drug.NDCNum;
                             __scrip.RxType = __raw_record[22].Trim().ToUpper() == "P" ? "2" : "1";
@@ -1170,6 +1282,15 @@ namespace motCommonLib
                                     __dose_times.Add(__last_dose_time);
                                 }
                             }
+                        }
+                    }
+                    else
+                    {
+                        // Fell through to here because the row length was 0
+                        if (!__committed)
+                        {
+                            __scrip.Commit(__socket);
+                            __committed = true;
                         }
                     }
                 }
@@ -1215,7 +1336,7 @@ namespace motCommonLib
                 throw new Exception("Failed to write to gateway: " + ex.Message);
             }
         }
-       
+
         public void parseByGuess(string inputStream)
         {
             try
@@ -1254,9 +1375,9 @@ namespace motCommonLib
                 {
                     parseDelimited(inputStream);
                     return;
-                }               
-                    
-                if(Regex.Match(inputStream, "\\d{10}S").Success)    // QS/1 Delimited
+                }
+
+                if (Regex.Match(inputStream, "\\d{10}S").Success)    // QS/1 Delimited
                 {
                     parseDelimited(inputStream);
                     return;
@@ -1277,7 +1398,7 @@ namespace motCommonLib
         }
         public motParser(motSocket __socket, string inputStream, bool __auto_truncate)
         {
-            if(__socket == null)
+            if (__socket == null)
             {
                 throw new ArgumentNullException("NULL Socket passed to motParser");
             }
@@ -1305,7 +1426,7 @@ namespace motCommonLib
             this.__socket = __socket;
             this.__send_eof = __send_eof;
             this.__debug_mode = __debug_mode;
-            this.__auto_truncate = __auto_truncate; 
+            this.__auto_truncate = __auto_truncate;
 
             logger = LogManager.GetLogger("motInboundLib.Parser");
 

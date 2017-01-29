@@ -157,6 +157,7 @@ namespace motCommonLib
 
             try
             {
+              
                 // Push it to the port
                 foreach (KeyValuePair<string, string> __record in __records)
                 {
@@ -167,15 +168,6 @@ namespace motCommonLib
                         __logger.Debug(__record);
                     }
                 }
-
-                // If this is true it will write an <EOF/> at the end of every queue dump. That's
-                // fine if the socket is Disposed and recreated at every use, but if it's multiple
-                // reads and dumps from an input, that say, has 20 patients and their scrips, then the 
-                // socket closing each time forces an error
-                //if (__send_eof)  
-                //{
-                //    __socket.write("<EOF/>");
-                //}
 
                 // Flush
                 __records.Clear();
@@ -219,6 +211,8 @@ namespace motCommonLib
         protected string __tableAction;
         protected Logger __logger = LogManager.GetLogger("motCommonLib.Record");
         protected motSocket __default = null;
+        protected string __gateway_address;
+        protected string __gateway_port;
 
 
         public bool __log_records { get; set; } = false;

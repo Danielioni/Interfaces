@@ -95,24 +95,25 @@ namespace motInboundLib
             Logger __logger = LogManager.GetLogger("FileSystemWatcher");
             __listen = true;
 
-            using (var __socket = new motSocket(__address, Convert.ToInt32(__port), __process_return))
+
+            while (__listen)
             {
-                while (__listen)
+                Thread.Sleep(1024);
+
+                if (Directory.GetFiles(dirName) != null)
                 {
-                    Thread.Sleep(1024);
+                    string[] __fileEntries = Directory.GetFiles(dirName);
 
-                    if (Directory.GetFiles(dirName) != null)
+                    foreach (string __fileName in __fileEntries)
                     {
-                        string[] __fileEntries = Directory.GetFiles(dirName);
-
-                        foreach (string __fileName in __fileEntries)
+                        if (__fileName.Contains(".FAILED"))
                         {
-                            if (__fileName.Contains(".FAILED"))
-                            {
-                                continue;
-                            }
+                            continue;
+                        }
 
-                            try
+                        try
+                        {
+                            using (var __socket = new motSocket(__address, Convert.ToInt32(__port), __process_return))
                             {
                                 using (var sr = new StreamReader(__fileName))
                                 {
@@ -126,24 +127,24 @@ namespace motInboundLib
 
                                 File.Delete(__fileName);
                             }
-                            catch (Exception ex)
+                        }
+                        catch (Exception ex)
+                        {
+                            if (!File.Exists(__fileName + ".FAILED"))
                             {
-                                if (!File.Exists(__fileName + ".FAILED"))
-                                {
-                                    File.Move(__fileName, __fileName + ".FAILED");
-                                }
-
-                                if (File.Exists(__fileName))
-                                {
-                                    File.Delete(__fileName);
-                                }
-
-                                __ui_args.timestamp = DateTime.Now.ToString();
-                                __ui_args.__event_message = string.Format("Failed While Processing {0} : {1}", __fileName, ex.Message);
-                                UpdateErrorUI(this, __ui_args);
-
-                                __logger.Error("Failed While Processing {0} : {1}", __fileName, ex.Message);
+                                File.Move(__fileName, __fileName + ".FAILED");
                             }
+
+                            if (File.Exists(__fileName))
+                            {
+                                File.Delete(__fileName);
+                            }
+
+                            __ui_args.timestamp = DateTime.Now.ToString();
+                            __ui_args.__event_message = string.Format("Failed While Processing {0} : {1}", __fileName, ex.Message);
+                            UpdateErrorUI(this, __ui_args);
+
+                            __logger.Error("Failed While Processing {0} : {1}", __fileName, ex.Message);
                         }
                     }
                 }
