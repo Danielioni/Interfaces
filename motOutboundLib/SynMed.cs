@@ -716,10 +716,10 @@ namespace motOutboundLib
             __new_row.PATIENT_FIRST_NAME = __patient_first_name;
             __new_row.PATIENT_LAST_NAME = __patient_last_name;
             __new_row.PATIENT_MOTHER_LAST_NAME = "";
-            __new_row.PATIENT_ADDRESS = __rx.Patient.Address.Address1;
-            __new_row.PATIENT_CITY = __rx.Patient.Address.City;
-            __new_row.PATIENT_STATE = __state[(int)__rx.Patient.Address.State];
-            __new_row.PATIENT_ZIP_CODE = __rx.Patient.Address.PostalCode;
+            __new_row.PATIENT_ADDRESS = __rx.Patient.UsePatientInfo ? __rx.Patient.Address.Address1 : __rx.Patient.Facility.Address.Address1;
+            __new_row.PATIENT_CITY = __rx.Patient.UsePatientInfo ? __rx.Patient.Address.City : __rx.Patient.Facility.Address.City;
+            __new_row.PATIENT_STATE = __state[__rx.Patient.UsePatientInfo ? (int)__rx.Patient.Address.State : (int)__rx.Patient.Facility.Address.State];
+            __new_row.PATIENT_ZIP_CODE = __rx.Patient.UsePatientInfo ? __rx.Patient.Address.PostalCode : __rx.Patient.Facility.Address.PostalCode;
             __new_row.PATIENT_COUNTRY = "";
             __new_row.PATIENT_BIN_NUMBER = "";
             __new_row.PATIENT_PHONE_NUMBER = __rx.Patient.Phones?.FirstOrDefault().ToString();
@@ -741,10 +741,10 @@ namespace motOutboundLib
             __new_row.PHYSICIAN_LICENCE = __rx.Prescriber.Dea;
 
             __new_row.PHARMACIST_NAME = "";
-            __new_row.REFILL_QUANTITY = "0";
-            __new_row.FIRST_REFILL_DATE = string.Format("{0:yyyyMMdd}", DateTime.Now);
-            __new_row.LAST_REFILL_DATE = string.Format("{0:yyyyMMdd}", DateTime.Now);
-            __new_row.COST = "0";
+            __new_row.REFILL_QUANTITY = __rx.Refills.ToString();
+            __new_row.FIRST_REFILL_DATE = ""; 
+            __new_row.LAST_REFILL_DATE = "";
+            __new_row.COST = "";
             __new_row.PRESCRIPTION_INSTRUCTION = __rx.CardSig;
             __new_row.PRESCRIPTION_COMMENT = "";
             __new_row.REORDER_NUMBER = "";
