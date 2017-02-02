@@ -1129,19 +1129,19 @@ namespace motCommonLib
                             __patient.RxSys_LocID = __raw_record[2]?.Trim()?.Substring(0, 4);
                             __patient.RxSys_PatID = __raw_record[1];
                             __patient.Room = __raw_record[4];
-                            __patient.Address1 = "Address 1";
-                            __patient.Address2 = "Address 2";
-                            __patient.City = "City";
-                            __patient.State = "UK";
-                            __patient.Zip = "999991111";
+                            __patient.Address1 = "";
+                            __patient.Address2 = "";
+                            __patient.City = "";
+                            __patient.State = "NH";
+                            __patient.Zip = "";
                             __patient.Status = 1;
 
                             __facility.LocationName = __raw_record[2];
-                            __facility.Address1 = "Address 1";
-                            __facility.Address2 = "Address 2";
-                            __facility.City = "City";
-                            __facility.State = "UK";
-                            __facility.Zip = "999991111";
+                            __facility.Address1 = "";
+                            __facility.Address2 = "";
+                            __facility.City = "";
+                            __facility.State = "NH";
+                            __facility.Zip = "";
                             __facility.RxSys_LocID = __raw_record[2]?.Trim()?.Substring(0, 4);
 
                             __drug.NDCNum = __raw_record[7];
@@ -1215,11 +1215,11 @@ namespace motCommonLib
                             string[] __doc_name = __raw_record[14].Split(' ');
                             __doc.FirstName = __doc_name[0]?.Trim();
                             __doc.LastName = __doc_name[1]?.Trim();
-                            __doc.Address1 = "Address 1";
-                            __doc.Address2 = "Address 2";
-                            __doc.City = "City";
-                            __doc.State = "UK";
-                            __doc.Zip = "999991111";
+                            __doc.Address1 = "";
+                            __doc.Address2 = "";
+                            __doc.City = "";
+                            __doc.State = "NH";
+                            __doc.Zip = "";
                             __doc.RxSys_DocID = __doc_name[0]?.Trim()?.Substring(0, 3) + __doc_name[1]?.Trim()?.Substring(0, 3);
                             __patient.RxSys_DocID = __doc.RxSys_DocID;
 
@@ -1240,7 +1240,7 @@ namespace motCommonLib
                             __scrip.DoseTimesQtys = string.Format("{0:0000}{1:00.00}", Convert.ToInt32(__raw_record[11]), Convert.ToDouble(__raw_record[12]));
                             __scrip.QtyPerDose = __raw_record[12];
                             __scrip.QtyDispensed = __raw_record[24];
-                            __scrip.Sig = string.Format("{0}{1}{2}\n{3}", __raw_record[18], __raw_record[19], __raw_record[20], __raw_record[2]);
+                            __scrip.Sig = string.Format("{0}{1}{2}", __raw_record[18], __raw_record[19], __raw_record[20]);
                             __scrip.Refills = __raw_record[23];
                             __scrip.RxSys_DrugID = __drug.NDCNum;
                             __scrip.RxType = __raw_record[22].Trim().ToUpper() == "P" ? "2" : "1";

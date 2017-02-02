@@ -124,12 +124,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_857C3871C5612FE23D44A51350D05EAD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_302DBB52FF9B4F42B6E8BE609644D31F"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -175,6 +169,12 @@
         "OwnerKey" = "8:_40C8B998689F8B637E0240BAFA8CC7EA"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_857C3871C5612FE23D44A51350D05EAD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -193,6 +193,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -209,6 +217,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -582,18 +598,18 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MOT Filesystem Watcher"
-        "ProductCode" = "8:{043CBE71-64F3-485F-BCD6-DAE1AC91CEEF}"
-        "PackageCode" = "8:{B86552D6-3D74-490E-80EE-879A036E26A2}"
+        "ProductCode" = "8:{AD1967B2-CC81-44B3-990A-F4DFF23D738D}"
+        "PackageCode" = "8:{6EFB91CB-5864-493C-8BA9-7C77B6DFE0FD}"
         "UpgradeCode" = "8:{AFF057CA-7EBC-4332-B3B7-20906BD7DA1C}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.0.9"
         "Manufacturer" = "8:Medicine-On-Time"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:"
+        "ARPHELPLINK" = "8:www.medicineontime..com"
         "Title" = "8:MOT Filesystem Watcher"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Medicine-On-Time"
