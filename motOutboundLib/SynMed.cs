@@ -562,26 +562,27 @@ namespace motOutboundLib
             get { return (string)__field_list.Find(f => f?.__name == "CYCLE_FIRST_DAY_FIXED")?.__data; }
             set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("CYCLE_FIRST_DAY_FIXED", value, false, 1)); }
         }
-        public string PERIOD_NAME_01
-        {
-            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_01")?.__data; }
-            set { __field_list.Add(new SynMedField("PERIOD_NAME_01", value, false, 8)); }
-        }
-        public string PERIOD_NAME_02
-        {
-            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_02")?.__data; }
-            set { __field_list.Add(new SynMedField("PERIOD_NAME_02", value, false, 8)); }
-        }
-        public string PERIOD_NAME_03
-        {
-            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_01")?.__data; }
-            set { __field_list.Add(new SynMedField("PERIOD_NAME_01", value, false, 8)); }
-        }
-        public string PERIOD_NAME_04
-        {
-            get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_04")?.__data; }
-            set { __field_list.Add(new SynMedField("PERIOD_NAME_04", value, false, 8)); }
-        }
+        /*      public string PERIOD_NAME_01
+                {
+                    get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_01")?.__data; }
+                    set { __field_list.Add(new SynMedField("PERIOD_NAME_01", value, false, 8)); }
+                }
+                public string PERIOD_NAME_02
+                {
+                    get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_02")?.__data; }
+                    set { __field_list.Add(new SynMedField("PERIOD_NAME_02", value, false, 8)); }
+                }
+                public string PERIOD_NAME_03
+                {
+                    get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_01")?.__data; }
+                    set { __field_list.Add(new SynMedField("PERIOD_NAME_01", value, false, 8)); }
+                }
+                public string PERIOD_NAME_04
+                {
+                    get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME_04")?.__data; }
+                    set { __field_list.Add(new SynMedField("PERIOD_NAME_04", value, false, 8)); }
+                }
+        */
         public string ONE_MAR_DOSE_ID
         {
             get { return (string)__field_list.Find(f => f?.__name == "ONE_MAR_DOSE_ID")?.__data; }
@@ -690,6 +691,7 @@ namespace motOutboundLib
             __new_row.RECORD_TYPE = "15";
             __new_row.ADMINISTRATION_DATE = string.Format("{0:yyyyMMdd}", __current_date);
             __new_row.ADMINISTRATION_TIME = string.Format("{0:00}:{1:00}", __dose.GetTimespan().Hours, __dose.GetTimespan().Minutes);
+            __new_row.DRUG_QUANTITY = __dose.Dose.ToString();
 
             // Strip the '-' out of the NDC
             string NDC = __rx.Drug.NdcNumber;
@@ -700,14 +702,13 @@ namespace motOutboundLib
             }
 
             __new_row.LOCAL_DRUG_ID = NDC;
-
-            __new_row.DRUG_DESCRIPTION = __rx.Drug.DosageCupName;
+            __new_row.DRUG_DESCRIPTION = __rx.Drug.VisualDescription;
             __new_row.DISPLAY_NAME = __rx.Drug.DosageCupName;
 
             // It's unclear how to do BULK scrips, maybe we just don't send them
-            // __new_row.EXTERNAL_DRUG_FLAG = (__rx.IsBulk || __rx.IsChartOnly) ? "Y" : "N";
             __new_row.EXTERNAL_DRUG_FLAG = "";
-            __new_row.NOT_IN_BLISTER = (__rx.IsBulk || __rx.IsChartOnly || __rx.RxDosageRegimen.IsPrn) ? "Y" : "N";
+            //__new_row.NOT_IN_BLISTER = (__rx.IsBulk || __rx.IsChartOnly || __rx.RxDosageRegimen.IsPrn) ? "Y" : "N";
+            __new_row.NOT_IN_BLISTER = (__rx.IsBulk || __rx.IsChartOnly) ? "Y" : "N";
 
             __new_row.PRESCRIPTION_NUMBER = __rx.RxSystemId;
             __new_row.PATIENT_ID = __rx.PatientId.ToString();
@@ -728,7 +729,7 @@ namespace motOutboundLib
             __new_row.PERIOD_NAME = "";
             __new_row.PERIOD_BEGINNING_TIME = "";   // string.Format("{0:yyyyMMdd}", DateTime.Now);
             __new_row.PERIOD_ENDING_TIME = "";      // string.Format("{0:hh:mm}", DateTime.Now);
-            __new_row.PERIOD_ORDER = "0";
+            __new_row.PERIOD_ORDER = "";
             __new_row.IS_HOUR_DRIVEN = "";
 
             __new_row.INSTITUTION_NAME = __rx.Patient.Facility.Name;
@@ -742,11 +743,14 @@ namespace motOutboundLib
 
             __new_row.PHARMACIST_NAME = "";
             __new_row.REFILL_QUANTITY = __rx.Refills.ToString();
-            __new_row.FIRST_REFILL_DATE = ""; 
+            __new_row.FIRST_REFILL_DATE = "";
             __new_row.LAST_REFILL_DATE = "";
             __new_row.COST = "";
             __new_row.PRESCRIPTION_INSTRUCTION = __rx.CardSig;
-            __new_row.PRESCRIPTION_COMMENT = "";
+
+            if(string.IsNullOrEmpty(__new_row.PRESCRIPTION_COMMENT))
+                __new_row.PRESCRIPTION_COMMENT = "";
+
             __new_row.REORDER_NUMBER = "";
             __new_row.INSTRUCTION_REASON = "";
             __new_row.GROUP_TITLE = "";
@@ -770,7 +774,7 @@ namespace motOutboundLib
             DateTime __base_date = __cycle_start_date;
             __filename = __file_name;
             //int __save_cycle_length = 0;
-            //SynMedRow __new_row;
+            SynMedRow __new_row;
 
             try
             {
@@ -784,71 +788,160 @@ namespace motOutboundLib
                     DateTime __start_date = __rx.Patient.DueDate;
                     DateTime __current_date = __start_date;
 
-                    var __alternating_regimen = __rx.RxDosageRegimen as IAlternatingItemsContainer;
-                    
-
-                    if (!__rx.RxDosageRegimen.IsCycleType && !__rx.RxDosageRegimen.IsPrn)
-                    {
-                        using (var scope = SynMed.container.BeginLifetimeScope())
-                        {
-                            var itemsQuery = scope.Resolve<IEntityQuery<RxAlternatingItem>>();
-
-                            if (__alternating_regimen != null && __alternating_regimen.AlternatingItems == null)
-                            {
-                                __alternating_regimen.AlternatingItems = (await itemsQuery.QueryAsync(new QueryParameters<RxAlternatingItem>(
-                                    item => item.RxDosageRegimenId == __alternating_regimen.Id))).ToList();
-                            }
-                        }
-                    }
-
-                    
                     if (__rx.IsActive)
                     {
-                        foreach (DoseScheduleItem __dose in __rx.RxDosageRegimen.DoseSchedule.DoseScheduleItems)
-                        {
-                            if (!__rx.RxDosageRegimen.IsCycleType)  // Any Alternating Schedule
-                            {
-                                for (int __day = 0; __day < __cycle_length; __day++)
-                                {
-                                    if ((int)__alternating_regimen.AlternatingItems[0].Doses[__day] > 0)
-                                    {
-                                        SynMedRow __new_row = new SynMedRow();
-                                        __new_row.DRUG_QUANTITY = __alternating_regimen.AlternatingItems[0].Doses[__day].ToString();
-                                        fillRow(__new_row, __rx, __base_date, __current_date, __dose);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                SynMedRow __new_row = new SynMedRow();
-                                fillRow(__new_row, __rx, __base_date, __current_date, __dose);  // Any Cycle Schedule
-                            }
-                        }
-
-                        if (__rx.RxDosageRegimen.IsPrn)  // Falls through to here because PRN DoseScheduleItems == 0
+                        if(__rx.RxDosageRegimen.RxType == RxType.Prn)
                         {
                             var __prn_regimen = __rx.RxDosageRegimen as RxPrnRegimen;
                             IOrderedEnumerable<DoseScheduleItem> __dose_schedule_items;
                             __dose_schedule_items = __prn_regimen.GetScheduleItems();
 
-                            if(__dose_schedule_items != null)
-                            {                             
-                                foreach(var __dose in __dose_schedule_items)
+                            if (__dose_schedule_items != null)
+                            {
+                                foreach (var __dose_item in __dose_schedule_items)
                                 {
-                                    SynMedRow __new_row = new SynMedRow();                                 
-                                                                        
+                                    __new_row = new SynMedRow();
+                                    __new_row.PRESCRIPTION_COMMENT = "PRN Prescription";
                                     __new_row.PATIENT_WITH_PRN = "Y";
-                                    __new_row.QTY_PER_ADMINISTRATION = __dose.Dose.ToString();
+                                    __new_row.QTY_PER_ADMINISTRATION = __dose_item.Dose.ToString();
                                     __new_row.ADMINISTRATION_PER_DAY = (__rx.QuantityWritten / __cycle_length).ToString();
-                                    __new_row.ADMINISTRATION_TIME = string.Format("{0:00}:{1:00}", __dose.GetTimespan().Hours, __dose.GetTimespan().Minutes);
+                                    __new_row.ADMINISTRATION_TIME = string.Format("{0:00}:{1:00}", __dose_item.GetTimespan().Hours, __dose_item.GetTimespan().Minutes);
                                     __new_row.DAY_LAPSE = "0";
 
-                                    fillRow(__new_row, __rx, __base_date, __current_date, __dose);
+                                    fillRow(__new_row, __rx, __base_date, __current_date, __dose_item);
                                 }
-                            }                           
+                            }
+
+                            continue;
                         }
-                     
-                        __current_date = __current_date.AddDays(1);
+
+                        foreach (DoseScheduleItem __dose in __rx.RxDosageRegimen.DoseSchedule.DoseScheduleItems)
+                        {
+                            switch (__rx.RxDosageRegimen.RxType)
+                            {
+                                case RxType.Daily:
+                                    __new_row = new SynMedRow();
+                                    __new_row.PRESCRIPTION_COMMENT = "Daily Prescription";
+                                    fillRow(__new_row, __rx, __base_date, __current_date, __dose);  // Any Daily Schedule
+
+                                    break;
+
+                                case RxType.Prn:                                   
+                                    break;
+
+                                case RxType.Alternating:
+                                    var __alternating_regimen = __rx.RxDosageRegimen as RxAlternatingRegimen;
+
+                                    for (int __day = 0; __day < __cycle_length; __day += __alternating_regimen.RepeatDays)
+                                    {
+                                        __current_date = __base_date.AddDays(__day);
+
+                                        foreach (var __item in __alternating_regimen.DoseSchedule.DoseScheduleItems)
+                                        {
+                                            __new_row = new SynMedRow();
+                                            __new_row.PRESCRIPTION_COMMENT = "Alternating Prescription - every (" + __alternating_regimen.RepeatDays + ") days";
+                                            fillRow(__new_row, __rx, __base_date, __current_date, __item);
+                                        }
+                                    }
+
+                                    break;
+
+                                case RxType.MonthlyTitrating:
+                                case RxType.WeeklyTitrating:
+                                    var __titrating_regimen = __rx.RxDosageRegimen as IAlternatingItemsContainer;
+
+                                    // Get the Alternating DoseRegamin
+                                    using (var scope = SynMed.container.BeginLifetimeScope())
+                                    {
+                                        var itemsQuery = scope.Resolve<IEntityQuery<RxAlternatingItem>>();
+
+                                        if (__titrating_regimen != null && __titrating_regimen.AlternatingItems == null)
+                                        {
+                                            __titrating_regimen.AlternatingItems = (await itemsQuery.QueryAsync(new QueryParameters<RxAlternatingItem>(
+                                                item => item.RxDosageRegimenId == __titrating_regimen.Id))).ToList();
+                                        }
+                                    }
+
+                                    foreach (var __item in __titrating_regimen.AlternatingItems)
+                                    {
+                                        for (int __day = 0; __day < __cycle_length; __day++)
+                                        {
+                                            if (__item.Doses[__day] > 0)
+                                            {
+                                                __new_row = new SynMedRow();
+                                                __new_row.DRUG_QUANTITY = __item.Doses[__day].ToString();
+                                                __new_row.PRESCRIPTION_COMMENT = "Monthly or Weekly Titrating Prescription";
+                                                fillRow(__new_row, __rx, __base_date, __current_date, __dose);
+                                                __current_date = __base_date.AddDays(__day + 1);
+                                            }
+                                        }
+                                    }
+
+                                    break;
+
+                                case RxType.DayOfMonth:
+                                    var __day_of_month_regimen = __rx.RxDosageRegimen as RxDayOfMonthRegimen;
+
+                                    for (var __day = 0; __day < __cycle_length; __day++)
+                                    {
+                                        __current_date = __base_date.AddDays(__day);
+
+                                        foreach (int __specific_day in __day_of_month_regimen.DayOfMonth)
+                                        {
+                                            if (__current_date.Day == __specific_day)
+                                            {
+                                                foreach (var __item in __day_of_month_regimen.DoseSchedule.DoseScheduleItems)
+                                                {
+                                                    __new_row = new SynMedRow();
+                                                    __new_row.PRESCRIPTION_COMMENT = "Day Of Month Prescription";
+                                                    fillRow(__new_row, __rx, __base_date, __current_date, __item);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    break;
+
+                                case RxType.DayOfWeek:
+                                    var __day_of_week_regimen = __rx.RxDosageRegimen as RxDayOfWeekRegimen;
+
+                                    for (int __day = 0; __day < __cycle_length; __day++)
+                                    {
+                                        __current_date = __base_date.AddDays(__day);
+
+                                        foreach (DayOfWeek __specific_day in __day_of_week_regimen.DaysOfWeek)
+                                        {
+                                            if (__current_date.DayOfWeek == __specific_day)
+                                            {
+                                                foreach (var __item in __day_of_week_regimen.DoseSchedule.DoseScheduleItems)
+                                                {
+                                                    __new_row = new SynMedRow();
+                                                    __new_row.PRESCRIPTION_COMMENT = "Day Of Week Prescription";
+                                                    fillRow(__new_row, __rx, __base_date, __current_date, __item);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    break;
+
+
+                                case RxType.Sequential:
+                                    var __sequential_regimen = __rx.RxDosageRegimen as RxSequentialRegimen;
+
+                                    foreach (var __sequential_dose in __sequential_regimen.DoseSchedule.DoseScheduleItems)
+                                    {
+                                        __new_row = new SynMedRow();
+                                        __new_row.PRESCRIPTION_COMMENT = "Sequential Prescription";
+                                        fillRow(__new_row, __rx, __base_date, __current_date, __sequential_dose);
+                                    }
+
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }
                     }
                 }
 
