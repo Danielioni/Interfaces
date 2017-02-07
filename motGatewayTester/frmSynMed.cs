@@ -28,9 +28,7 @@ namespace motGatewayTester
             try
             {
                 motNextSynMed __synmed = new motNextSynMed(@"\motNext\SynmedFiles");
-                DateTime __due = DateTime.Parse("2/4/2017");
-
-
+                DateTime __due = DateTime.Parse("2/10/2017");
 
                 await __synmed.Login("mot", "mot");
                 await __synmed.WriteCycle(__due);
@@ -45,14 +43,14 @@ namespace motGatewayTester
                                     __due,
                                      30);
                 
-  
+  */
                 await __synmed.WritePatient(@"ALLEN",
                                      @"PRISCILLA",
                                      @"",
                                     DateTime.Parse("12/1/1960"),
                                     __due,
                                     30);
-             */   
+             
 
             }
             catch (Exception ex)

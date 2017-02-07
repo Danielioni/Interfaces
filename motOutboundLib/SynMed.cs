@@ -207,6 +207,7 @@ namespace motOutboundLib
                                                     r => r.Drug,
                                                     r => r.Patient.Address,
                                                     r => r.Patient.Facility.Address,
+                                                    r => r.Patient.Phones,
                                                     r => r.Prescriber,
                                                     r => r.Store,
                                                     r => r.Patient.Facility)
@@ -225,6 +226,7 @@ namespace motOutboundLib
                                                     r => r.Drug,
                                                     r => r.Patient.Address,
                                                     r => r.Patient.Facility.Address,
+                                                    r => r.Patient.Phones,
                                                     r => r.Prescriber,
                                                     r => r.Store,
                                                     r => r.Patient.Facility)
@@ -406,8 +408,8 @@ namespace motOutboundLib
         }
         public string PATIENT_WITH_PRN
         {
-            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_PHONE_NUMBER")?.__data; }
-            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("PATIENT_PHONE_NUMBER", value, false, 1)); }
+            get { return (string)__field_list.Find(f => f?.__name == "PATIENT_WITH_PRN")?.__data; }
+            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("PATIENT_WITH_PRN", value, false, 1)); }
         }
         public string QTY_PER_ADMINISTRATION
         {
@@ -719,7 +721,6 @@ namespace motOutboundLib
 
             // It's unclear how to do BULK scrips, maybe we just don't send them
             __new_row.EXTERNAL_DRUG_FLAG = "";
-            //__new_row.NOT_IN_BLISTER = (__rx.IsBulk || __rx.IsChartOnly || __rx.RxDosageRegimen.IsPrn) ? "Y" : "N";
             __new_row.NOT_IN_BLISTER = (__rx.IsBulk || __rx.IsChartOnly) ? "Y" : "N";
 
             __new_row.PRESCRIPTION_NUMBER = __rx.RxSystemId;
@@ -735,7 +736,7 @@ namespace motOutboundLib
             __new_row.PATIENT_ZIP_CODE = __rx.Patient.UsePatientInfo ? __rx.Patient.Address.PostalCode : __rx.Patient.Facility.Address.PostalCode;
             __new_row.PATIENT_COUNTRY = "";
             __new_row.PATIENT_BIN_NUMBER = "";
-            __new_row.PATIENT_PHONE_NUMBER = __rx.Patient.Phones?.FirstOrDefault().ToString();
+            __new_row.PATIENT_PHONE_NUMBER = __rx.Patient.Phones?.FirstOrDefault().Number;
             __new_row.PATIENT_BIRTH_DATE = string.Format("{0:yyyyMMdd}", __rx.Patient.DateOfBirth);
 
             __new_row.PERIOD_NAME = "";
@@ -816,9 +817,10 @@ namespace motOutboundLib
                                     __new_row.PRESCRIPTION_COMMENT = "PRN Prescription";
                                     __new_row.PATIENT_WITH_PRN = "Y";
                                     __new_row.QTY_PER_ADMINISTRATION = __dose_item.Dose.ToString();
+                                    __new_row.DRUG_QUANTITY = __rx.QuantityWritten.ToString();
                                     __new_row.ADMINISTRATION_PER_DAY = (__rx.QuantityWritten / __cycle_length).ToString();
                                     __new_row.ADMINISTRATION_TIME = string.Format("{0:00}:{1:00}", __dose_item.GetTimespan().Hours, __dose_item.GetTimespan().Minutes);
-                                    __new_row.DAY_LAPSE = "0";
+                                    __new_row.DAY_LAPSE = "1";
 
                                     fillRow(__new_row, __rx, __base_date, __current_date, __dose_item);
                                 }
