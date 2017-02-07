@@ -15,9 +15,7 @@ namespace motGatewayTester
     {
         public frmSynMed()
         {
-            InitializeComponent();
-
-            
+            InitializeComponent();           
         }
 
         private void btnGo_Click(object sender, EventArgs e)
@@ -29,10 +27,13 @@ namespace motGatewayTester
         {
             try
             {
-                SynMed __synmed = new SynMed(@"\motNext\SynmedFiles");
+                motNextSynMed __synmed = new motNextSynMed(@"\motNext\SynmedFiles");
                 DateTime __due = DateTime.Parse("2/4/2017");
 
+
+
                 await __synmed.Login("mot", "mot");
+                await __synmed.WriteCycle(__due);
 
                 //await __synmed.WriteCycle(__due);
 
@@ -44,14 +45,14 @@ namespace motGatewayTester
                                     __due,
                                      30);
                 
-    */
-                await __synmed.Write(@"ALLEN",
+  
+                await __synmed.WritePatient(@"ALLEN",
                                      @"PRISCILLA",
                                      @"",
                                     DateTime.Parse("12/1/1960"),
                                     __due,
                                     30);
-                
+             */   
 
             }
             catch (Exception ex)

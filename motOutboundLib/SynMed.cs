@@ -24,19 +24,26 @@ using Mot.Shared.Model.Rxes.RxRegimens;
 
 namespace motOutboundLib
 {
-    public interface ISynMedLogin
+    public interface ISynMedRobotDriver
     {
+        Task Login(string __uname, string __pw);
+        Task WritePatient(string __last_name, string __first_name, string __middle_initial, DateTime __patient_dob, DateTime __cycle_start_date, int __cycle_length);
+        Task WriteCycle(DateTime __cycle_start);
+        Task WriteFacilityCycle(string __facility_name, DateTime __cycle_start_date, int __cycle_length);
     }
 
-    public interface ISynMedQuery
+   public class motLegacySynMed : ISynMedRobotDriver
     {
+        public async Task Login(string __uname, string __pw)
+        { }
+        public async Task WritePatient(string __last_name, string __first_name, string __middle_initial, DateTime __patient_dob, DateTime __cycle_start_date, int __cycle_length)
+        { }
+        public async Task WriteCycle(DateTime __cycle_start)
+        { }
+        public async Task WriteFacilityCycle(string __facility_name, DateTime __cycle_start_date, int __cycle_length)
+        { }
     }
-
-    public interface ISynMedBuild
-    {
-    }
-
-    public class SynMed
+    public class motNextSynMed : ISynMedRobotDriver
     {
         public static IContainer container;
         private SynMedTable __table;
@@ -48,9 +55,7 @@ namespace motOutboundLib
         private string __username;
         private string __password;
         private bool __logged_in = false;
-
         private string __file_name;
-
         private void setup(string __path)
         {
             try
@@ -90,8 +95,7 @@ namespace motOutboundLib
                 throw;
             }
         }
-
-        public SynMed(string __pathname)
+        public motNextSynMed(string __pathname)
         {
             try
             {
@@ -112,8 +116,6 @@ namespace motOutboundLib
             catch
             { throw; }
         }
-
-
         public async Task Login(string __uname, string __pw)
         {
             __username = __uname;
@@ -131,7 +133,6 @@ namespace motOutboundLib
                 throw;
             }
         }
-
         public async Task WriteCycle(DateTime __cycle_start)
         {
             if (!__logged_in)
@@ -145,8 +146,9 @@ namespace motOutboundLib
                 {
 
                     var query = scope.Resolve<IEntityQuery<Patient>>();
+                    var __due_date  = new DateTimeOffset(__cycle_start);
 
-                    var __patients = await query.QueryAsync(new QueryParameters<Patient>(pt => pt.DueDate <= new DateTimeOffset(__cycle_start) && !pt.ChartOnly && !pt.IsHidden,
+                    var __patients = await query.QueryAsync(new QueryParameters<Patient>(pt => pt.DueDate == __due_date && !pt.ChartOnly && !pt.IsHidden,
                                                                                          p => p.Rxes,
                                                                                          p => p.Phones,
                                                                                          p => p.Facility,
@@ -163,10 +165,13 @@ namespace motOutboundLib
 
                                 //await Write(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, (DateTime)__patient.DateOfBirth, __cycle_start, __ts.Days + 1);
 
-                                __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, (DateTime)__patient.DateOfBirth, __cycle_start, __ts.Days + 1);
-                                __table.WriteRxCollection(__patient.Rxes, __file_name, __patient);
+                                if (__patient.DateOfBirth != null)
+                                {
+                                    __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, (DateTime)__patient.DateOfBirth, __cycle_start, __ts.Days + 1);
+                                    __table.WriteRxCollection(__patient.Rxes, __file_name, __patient);
 
-                                Console.WriteLine("Wrote: {0}, {1} {2} Rxcount: {3}", __patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.Rxes.Count);
+                                    Console.WriteLine("Wrote: {0}, {1} {2} Rxcount: {3}", __patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.Rxes.Count);
+                                }
                             }
                         }
                         catch
@@ -179,8 +184,7 @@ namespace motOutboundLib
                 throw;
             }
         }
-
-        public async Task Write(string __last_name, string __first_name, string __middle_initial, DateTime __patient_dob, DateTime __cycle_start_date, int __cycle_length)
+        public async Task WritePatient(string __last_name, string __first_name, string __middle_initial, DateTime __patient_dob, DateTime __cycle_start_date, int __cycle_length)
         {
             if (!__logged_in)
             {
@@ -236,6 +240,14 @@ namespace motOutboundLib
                 Console.WriteLine(ex.Message);
             }
         }
+        public async Task WriteFacilityCycle(string __facility_name, DateTime __cycle_start_date, int __cycle_length)
+        {
+            if (!__logged_in)
+            {
+                throw new Exception("Not logged in");
+            }
+        }
+
     }
     class SynMedHeader
     {
@@ -851,7 +863,7 @@ namespace motOutboundLib
                                     var __titrating_regimen = __rx.RxDosageRegimen as IAlternatingItemsContainer;
 
                                     // Get the Alternating DoseRegamin
-                                    using (var scope = SynMed.container.BeginLifetimeScope())
+                                    using (var scope = motNextSynMed.container.BeginLifetimeScope())
                                     {
                                         var itemsQuery = scope.Resolve<IEntityQuery<RxAlternatingItem>>();
 
