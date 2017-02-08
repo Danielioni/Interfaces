@@ -280,7 +280,7 @@ namespace motCommonLib
 #endif
         }
 
-        public bool executeQuery(string strQuery, DataSet __recordSet_)
+        public bool executeQuery(string strQuery, DataSet __recordSet_, string __tablename = null)
         {
 
             try
@@ -288,7 +288,15 @@ namespace motCommonLib
                 __recordSet_.Clear();
 
                 adapter = new SqlDataAdapter(strQuery, connection);
-                adapter.Fill(__recordSet_, "__table");
+
+                if (__tablename == null)
+                {
+                    adapter.Fill(__recordSet_, "__table");
+                }
+                else
+                {
+                    adapter.Fill(__recordSet_, __tablename);
+                }
                
                 return true;
             }
@@ -359,17 +367,22 @@ namespace motCommonLib
             }
         }
 
-        public bool executeQuery(string strQuery, DataSet __recordSet_)
+        public bool executeQuery(string strQuery, DataSet __recordSet_, string __tablename = null)
         {
-            __recordSet_.Clear();
-
             try
             {
                 __recordSet_.Clear();
 
                 adapter = new OdbcDataAdapter(strQuery, connection);
-                adapter.Fill(__recordSet_, "__table");
 
+                if (__tablename == null)
+                {
+                    adapter.Fill(__recordSet_, "__table");
+                }
+                else
+                {
+                    adapter.Fill(__recordSet_, __tablename);
+                }
                 return true;
             }
             catch (Exception e)

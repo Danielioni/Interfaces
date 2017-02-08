@@ -301,7 +301,7 @@ namespace motCommonLib
         {
             if (string.IsNullOrEmpty(__date))
             {
-                throw new ArgumentNullException("Invalid Date Argument");
+                return string.Empty;
             }
 
             // Extract the date pard

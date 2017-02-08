@@ -924,17 +924,30 @@ namespace motCommonLib
         {
             if (__open_for_listening)
             {
-                __trigger.Stop();
-                __trigger.Server.Dispose();
+                if (__trigger != null)
+                {
+                    __trigger.Stop();
+                    __trigger.Server.Dispose();
+                }
             }
             else
             {
-                __client.Dispose();
-                __stream.Dispose();
+                if (__client != null)
+                {
+                    __client.Dispose();
+                }
+
+                if (__stream != null)
+                {
+                    __stream.Dispose();
+                }
 
                 if(__use_ssl)
                 {
-                    __ssl_stream.Dispose();
+                    if (__ssl_stream != null)
+                    {
+                        __ssl_stream.Dispose();
+                    }
                 }
             }
         }
