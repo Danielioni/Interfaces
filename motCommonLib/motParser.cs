@@ -865,7 +865,7 @@ namespace motCommonLib
 
 
 
-        /*
+/*
             0) Patient Name (last, first)
             1) Patient Record Number (in BestRx)
             2) Facility Name
@@ -878,7 +878,7 @@ namespace motCommonLib
             9) Generic Drug name
             10) Admin Date (for PRN this will be blank)
             11) Admin Time (for PRN this will be "1200"
-            12) Admin Qty (for PRN this will be "1")
+            12) Admin Qty  (for PRN this will be "1")
             13) Drug Strength
             14) Prescriber Name
             15) Rx Number
@@ -892,7 +892,7 @@ namespace motCommonLib
             23) Refill Number (0=original fill, 1=first refill, etc)
             24) Total number of doses for Rx in the file
             25) Value for barcode (you can ignore this) 
-         */
+*/
 
         // (0)DONUT, FRED~
         // (1)25731~
