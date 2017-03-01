@@ -459,7 +459,7 @@ namespace motCommonLib
 
         public MSH __msh;
         public List<Order> __orders;
-        public Patient __patient;
+        public hl7Patient __patient;
         public Header __header;
 
         public OMP_O09(XDocument __xdoc) : base()
@@ -469,7 +469,7 @@ namespace motCommonLib
 
             __header = new Header();
             __orders = new List<Order>();
-            __patient = new Patient();
+            __patient = new hl7Patient();
             Order __current_order = new Order();
 
             __data = __xdoc;
@@ -665,7 +665,7 @@ namespace motCommonLib
             return false;
         }
     }
-    public class Patient
+    public class hl7Patient
     {
         public PID __pid;
         public PD1 __pd1;
@@ -680,7 +680,7 @@ namespace motCommonLib
         public IN1 __in1;
         public IN2 __in2;
 
-        public Patient()
+        public hl7Patient()
         {
             try
             {
@@ -753,7 +753,7 @@ namespace motCommonLib
 
         public Header __header;
         public List<Order> __orders;
-        public Patient __patient;
+        public hl7Patient __patient;
 
         public RDE_O11() : base()
         {
@@ -765,7 +765,7 @@ namespace motCommonLib
 
             __header = new Header();
             __orders = new List<Order>();
-            __patient = new Patient();
+            __patient = new hl7Patient();
 
             Order __current_order = new Order();
 
@@ -919,7 +919,7 @@ namespace motCommonLib
         public MSH __msh;
         public ZPI __zpi;
         public List<Order> __orders;
-        public Patient __patient;
+        public hl7Patient __patient;
         public Header __header;
 
         public RDS_O13(XDocument __xdoc) : base()
@@ -928,7 +928,7 @@ namespace motCommonLib
 
             __orders = new List<Order>();
             __header = new Header();
-            __patient = new Patient();
+            __patient = new hl7Patient();
 
             Order __current_order = new Order();
 

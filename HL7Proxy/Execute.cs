@@ -1385,7 +1385,7 @@ namespace HL7Proxy
             __g_msh = __header.__msh;
             return true;
         }
-        private bool __process_Patient(Patient __patient, RecordBundle __recs)
+        private bool __process_Patient(hl7Patient __patient, RecordBundle __recs)
         {
             try
             {
