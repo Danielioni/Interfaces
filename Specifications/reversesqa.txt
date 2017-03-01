@@ -1,0 +1,4 @@
+select * from cardserial where card_duedate >  date( '2016-01-01' )  -- Use cardsn to lookup bubble contents
+select * from cardserial_bubble where cardsn = 5697	-- Use rxnum to lookup rx's
+select * from rx where motrxnum = 893 			-- Use drugs_seqno to lookup NDC
+select * from drugs where Seq_No = 1002571
