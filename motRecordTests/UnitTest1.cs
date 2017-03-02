@@ -248,7 +248,7 @@ namespace motRecordTests
             try
             {
                 p = new motSocket(__gateway_address, __port_number);
-                motParser __test = new motParser(p, __xdoc, motInputStuctures.__inputXML);
+                motParser __test = new motParser(p, __xdoc, false);
             }
             catch (Exception e)
             {
@@ -487,7 +487,7 @@ DONUT, FRED~25731~SPRINGFIELD RETIREMENT CASTLE~~2~201~13~00904791559~~IBUPROFEN
             try
             {
                 motSocket p = new motSocket(__gateway_address, __port_number);
-                motParser __test = new motParser(p, __parada_record, motInputStuctures.__inputPARADA);
+                motParser __test = new motParser(p, __parada_record, false);
             }
             catch (Exception ex)
             {
@@ -524,7 +524,7 @@ DONUT, FRED~25731~SPRINGFIELD RETIREMENT CASTLE~~2~201~13~00904791559~~IBUPROFEN
             try
             {
                 p = new motSocket(__gateway_address, __port_number);
-                motParser __test = new motParser(p, __jdoc, motInputStuctures.__inputJSON);
+                motParser __test = new motParser(p, __jdoc, false);
             }
             catch (Exception e)
             {

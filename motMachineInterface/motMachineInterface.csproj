@@ -87,7 +87,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -96,17 +98,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SynMed.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SynMed.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\motCommonLib\motCommonLib.csproj">
       <Project>{ca048b94-057e-4f73-b60d-4f79096e46c9}</Project>
       <Name>motCommonLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\motOutboundLib\motOutboundLib.csproj">
-      <Project>{b8caced9-09d0-411f-9fd6-11dcf222ddfd}</Project>
-      <Name>motOutboundLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

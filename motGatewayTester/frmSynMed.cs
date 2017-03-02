@@ -68,7 +68,7 @@ namespace motGatewayTester
 
                     else if (!string.IsNullOrEmpty(__patient_last_name))
                     {
-                        await __synmed.WriteCycle(DateTime.Parse(__start_date));
+                        await __synmed.WriteCycle(DateTime.Parse(__start_date), DateTime.Parse(__start_date));
                     }
                 }
                 else
@@ -76,7 +76,7 @@ namespace motGatewayTester
                     motLegacySynMed __old_synmed = new motLegacySynMed(@"\motNext\SynmedFiles");
 
                     await __old_synmed.Login(__username, __password);
-                    await __old_synmed.WriteCycle(DateTime.Parse(__start_date));
+                    await __old_synmed.WriteCycle(DateTime.Parse(__start_date), DateTime.Parse(__start_date));
                 }
 
 

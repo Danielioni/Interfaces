@@ -56,7 +56,7 @@ namespace motMatchineInterface
     public class __motsynmed_dose
     {
         public Guid __g_id;
-        public long __i_id;
+        public decimal __i_id;
 
         public string __dose_schedule_name;
         public string __dose_time; // HH:MM
@@ -66,9 +66,9 @@ namespace motMatchineInterface
     public class __motsynmed_rx
     {
         public Guid __g_presccriber_id;
-        public long __i_prescriber_id;
+        public decimal __i_prescriber_id;
 
-        public long __rx_num;
+        public decimal __rx_num;
 
         public Guid __g_rxid;
         public long __i_rxid;
@@ -94,6 +94,8 @@ namespace motMatchineInterface
         public RxType? __rx_type;
         public string __rx_dose_code;
 
+        public bool __active;
+
         public string __sig;
 
         public List<__motsynmed_dose> __dose_schedule;
@@ -106,7 +108,7 @@ namespace motMatchineInterface
     public class __motsynmed_facility
     {
         public Guid __g_id;
-        public long __i_id;
+        public decimal __i_id;
 
         public string __facility_name;
         public __motsynmed_address __main_address;
@@ -117,16 +119,34 @@ namespace motMatchineInterface
             __main_address = new __motsynmed_address();
         }
     }
+    public class __motsynmed_store
+    {
+        public Guid __g_id;
+        public decimal __i_id;
+
+        public string __facility_name;
+        public __motsynmed_address __main_address;
+        public string __phone;
+        public string __dea;
+
+        public __motsynmed_store()
+        {
+            __main_address = new __motsynmed_address();
+        }
+    }
     public class __motsynmed_patient
     {
         public Guid __g_patient_id;
-        public long __i_patient_id;
+        public decimal __i_patient_id;
 
         public string __last_name;
         public string __first_name;
         public string __middle_initial;
         public DateTime __dob;
         public DateTime __cycle_date;
+
+        public int __cycle_days;
+
         public string __phone;
         public List<__motsynmed_rx> __rxes;
         public __motsynmed_address __main_address;
@@ -145,13 +165,13 @@ namespace motMatchineInterface
             __main_address = new __motsynmed_address();
             __rxes = new List<__motsynmed_rx>();
         }
-
     }
     public class __motsynmed_card : IDisposable
     {
-        public __motsynmed_patient __pat;
-        public __motsynmed_facility __fac;
-        public __motsynmed_prescriber __doc;
+        public __motsynmed_patient __patient;
+        public __motsynmed_facility __faccility;
+        public __motsynmed_prescriber __prescriber;
+        public __motsynmed_store __store;
 
         public int __card_sn;
         public int[] __bubble_num;
@@ -164,9 +184,10 @@ namespace motMatchineInterface
 
         public __motsynmed_card()
         {
-            __pat = new __motsynmed_patient();
-            __fac = new __motsynmed_facility();
-            __doc = new __motsynmed_prescriber();
+            __patient = new __motsynmed_patient();
+            __faccility = new __motsynmed_facility();
+            __prescriber = new __motsynmed_prescriber();
+            __store = new __motsynmed_store();
 
             __bubble_num = new int[31];
         }
@@ -177,7 +198,7 @@ namespace motMatchineInterface
 
         public void Dispose()
         {
-            __pat.__rxes.Clear();
+            __patient.__rxes.Clear();
         }
     }
     /// <summary>
@@ -187,7 +208,7 @@ namespace motMatchineInterface
     {
         Task Login(string __uname, string __pw);
         Task WritePatient(string __last_name, string __first_name, string __middle_initial, DateTime __cycle_start_date, int __cycle_length);
-        Task WriteCycle(DateTime __cycle_start);
+        Task WriteCycle(DateTime __cycle_start, DateTime __end_cycle_range);
         Task WriteFacilityCycle(string __facility_name, DateTime __cycle_start_date, int __cycle_length);
     }
     /// <summary>
@@ -199,6 +220,26 @@ namespace motMatchineInterface
         private string __file_name;
         private SynMedTable __table;
 
+        Dictionary<string, int> __state_no = new Dictionary<string, int>()
+            {
+                {"",-1 }, { "AL", 0 }, {"AK", 1 }, {"AZ", 2 },
+                {"AR", 3 }, {"CA", 4 }, {"CO", 5 },
+                {"CT", 6 }, {"DE", 7 }, {"DC", 8 },
+                {"FL", 9 }, {"GA", 10 }, {"HI", 11 },
+                {"ID", 12 }, {"IL", 13 }, {"IN", 14 },
+                {"IA", 15 }, {"KS", 16 }, {"KY", 17 },
+                {"LA", 18 }, {"ME", 19 }, {"MD", 20 },
+                {"MA", 21 }, {"MI", 22 }, {"MN", 23 },
+                {"MS", 24 }, {"MO", 25 }, {"MT", 26 },
+                {"NE", 27 }, {"NV", 28 }, {"NH", 29 },
+                {"NJ", 30 }, {"NM", 31 }, {"NY", 32 },
+                {"NC", 33 }, {"ND", 34 }, {"OH", 35 },
+                {"OK", 36 }, {"OR", 37 }, {"PA", 38 },
+                {"RI", 39 }, {"SC", 40 }, {"SD", 41 },
+                {"TN", 42 }, {"TX", 43 }, {"UT", 44 },
+                {"VT", 45 }, {"VA", 46 }, {"WA", 47 },
+                {"WV", 48 }, {"WI", 49 }, {"WY", 50 }
+            };
 
         // Transforms
         public DateTime __get_date_value(DataRow __row, string __index)
@@ -296,7 +337,7 @@ namespace motMatchineInterface
             return null;
         }
 
-
+        // Normal Tasks
         public async Task Login(string __uname, string __pw)
         {
             try
@@ -312,13 +353,119 @@ namespace motMatchineInterface
         { }
         public async Task WritePatient(string __last_name, string __first_name, string __middle_initial, DateTime __cycle_start_date, int __cycle_length)
         { }
+        /// <summary>
+        /// WriteCycle Creates a card set based on the cycle date.
+        /// 
+        ///     Step 1:  Locate all the patients whose cycles begin on a specific date or date range
+        ///     Step 2:  For each Active patient, locate all the active prescriptions for the patient and add them to a prescription list the patient class contains
+        ///     Step 3:  For each active prescription. locate the doctors that wrote 
+        ///     Step 4:  For each active patient, locate the Facility they live in
+        ///     Step 5:  Locate the store that provides Medicine-On-Time to the patient
+        ///     Step 6:  Write the SynMed file using the collected items
+        ///     
+        /// </summary>
+        /// <param name="__cycle_start"></param>
+        /// <returns>Task</returns>
+        public async Task WriteCycle(DateTime __cycle_start, DateTime __end_cycle_range)
+        {
+            try
+            {
+                // Find all the patients
+                DataSet __db_patients = new DataSet();
+                List<__motsynmed_patient> __patients = new List<__motsynmed_patient>();
+
+                if (__end_cycle_range > __cycle_start)
+                {
+                    __db.executeQuery(string.Format("SELECT * FROM Patient, cardserial WHERE cycledate >= date('{0:yyyy-MM-dd}' AND cycledate <= date('{1:yyyy-MM-dd}');", __cycle_start, __end_cycle_range), __db_patients, "Patients");
+                }
+                else
+                {
+                    __db.executeQuery(string.Format("SELECT * FROM Patient, cardserial WHERE cycledate >= date('{0:yyyy-MM-dd}');", __cycle_start), __db_patients, "Patients");
+                }
+
+                // Make sure we have some and add them to the collection
+                if (__db_patients.Tables["Patients"].Rows.Count > 0)
+                {
+                    foreach (DataRow p in __db_patients.Tables["Patients"].Rows)
+                    {
+                        var __patient = new __motsynmed_patient();
+
+                        __patient.__cycle_date = __get_date_value(p, "CycleDate");
+                        __patient.__cycle_days = __get_value<int>(p, "CycleDays");
+                        __patient.__last_name = __get_value<string>(p, "LastName");
+                        __patient.__first_name = __get_value<string>(p, "FirstName");
+                        __patient.__middle_initial = __get_value<string>(p, "MiddleInitial");
+                        __patient.__main_address.__address1 = __get_value<string>(p, "Address1");
+                        __patient.__main_address.__address2 = __get_value<string>(p, "Address2");
+                        __patient.__main_address.__city = __get_value<string>(p, "City");
+                        __patient.__main_address.__state = (__get_value<string>(p, "State") != null) ? __state_no[__get_value<string>(p, "State")] : 0;
+                        __patient.__main_address.__zip = __get_value<string>(p, "Zip");
+                        __patient.__phone = __get_value<string>(p, "Phone");
+                        __patient.__dob = __get_date_value(p, "DOB");
+                        __patient.__room = __get_value<string>(p, "Room");
+                        
+                        // Set up the links to other assets
+                        __patient.__i_patient_id = (long)__get_value<decimal>(p, "MotPatID");
+                        __patient.__i_prescriber_id = (long)__get_value<decimal>(p, "PrimaryDoc");
+                        __patient.__i_facility_id = (long)__get_value<decimal>(p, "PrimaryDoc");
+
+                        // Add it to the list
+                        __patients.Add(__patient);
+                    }
+                }
+
+                // Build the Rx List for each patient
+                DataSet __db_rxes = new DataSet();
+
+                foreach(var __patient in __patients)
+                {
+                    __db.executeQuery(string.Format("SELECT * FROM rx INNER JOIN ON rx.drugs_seqno_wf = drugs.seq_no WHERE motpatid = '{0}' AND deleted == 0);", __patient.__i_patient_id), __db_rxes, "Scrips");
+
+                    if(__db_rxes.Tables["Scrips"].Rows.Count > 0)
+                    {
+                        foreach (DataRow r in __db_rxes.Tables["Scrips"].Rows)
+                        {
+                            if (r["discontinue_date"] == DBNull.Value)
+                            {
+                                var __exp_date = __get_date_value(r, "expiration_date");
+                                if (__exp_date < DateTime.Today)
+                                {
+                                    continue;
+                                }
+
+                                var __rx = new __motsynmed_rx();
+
+
+                                __rx.__expire_date = __exp_date;
+                                __rx.__start_date = __get_date_value(r, "rxstartdate");
+
+                                __rx.__rx_num = __get_value<decimal>(r, "rxsys_rxnum");
+                                __rx.__rx_type = __convert_rx(__get_value<int>(r, "rxtype"));
+                                __rx.__trade_name = __get_value<string>(r, "tradename");
+                                __rx.__cup_name = __get_value<string>(r, "short_name");
+                                __rx.__rx_dose_code = __get_value<string>(r, "dscode");
+
+                                __convert_dose_schedule(__rx.__rx_dose_code, __rx.__dose_schedule, __patient.__i_facility_id);
+
+
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        /*
         public async Task WriteCycle(DateTime __cycle_start)
         {
             List<__motsynmed_card> __card_list = new List<__motsynmed_card>();
 
             DataSet __data = new DataSet();
             DataSet __scrip = new DataSet();
-            DataSet __pat = new DataSet();
+            DataSet __patient = new DataSet();
             DataSet __loc = new DataSet();
             DataSet __doc = new DataSet();
             DataSet __patloc = new DataSet();
@@ -354,13 +501,13 @@ namespace motMatchineInterface
                 foreach (DataRow __record in __data.Tables["__table"].Rows)
                 {
                     i++;
-                    __motsynmed_card __cl = new __motsynmed_card();
+                    __motsynmed_card __card = new __motsynmed_card();
 
-                    __cl.__card_sn = __get_value<int>(__record, "cardsn");
-                   // __cl.__bubble_num[i++] = (int)__get_value<byte>(__record, "bubblenum");
-                    __cl.__card_dispensdate = __get_date_value(__record, "dispense_date");
-                    __cl.__card_duedate = __get_date_value(__record, "card_duedate");
-                    __cl.__card_type = (int)__get_value<byte>(__record, "card_type");
+                    __card.__card_sn = __get_value<int>(__record, "cardsn");
+                   // __card.__bubble_num[i++] = (int)__get_value<byte>(__record, "bubblenum");
+                    __card.__card_dispensdate = __get_date_value(__record, "dispense_date");
+                    __card.__card_duedate = __get_date_value(__record, "card_duedate");
+                    __card.__card_type = (int)__get_value<byte>(__record, "card_type");
 
                     // Populate the Patient Object
                     __db.executeQuery(string.Format("Select * from Patient LEFT OUTER JOIN Location ON Patient.LocCode = Location.LocCode where Patient.MotPatId = '{0}';", __record["patid"]), __patloc, "__patloc");
@@ -369,51 +516,51 @@ namespace motMatchineInterface
                     {
                         DataRow __row0 = __patloc.Tables["__patloc"].Rows[0];
 
-                        __cl.__pat.__last_name = __get_value<string>(__row0, "LastName");
-                        __cl.__pat.__first_name = __get_value<string>(__row0, "FirstName");
-                        __cl.__pat.__middle_initial = __get_value<string>(__row0, "MiddleInitial");
-                        __cl.__pat.__main_address.__address1 = __get_value<string>(__row0, "Address1");
-                        __cl.__pat.__main_address.__address2 = __get_value<string>(__row0, "Address2");
-                        __cl.__pat.__main_address.__city = __get_value<string>(__row0, "City");
-                        __cl.__pat.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
-                        __cl.__pat.__main_address.__zip = __get_value<string>(__row0, "Zip");
-                        __cl.__pat.__phone = __get_value<string>(__row0, "Phone");
-                        __cl.__pat.__dob = __get_date_value(__row0, "DOB");
-                        __cl.__pat.__room = __get_value<string>(__row0, "Room"); ;
-                        __cl.__fac.__i_id = __get_value<int>(__row0, "LocCode");
-                        __cl.__doc.__i_id = __get_value<int>(__row0, "PrimaryDoc");
+                        __card.__patient.__last_name = __get_value<string>(__row0, "LastName");
+                        __card.__patient.__first_name = __get_value<string>(__row0, "FirstName");
+                        __card.__patient.__middle_initial = __get_value<string>(__row0, "MiddleInitial");
+                        __card.__patient.__main_address.__address1 = __get_value<string>(__row0, "Address1");
+                        __card.__patient.__main_address.__address2 = __get_value<string>(__row0, "Address2");
+                        __card.__patient.__main_address.__city = __get_value<string>(__row0, "City");
+                        __card.__patient.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
+                        __card.__patient.__main_address.__zip = __get_value<string>(__row0, "Zip");
+                        __card.__patient.__phone = __get_value<string>(__row0, "Phone");
+                        __card.__patient.__dob = __get_date_value(__row0, "DOB");
+                        __card.__patient.__room = __get_value<string>(__row0, "Room"); ;
+                        __card.__facility.__i_id = __get_value<int>(__row0, "LocCode");
+                        __card.__prescriber.__i_id = __get_value<int>(__row0, "PrimaryDoc");
 
                     }
 
-                    __db.executeQuery(string.Format("Select * from Location where LocCode = '{0}';", __cl.__fac.__i_id), __loc, "__location");
+                    __db.executeQuery(string.Format("Select * from Location where LocCode = '{0}';", __card.__facility.__i_id), __loc, "__location");
                     if (__loc.Tables["__location"].Rows.Count > 0)
                     {
                         DataRow __row0 = __loc.Tables["__location"].Rows[0];
 
-                        __cl.__fac.__facility_name = __get_value<string>(__row0, "locname");
-                        __cl.__fac.__main_address.__address1 = __get_value<string>(__row0, "Address1");
-                        __cl.__fac.__main_address.__address2 = __get_value<string>(__row0, "Address2");
-                        __cl.__fac.__main_address.__city = __get_value<string>(__row0, "City");
-                        __cl.__fac.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
-                        __cl.__fac.__main_address.__zip = __get_value<string>(__row0, "Zip");
-                        __cl.__fac.__phone = __get_value<string>(__row0, "Phone");
+                        __card.__facility.__facility_name = __get_value<string>(__row0, "locname");
+                        __card.__facility.__main_address.__address1 = __get_value<string>(__row0, "Address1");
+                        __card.__facility.__main_address.__address2 = __get_value<string>(__row0, "Address2");
+                        __card.__facility.__main_address.__city = __get_value<string>(__row0, "City");
+                        __card.__facility.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
+                        __card.__facility.__main_address.__zip = __get_value<string>(__row0, "Zip");
+                        __card.__facility.__phone = __get_value<string>(__row0, "Phone");
                     }
 
-                    __db.executeQuery(string.Format("Select * from Prescriber where DocCode = '{0}';", __cl.__doc.__i_id), __doc, "__doctor");
+                    __db.executeQuery(string.Format("Select * from Prescriber where DocCode = '{0}';", __card.__prescriber.__i_id), __doc, "__doctor");
                     if (__doc.Tables["__doctor"].Rows.Count > 0)
                     {
                         DataRow __row0 = __doc.Tables["__doctor"].Rows[0];
 
-                        __cl.__doc.__last_name = __get_value<string>(__row0, "LastName");
-                        __cl.__doc.__first_name = __get_value<string>(__row0, "FirstName");
-                        __cl.__doc.__middle_initial = __get_value<string>(__row0, "MiddleInitial");
-                        __cl.__doc.__main_address.__address1 = __get_value<string>(__row0, "Address1");
-                        __cl.__doc.__main_address.__address2 = __get_value<string>(__row0, "Address2");
-                        __cl.__doc.__main_address.__city = __get_value<string>(__row0, "City");
-                        __cl.__doc.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
-                        __cl.__doc.__main_address.__zip = __get_value<string>(__row0, "Zip");
-                        __cl.__doc.__dea = __get_value<string>(__row0, "DEA");
-                        __cl.__doc.__phone = __get_value<string>(__row0, "Phone");
+                        __card.__prescriber.__last_name = __get_value<string>(__row0, "LastName");
+                        __card.__prescriber.__first_name = __get_value<string>(__row0, "FirstName");
+                        __card.__prescriber.__middle_initial = __get_value<string>(__row0, "MiddleInitial");
+                        __card.__prescriber.__main_address.__address1 = __get_value<string>(__row0, "Address1");
+                        __card.__prescriber.__main_address.__address2 = __get_value<string>(__row0, "Address2");
+                        __card.__prescriber.__main_address.__city = __get_value<string>(__row0, "City");
+                        __card.__prescriber.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
+                        __card.__prescriber.__main_address.__zip = __get_value<string>(__row0, "Zip");
+                        __card.__prescriber.__dea = __get_value<string>(__row0, "DEA");
+                        __card.__prescriber.__phone = __get_value<string>(__row0, "Phone");
                     }
 
                     if (__get_value<decimal>(__record, "rxnum") > 0)
@@ -443,7 +590,7 @@ namespace motMatchineInterface
                                 __tmp_dose.__qty = (double)__get_value<decimal>(__rec, "qty_written");
                                 __tmp_dose.__dose_schedule_name = __get_value<string>(__rec, "dscode");
 
-                                __convert_dose_schedule(__tmp_dose.__dose_schedule_name, __tmp_rx.__dose_schedule, __cl.__fac.__i_id);
+                                __convert_dose_schedule(__tmp_dose.__dose_schedule_name, __tmp_rx.__dose_schedule, __card.__facility.__i_id);
                                 __tmp_rx.__rx_type = __convert_rx(__get_value<byte>(__rec, "RxType"));
 
                                 __tmp_rx.__refills = __get_value<byte>(__rec, "refills");
@@ -460,24 +607,24 @@ namespace motMatchineInterface
                                 __tmp_rx.__consult_message += string.Format(" \n{0}", __get_value<string>(__rec, "consult_msg"));
                                 __tmp_rx.__generic_for = __get_value<string>(__rec, "GenericFor");
 
-                                __cl.__doc.__i_id = __get_value<int>(__rec, "doccode");
+                                __card.__prescriber.__i_id = __get_value<int>(__rec, "doccode");
 
                                 __tmp_rx.__dose_schedule.Add(__tmp_dose);
-                                __cl.__pat.__rxes.Add(__tmp_rx);
+                                __card.__patient.__rxes.Add(__tmp_rx);
 
                             }
                         }
                     }
 
-                    __card_list.Add(__cl);
+                    __card_list.Add(__card.;
 
-                    Console.WriteLine("Added record for - {0} at {1}", __cl.__pat.__last_name, __cl.__fac.__facility_name);
+                    Console.WriteLine("Added record for - {0} at {1}", __card.__patient.__last_name, __card.__facility.__facility_name);
                 }
 
                 Console.WriteLine("Done, added {0} records", i);
             }
         }
-
+        */
 
         public motLegacySynMed(string __path)
         {
@@ -617,7 +764,7 @@ namespace motMatchineInterface
                 throw;
             }
         }
-        public async Task WriteCycle(DateTime __cycle_start)
+        public async Task WriteCycle(DateTime __cycle_start, DateTime __end_cycle_range)
         {
             if (!__logged_in)
             {
