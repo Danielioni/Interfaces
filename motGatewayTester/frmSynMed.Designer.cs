@@ -46,8 +46,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rbUseNext = new System.Windows.Forms.RadioButton();
             this.rbUseLegacy = new System.Windows.Forms.RadioButton();
+            this.rbUseNext = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,6 +77,8 @@
             this.txtCycleStartDate.Name = "txtCycleStartDate";
             this.txtCycleStartDate.Size = new System.Drawing.Size(244, 22);
             this.txtCycleStartDate.TabIndex = 3;
+            this.txtCycleStartDate.Text = "3/11/2017";
+            this.txtCycleStartDate.TextChanged += new System.EventHandler(this.txtCycleStartDate_TextChanged);
             // 
             // txtCycleLength
             // 
@@ -161,6 +163,7 @@
             this.txtUserName.Name = "txtUserName";
             this.txtUserName.Size = new System.Drawing.Size(270, 22);
             this.txtUserName.TabIndex = 13;
+            this.txtUserName.Text = "dba";
             // 
             // txtPassword
             // 
@@ -203,16 +206,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "[ Database ]";
             // 
-            // rbUseNext
-            // 
-            this.rbUseNext.AutoSize = true;
-            this.rbUseNext.Location = new System.Drawing.Point(25, 31);
-            this.rbUseNext.Name = "rbUseNext";
-            this.rbUseNext.Size = new System.Drawing.Size(109, 21);
-            this.rbUseNext.TabIndex = 0;
-            this.rbUseNext.Text = "Use motNext";
-            this.rbUseNext.UseVisualStyleBackColor = true;
-            // 
             // rbUseLegacy
             // 
             this.rbUseLegacy.AutoSize = true;
@@ -224,6 +217,16 @@
             this.rbUseLegacy.TabStop = true;
             this.rbUseLegacy.Text = "Use motLegacy";
             this.rbUseLegacy.UseVisualStyleBackColor = true;
+            // 
+            // rbUseNext
+            // 
+            this.rbUseNext.AutoSize = true;
+            this.rbUseNext.Location = new System.Drawing.Point(25, 31);
+            this.rbUseNext.Name = "rbUseNext";
+            this.rbUseNext.Size = new System.Drawing.Size(109, 21);
+            this.rbUseNext.TabIndex = 0;
+            this.rbUseNext.Text = "Use motNext";
+            this.rbUseNext.UseVisualStyleBackColor = true;
             // 
             // frmSynMed
             // 

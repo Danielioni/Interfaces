@@ -114,5 +114,10 @@ namespace motGatewayTester
         {
 
         }
+
+        private void txtCycleStartDate_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -27,6 +27,7 @@ namespace motMatchineInterface
     /// <summary>
     /// Generalized classes for mapping motLegacy and motNext data into a common model 
     /// </summary>
+    /// 
     public class __motsynmed_address
     {
         public string __address1;
@@ -53,31 +54,105 @@ namespace motMatchineInterface
             __main_address = new __motsynmed_address();
         }
     }
-    public class __motsynmed_dose
+    /// <summary>
+    /// Titrating Rx Type - needs to offer varialble dosage over time and variable dos_schedules.
+    /// For example:
+    ///     2017-03-10  4 Prednisone 10mg @ 08:00
+    ///     2017-03-11  3 Prednisone 10mg @ 08:00
+    ///     2017-03-12  1 Prednisone 10mg @ 08:00
+    ///     2017-03-13  1 Prednisone 10mg @ 08:00
+    ///     2017-03-12  1 Prednisone 10mg @ 08:00    
+    ///     
+    ///     --or-- with a specified daily dose schedule, BID, QD, ...
+    ///     
+    ///     2017-03-10  4 Prednisone 5mg @ 08:00
+    ///     2017-03-10  4 Prednisone 5mg @ 20:00
+    ///     2017-03-11  3 Prednisone 5mg @ 08:00
+    ///     2017-03-11  3 Prednisone 5mg @ 20:00
+    ///     2017-03-12  2 Prednisone 5mg @ 08:00
+    ///     2017-03-12  2 Prednisone 5mg @ 20:00
+    ///     2017-03-13  1 Prednisone 5mg @ 08:00
+    ///     2017-03-10  1 Prednisone 5mg @ 20:00
+    ///     
+    /// </summary>
+    public class __motsynmed_titrating_schedule : IDisposable
+    {
+        public Guid __g_id;
+        public decimal __i_id;
+
+        public DateTime __dose_date;
+        public List<__motsynmed_daily_dose> __dose_schedule;
+        public __motsynmed_daily_dose __dose_item;
+
+        public __motsynmed_titrating_schedule()
+        {
+            __dose_schedule = new List<__motsynmed_daily_dose>();
+        }
+        public void Dispose()
+        {
+            __dose_schedule.Clear();
+        }
+    }
+    public class __motsynmed_alternating_schedule : IDisposable
+    {
+        public Guid __g_id;
+        public decimal __i_id;
+
+        public DateTime __dose_date;
+        public int __alternating_days;
+        public List<__motsynmed_daily_dose> __dose_schedule;
+
+        public __motsynmed_alternating_schedule()
+        {
+            __dose_schedule = new List<__motsynmed_daily_dose>();
+        }
+        public void Dispose()
+        {
+            __dose_schedule.Clear();
+        }
+    }
+    public class __motsynmed_daily_dose
     {
         public Guid __g_id;
         public decimal __i_id;
 
         public string __dose_schedule_name;
         public string __dose_time; // HH:MM
-        public double __qty;
+        public decimal __qty;
+        public int __card_sn;
+        public int __isolate;
         public string __special_instructions;
+
+        public __motsynmed_daily_dose()
+        {
+            __card_sn = -1;
+            __isolate = 0;
+        }
     }
     public class __motsynmed_rx
     {
         public Guid __g_presccriber_id;
         public decimal __i_prescriber_id;
+        public __motsynmed_prescriber __prescriber;
 
         public decimal __rx_num;
+        public int __mot_rx_num;
 
         public Guid __g_rxid;
         public long __i_rxid;
+
+        public __motsynmed_patient __patient;
 
         public DateTime __written_date;
         public DateTime __start_date;
         public DateTime __expire_date;
         public DateTime __dc_date;
-        public int __refills;
+
+        public int __mdomstart;
+        public int __mdomend;
+        public byte[] __dow_list;
+        public string __dom_list;
+        public int __alternate_days;       // Flex Days
 
         public string __NDC;
         public string __visual_description;
@@ -88,27 +163,43 @@ namespace motMatchineInterface
         public string __strength;
         public string __route;
         public string __dose_form;
+        public string __otc;
         public string __consult_message;
         public string __generic_for;
 
-        public RxType? __rx_type;
-        public string __rx_dose_code;
+        public RxType? __type;
+        public string __dose_code;
+
+        public decimal __qty_per_dose;
+        public decimal __qty_to_dispense;
+        public int __refills;
 
         public bool __active;
 
         public string __sig;
+        public int __isolate;
+        public int __bulk;
+        public int __chart_only;
 
-        public List<__motsynmed_dose> __dose_schedule;
+        public List<__motsynmed_daily_dose> __dose_schedule;
+        public List<__motsynmed_titrating_schedule> __t_dose_schedule;
+        public List<__motsynmed_alternating_schedule> __a_dose_schedule;
 
         public __motsynmed_rx()
         {
-            __dose_schedule = new List<__motsynmed_dose>();
+            __dow_list = new byte[7];
+            __dose_schedule = new List<__motsynmed_daily_dose>();
+            __t_dose_schedule = new List<__motsynmed_titrating_schedule>();
+            __a_dose_schedule = new List<__motsynmed_alternating_schedule>();
+            __prescriber = new __motsynmed_prescriber();
         }
     }
     public class __motsynmed_facility
     {
         public Guid __g_id;
-        public decimal __i_id;
+        public long __i_id;
+
+        public short __store_id;
 
         public string __facility_name;
         public __motsynmed_address __main_address;
@@ -121,10 +212,9 @@ namespace motMatchineInterface
     }
     public class __motsynmed_store
     {
-        public Guid __g_id;
-        public decimal __i_id;
+        public short __id;
 
-        public string __facility_name;
+        public string __store_name;
         public __motsynmed_address __main_address;
         public string __phone;
         public string __dea;
@@ -149,6 +239,8 @@ namespace motMatchineInterface
 
         public string __phone;
         public List<__motsynmed_rx> __rxes;
+
+        public bool __use_patient_address;
         public __motsynmed_address __main_address;
 
         public string __room;
@@ -156,14 +248,26 @@ namespace motMatchineInterface
 
         public Guid __g_prescriber_id;
         public long __i_prescriber_id;
+        public __motsynmed_prescriber __prescriber;
 
         public Guid __g_facility_id;
         public long __i_facility_id;
+        public __motsynmed_facility __facility;
+
+        public Guid __g_store_id;
+        public short __i_store_id;
+        public __motsynmed_store __store;
+
+        public Dictionary<string, string> __card_dose_sn;
 
         public __motsynmed_patient()
         {
             __main_address = new __motsynmed_address();
             __rxes = new List<__motsynmed_rx>();
+            __store = new __motsynmed_store();
+            __facility = new __motsynmed_facility();
+            __prescriber = new __motsynmed_prescriber();
+            __card_dose_sn = new Dictionary<string, string>();
         }
     }
     public class __motsynmed_card : IDisposable
@@ -219,6 +323,9 @@ namespace motMatchineInterface
         motODBCServer __db;
         private string __file_name;
         private SynMedTable __table;
+        Logger __logger;
+
+        public Dictionary<string, string> __card_dose_time = new Dictionary<string, string>();   // "08:00", "3245"
 
         Dictionary<string, int> __state_no = new Dictionary<string, int>()
             {
@@ -238,7 +345,8 @@ namespace motMatchineInterface
                 {"RI", 39 }, {"SC", 40 }, {"SD", 41 },
                 {"TN", 42 }, {"TX", 43 }, {"UT", 44 },
                 {"VT", 45 }, {"VA", 46 }, {"WA", 47 },
-                {"WV", 48 }, {"WI", 49 }, {"WY", 50 }
+                {"WV", 48 }, {"WI", 49 }, {"WY", 50 },
+                {"PR", 51 }, {"ON", 52 }, {"UK", 53 }
             };
 
         // Transforms
@@ -272,33 +380,145 @@ namespace motMatchineInterface
 
             return default(T);
         }
-        private void __convert_dose_schedule(string __ds_name, List<__motsynmed_dose> __tq, long __loc_code)
+        public string __get_next_cardsn(__motsynmed_rx rx)
+        {
+            try
+            {
+                DataSet __max_cardsn = new DataSet();
+                __motsynmed_facility f = new __motsynmed_facility(); ;
+
+                __get_facility(f, rx.__patient.__i_facility_id);
+
+                __db.executeQuery(string.Format("select MAX(cardsn)  from cardserial;"), __max_cardsn, "__max_cardsn");
+                DataRow r = __max_cardsn.Tables["__max_cardsn"].Rows[0];
+                int __new_card_sn = __get_value<int>(r, "MAX(cardserial.cardsn)");
+
+                if (f.__facility_name.Contains("'"))
+                {
+                    f.__facility_name = f.__facility_name.Replace("'", "''");
+                }
+
+                __db.executeNonQuery(string.Format("INSERT into cardserial (cardsn, patid, patnamelast, patnamefirst, loccode, locname, prtdttm, prtdate) VALUES ({0}, {1}, '{2}', '{3}', {4}, '{5}', '{6:yyyy-MM-dd}', '{7:yyyy-MM-dd}');",
+                                    __new_card_sn + 1,
+                                    rx.__patient.__i_patient_id,
+                                    rx.__patient.__last_name,
+                                    rx.__patient.__first_name,
+                                    rx.__patient.__i_facility_id,
+                                    f.__facility_name,
+                                    DateTime.Now,
+                                    DateTime.Now));
+
+                return (__new_card_sn + 1).ToString();
+            }
+            catch
+            {
+                return "-1";
+            }
+        }
+        private void __convert_dose_schedule(__motsynmed_rx __rx, long __loc_code)
         {
             DataSet __tq_list = new DataSet();
-            __motsynmed_dose __tmp_dose;
+            __motsynmed_daily_dose __tmp_dose;
 
-            __db.executeQuery(string.Format("SELECT * from ds_times_qtys where dscode = '{0}' AND linkcode = '{1}';", __ds_name, __loc_code), __tq_list);
-
-            if (__tq_list.Tables["__table"].Rows.Count > 0)
+            if(__rx.__type == RxType.Prn)
             {
-                foreach (DataRow __record in __tq_list.Tables["__table"].Rows)
-                {
-                    __tmp_dose = new __motsynmed_dose();
-                    __tmp_dose.__dose_schedule_name = __ds_name;
+                __rx.__patient.__card_dose_sn.Add("PRN", __get_next_cardsn(__rx));
+            }
 
+            if (__rx.__dose_code.Contains("CUSTOM"))  // The LinkCode is the mot RX number
+            {
+                __db.executeQuery(string.Format("SELECT * from ds_times_qtys where dscode = 'CUSTOM' AND linkcode = '{0}';", __rx.__mot_rx_num), __tq_list, "__dose_schedule");
+            }
+            else  // The LinkCode is the FacilityID
+            {
+                __db.executeQuery(string.Format("SELECT * from ds_times_qtys where dscode = '{0}' AND linkcode = '{1}';", __rx.__dose_code, __loc_code), __tq_list, "__dose_schedule");
+            }
+
+            if (__tq_list.Tables["__dose_schedule"].Rows.Count > 0)
+            {
+                foreach (DataRow __record in __tq_list.Tables["__dose_schedule"].Rows)
+                {
+                    __tmp_dose = new __motsynmed_daily_dose();
+                    __tmp_dose.__dose_schedule_name = __rx.__dose_code;
                     __tmp_dose.__dose_time = __get_value<TimeSpan>(__record, "dosetime").ToString();
 
-                    if (!string.IsNullOrEmpty(__tmp_dose.__dose_time))
+                    if (!string.IsNullOrEmpty(__tmp_dose.__dose_time) && __tmp_dose.__dose_time.Length > 5)
                     {
                         __tmp_dose.__dose_time = __tmp_dose.__dose_time.Substring(0, 5);
-                        __tmp_dose.__qty = (double)__get_value<decimal>(__record, "doseqty");
+                        __tmp_dose.__qty = __get_value<decimal>(__record, "doseqty");
                         __tmp_dose.__special_instructions = __get_value<string>(__record, "textnotes");
 
                         if (__tmp_dose.__qty > 0)
                         {
-                            __tq.Add(__tmp_dose);
+                            __rx.__dose_schedule.Add(__tmp_dose);
+
+                            if (!__rx.__patient.__card_dose_sn.ContainsKey(__tmp_dose.__dose_time))
+                            {
+                                __rx.__patient.__card_dose_sn.Add(__tmp_dose.__dose_time, __get_next_cardsn(__rx));
+                            }
                         }
                     }
+                }
+            }
+        }
+        private void __convert_titrating_dose_schedule(__motsynmed_rx __rx, long __loc_code, DateTime __start_date)
+        {
+            DataSet __titration_list = new DataSet();
+            DateTime __current_date = __start_date;
+            decimal __dose_qty;
+
+            // Iterate through the titration schedule and update the dose schedule and quantity
+            __db.executeQuery(string.Format("SELECT * from ds_times_qtys_special where ds_times_qtys_special.motrxnum = '{0}';", __rx.__mot_rx_num), __titration_list, "__titration_schedule");
+            if (__titration_list.Tables["__titration_schedule"].Rows.Count > 0)
+            {
+                __convert_dose_schedule(__rx, __loc_code);
+
+                foreach (DataRow r in __titration_list.Tables["__titration_schedule"].Rows)
+                {
+                    __motsynmed_titrating_schedule __tmp_ts = new __motsynmed_titrating_schedule();
+
+                    
+                    __tmp_ts.__dose_schedule = __rx.__dose_schedule;
+                    __tmp_ts.__dose_date = __current_date;
+                    __dose_qty = __get_value<decimal>(r, "doseqty");
+
+                    if (__dose_qty > 0)
+                    {
+                        foreach (var d in __tmp_ts.__dose_schedule)
+                        {
+                            d.__qty = __dose_qty;
+                        }
+
+                        __rx.__t_dose_schedule.Add(__tmp_ts);
+                    }
+
+                    __current_date = __start_date.AddDays(__get_value<byte>(r, "bubble_num"));
+                }
+            }
+        }
+        private void __convert_alternating_dose_schedule(__motsynmed_rx __rx, long __loc_code, DateTime __start_date)
+        {
+            DataSet __alternating_list = new DataSet();
+            DateTime __current_date = __start_date;
+
+            __db.executeQuery(string.Format("SELECT flexdays from rx where motrxnum = '{0}';", __rx.__mot_rx_num), __alternating_list, "__alternating_schedule");
+            if (__alternating_list.Tables["__alternating_schedule"].Rows.Count > 0)  // There should only be a single row
+            {
+                DataRow r = __alternating_list.Tables["__alternating_schedule"].Rows[0];
+                var __repeat_days = __get_value<byte>(r, "flexdays");
+
+                DateTime __last_date = __start_date.AddDays(30);
+                __convert_dose_schedule(__rx, __loc_code);
+
+                while (__current_date <= __last_date)
+                {
+                    __motsynmed_alternating_schedule __tmp_as = new __motsynmed_alternating_schedule();
+                    
+                    __tmp_as.__dose_date = __current_date;
+                    __tmp_as.__dose_schedule = __rx.__dose_schedule;
+                    __rx.__a_dose_schedule.Add(__tmp_as);
+
+                    __current_date = __current_date.AddDays(__repeat_days);
                 }
             }
         }
@@ -313,22 +533,22 @@ namespace motMatchineInterface
                     return RxType.Prn;
 
                 case 5:
-                    return RxType.DayOfWeek;
+                    return RxType.DayOfWeek;  // __dow array represents dose days 
 
                 case 7:
-                    return RxType.DayOfMonth;
+                    return RxType.DayOfMonth; // Day of month string represnts map of days
 
                 case 8:
-                    return RxType.MonthlyTitrating;
+                    return RxType.MonthlyTitrating; // Multiple Dose Lines in __dose_schedule
 
                 case 9:
-                    return RxType.WeeklyTitrating;
+                    return RxType.WeeklyTitrating;  // Multiple Dose Lines in __dose_schedule
 
                 case 13:
                     return RxType.Sequential;
 
                 case 18:
-                    return RxType.Alternating;
+                    return RxType.Alternating;  // Dose 1 on Start Date, += __alternate_days until card end or End Date
 
                 default:
                     break;
@@ -336,7 +556,73 @@ namespace motMatchineInterface
 
             return null;
         }
+        public void __get_facility(__motsynmed_facility f, long __facility_id)
+        {
+            DataSet __db_faclities = new DataSet();
 
+            try
+            {
+                __db.executeQuery(string.Format("SELECT * FROM location WHERE loccode = '{0}';", __facility_id), __db_faclities, "Facilities");
+                if (__db_faclities.Tables["Facilities"].Rows.Count > 0)
+                {
+                    DataRow r = __db_faclities.Tables["Facilities"].Rows[0];
+
+                    f.__facility_name = __get_value<string>(r, "locname");
+                    f.__main_address.__address1 = __get_value<string>(r, "Address1");
+                    f.__main_address.__address2 = __get_value<string>(r, "Address2");
+                    f.__main_address.__city = __get_value<string>(r, "City");
+                    f.__main_address.__state = (__get_value<string>(r, "State") != null) ? __state_no[__get_value<string>(r, "State")] : 0;
+                    f.__main_address.__zip = __get_value<string>(r, "Zip");
+                    f.__phone = __get_value<string>(r, "Phone");
+                    f.__store_id = __get_value<short>(r, "mot_storenum");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Retrive facility {0} failed\n{1}", __facility_id, ex.StackTrace);
+            }
+        }
+        public void __get_prescriber(__motsynmed_prescriber p, long __prescriber_id)
+        {
+            DataSet __db_prescribers = new DataSet();
+
+            __db.executeQuery(string.Format("SELECT * FROM prescriber WHERE doccode = '{0}';", __prescriber_id), __db_prescribers, "Prescribers");
+            if (__db_prescribers.Tables["Prescribers"].Rows.Count > 0)
+            {
+                DataRow r = __db_prescribers.Tables["Prescribers"].Rows[0];
+
+                p.__last_name = __get_value<string>(r, "LastName");
+                p.__first_name = __get_value<string>(r, "FirstName");
+                p.__middle_initial = __get_value<string>(r, "MiddleInitial");
+                p.__main_address.__address1 = __get_value<string>(r, "Address1");
+                p.__main_address.__address2 = __get_value<string>(r, "Address2");
+                p.__main_address.__city = __get_value<string>(r, "City");
+                p.__main_address.__state = (__get_value<string>(r, "State") != null) ? __state_no[__get_value<string>(r, "State")] : 0;
+                p.__main_address.__zip = __get_value<string>(r, "Zip");
+                p.__dea = __get_value<string>(r, "DEA");
+                p.__phone = __get_value<string>(r, "Phone");
+
+            }
+        }
+        public void __get_store(__motsynmed_store s, short __store_id)
+        {
+            DataSet __db_store = new DataSet();
+
+            __db.executeQuery(string.Format("SELECT * FROM store WHERE mot_storenum = '{0}';", __store_id), __db_store, "Stores");
+            if (__db_store.Tables["Stores"].Rows.Count > 0)
+            {
+                DataRow r = __db_store.Tables["Stores"].Rows[0];
+                s.__store_name = __get_value<string>(r, "Name");
+                s.__main_address.__address1 = __get_value<string>(r, "Address1");
+                s.__main_address.__address2 = __get_value<string>(r, "Address2");
+                s.__main_address.__city = __get_value<string>(r, "City");
+                s.__main_address.__state = (__get_value<string>(r, "State") != null) ? __state_no[__get_value<string>(r, "State")] : 0;
+                s.__main_address.__zip = __get_value<string>(r, "Zip");
+                s.__dea = __get_value<string>(r, "DEA");
+                s.__phone = __get_value<string>(r, "Phone");
+
+            }
+        }
         // Normal Tasks
         public async Task Login(string __uname, string __pw)
         {
@@ -357,8 +643,8 @@ namespace motMatchineInterface
         /// WriteCycle Creates a card set based on the cycle date.
         /// 
         ///     Step 1:  Locate all the patients whose cycles begin on a specific date or date range
-        ///     Step 2:  For each Active patient, locate all the active prescriptions for the patient and add them to a prescription list the patient class contains
-        ///     Step 3:  For each active prescription. locate the doctors that wrote 
+        ///     Step 2:  For each active patient, locate all the active prescriptions for the patient and add them to a prescription list the patient class contains
+        ///     Step 3:  For each active prescription. locate the doctors that wrote them
         ///     Step 4:  For each active patient, locate the Facility they live in
         ///     Step 5:  Locate the store that provides Medicine-On-Time to the patient
         ///     Step 6:  Write the SynMed file using the collected items
@@ -376,11 +662,11 @@ namespace motMatchineInterface
 
                 if (__end_cycle_range > __cycle_start)
                 {
-                    __db.executeQuery(string.Format("SELECT * FROM Patient, cardserial WHERE cycledate >= date('{0:yyyy-MM-dd}' AND cycledate <= date('{1:yyyy-MM-dd}');", __cycle_start, __end_cycle_range), __db_patients, "Patients");
+                    __db.executeQuery(string.Format("SELECT * FROM Patient WHERE cycledate >= date('{0:yyyy-MM-dd}' AND cycledate <= date('{1:yyyy-MM-dd}');", __cycle_start, __end_cycle_range), __db_patients, "Patients");
                 }
                 else
                 {
-                    __db.executeQuery(string.Format("SELECT * FROM Patient, cardserial WHERE cycledate >= date('{0:yyyy-MM-dd}');", __cycle_start), __db_patients, "Patients");
+                    __db.executeQuery(string.Format("SELECT * FROM Patient WHERE cycledate >= date('{0:yyyy-MM-dd}');", __cycle_start), __db_patients, "Patients");
                 }
 
                 // Make sure we have some and add them to the collection
@@ -391,7 +677,7 @@ namespace motMatchineInterface
                         var __patient = new __motsynmed_patient();
 
                         __patient.__cycle_date = __get_date_value(p, "CycleDate");
-                        __patient.__cycle_days = __get_value<int>(p, "CycleDays");
+                        __patient.__cycle_days = __get_value<byte>(p, "CycleDays");
                         __patient.__last_name = __get_value<string>(p, "LastName");
                         __patient.__first_name = __get_value<string>(p, "FirstName");
                         __patient.__middle_initial = __get_value<string>(p, "MiddleInitial");
@@ -403,11 +689,21 @@ namespace motMatchineInterface
                         __patient.__phone = __get_value<string>(p, "Phone");
                         __patient.__dob = __get_date_value(p, "DOB");
                         __patient.__room = __get_value<string>(p, "Room");
-                        
+
                         // Set up the links to other assets
-                        __patient.__i_patient_id = (long)__get_value<decimal>(p, "MotPatID");
-                        __patient.__i_prescriber_id = (long)__get_value<decimal>(p, "PrimaryDoc");
-                        __patient.__i_facility_id = (long)__get_value<decimal>(p, "PrimaryDoc");
+                        __patient.__i_patient_id = __get_value<int>(p, "MotPatID");
+                        __patient.__i_prescriber_id = __get_value<int>(p, "PrimaryDoc");
+                        __patient.__i_facility_id = __get_value<int>(p, "LocCode");
+                        __patient.__i_store_id = __patient.__facility.__store_id;
+
+                        if (__patient.__i_prescriber_id == 0)
+                        {
+                            __logger.Warn("Patient {0} - {1} does not have a primary prescriber", __patient.__last_name, __patient.__i_patient_id);
+                        }
+
+                        __get_prescriber(__patient.__prescriber, __patient.__i_prescriber_id);
+                        __get_facility(__patient.__facility, __patient.__i_facility_id);
+                        __get_store(__patient.__store, __patient.__facility.__store_id);
 
                         // Add it to the list
                         __patients.Add(__patient);
@@ -417,253 +713,155 @@ namespace motMatchineInterface
                 // Build the Rx List for each patient
                 DataSet __db_rxes = new DataSet();
 
-                foreach(var __patient in __patients)
+                foreach (var __patient in __patients)
                 {
-                    __db.executeQuery(string.Format("SELECT * FROM rx INNER JOIN ON rx.drugs_seqno_wf = drugs.seq_no WHERE motpatid = '{0}' AND deleted == 0);", __patient.__i_patient_id), __db_rxes, "Scrips");
+                    __patient.__rxes = new List<__motsynmed_rx>();
 
-                    if(__db_rxes.Tables["Scrips"].Rows.Count > 0)
+                    __db.executeQuery(string.Format("SELECT * FROM rx JOIN drugs ON rx.drugs_seqno = drugs.seq_no WHERE motpatid = '{0}' AND rx.status = 1 AND rx.deleted = 0;", __patient.__i_patient_id), __db_rxes, "Scrips");
+
+                    if (__db_rxes.Tables["Scrips"].Rows.Count > 0)
                     {
                         foreach (DataRow r in __db_rxes.Tables["Scrips"].Rows)
                         {
-                            if (r["discontinue_date"] == DBNull.Value)
+                            var __p_id = __get_value<int>(r, "doccode");
+                            if (__p_id == 0)
                             {
-                                var __exp_date = __get_date_value(r, "expiration_date");
-                                if (__exp_date < DateTime.Today)
-                                {
-                                    continue;
-                                }
-
-                                var __rx = new __motsynmed_rx();
-
-
-                                __rx.__expire_date = __exp_date;
-                                __rx.__start_date = __get_date_value(r, "rxstartdate");
-
-                                __rx.__rx_num = __get_value<decimal>(r, "rxsys_rxnum");
-                                __rx.__rx_type = __convert_rx(__get_value<int>(r, "rxtype"));
-                                __rx.__trade_name = __get_value<string>(r, "tradename");
-                                __rx.__cup_name = __get_value<string>(r, "short_name");
-                                __rx.__rx_dose_code = __get_value<string>(r, "dscode");
-
-                                __convert_dose_schedule(__rx.__rx_dose_code, __rx.__dose_schedule, __patient.__i_facility_id);
-
-
+                                __logger.Error("Ignoring RX with no prescriber ({0})", __get_value<string>(r, "rxsys_rxnum"));
+                                continue;
                             }
+
+                            var __exp_date = __get_date_value(r, "expiration_date");
+                            if (__exp_date < DateTime.Today || __exp_date < __cycle_start)
+                            {
+                                __logger.Info("Expired RX");
+                                continue;
+                            }
+
+                            RxType? __type = __convert_rx(__get_value<byte>(r, "rxtype"));
+                            if (__type == null)
+                            {
+                                __logger.Error("Ignoring RX with no type ({0})", __get_value<decimal>(r, "rxsys_rxnum"));
+                                continue;   // Ignore bogus RX types
+                            }
+
+                            var __rx = new __motsynmed_rx();
+
+                            // Rx info
+                            __rx.__patient = __patient;
+
+                            __rx.__type = __convert_rx(__get_value<byte>(r, "rxtype"));
+                            __rx.__expire_date = __exp_date;
+
+                            __rx.__start_date = __cycle_start < __get_date_value(r, "written_date") ? __get_date_value(r, "written_date") : __cycle_start;
+
+                            //__rx.__written_date = __get_date_value(r, "written_date");
+                            __rx.__rx_num = __get_value<decimal>(r, "rxsys_rxnum");
+                            __rx.__mot_rx_num = __get_value<int>(r, "motrxnum");
+                            __rx.__dose_code = __get_value<string>(r, "dscode");
+                            __rx.__qty_to_dispense = __get_value<decimal>(r, "qty2disp");
+                            __rx.__qty_per_dose = __get_value<decimal>(r, "qty_per_dose");
+                            __rx.__sig = __get_value<string>(r, "sig2print");
+
+                            __rx.__mdomstart = __get_value<byte>(r, "mdomstart");
+                            __rx.__mdomend = __get_value<byte>(r, "mdomend");
+                            __rx.__alternate_days = __get_value<byte>(r, "flexdays");
+
+                            __rx.__dow_list[0] = __get_value<byte>(r, "su");
+                            __rx.__dow_list[1] = __get_value<byte>(r, "mo");
+                            __rx.__dow_list[2] = __get_value<byte>(r, "tu");
+                            __rx.__dow_list[3] = __get_value<byte>(r, "we");
+                            __rx.__dow_list[4] = __get_value<byte>(r, "th");
+                            __rx.__dow_list[5] = __get_value<byte>(r, "fr");
+                            __rx.__dow_list[6] = __get_value<byte>(r, "sa");
+
+                            __rx.__dom_list = __get_value<string>(r, "mdomstring");
+
+
+                            // Drug Info
+                            __rx.__NDC = __get_value<string>(r, "NDCNum");
+                            __rx.__drug_schedule = __get_value<byte>(r, "drug_sched");
+                            __rx.__trade_name = __get_value<string>(r, "tradename");
+                            __rx.__cup_name = __get_value<string>(r, "short_name");
+                            __rx.__strength = __get_value<string>(r, "strength");
+                            __rx.__unit = __get_value<string>(r, "unit");
+                            __rx.__route = __get_value<string>(r, "route");
+                            __rx.__dose_form = __get_value<string>(r, "dose_form");
+                            __rx.__visual_description = __get_value<string>(r, "visual_descript");
+                            __rx.__otc = __get_value<string>(r, "rx_otc");
+                            __rx.__generic_for = __get_value<string>(r, "genericfor");
+
+                            // Packaging
+                            __rx.__chart_only = __get_value<byte>(r, "chart_only");
+                            __rx.__isolate = __get_value<byte>(r, "default_isolate");
+
+                            // ID's                         
+                            __rx.__i_prescriber_id = __get_value<int>(r, "doccode");
+                            __get_prescriber(__rx.__prescriber, (long)__rx.__i_prescriber_id);
+
+                            switch (__rx.__type)
+                            {
+                                case RxType.Daily:
+                                case RxType.DayOfMonth:
+                                case RxType.DayOfWeek:
+                                    __convert_dose_schedule(__rx, __patient.__i_facility_id);
+                                    break;
+
+                                case RxType.MonthlyTitrating:
+                                case RxType.WeeklyTitrating:
+                                    __convert_titrating_dose_schedule(__rx, __patient.__i_facility_id, __rx.__start_date);
+                                    break;
+
+                                case RxType.Alternating:
+                                    __convert_alternating_dose_schedule(__rx, __patient.__i_facility_id, __rx.__start_date);
+                                    break;
+
+                                case RxType.Prn:
+                                    __convert_dose_schedule(__rx, __patient.__i_facility_id);
+                                    foreach (var e in __rx.__dose_schedule)
+                                    {
+                                        e.__isolate = 1;
+                                    }
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                            __patient.__rxes.Add(__rx);
                         }
+                    }
+                }
+                // The patient list --might-- contain a bunch of patients with 0 rxes ...
+                //var done = -1;
+
+                foreach (var p in __patients)
+                {
+                    if (p.__rxes.Count > 0)
+                    {
+                        if(p.__cycle_days == 0)
+                        {
+                            continue;
+                        }
+
+                        __table = new SynMedTable(p.__last_name, p.__first_name, p.__middle_initial, p.__cycle_date, p.__cycle_days);
+
+                        // Definitly need to have a notion of a card here.  There should be a unique SN for each card and each card contains a single dose time
+
+                        __table.WriteLegacyRxCollection(p);
+
                     }
                 }
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine("Build Patient Record Failed: {0}", ex.StackTrace);
+                __logger.Error("Build Patient Record Failed: {0}", ex.StackTrace);
             }
+
         }
-        /*
-        public async Task WriteCycle(DateTime __cycle_start)
-        {
-            List<__motsynmed_card> __card_list = new List<__motsynmed_card>();
-
-            DataSet __data = new DataSet();
-            DataSet __scrip = new DataSet();
-            DataSet __patient = new DataSet();
-            DataSet __loc = new DataSet();
-            DataSet __doc = new DataSet();
-            DataSet __patloc = new DataSet();
-
-            Dictionary<string, int> __state_no = new Dictionary<string, int>()
-            {
-                {"",-1 }, { "AL", 0 }, {"AK", 1 }, {"AZ", 2 },
-                {"AR", 3 }, {"CA", 4 }, {"CO", 5 },
-                {"CT", 6 }, {"DE", 7 }, {"DC", 8 },
-                {"FL", 9 }, {"GA", 10 }, {"HI", 11 },
-                {"ID", 12 }, {"IL", 13 }, {"IN", 14 },
-                {"IA", 15 }, {"KS", 16 }, {"KY", 17 },
-                {"LA", 18 }, {"ME", 19 }, {"MD", 20 },
-                {"MA", 21 }, {"MI", 22 }, {"MN", 23 },
-                {"MS", 24 }, {"MO", 25 }, {"MT", 26 },
-                {"NE", 27 }, {"NV", 28 }, {"NH", 29 },
-                {"NJ", 30 }, {"NM", 31 }, {"NY", 32 },
-                {"NC", 33 }, {"ND", 34 }, {"OH", 35 },
-                {"OK", 36 }, {"OR", 37 }, {"PA", 38 },
-                {"RI", 39 }, {"SC", 40 }, {"SD", 41 },
-                {"TN", 42 }, {"TX", 43 }, {"UT", 44 },
-                {"VT", 45 }, {"VA", 46 }, {"WA", 47 },
-                {"WV", 48 }, {"WI", 49 }, {"WY", 50 }
-            };
-
-            __db.executeQuery(string.Format("SELECT * FROM cardserial LEFT OUTER JOIN cardserial_bubble ON cardserial.cardsn = cardserial_bubble.cardsn " +
-                                                    "where cardserial.card_duedate >= date('{0:yyyy-MM-dd}');", __cycle_start), __data);
-
-            if (__data.Tables["__table"].Rows.Count > 0)
-            {
-                int i = 0;
-
-                foreach (DataRow __record in __data.Tables["__table"].Rows)
-                {
-                    i++;
-                    __motsynmed_card __card = new __motsynmed_card();
-
-                    __card.__card_sn = __get_value<int>(__record, "cardsn");
-                   // __card.__bubble_num[i++] = (int)__get_value<byte>(__record, "bubblenum");
-                    __card.__card_dispensdate = __get_date_value(__record, "dispense_date");
-                    __card.__card_duedate = __get_date_value(__record, "card_duedate");
-                    __card.__card_type = (int)__get_value<byte>(__record, "card_type");
-
-                    // Populate the Patient Object
-                    __db.executeQuery(string.Format("Select * from Patient LEFT OUTER JOIN Location ON Patient.LocCode = Location.LocCode where Patient.MotPatId = '{0}';", __record["patid"]), __patloc, "__patloc");
-
-                    if (__patloc.Tables["__patloc"].Rows.Count > 0)
-                    {
-                        DataRow __row0 = __patloc.Tables["__patloc"].Rows[0];
-
-                        __card.__patient.__last_name = __get_value<string>(__row0, "LastName");
-                        __card.__patient.__first_name = __get_value<string>(__row0, "FirstName");
-                        __card.__patient.__middle_initial = __get_value<string>(__row0, "MiddleInitial");
-                        __card.__patient.__main_address.__address1 = __get_value<string>(__row0, "Address1");
-                        __card.__patient.__main_address.__address2 = __get_value<string>(__row0, "Address2");
-                        __card.__patient.__main_address.__city = __get_value<string>(__row0, "City");
-                        __card.__patient.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
-                        __card.__patient.__main_address.__zip = __get_value<string>(__row0, "Zip");
-                        __card.__patient.__phone = __get_value<string>(__row0, "Phone");
-                        __card.__patient.__dob = __get_date_value(__row0, "DOB");
-                        __card.__patient.__room = __get_value<string>(__row0, "Room"); ;
-                        __card.__facility.__i_id = __get_value<int>(__row0, "LocCode");
-                        __card.__prescriber.__i_id = __get_value<int>(__row0, "PrimaryDoc");
-
-                    }
-
-                    __db.executeQuery(string.Format("Select * from Location where LocCode = '{0}';", __card.__facility.__i_id), __loc, "__location");
-                    if (__loc.Tables["__location"].Rows.Count > 0)
-                    {
-                        DataRow __row0 = __loc.Tables["__location"].Rows[0];
-
-                        __card.__facility.__facility_name = __get_value<string>(__row0, "locname");
-                        __card.__facility.__main_address.__address1 = __get_value<string>(__row0, "Address1");
-                        __card.__facility.__main_address.__address2 = __get_value<string>(__row0, "Address2");
-                        __card.__facility.__main_address.__city = __get_value<string>(__row0, "City");
-                        __card.__facility.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
-                        __card.__facility.__main_address.__zip = __get_value<string>(__row0, "Zip");
-                        __card.__facility.__phone = __get_value<string>(__row0, "Phone");
-                    }
-
-                    __db.executeQuery(string.Format("Select * from Prescriber where DocCode = '{0}';", __card.__prescriber.__i_id), __doc, "__doctor");
-                    if (__doc.Tables["__doctor"].Rows.Count > 0)
-                    {
-                        DataRow __row0 = __doc.Tables["__doctor"].Rows[0];
-
-                        __card.__prescriber.__last_name = __get_value<string>(__row0, "LastName");
-                        __card.__prescriber.__first_name = __get_value<string>(__row0, "FirstName");
-                        __card.__prescriber.__middle_initial = __get_value<string>(__row0, "MiddleInitial");
-                        __card.__prescriber.__main_address.__address1 = __get_value<string>(__row0, "Address1");
-                        __card.__prescriber.__main_address.__address2 = __get_value<string>(__row0, "Address2");
-                        __card.__prescriber.__main_address.__city = __get_value<string>(__row0, "City");
-                        __card.__prescriber.__main_address.__state = (__get_value<string>(__row0, "State") != null) ? __state_no[__get_value<string>(__row0, "State")] : 0;
-                        __card.__prescriber.__main_address.__zip = __get_value<string>(__row0, "Zip");
-                        __card.__prescriber.__dea = __get_value<string>(__row0, "DEA");
-                        __card.__prescriber.__phone = __get_value<string>(__row0, "Phone");
-                    }
-
-                    if (__get_value<decimal>(__record, "rxnum") > 0)
-                    {
-                        __db.executeQuery(string.Format("select * from rx LEFT OUTER JOIN drugs ON rx.drugs_seqno = drugs.Seq_no WHERE motrxnum = '{0}'", __record["rxnum"]), __scrip, "__rxes");
-
-                        if (__scrip.Tables["__rxes"].Rows.Count > 0)
-                        {
-                            foreach (DataRow __rec in __scrip.Tables["__rxes"].Rows)
-                            {
-                                // Make sure the scrip isn't DC'd
-                                if (!string.IsNullOrEmpty(__rec["discontinue_date"]?.ToString()))
-                                {
-                                    continue;
-                                }
-
-                                __motsynmed_rx __tmp_rx = new __motsynmed_rx();
-
-                                __tmp_rx.__i_rxid = (long)__get_value<decimal>(__rec, "rxsys_rxnum");
-
-                                __tmp_rx.__start_date = __get_date_value(__rec, "rxstartdate");
-                                __tmp_rx.__expire_date = __get_date_value(__rec, "rxstopdate");
-                                __tmp_rx.__written_date = __get_date_value(__rec, "written_date");
-
-                                var __tmp_dose = new __motsynmed_dose();
-
-                                __tmp_dose.__qty = (double)__get_value<decimal>(__rec, "qty_written");
-                                __tmp_dose.__dose_schedule_name = __get_value<string>(__rec, "dscode");
-
-                                __convert_dose_schedule(__tmp_dose.__dose_schedule_name, __tmp_rx.__dose_schedule, __card.__facility.__i_id);
-                                __tmp_rx.__rx_type = __convert_rx(__get_value<byte>(__rec, "RxType"));
-
-                                __tmp_rx.__refills = __get_value<byte>(__rec, "refills");
-                                __tmp_rx.__sig = __get_value<string>(__rec, "sig2print");
-                                __tmp_rx.__NDC = __get_value<string>(__rec, "NDCNum");
-                                __tmp_rx.__visual_description = __get_value<string>(__rec, "Visual_Descript");
-                                __tmp_rx.__drug_schedule = __get_value<byte>(__rec, "Drug_Sched");
-                                __tmp_rx.__trade_name = __get_value<string>(__rec, "Tradename");
-                                __tmp_rx.__cup_name = __get_value<string>(__rec, "Short_Name");
-                                __tmp_rx.__unit = __get_value<string>(__rec, "Unit");
-                                __tmp_rx.__strength = __get_value<string>(__rec, "Strength");
-                                __tmp_rx.__route = __get_value<string>(__rec, "Route");
-                                __tmp_rx.__dose_form = __get_value<string>(__rec, "Dose_Form");
-                                __tmp_rx.__consult_message += string.Format(" \n{0}", __get_value<string>(__rec, "consult_msg"));
-                                __tmp_rx.__generic_for = __get_value<string>(__rec, "GenericFor");
-
-                                __card.__prescriber.__i_id = __get_value<int>(__rec, "doccode");
-
-                                __tmp_rx.__dose_schedule.Add(__tmp_dose);
-                                __card.__patient.__rxes.Add(__tmp_rx);
-
-                            }
-                        }
-                    }
-
-                    __card_list.Add(__card.;
-
-                    Console.WriteLine("Added record for - {0} at {1}", __card.__patient.__last_name, __card.__facility.__facility_name);
-                }
-
-                Console.WriteLine("Done, added {0} records", i);
-            }
-        }
-        */
-
         public motLegacySynMed(string __path)
         {
-            try
-            {
-                // Collect the CSV header
-                var __csv_header = string.Empty;
-                Type __SynMedFieldNames = typeof(SynMedRow);
-                PropertyInfo[] __fieldnames = __SynMedFieldNames.GetProperties();
-
-                for (int i = 0; i < __fieldnames.Length; i++)
-                {
-                    __csv_header += __fieldnames[i].Name.ToString();
-                    if (i < __fieldnames.Length - 1)
-                    {
-                        __csv_header += ";";
-                    }
-                }
-
-                if (!Directory.Exists(__path))
-                {
-                    Directory.CreateDirectory(__path);
-                }
-
-                __file_name = string.Format(@"{0}\{1:yyyyMMdd-hhmmss}-{2}.csv", __path, DateTime.Now, Path.GetRandomFileName());
-
-                // Create a new file
-                using (var __file = new FileStream(__file_name, FileMode.Create))
-                {
-                    using (StreamWriter __sw = new StreamWriter(__file))
-                    {
-                        __sw.WriteLine(__csv_header);
-                    }
-                }
-            }
-            catch
-            {
-                throw;
-            }
+            __logger = LogManager.GetLogger("mot_machineInterface");
         }
     }
     /// <summary>
@@ -725,7 +923,7 @@ namespace motMatchineInterface
         {
             try
             {
-                __logger = LogManager.GetLogger("mot machineInterface");
+                __logger = LogManager.GetLogger("mot_machineInterface");
 
                 Simple.OData.Client.V4Adapter.Reference();
 
@@ -937,12 +1135,12 @@ namespace motMatchineInterface
             }
         }
     }
-    class SynMedHeader
+    public class SynMedHeader
     {
         public string RECORD_TYPE { get; set; } = "H";
         public int RECORD_COUNT { get; set; }
     }
-    class SynMedField
+    public class SynMedField
     {
         public string __name { get; set; }
         public bool __mandatory { get; set; } = false;
@@ -956,7 +1154,7 @@ namespace motMatchineInterface
             this.__length = __length;
         }
     }
-    class SynMedRow
+    public class SynMedRow
     {
         private List<SynMedField> __field_list;
 
@@ -966,312 +1164,307 @@ namespace motMatchineInterface
 
             Type __SynMedFieldData = typeof(SynMedRow);
             PropertyInfo[] __field_data = __SynMedFieldData.GetProperties();
-
-            //foreach (var __f in __field_data)
-            //{
-            //    __f.SetValue(this,"");
-            //}
         }
         public string RECORD_TYPE
         {
             get { return (string)__field_list.Find(f => f?.__name == "RECORD_TYPE")?.__data; }
-            set { __field_list.Add(new SynMedField("RECORD_TYPE", value, false, 5)); }
+            set { __field_list.Add(new SynMedField("RECORD_TYPE", value?.Trim(), false, 5)); }
         }
         public string ADMINISTRATION_DATE
         {
             get { return (string)__field_list.Find(f => f?.__name == "ADMINISTRATION_DATE")?.__data; }
-            set { __field_list.Add(new SynMedField("ADMINISTRATION_DATE", value, true, 10)); }
+            set { __field_list.Add(new SynMedField("ADMINISTRATION_DATE", value?.Trim(), true, 10)); }
         }
         public string ADMINISTRATION_TIME
         {
             get { return (string)__field_list.Find(f => f?.__name == "ADMINISTRATION_TIME")?.__data; }
-            set { __field_list.Add(new SynMedField("ADMINISTRATION_TIME", value, true, 11)); }
+            set { __field_list.Add(new SynMedField("ADMINISTRATION_TIME", value?.Trim(), true, 11)); }
         }
         public string LOCAL_DRUG_ID
         {
             get { return (string)__field_list.Find(f => f?.__name == "LOCAL_DRUG_ID")?.__data; }
-            set { __field_list.Add(new SynMedField("LOCAL_DRUG_ID", value, true, 15)); }
+            set { __field_list.Add(new SynMedField("LOCAL_DRUG_ID", value?.Trim(), true, 15)); }
         }
         public string DRUG_QUANTITY
         {
             get { return (string)__field_list.Find(f => f?.__name == "DRUG_QUANTITY")?.__data; }
-            set { __field_list.Add(new SynMedField("DRUG_QUANTITY", value, true)); }
+            set { __field_list.Add(new SynMedField("DRUG_QUANTITY", value?.Trim(), true)); }
         }
         public string DRUG_DESCRIPTION
         {
             get { return (string)__field_list.Find(f => f?.__name == "DRUG_DESCRIPTION")?.__data; }
-            set { __field_list.Add(new SynMedField("DRUG_DESCRIPTION", value, true, 75)); }
+            set { __field_list.Add(new SynMedField("DRUG_DESCRIPTION", value?.Trim(), true, 75)); }
         }
         public string DISPLAY_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "DISPLAY_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("DISPLAY_NAME", value, false, 75)); }
+            set { __field_list.Add(new SynMedField("DISPLAY_NAME", value?.Trim(), false, 75)); }
         }
         public string EXTERNAL_DRUG_FLAG
         {
             get { return (string)__field_list.Find(f => f?.__name == "EXTERNAL_DRUG_FLAG")?.__data; }
-            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("EXTERNAL_DRUG_FLAG", value, false, 1)); }
+            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("EXTERNAL_DRUG_FLAG", value?.Trim(), false, 1)); }
         }
         public string NOT_IN_BLISTER
         {
             get { return (string)__field_list.Find(f => f?.__name == "NOT_IN_BLISTER")?.__data; }
-            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("NOT_IN_BLISTER", value, false, 1)); }
+            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("NOT_IN_BLISTER", value?.Trim(), false, 1)); }
         }
         public string PRESCRIPTION_NUMBER
         {
             get { return (string)__field_list.Find(f => f?.__name == "PRESCRIPTION_NUMBER")?.__data; }
-            set { __field_list.Add(new SynMedField("PRESCRIPTION_NUMBER", value, true, 15)); }
+            set { __field_list.Add(new SynMedField("PRESCRIPTION_NUMBER", value?.Trim(), true, 15)); }
         }
         public string PATIENT_ID
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_ID")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_ID", value, true, 10)); }
+            set { __field_list.Add(new SynMedField("PATIENT_ID", value?.Trim(), true, 10)); }
         }
         public string PATIENT_FULL_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_FULL_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_FULL_NAME", value, true, 50)); }
+            set { __field_list.Add(new SynMedField("PATIENT_FULL_NAME", value?.Trim(), true, 50)); }
         }
         public string PATIENT_LANGUAGE
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_LANGUAGE")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_LANGUAGE", value, false, 3)); }
+            set { __field_list.Add(new SynMedField("PATIENT_LANGUAGE", value?.Trim(), false, 3)); }
         }
         public string PATIENT_FIRST_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_FIRST_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_FIRST_NAME", value, false, 25)); }
+            set { __field_list.Add(new SynMedField("PATIENT_FIRST_NAME", value?.Trim(), false, 25)); }
         }
         public string PATIENT_LAST_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_LAST_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_LAST_NAME", value, false, 25)); }
+            set { __field_list.Add(new SynMedField("PATIENT_LAST_NAME", value?.Trim(), false, 25)); }
         }
         public string PATIENT_MOTHER_LAST_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_MOTHER_LAST_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_MOTHER_LAST_NAME", value, false, 20)); }
+            set { __field_list.Add(new SynMedField("PATIENT_MOTHER_LAST_NAME", value?.Trim(), false, 20)); }
         }
         public string PATIENT_ADDRESS
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_ADDRESS")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_ADDRESS", value, false, 50)); }
+            set { __field_list.Add(new SynMedField("PATIENT_ADDRESS", value?.Trim(), false, 50)); }
         }
         public string PATIENT_CITY
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_CITY")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_CITY", value, false, 50)); }
+            set { __field_list.Add(new SynMedField("PATIENT_CITY", value?.Trim(), false, 50)); }
         }
         public string PATIENT_STATE
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_STATE")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_STATE", value, false, 50)); }
+            set { __field_list.Add(new SynMedField("PATIENT_STATE", value?.Trim(), false, 50)); }
         }
         public string PATIENT_ZIP_CODE
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_ZIP_CODE")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_ZIP_CODE", value, false, 25)); }
+            set { __field_list.Add(new SynMedField("PATIENT_ZIP_CODE", value?.Trim(), false, 25)); }
         }
         public string PATIENT_COUNTRY
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_COUNTRY")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_COUNTRY", value, false, 50)); }
+            set { __field_list.Add(new SynMedField("PATIENT_COUNTRY", value?.Trim(), false, 50)); }
         }
         public string PATIENT_BIN_NUMBER
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_BIN_NUMBER")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_BIN_NUMBER", value, false, 10)); }
+            set { __field_list.Add(new SynMedField("PATIENT_BIN_NUMBER", value?.Trim(), false, 10)); }
         }
         public string PATIENT_PHONE_NUMBER
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_PHONE_NUMBER")?.__data; }
-            set { __field_list?.Add(new SynMedField("PATIENT_PHONE_NUMBER", value, false, 25)); }
+            set { __field_list?.Add(new SynMedField("PATIENT_PHONE_NUMBER", value?.Trim(), false, 25)); }
         }
         public string PATIENT_BIRTH_DATE
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_BIRTH_DATE")?.__data; }
-            set { __field_list.Add(new SynMedField("PATIENT_BIRTH_DATE", value, false, 25)); }
+            set { __field_list.Add(new SynMedField("PATIENT_BIRTH_DATE", value?.Trim(), false, 25)); }
         }
         public string PATIENT_WITH_PRN
         {
             get { return (string)__field_list.Find(f => f?.__name == "PATIENT_WITH_PRN")?.__data; }
-            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("PATIENT_WITH_PRN", value, false, 1)); }
+            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("PATIENT_WITH_PRN", value?.Trim(), false, 1)); }
         }
         public string QTY_PER_ADMINISTRATION
         {
             get { return (string)__field_list.Find(f => f?.__name == "QTY_PER_ADMINISTRATION")?.__data; }
-            set { __field_list.Add(new SynMedField("QTY_PER_ADMINISTRATION", value, false)); }
+            set { __field_list.Add(new SynMedField("QTY_PER_ADMINISTRATION", value?.Trim(), false)); }
         }
         public string ADMINISTRATION_PER_DAY
         {
             get { return (string)__field_list.Find(f => f?.__name == "ADMINISTRATION_PER_DAY")?.__data; }
-            set { __field_list.Add(new SynMedField("ADMINISTRATION_PER_DAY", value, false)); }
+            set { __field_list.Add(new SynMedField("ADMINISTRATION_PER_DAY", value?.Trim(), false)); }
         }
         public string DAY_LAPSE
         {
             get { return (string)__field_list.Find(f => f?.__name == "DAY_LAPSE")?.__data; }
-            set { __field_list.Add(new SynMedField("DAY_LAPSE", value, false)); }
+            set { __field_list.Add(new SynMedField("DAY_LAPSE", value?.Trim(), false)); }
         }
         public string PERIOD_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PERIOD_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("PERIOD_NAME", value, false, 8)); }
+            set { __field_list.Add(new SynMedField("PERIOD_NAME", value?.Trim(), false, 8)); }
         }
         public string PERIOD_BEGINNING_TIME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PERIOD_BEGINNING_TIME")?.__data; }
-            set { __field_list.Add(new SynMedField("PERIOD_BEGINNING_TIME", value, false)); }
+            set { __field_list.Add(new SynMedField("PERIOD_BEGINNING_TIME", value?.Trim(), false)); }
         }
         public string PERIOD_ENDING_TIME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PERIOD_ENDING_TIME")?.__data; }
-            set { __field_list.Add(new SynMedField("PERIOD_ENDING_TIME", value, false)); }
+            set { __field_list.Add(new SynMedField("PERIOD_ENDING_TIME", value?.Trim(), false)); }
         }
         public string PERIOD_ORDER
         {
             get { return (string)__field_list.Find(f => f?.__name == "PERIOD_ORDER")?.__data; }
-            set { __field_list.Add(new SynMedField("PERIOD_ORDER", value, false)); }
+            set { __field_list.Add(new SynMedField("PERIOD_ORDER", value?.Trim(), false)); }
         }
         public string IS_HOUR_DRIVEN
         {
             get { return (string)__field_list.Find(f => f?.__name == "IS_HOUR_DRIVEN")?.__data; }
-            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("IS_HOUR_DRIVEN", value, false, 1)); }
+            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("IS_HOUR_DRIVEN", value?.Trim(), false, 1)); }
         }
         public string INSTITUTION_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("INSTITUTION_NAME", value, false, 30)); }
+            set { __field_list.Add(new SynMedField("INSTITUTION_NAME", value?.Trim(), false, 30)); }
         }
         public string INSTITUTION_UNIT_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_UNIT_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("INSTITUTION_UNIT_NAME", value, false, 25)); }
+            set { __field_list.Add(new SynMedField("INSTITUTION_UNIT_NAME", value?.Trim(), false, 25)); }
         }
         public string INSTITUTION_FLOOR_LEVEL
         {
             get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_FLOOR_LEVEL")?.__data; }
-            set { __field_list.Add(new SynMedField("INSTITUTION_FLOOR_LEVEL", value, false, 15)); }
+            set { __field_list.Add(new SynMedField("INSTITUTION_FLOOR_LEVEL", value?.Trim(), false, 15)); }
         }
         public string INSTITUTION_ROOM_NUMBER
         {
             get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_ROOM_NUMBER")?.__data; }
-            set { __field_list.Add(new SynMedField("INSTITUTION_ROOM_NUMBER", value, false, 15)); }
+            set { __field_list.Add(new SynMedField("INSTITUTION_ROOM_NUMBER", value?.Trim(), false, 15)); }
         }
         public string INSTITUTION_BED_NUMBER
         {
             get { return (string)__field_list.Find(f => f?.__name == "INSTITUTION_BED_NUMBER")?.__data; }
-            set { __field_list.Add(new SynMedField("INSTITUTION_BED_NUMBER", value, false, 15)); }
+            set { __field_list.Add(new SynMedField("INSTITUTION_BED_NUMBER", value?.Trim(), false, 15)); }
         }
         public string PHYSICIAN_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PHYSICIAN_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("PHYSICIAN_NAME", value, false, 25)); }
+            set { __field_list.Add(new SynMedField("PHYSICIAN_NAME", value?.Trim(), false, 25)); }
         }
         public string PHYSICIAN_LICENCE
         {
             get { return (string)__field_list.Find(f => f?.__name == "PHYSICIAN_LICENCE")?.__data; }
-            set { __field_list.Add(new SynMedField("PHYSICIAN_LICENCE", value, false, 15)); }
+            set { __field_list.Add(new SynMedField("PHYSICIAN_LICENCE", value?.Trim(), false, 15)); }
         }
         public string PHARMACIST_NAME
         {
             get { return (string)__field_list.Find(f => f?.__name == "PHARMACIST_NAME")?.__data; }
-            set { __field_list.Add(new SynMedField("PHARMACIST_NAME", value, false, 30)); }
+            set { __field_list.Add(new SynMedField("PHARMACIST_NAME", value?.Trim(), false, 30)); }
         }
         public string REFILL_QUANTITY
         {
             get { return (string)__field_list.Find(f => f?.__name == "REFILL_QUANTITY")?.__data; }
-            set { __field_list.Add(new SynMedField("REFILL_QUANTITY", value, false)); }
+            set { __field_list.Add(new SynMedField("REFILL_QUANTITY", value?.Trim(), false)); }
         }
         public string FIRST_REFILL_DATE
         {
             get { return (string)__field_list.Find(f => f?.__name == "FIRST_REFILL_DATE")?.__data; }
-            set { __field_list.Add(new SynMedField("FIRST_REFILL_DATE", value, false)); }
+            set { __field_list.Add(new SynMedField("FIRST_REFILL_DATE", value?.Trim(), false)); }
         }
         public string LAST_REFILL_DATE
         {
             get { return (string)__field_list.Find(f => f?.__name == "LAST_REFILL_DATE")?.__data; }
-            set { __field_list.Add(new SynMedField("LAST_REFILL_DATE", value, false)); }
+            set { __field_list.Add(new SynMedField("LAST_REFILL_DATE", value?.Trim(), false)); }
         }
         public string COST
         {
             get { return (string)__field_list.Find(f => f?.__name == "COST")?.__data; }
-            set { __field_list.Add(new SynMedField("COST", value, false)); }
+            set { __field_list.Add(new SynMedField("COST", value?.Trim(), false)); }
         }
         public string PRESCRIPTION_INSTRUCTION
         {
             get { return (string)__field_list.Find(f => f?.__name == "PRESCRIPTION_INSTRUCTION")?.__data; }
-            set { __field_list.Add(new SynMedField("PRESCRIPTION_INSTRUCTION", value, false, 90)); }
+            set { __field_list.Add(new SynMedField("PRESCRIPTION_INSTRUCTION", value?.Trim(), false, 90)); }
         }
         public string PRESCRIPTION_COMMENT
         {
             get { return (string)__field_list.Find(f => f?.__name == "PRESCRIPTION_COMMENT")?.__data; }
-            set { __field_list.Add(new SynMedField("PRESCRIPTION_COMMENT", value, false, 75)); }
+            set { __field_list.Add(new SynMedField("PRESCRIPTION_COMMENT", value?.Trim(), false, 75)); }
         }
         public string REORDER_NUMBER
         {
             get { return (string)__field_list.Find(f => f?.__name == "REORDER_NUMBER")?.__data; }
-            set { __field_list.Add(new SynMedField("REORDER_NUMBER", value, false, 25)); }
+            set { __field_list.Add(new SynMedField("REORDER_NUMBER", value?.Trim(), false, 25)); }
         }
         public string INSTRUCTION_REASON
         {
             get { return (string)__field_list.Find(f => f?.__name == "INSTRUCTION_REASON")?.__data; }
-            set { __field_list.Add(new SynMedField("INSTRUCTION_REASON", value, false, 35)); }
+            set { __field_list.Add(new SynMedField("INSTRUCTION_REASON", value?.Trim(), false, 35)); }
         }
         public string GROUP_TITLE
         {
             get { return (string)__field_list.Find(f => f?.__name == "GROUP_TITLE")?.__data; }
-            set { __field_list.Add(new SynMedField("GROUP_TITLE", value, false, 50)); }
+            set { __field_list.Add(new SynMedField("GROUP_TITLE", value?.Trim(), false, 50)); }
         }
         public string CARD_NOTE_01
         {
             get { return (string)__field_list.Find(f => f?.__name == "CARD_NOTE_01")?.__data; }
-            set { __field_list.Add(new SynMedField("CARD_NOTE_01", value, false, 35)); }
+            set { __field_list.Add(new SynMedField("CARD_NOTE_01", value?.Trim(), false, 35)); }
         }
         public string CARD_NOTE_02
         {
             get { return (string)__field_list.Find(f => f?.__name == "CARD_NOTE_02")?.__data; }
-            set { __field_list.Add(new SynMedField("CARD_NOTE_02", value, false, 35)); }
+            set { __field_list.Add(new SynMedField("CARD_NOTE_02", value?.Trim(), false, 35)); }
         }
         public string CELL_NOTE
         {
             get { return (string)__field_list.Find(f => f?.__name == "CELL_NOTE")?.__data; }
-            set { __field_list.Add(new SynMedField("CELL_NOTE", value, false, 35)); }
+            set { __field_list.Add(new SynMedField("CELL_NOTE", value?.Trim(), false, 35)); }
         }
         public string PHARMACY_ACCREDITATION_NUMBER
         {
             get { return (string)__field_list.Find(f => f?.__name == "PHARMACY_ACCREDITATION_NUMBER")?.__data; }
-            set { __field_list.Add(new SynMedField("PHARMACY_ACCREDITATION_NUMBER", value, false, 35)); }
+            set { __field_list.Add(new SynMedField("PHARMACY_ACCREDITATION_NUMBER", value?.Trim(), false, 35)); }
         }
         public string ORDER_ID
         {
             get { return (string)__field_list.Find(f => f?.__name == "ORDER_ID")?.__data; }
-            set { __field_list.Add(new SynMedField("ORDER_ID", value, false, 10)); }
+            set { __field_list.Add(new SynMedField("ORDER_ID", value?.Trim(), false, 10)); }
         }
         public string CYCLE_BASE_DATE
         {
             get { return (string)__field_list.Find(f => f?.__name == "CYCLE_BASE_DATE")?.__data; }
-            set { __field_list.Add(new SynMedField("CYCLE_BASE_DATE", value, false)); }
+            set { __field_list.Add(new SynMedField("CYCLE_BASE_DATE", value?.Trim(), false)); }
         }
         public string CYCLE_LENGTH
         {
             get { return (string)__field_list.Find(f => f?.__name == "CYCLE_LENGTH")?.__data; }
-            set { __field_list.Add(new SynMedField("CYCLE_LENGTH", value, false)); }
+            set { __field_list.Add(new SynMedField("CYCLE_LENGTH", value?.Trim(), false)); }
         }
         public string CYCLE_FIRST_DAY_FIXED
         {
             get { return (string)__field_list.Find(f => f?.__name == "CYCLE_FIRST_DAY_FIXED")?.__data; }
-            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("CYCLE_FIRST_DAY_FIXED", value, false, 1)); }
+            set { /*if (value == "Y" || value == "N")*/ __field_list.Add(new SynMedField("CYCLE_FIRST_DAY_FIXED", value?.Trim(), false, 1)); }
         }
 
         public string ONE_MAR_DOSE_ID
         {
             get { return (string)__field_list.Find(f => f?.__name == "ONE_MAR_DOSE_ID")?.__data; }
-            set { __field_list.Add(new SynMedField("ONE_MAR_DOSE_ID", value, false, 2)); }
+            set { __field_list.Add(new SynMedField("ONE_MAR_DOSE_ID", value?.Trim(), false, 2)); }
         }
         public string ONE_MAR_WEB_SITE
         {
             get { return (string)__field_list.Find(f => f?.__name == "ONE_MAR_WEB_SITE")?.__data; }
-            set { __field_list.Add(new SynMedField("ONE_MAR_WEB_SITE", value, false, 2)); }
+            set { __field_list.Add(new SynMedField("ONE_MAR_WEB_SITE", value?.Trim(), false, 2)); }
         }
 
         public void write(string __filename, FileMode __mode)
@@ -1304,7 +1497,7 @@ namespace motMatchineInterface
             }
         }
     }
-    class SynMedTable
+    public class SynMedTable
     {
         public static Dictionary<int, string> __state = new Dictionary<int, string>()
         {
@@ -1347,19 +1540,102 @@ namespace motMatchineInterface
         private FileMode __mode = FileMode.CreateNew;
 
         private void __write_to_file()
-        {
+        {         
             foreach (var __row in __table_rows)
             {
                 __row.write(__filename, __mode);
             }
         }
-
+        private int __rx_dose_time_compare(SynMedRow a, SynMedRow b)
+        {
+            return string.Compare(a.ADMINISTRATION_DATE, b.ADMINISTRATION_DATE);
+        }
         public void WriteByCycleDate(DateTime __cycle_start_date)
         { }
-
         public void WriteByPatient()
         { }
+        public void fillLegacyRow(SynMedRow __new_row, __motsynmed_patient __pat, __motsynmed_rx __rx, __motsynmed_daily_dose __dose, DateTime __base_date, DateTime __current_date)
+        {
+            __new_row.RECORD_TYPE = "15";
+            __new_row.ADMINISTRATION_DATE = string.Format("{0:yyyyMMdd}", __current_date);
 
+            if (__rx.__type != RxType.Prn)
+            {
+                __new_row.ADMINISTRATION_TIME = string.Format("{0}", __dose.__dose_time);
+            }
+            __new_row.DRUG_QUANTITY = __dose.__qty.ToString();
+
+            __new_row.LOCAL_DRUG_ID = __rx.__NDC;
+            __new_row.DRUG_DESCRIPTION = !string.IsNullOrEmpty(__rx.__visual_description) ? __rx.__visual_description : "UNKNOWN";
+            __new_row.DISPLAY_NAME = __rx.__cup_name;
+
+            __new_row.EXTERNAL_DRUG_FLAG = "";
+            __new_row.NOT_IN_BLISTER = (__rx.__bulk == 1 || __rx.__chart_only == 1) ? "Y" : "N";
+
+            __new_row.PRESCRIPTION_NUMBER = __rx.__rx_num.ToString();
+            __new_row.PATIENT_ID = __pat.__i_patient_id.ToString();
+            __new_row.PATIENT_FULL_NAME = string.Format("{0} {1} {2}", __pat.__first_name, __pat.__middle_initial, __pat.__last_name);
+            __new_row.PATIENT_LANGUAGE = "";
+            __new_row.PATIENT_FIRST_NAME = __patient_first_name;
+            __new_row.PATIENT_LAST_NAME = __patient_last_name;
+            __new_row.PATIENT_MOTHER_LAST_NAME = "";
+
+            __new_row.PATIENT_ADDRESS = __pat.__main_address.__address1 + ", " + __pat.__main_address.__address2;
+            __new_row.PATIENT_CITY = __pat.__main_address.__city;
+            __new_row.PATIENT_STATE = __state[__pat.__main_address.__state];
+            __new_row.PATIENT_ZIP_CODE = __pat.__main_address.__zip;
+            __new_row.PATIENT_COUNTRY = "";
+            __new_row.PATIENT_BIN_NUMBER = "";
+            __new_row.PATIENT_PHONE_NUMBER = !string.IsNullOrEmpty(__pat.__phone) ? __pat.__phone : "No Phone";
+
+            __new_row.PATIENT_BIRTH_DATE = string.Format("{0:yyyyMMdd}", __pat.__dob);
+
+            __new_row.PERIOD_NAME = "";
+            __new_row.PERIOD_BEGINNING_TIME = "";   // string.Format("{0:yyyyMMdd}", DateTime.Now);
+            __new_row.PERIOD_ENDING_TIME = "";      // string.Format("{0:hh:mm}", DateTime.Now);
+            __new_row.PERIOD_ORDER = "";
+            __new_row.IS_HOUR_DRIVEN = "";
+
+            __new_row.INSTITUTION_NAME = !string.IsNullOrEmpty(__pat.__facility.__facility_name) ? __pat.__facility.__facility_name : "Independent";
+            __new_row.INSTITUTION_UNIT_NAME = "";
+            __new_row.INSTITUTION_FLOOR_LEVEL = "";
+            __new_row.INSTITUTION_ROOM_NUMBER = !string.IsNullOrEmpty(__pat.__room) ? __pat.__room : string.Empty;
+            __new_row.INSTITUTION_BED_NUMBER = "";
+
+            __new_row.PHYSICIAN_NAME = string.Format(" {0} {1} {2}", __rx.__prescriber.__first_name, __rx.__prescriber.__middle_initial, __rx.__prescriber.__last_name);
+            __new_row.PHYSICIAN_LICENCE = __rx.__prescriber.__dea;
+
+            __new_row.PHARMACIST_NAME = "";
+            __new_row.REFILL_QUANTITY = __rx.__refills.ToString();
+            __new_row.FIRST_REFILL_DATE = "";
+            __new_row.LAST_REFILL_DATE = "";
+            __new_row.COST = "";
+            __new_row.PRESCRIPTION_INSTRUCTION = __rx.__sig;
+
+            if (string.IsNullOrEmpty(__new_row.PRESCRIPTION_COMMENT))
+            {
+                __new_row.PRESCRIPTION_COMMENT = "";
+            }
+
+            __new_row.REORDER_NUMBER = "";
+            __new_row.INSTRUCTION_REASON = "";
+            __new_row.GROUP_TITLE = "";
+            __new_row.CARD_NOTE_01 = "";
+            __new_row.CARD_NOTE_02 = "";
+            __new_row.CELL_NOTE = "";
+            __new_row.PHARMACY_ACCREDITATION_NUMBER = __pat.__store.__dea;
+            __new_row.ORDER_ID = "";
+
+            __new_row.CYCLE_BASE_DATE = string.Format("{0:yyyyMMdd}", __base_date);
+            __new_row.CYCLE_LENGTH = __cycle_length.ToString();
+            __new_row.CYCLE_FIRST_DAY_FIXED = "";
+
+            __new_row.ONE_MAR_DOSE_ID = "";
+            __new_row.ONE_MAR_WEB_SITE = "";
+
+            __table_rows.Add(__new_row);
+
+        }
         public void fillRow(SynMedRow __new_row, Rx __rx, DateTime __base_date, DateTime __current_date, DoseScheduleItem __dose)
         {
             __new_row.RECORD_TYPE = "15";
@@ -1376,7 +1652,7 @@ namespace motMatchineInterface
             }
 
             __new_row.LOCAL_DRUG_ID = NDC;
-            __new_row.DRUG_DESCRIPTION = !string.IsNullOrEmpty(__rx.Drug.VisualDescription) ? __rx.Drug.VisualDescription : "UNKOWN";
+            __new_row.DRUG_DESCRIPTION = !string.IsNullOrEmpty(__rx.Drug.VisualDescription) ? __rx.Drug.VisualDescription : "UNKNOWN";
             __new_row.DISPLAY_NAME = __rx.Drug.DosageCupName;
 
             // It's unclear how to do BULK scrips, maybe we just don't send them
@@ -1453,8 +1729,175 @@ namespace motMatchineInterface
 
             __table_rows.Add(__new_row);
         }
+        public void WriteLegacyRxCollection(__motsynmed_patient __patient)
+        {
+            DateTime __base_date = __cycle_start_date;
+            SynMedRow __new_row;
+
+            try
+            {
+                foreach (var __rx in __patient.__rxes)
+                {
+                    DateTime __start_date = __rx.__start_date;
+                    DateTime __current_date = __start_date;
+
+                    if (__start_date <= __rx.__start_date && __rx.__expire_date > DateTime.Today)
+                    {
+                        switch (__rx.__type)
+                        {
+                            case RxType.Daily:
+                                foreach (var __dose in __rx.__dose_schedule)  // The number of dose schedule items should be the number of cards
+                                {
+                                    for (double __index = 0; __index < __cycle_length; __index++)
+                                    {
+                                        __new_row = new SynMedRow();
+                                        __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn[__dose.__dose_time];
+                                        __new_row.PRESCRIPTION_COMMENT = "Daily Prescription";
+                                        __current_date = (DateTime)__base_date.AddDays(__index);
+                                        fillLegacyRow(__new_row, __patient, __rx, __dose, __start_date, __current_date);  // Any Daily Schedule (1 line per day)
+                                    }
+                                }
+
+                                break;
+
+                            case RxType.Prn:
+
+                                __motsynmed_daily_dose __prn_dose = new __motsynmed_daily_dose();
+                                __prn_dose.__dose_time = "PRN";
+                                __prn_dose.__dose_schedule_name = "PRN";
+                                __prn_dose.__isolate = 1;
+                                __prn_dose.__qty = __rx.__qty_per_dose;
+                                __prn_dose.__card_sn = Convert.ToInt32(__rx.__patient.__card_dose_sn["PRN"]);
+
+                                for (int i = 0; i < __patient.__cycle_days; i++)
+                                {
+                                    __new_row = new SynMedRow();
+                                    __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn["PRN"];
+                                    __new_row.PRESCRIPTION_COMMENT = "PRN Prescription";
+                                    __new_row.PATIENT_WITH_PRN = "Y";
+                                    __new_row.QTY_PER_ADMINISTRATION = __rx.__qty_per_dose.ToString();
+                                    __new_row.DRUG_QUANTITY = (__rx.__qty_per_dose * __cycle_length).ToString();
+                                    __new_row.ADMINISTRATION_PER_DAY = (__rx.__qty_to_dispense / __cycle_length).ToString();
+                                    __new_row.DAY_LAPSE = "1";
+
+                                    fillLegacyRow(__new_row, __patient, __rx, __prn_dose, __start_date, __current_date);
+                                }
+
+                                break;
+
+                            case RxType.Alternating:
+
+                                foreach (var __day in __rx.__a_dose_schedule)
+                                {
+                                    foreach (var __dose in __day.__dose_schedule)
+                                    {
+                                        __new_row = new SynMedRow();
+                                        __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn[__dose.__dose_time];
+                                        __new_row.PRESCRIPTION_COMMENT = "Alternating Prescription - every (" + __rx.__alternate_days + ") days";
+                                        fillLegacyRow(__new_row, __patient, __rx, __dose, __start_date, __day.__dose_date);
+                                    }
+                                }
+
+                                break;
+
+                            case RxType.MonthlyTitrating:
+                            case RxType.WeeklyTitrating:
+
+                                if (__rx.__t_dose_schedule != null)
+                                {
+                                    foreach (var __day in __rx.__t_dose_schedule)
+                                    {
+                                        foreach (var __dose in __day.__dose_schedule)
+                                        {
+                                            __new_row = new SynMedRow();
+                                            __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn[__dose.__dose_time];
+                                            __new_row.PRESCRIPTION_COMMENT = "Monthly or Weekly Titrating Prescription";
+                                            fillLegacyRow(__new_row, __patient, __rx, __dose, __start_date, __day.__dose_date);
+                                        }
+                                    }
+                                }
+
+                                break;
+
+                            case RxType.DayOfMonth:
+
+                                if (__rx.__dom_list == null)
+                                {
+                                    continue;
+                                }
+                                __current_date = __start_date;
+
+                                foreach (char __day in __rx.__dom_list)
+                                {
+                                    if (__day == '1' && __rx.__dose_schedule != null)
+                                    {
+                                        __new_row = new SynMedRow();
+                                        __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn[__rx.__dose_schedule[0].__dose_time];
+                                        __new_row.PRESCRIPTION_COMMENT = "Day Of Month Prescription";
+                                        fillLegacyRow(__new_row, __patient, __rx, __rx.__dose_schedule[0], __start_date, __current_date);
+                                    }
+
+                                    __current_date = __current_date.AddDays(1);
+                                }
+
+                                break;
+
+                            case RxType.DayOfWeek:
+                                __current_date = __start_date;
+
+                                foreach (byte __day in __rx.__dow_list)
+                                {
+                                    if (__day == '1' && __rx.__dose_schedule != null)
+                                    {
+                                        __new_row = new SynMedRow();
+                                        __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn[__rx.__dose_schedule[0].__dose_time];
+                                        __new_row.PRESCRIPTION_COMMENT = "Day Of Week Prescription";
+                                        fillLegacyRow(__new_row, __patient, __rx, __rx.__dose_schedule[0], __start_date, __current_date);
+                                    }
+
+                                    __current_date = __current_date.AddDays(1);
+                                }
+
+                                break;
 
 
+                            case RxType.Sequential:
+                                /*  Not Supported By SynMed
+                                var __sequential_regimen = __rx.RxDosageRegimen as RxSequentialRegimen;
+
+                                foreach (var __sequential_dose in __sequential_regimen.DoseSchedule.DoseScheduleItems)
+                                {
+                                    __new_row = new SynMedRow();
+                                    __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn[__dose.__dose_time];
+                                    __new_row.PRESCRIPTION_COMMENT = "Sequential Prescription";
+                                    fillRow(__new_row, __rx, __base_date, __current_date, __sequential_dose);
+                                }
+                                */
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+
+                __write_to_file();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Failed to add row item: {0}", ex.StackTrace);
+            }
+        }
+        public int __sort_by_time_ndc(SynMedRow a, SynMedRow b)
+        {
+            if (a.ADMINISTRATION_TIME == b.ADMINISTRATION_TIME && a.LOCAL_DRUG_ID == b.LOCAL_DRUG_ID)
+            {
+                return 1;
+            }
+
+            return 0;
+        }
         public async void WriteRxCollection(IEnumerable<Rx> __rxes, string __file_name, Patient __patient = null)
         {
             DateTime __base_date = __cycle_start_date;
@@ -1672,33 +2115,66 @@ namespace motMatchineInterface
                 Console.WriteLine(ex.Message);
             }
         }
-
-
-        public SynMedTable(string __patient_last_name, string __patient_first_name, string __patient_middle_initial, DateTime __cycle_start_date, int __cycle_length)
+        public SynMedTable(string __patient_last_name, string __patient_first_name, string __patient_middle_initial, DateTime __cycle_start_date, int __cycle_length, string __path = null)
         {
             this.__patient_name = string.Format("{0} {1} {2}", __patient_last_name, __patient_first_name, __patient_middle_initial);
             this.__patient_first_name = __patient_first_name;
             this.__patient_last_name = __patient_last_name;
             this.__patient_middle_initial = __patient_middle_initial;
-            //this.__patient_dob = __patient_dob;
             this.__cycle_start_date = __cycle_start_date;
             this.__cycle_length = __cycle_length;
 
             try
             {
+                if (__path == null)
+                {
+                    __path = @"C:\motNext\SynmedFiles";
+                }
+
                 __table_rows = new List<SynMedRow>();
 
-                /*
-                if (!File.Exists(__filename))
-                {
-                    setup();
-                }
-                */
-            }
-            catch
-            { throw; }
-        }
+                // Collect the CSV header
+                var __csv_header = string.Empty;
+                Type __SynMedFieldNames = typeof(SynMedRow);
+                PropertyInfo[] __fieldnames = __SynMedFieldNames.GetProperties();
 
+                for (int i = 0; i < __fieldnames.Length; i++)
+                {
+                    __csv_header += __fieldnames[i].Name.ToString();
+                    if (i < __fieldnames.Length - 1)
+                    {
+                        __csv_header += ";";
+                    }
+                }
+
+                if (!Directory.Exists(__path))
+                {
+                    Directory.CreateDirectory(__path);
+                }
+
+                __filename = string.Format(@"{0}\{1:yyyyMMdd} - {2} - {3}.card", __path, DateTime.Today, __patient_name, Path.GetRandomFileName());
+
+                char[] __junk = { '<', '>' };
+
+                while (__filename?.IndexOfAny(__junk) > -1)
+                {
+                    __filename = __filename.Remove(__filename.IndexOfAny(__junk), 1);
+                }
+
+                // Create a new file
+                using (var __file = new FileStream(__filename, FileMode.Create))
+                {
+                    using (StreamWriter __sw = new StreamWriter(__file))
+                    {
+                        __sw.WriteLine(__csv_header);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error:  path = {0}\nFilename = {1}\n{2}", __path, __filename, ex.StackTrace);
+            }
+        }
         public SynMedTable(motCommonLib.motSocket __socket, string __patient_name, DateTime __patient_dob, DateTime __cycle_start_date, int __cycle_length)
         {
             this.__patient_name = __patient_name;
@@ -1706,13 +2182,6 @@ namespace motMatchineInterface
             this.__cycle_start_date = __cycle_start_date;
             this.__cycle_length = __cycle_length;
             this.__socket = __socket;
-
-            /*
-            if (!File.Exists(__filename))
-            {
-                setup();
-            }
-            */
         }
     }
 }
