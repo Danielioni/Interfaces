@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="(@1 @2 Type=FacilityModel)" Category="CodeSchema_Class" Bounds="-170.938411712646,52.8877807344271,110.75,26" CodeSchemaProperty_IsPublic="True" CommonLabel="FacilityModel" Icon="Microsoft.VisualStudio.Class.Public" Label="FacilityModel" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/ViewModels.cs StartLineNumber=22 StartCharacterOffset=17 EndLineNumber=22 EndCharacterOffset=30)" UseManualLocation="True" />
+    <Node Id="(@1 @2 Type=PatientModel)" Category="CodeSchema_Class" Bounds="-154.521666564941,108.887880734427,111.58,26" CodeSchemaProperty_IsPublic="True" CommonLabel="PatientModel" Icon="Microsoft.VisualStudio.Class.Public" Label="PatientModel" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/ViewModels.cs StartLineNumber=12 StartCharacterOffset=17 EndLineNumber=12 EndCharacterOffset=29)" UseManualLocation="True" />
+    <Node Id="(@1 @2 Type=RxModel)" Category="CodeSchema_Class" Bounds="-146.718335266113,164.887980734427,87.74,26" CodeSchemaProperty_IsPublic="True" CommonLabel="RxModel" Icon="Microsoft.VisualStudio.Class.Public" Label="RxModel" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/ViewModels.cs StartLineNumber=17 StartCharacterOffset=17 EndLineNumber=17 EndCharacterOffset=24)" UseManualLocation="True" />
+    <Node Id="(@1 @2 Type=SynMedField)" Category="CodeSchema_Class" Bounds="87.73019297998,-135.112319265573,108.756666666667,26" CodeSchemaProperty_IsPublic="True" CommonLabel="SynMedField" Icon="Microsoft.VisualStudio.Class.Public" Label="SynMedField" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/SynMed.cs StartLineNumber=53 StartCharacterOffset=17 EndLineNumber=53 EndCharacterOffset=28)" />
+    <Node Id="(@1 @2 Type=SynMedHeader)" Category="CodeSchema_Class" Bounds="-48.5398070200199,-23.1123192655729,122.16,26" CodeSchemaProperty_IsPublic="True" CommonLabel="SynMedHeader" Icon="Microsoft.VisualStudio.Class.Public" Label="SynMedHeader" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/SynMed.cs StartLineNumber=48 StartCharacterOffset=17 EndLineNumber=48 EndCharacterOffset=29)" />
+    <Node Id="(@1 @2 Type=SynMedRow)" Category="CodeSchema_Class" Bounds="-48.5398070200199,-135.112319265573,106.27,26" CodeSchemaProperty_IsPublic="True" CommonLabel="SynMedRow" Icon="Microsoft.VisualStudio.Class.Public" Label="SynMedRow" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/SynMed.cs StartLineNumber=67 StartCharacterOffset=17 EndLineNumber=67 EndCharacterOffset=26)" />
+    <Node Id="(@1 @2 Type=SynMedTable)" Category="CodeSchema_Class" Bounds="-48.5398070200199,-79.1123192655729,111.023333333333,26" CodeSchemaProperty_IsPublic="True" CommonLabel="SynMedTable" Icon="Microsoft.VisualStudio.Class.Public" Label="SynMedTable" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/SynMed.cs StartLineNumber=410 StartCharacterOffset=17 EndLineNumber=410 EndCharacterOffset=28)" />
+    <Node Id="(@1 @2 Type=motLegacySynMed)" Category="CodeSchema_Class" Bounds="-240.163240353353,-70.228666305542,141.623333333333,26" CodeSchemaProperty_IsPublic="True" CommonLabel="motLegacySynMed" Icon="Microsoft.VisualStudio.Class.Public" Label="motLegacySynMed" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/motLegacySynMed.cs StartLineNumber=23 StartCharacterOffset=17 EndLineNumber=23 EndCharacterOffset=32)" UseManualLocation="True" />
+    <Node Id="@3" Category="CodeSchema_Class" Bounds="-68.5398070200199,-175.112319265573,285.026666666667,198" CodeSchemaProperty_IsPublic="True" CommonLabel="motNextSynMed" Group="Expanded" Icon="Microsoft.VisualStudio.Class.Public" Label="motNextSynMed" SourceLocation="(Assembly=file:///C:/Users/petej/Source/Repos/Interfaces/motMachineInterface/motNextSynMed.cs StartLineNumber=26 StartCharacterOffset=17 EndLineNumber=26 EndCharacterOffset=30)" UseManualLocation="True" />
+  </Nodes>
+  <Links>
+    <Link Source="@3" Target="(@1 @2 Type=SynMedField)" Category="Contains" />
+    <Link Source="@3" Target="(@1 @2 Type=SynMedHeader)" Category="Contains" />
+    <Link Source="@3" Target="(@1 @2 Type=SynMedRow)" Category="Contains" />
+    <Link Source="@3" Target="(@1 @2 Type=SynMedTable)" Category="Contains" />
+  </Links>
+  <Categories>
+    <Category Id="CodeSchema_Class" Label="Class" BasedOn="CodeSchema_Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Classes" />
+    <Category Id="CodeSchema_Type" Label="Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Types" />
+    <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsPublic" Label="Is Public" Description="Flag to indicate the scope is Public" DataType="System.Boolean" />
+    <Property Id="CommonLabel" DataType="System.String" />
+    <Property Id="DefaultAction" Label="DefaultAction" Description="DefaultAction" DataType="System.String" />
+    <Property Id="Group" Label="Group" Description="Display the node as a group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="Icon" Label="Icon" Description="Icon" DataType="System.String" />
+    <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
+    <Property Id="SourceLocation" Label="Start Line Number" DataType="Microsoft.VisualStudio.GraphModel.CodeSchema.SourceLocation" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+  </Properties>
+  <QualifiedNames>
+    <Name Id="Assembly" Label="Assembly" ValueType="Uri" />
+    <Name Id="Namespace" Label="Namespace" ValueType="System.String" />
+    <Name Id="Type" Label="Type" ValueType="System.Object" />
+  </QualifiedNames>
+  <IdentifierAliases>
+    <Alias n="1" Uri="Assembly=$(8b6e27e8-a06d-4bbf-bf34-dcf4b81a489b.OutputPathUri)" />
+    <Alias n="2" Id="Namespace=motMachineInterface" />
+    <Alias n="3" Id="(@1 @2 Type=motNextSynMed)" />
+  </IdentifierAliases>
+  <Paths>
+    <Path Id="8b6e27e8-a06d-4bbf-bf34-dcf4b81a489b.OutputPathUri" Value="file:///C:/Users/petej/Source/Repos/Interfaces/Libs/Debug/motMachineInterface.dll" />
+  </Paths>
+</DirectedGraph>
