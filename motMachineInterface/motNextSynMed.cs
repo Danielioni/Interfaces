@@ -12,7 +12,7 @@ using Mot.Client.Sdk;
 using Mot.Client.Sdk.Patients;
 using Mot.Client.Sdk.Cards;
 
-
+using Mot.Shared.Model;
 using Mot.Shared.Model.Cards;
 using Mot.Shared.Model.Rxes;
 using Mot.Shared.Model.Rxes.RxRegimens;
@@ -24,7 +24,7 @@ using motCommonLib;
 
 namespace motMachineInterface
 {
-    public class motNextSynMed
+    public class motNextSynMed : synMedBase
     {
         public static IContainer container;
         private SynMedTable __table;
@@ -37,6 +37,83 @@ namespace motMachineInterface
         private string __password;
         private bool __logged_in = false;
         private string __file_name;
+
+        // Display Support
+        public DataSet GetFacilitiesAsDataSet(string __loc = null)
+        {
+            DataSet __db_facilitiess = new DataSet();
+
+            try
+            {
+                using (var scope = container.BeginLifetimeScope())
+                {
+                    var query1 = scope.Resolve<IEntityQuery<Facility>>();
+
+                    if (__loc == null)
+                    {
+                        var patients = query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.StoreId != null));
+                    }
+                    else
+                    {
+                        Guid __g = new Guid(__loc);
+                        var patients = query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.StoreId == __g));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                __logger.Error(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
+
+            return __db_facilitiess;
+
+        }
+        public DataSet GetPatientsAsDataSet(string __loc = null)
+        {
+            DataSet __db_patients = new DataSet();
+
+            try
+            {
+                if (__loc == null)
+                {
+                    //__db.executeQuery(string.Format("SELECT * FROM Patient;"), __db_patients, "Patients");
+                }
+                else
+                {
+                    //__db.executeQuery(string.Format("SELECT * FROM Patient WHERE LocCode = '{0}';", __loc), __db_patients, "Patients");
+                }
+
+                return __db_patients;
+            }
+            catch (Exception ex)
+            {
+                __logger.Error(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+        public DataSet GetRxesAsDataSet(int patId, DateTime dt)
+        {
+            try
+            {
+                DataSet __ds_rxes = new DataSet();
+
+                //__db.executeQuery(string.Format("SELECT rx.rxsys_rxnum, rx.dscode, rx.qty_per_dose, rx.isolate, drugs.Tradename, rx.sig2print, rx.expiration_date  " +
+                //                                               "FROM drugs, rx " +
+                //                                               "WHERE rx.motpatid = {0} AND drugs.Seq_No = rx.drugs_seqno AND rx.status = 1 AND date('{1:yyyy-MM-dd}') < expiration_date;",
+                //                                               patId, dt), __ds_rxes, "Rxes");
+                return __ds_rxes;
+            }
+            catch (Exception ex)
+            {
+                __logger.Error(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
 
         private void setup(string __path)
         {
@@ -112,8 +189,14 @@ namespace motMachineInterface
 
             try
             {
+                var auth = new AuthorizeModel();
+
+                auth.IsGrantAccesNeed = false;
+                auth.UserName = __uname;
+                auth.UserPassword = __pw;
+
                 //Authentication service will automatically store access_token and refresh_token and re-issue them when they are about to expire.
-                await authService.LoginAsync(__username, __password);
+                await authService.LoginAsync(auth/*__username, __password*/);
 
                 __logged_in = true;
 

@@ -73,6 +73,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="dsFacilities.cs">
+      <DependentUpon>dsFacilities.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="dsFacilities.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsFacilities.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="dsPatients.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsPatients.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Execute.cs" />
     <Compile Include="frmDoseSchedule.cs">
       <SubType>Form</SubType>
@@ -167,6 +180,28 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="dsFacilities.xsc">
+      <DependentUpon>dsFacilities.xsd</DependentUpon>
+    </None>
+    <None Include="dsFacilities.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsFacilities.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="dsFacilities.xss">
+      <DependentUpon>dsFacilities.xsd</DependentUpon>
+    </None>
+    <None Include="dsPatients.xsc">
+      <DependentUpon>dsPatients.xsd</DependentUpon>
+    </None>
+    <None Include="dsPatients.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsPatients.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="dsPatients.xss">
+      <DependentUpon>dsPatients.xsd</DependentUpon>
+    </None>
     <None Include="mot-certificate.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

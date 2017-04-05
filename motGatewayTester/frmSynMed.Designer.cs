@@ -48,15 +48,38 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rbUseLegacy = new System.Windows.Forms.RadioButton();
             this.rbUseNext = new System.Windows.Forms.RadioButton();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.patientBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.dsPatients = new motGatewayTester.dsPatients();
+            this.dsFacilities = new motGatewayTester.dsFacilities();
+            this.locationBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.locationTableAdapter = new motGatewayTester.dsFacilitiesTableAdapters.LocationTableAdapter();
+            this.patientTableAdapter = new motGatewayTester.dsPatientsTableAdapters.PatientTableAdapter();
+            this.Select = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Fill = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Print = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.locname = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.address1DataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.address2DataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.stateDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.zipDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.phoneDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cycleDaysDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cycleTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.patientBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dsPatients)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dsFacilities)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.locationBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // btnGo
             // 
-            this.btnGo.Location = new System.Drawing.Point(689, 359);
-            this.btnGo.Margin = new System.Windows.Forms.Padding(4);
+            this.btnGo.Location = new System.Drawing.Point(501, 70);
             this.btnGo.Name = "btnGo";
-            this.btnGo.Size = new System.Drawing.Size(249, 110);
+            this.btnGo.Size = new System.Drawing.Size(187, 89);
             this.btnGo.TabIndex = 0;
             this.btnGo.Text = "Go";
             this.btnGo.UseVisualStyleBackColor = true;
@@ -64,92 +87,82 @@
             // 
             // txtPatientLastName
             // 
-            this.txtPatientLastName.Location = new System.Drawing.Point(180, 128);
-            this.txtPatientLastName.Margin = new System.Windows.Forms.Padding(4);
+            this.txtPatientLastName.Location = new System.Drawing.Point(107, 29);
             this.txtPatientLastName.Name = "txtPatientLastName";
-            this.txtPatientLastName.Size = new System.Drawing.Size(99, 22);
+            this.txtPatientLastName.Size = new System.Drawing.Size(75, 20);
             this.txtPatientLastName.TabIndex = 1;
             // 
             // txtCycleStartDate
             // 
-            this.txtCycleStartDate.Location = new System.Drawing.Point(180, 158);
-            this.txtCycleStartDate.Margin = new System.Windows.Forms.Padding(4);
+            this.txtCycleStartDate.Location = new System.Drawing.Point(107, 53);
             this.txtCycleStartDate.Name = "txtCycleStartDate";
-            this.txtCycleStartDate.Size = new System.Drawing.Size(244, 22);
+            this.txtCycleStartDate.Size = new System.Drawing.Size(184, 20);
             this.txtCycleStartDate.TabIndex = 3;
             this.txtCycleStartDate.Text = "3/11/2017";
             this.txtCycleStartDate.TextChanged += new System.EventHandler(this.txtCycleStartDate_TextChanged);
             // 
             // txtCycleLength
             // 
-            this.txtCycleLength.Location = new System.Drawing.Point(180, 190);
-            this.txtCycleLength.Margin = new System.Windows.Forms.Padding(4);
+            this.txtCycleLength.Location = new System.Drawing.Point(107, 79);
             this.txtCycleLength.Name = "txtCycleLength";
-            this.txtCycleLength.Size = new System.Drawing.Size(244, 22);
+            this.txtCycleLength.Size = new System.Drawing.Size(184, 20);
             this.txtCycleLength.TabIndex = 4;
             // 
             // txtOutFile
             // 
-            this.txtOutFile.Location = new System.Drawing.Point(180, 222);
-            this.txtOutFile.Margin = new System.Windows.Forms.Padding(4);
+            this.txtOutFile.Location = new System.Drawing.Point(107, 105);
             this.txtOutFile.Name = "txtOutFile";
-            this.txtOutFile.Size = new System.Drawing.Size(244, 22);
+            this.txtOutFile.Size = new System.Drawing.Size(184, 20);
             this.txtOutFile.TabIndex = 5;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(79, 131);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(31, 31);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 17);
+            this.label1.Size = new System.Drawing.Size(71, 13);
             this.label1.TabIndex = 6;
             this.label1.Text = "Patient Name";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(61, 161);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Location = new System.Drawing.Point(18, 56);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(110, 17);
+            this.label3.Size = new System.Drawing.Size(84, 13);
             this.label3.TabIndex = 8;
             this.label3.Text = "Cycle Start Date";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(81, 193);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Location = new System.Drawing.Point(33, 82);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(90, 17);
+            this.label4.Size = new System.Drawing.Size(69, 13);
             this.label4.TabIndex = 9;
             this.label4.Text = "Cycle Length";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(116, 225);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Location = new System.Drawing.Point(59, 108);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(57, 17);
+            this.label5.Size = new System.Drawing.Size(43, 13);
             this.label5.TabIndex = 10;
             this.label5.Text = "Out File";
             // 
             // txtPatientFirstName
             // 
-            this.txtPatientFirstName.Location = new System.Drawing.Point(287, 128);
-            this.txtPatientFirstName.Margin = new System.Windows.Forms.Padding(4);
+            this.txtPatientFirstName.Location = new System.Drawing.Point(187, 29);
             this.txtPatientFirstName.Name = "txtPatientFirstName";
-            this.txtPatientFirstName.Size = new System.Drawing.Size(99, 22);
+            this.txtPatientFirstName.Size = new System.Drawing.Size(75, 20);
             this.txtPatientFirstName.TabIndex = 11;
             // 
             // txtPatientMI
             // 
-            this.txtPatientMI.Location = new System.Drawing.Point(394, 128);
-            this.txtPatientMI.Margin = new System.Windows.Forms.Padding(4);
+            this.txtPatientMI.Location = new System.Drawing.Point(268, 29);
             this.txtPatientMI.Name = "txtPatientMI";
-            this.txtPatientMI.Size = new System.Drawing.Size(26, 22);
+            this.txtPatientMI.Size = new System.Drawing.Size(20, 20);
             this.txtPatientMI.TabIndex = 12;
             // 
             // notifyIcon1
@@ -159,28 +172,29 @@
             // 
             // txtUserName
             // 
-            this.txtUserName.Location = new System.Drawing.Point(637, 125);
+            this.txtUserName.Location = new System.Drawing.Point(501, 27);
+            this.txtUserName.Margin = new System.Windows.Forms.Padding(2);
             this.txtUserName.Name = "txtUserName";
-            this.txtUserName.Size = new System.Drawing.Size(270, 22);
+            this.txtUserName.Size = new System.Drawing.Size(204, 20);
             this.txtUserName.TabIndex = 13;
             this.txtUserName.Text = "dba";
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(637, 153);
+            this.txtPassword.Location = new System.Drawing.Point(501, 49);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(2);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtPassword.Size = new System.Drawing.Size(270, 22);
+            this.txtPassword.Size = new System.Drawing.Size(204, 20);
             this.txtPassword.TabIndex = 14;
             this.txtPassword.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(537, 125);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(426, 27);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(79, 17);
+            this.label2.Size = new System.Drawing.Size(60, 13);
             this.label2.TabIndex = 15;
             this.label2.Text = "User Name";
             this.label2.Click += new System.EventHandler(this.label2_Click);
@@ -188,10 +202,9 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(537, 153);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Location = new System.Drawing.Point(426, 49);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(69, 17);
+            this.label6.Size = new System.Drawing.Size(53, 13);
             this.label6.TabIndex = 16;
             this.label6.Text = "Password";
             // 
@@ -199,9 +212,11 @@
             // 
             this.groupBox1.Controls.Add(this.rbUseLegacy);
             this.groupBox1.Controls.Add(this.rbUseNext);
-            this.groupBox1.Location = new System.Drawing.Point(82, 328);
+            this.groupBox1.Location = new System.Drawing.Point(24, 268);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 100);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox1.Size = new System.Drawing.Size(150, 81);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "[ Database ]";
@@ -210,9 +225,10 @@
             // 
             this.rbUseLegacy.AutoSize = true;
             this.rbUseLegacy.Checked = true;
-            this.rbUseLegacy.Location = new System.Drawing.Point(25, 59);
+            this.rbUseLegacy.Location = new System.Drawing.Point(19, 48);
+            this.rbUseLegacy.Margin = new System.Windows.Forms.Padding(2);
             this.rbUseLegacy.Name = "rbUseLegacy";
-            this.rbUseLegacy.Size = new System.Drawing.Size(127, 21);
+            this.rbUseLegacy.Size = new System.Drawing.Size(99, 17);
             this.rbUseLegacy.TabIndex = 1;
             this.rbUseLegacy.TabStop = true;
             this.rbUseLegacy.Text = "Use motLegacy";
@@ -221,18 +237,141 @@
             // rbUseNext
             // 
             this.rbUseNext.AutoSize = true;
-            this.rbUseNext.Location = new System.Drawing.Point(25, 31);
+            this.rbUseNext.Location = new System.Drawing.Point(19, 25);
+            this.rbUseNext.Margin = new System.Windows.Forms.Padding(2);
             this.rbUseNext.Name = "rbUseNext";
-            this.rbUseNext.Size = new System.Drawing.Size(109, 21);
+            this.rbUseNext.Size = new System.Drawing.Size(86, 17);
             this.rbUseNext.TabIndex = 0;
             this.rbUseNext.Text = "Use motNext";
             this.rbUseNext.UseVisualStyleBackColor = true;
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AutoGenerateColumns = false;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Select,
+            this.Fill,
+            this.Print,
+            this.locname,
+            this.address1DataGridViewTextBoxColumn,
+            this.address2DataGridViewTextBoxColumn,
+            this.cityDataGridViewTextBoxColumn,
+            this.stateDataGridViewTextBoxColumn,
+            this.zipDataGridViewTextBoxColumn,
+            this.phoneDataGridViewTextBoxColumn,
+            this.cycleDaysDataGridViewTextBoxColumn,
+            this.cycleTypeDataGridViewTextBoxColumn});
+            this.dataGridView1.DataSource = this.locationBindingSource;
+            this.dataGridView1.Location = new System.Drawing.Point(212, 214);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(836, 261);
+            this.dataGridView1.TabIndex = 18;
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick_1);
+            // 
+            // patientBindingSource
+            // 
+            this.patientBindingSource.DataMember = "Patient";
+            this.patientBindingSource.DataSource = this.dsPatients;
+            // 
+            // dsPatients
+            // 
+            this.dsPatients.DataSetName = "dsPatients";
+            this.dsPatients.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // dsFacilities
+            // 
+            this.dsFacilities.DataSetName = "dsFacilities";
+            this.dsFacilities.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // locationBindingSource
+            // 
+            this.locationBindingSource.DataMember = "Location";
+            this.locationBindingSource.DataSource = this.dsFacilities;
+            // 
+            // locationTableAdapter
+            // 
+            this.locationTableAdapter.ClearBeforeFill = true;
+            // 
+            // patientTableAdapter
+            // 
+            this.patientTableAdapter.ClearBeforeFill = true;
+            // 
+            // Select
+            // 
+            this.Select.HeaderText = "Select";
+            this.Select.Name = "Select";
+            // 
+            // Fill
+            // 
+            this.Fill.HeaderText = "Fill";
+            this.Fill.Name = "Fill";
+            // 
+            // Print
+            // 
+            this.Print.HeaderText = "Print";
+            this.Print.Name = "Print";
+            // 
+            // locname
+            // 
+            this.locname.DataPropertyName = "locname";
+            this.locname.HeaderText = "Facility";
+            this.locname.Name = "locname";
+            // 
+            // address1DataGridViewTextBoxColumn
+            // 
+            this.address1DataGridViewTextBoxColumn.DataPropertyName = "Address1";
+            this.address1DataGridViewTextBoxColumn.HeaderText = "Address1";
+            this.address1DataGridViewTextBoxColumn.Name = "address1DataGridViewTextBoxColumn";
+            // 
+            // address2DataGridViewTextBoxColumn
+            // 
+            this.address2DataGridViewTextBoxColumn.DataPropertyName = "Address2";
+            this.address2DataGridViewTextBoxColumn.HeaderText = "Address2";
+            this.address2DataGridViewTextBoxColumn.Name = "address2DataGridViewTextBoxColumn";
+            // 
+            // cityDataGridViewTextBoxColumn
+            // 
+            this.cityDataGridViewTextBoxColumn.DataPropertyName = "City";
+            this.cityDataGridViewTextBoxColumn.HeaderText = "City";
+            this.cityDataGridViewTextBoxColumn.Name = "cityDataGridViewTextBoxColumn";
+            // 
+            // stateDataGridViewTextBoxColumn
+            // 
+            this.stateDataGridViewTextBoxColumn.DataPropertyName = "State";
+            this.stateDataGridViewTextBoxColumn.HeaderText = "State";
+            this.stateDataGridViewTextBoxColumn.Name = "stateDataGridViewTextBoxColumn";
+            // 
+            // zipDataGridViewTextBoxColumn
+            // 
+            this.zipDataGridViewTextBoxColumn.DataPropertyName = "Zip";
+            this.zipDataGridViewTextBoxColumn.HeaderText = "Zip";
+            this.zipDataGridViewTextBoxColumn.Name = "zipDataGridViewTextBoxColumn";
+            // 
+            // phoneDataGridViewTextBoxColumn
+            // 
+            this.phoneDataGridViewTextBoxColumn.DataPropertyName = "Phone";
+            this.phoneDataGridViewTextBoxColumn.HeaderText = "Phone";
+            this.phoneDataGridViewTextBoxColumn.Name = "phoneDataGridViewTextBoxColumn";
+            // 
+            // cycleDaysDataGridViewTextBoxColumn
+            // 
+            this.cycleDaysDataGridViewTextBoxColumn.DataPropertyName = "CycleDays";
+            this.cycleDaysDataGridViewTextBoxColumn.HeaderText = "CycleDays";
+            this.cycleDaysDataGridViewTextBoxColumn.Name = "cycleDaysDataGridViewTextBoxColumn";
+            // 
+            // cycleTypeDataGridViewTextBoxColumn
+            // 
+            this.cycleTypeDataGridViewTextBoxColumn.DataPropertyName = "CycleType";
+            this.cycleTypeDataGridViewTextBoxColumn.HeaderText = "CycleType";
+            this.cycleTypeDataGridViewTextBoxColumn.Name = "cycleTypeDataGridViewTextBoxColumn";
+            // 
             // frmSynMed
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(955, 510);
+            this.ClientSize = new System.Drawing.Size(1060, 487);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label2);
@@ -249,11 +388,16 @@
             this.Controls.Add(this.txtCycleStartDate);
             this.Controls.Add(this.txtPatientLastName);
             this.Controls.Add(this.btnGo);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmSynMed";
             this.Text = "frmSynMed";
+            this.Load += new System.EventHandler(this.frmSynMed_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.patientBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dsPatients)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dsFacilities)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.locationBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -280,5 +424,27 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton rbUseLegacy;
         private System.Windows.Forms.RadioButton rbUseNext;
+        private System.Windows.Forms.DataGridViewTextBoxColumn patientDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn facilityDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn iidDataGridViewTextBoxColumn;
+        private dsFacilities dsFacilities;
+        private System.Windows.Forms.BindingSource locationBindingSource;
+        private dsFacilitiesTableAdapters.LocationTableAdapter locationTableAdapter;
+        private dsPatients dsPatients;
+        private System.Windows.Forms.BindingSource patientBindingSource;
+        private dsPatientsTableAdapters.PatientTableAdapter patientTableAdapter;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Select;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Fill;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Print;
+        private System.Windows.Forms.DataGridViewTextBoxColumn locname;
+        private System.Windows.Forms.DataGridViewTextBoxColumn address1DataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn address2DataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cityDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn stateDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn zipDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn phoneDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cycleDaysDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cycleTypeDataGridViewTextBoxColumn;
     }
 }

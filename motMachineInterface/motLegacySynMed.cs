@@ -18,12 +18,16 @@ using motCommonLib;
 
 namespace motMachineInterface
 {
+    public abstract class synMedBase
+    {
+
+    }
     /// <summary>
     /// Implementation for motLegacy drawing data from SQLAnywhere
     /// </summary>
-    public class motLegacySynMed
+    public class motLegacySynMed : synMedBase
     {
-        motODBCServer __db;
+        public motODBCServer __db { get; set; }
         private string __file_name;
         private SynMedTable __table;
         Logger __logger;
@@ -54,9 +58,9 @@ namespace motMachineInterface
 
 
         // Models
-        public BindingList<__motsynmed_patient> Patients { get; set; }
-        public BindingList<__motsynmed_rx> Rxes { get; set; }
-        public BindingList<__motsynmed_facility> Facilities { get; set; }
+        //public BindingList<__motsynmed_patient> Patients { get; set; }
+        //public BindingList<__motsynmed_rx> Rxes { get; set; }
+        //public BindingList<__motsynmed_facility> Facilities { get; set; }
 
         public DataSet motFacilities { get; set; }
         public DataSet motPatients { get; set; }
@@ -342,6 +346,78 @@ namespace motMachineInterface
             }
         }
 
+        // Display Support
+        public DataSet GetFacilitiesAsDataSet(string __loc = null)
+        {
+            DataSet __db_facilitiess = new DataSet();
+
+            try
+            {
+                if (__loc == null)
+                {
+                    __db.executeQuery(string.Format("SELECT * FROM Location;"), __db_facilitiess, "Facilities");
+                }
+                else
+                {
+                    __db.executeQuery(string.Format("SELECT * FROM Location WHERE LocCode = '{0}';", __loc), __db_facilitiess, "Facilities");
+                }
+
+                return __db_facilitiess;
+            }
+            catch (Exception ex)
+            {
+                __logger.Error(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+        public DataSet GetPatientsAsDataSet(string __loc = null)
+        {
+            DataSet __db_patients = new DataSet();
+
+            try
+            {
+                if (__loc == null)
+                {
+                    __db.executeQuery(string.Format("SELECT * FROM Patient;"), __db_patients, "Patients");
+                }
+                else
+                {
+                    __db.executeQuery(string.Format("SELECT * FROM Patient WHERE LocCode = '{0}';", __loc), __db_patients, "Patients");
+                }
+
+                return __db_patients;
+            }
+            catch(Exception ex)
+            {
+                __logger.Error(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+        public DataSet GetRxesAsDataSet(int patId, DateTime dt)
+        {
+            try
+            {
+                DataSet __ds_rxes = new DataSet();
+
+                __db.executeQuery(string.Format("SELECT rx.rxsys_rxnum, rx.dscode, rx.qty_per_dose, rx.isolate, drugs.Tradename, rx.sig2print, rx.expiration_date  " +
+                                                               "FROM drugs, rx " +
+                                                               "WHERE rx.motpatid = {0} AND drugs.Seq_No = rx.drugs_seqno AND rx.status = 1 AND date('{1:yyyy-MM-dd}') < expiration_date;",
+                                                               patId, dt), __ds_rxes, "Rxes");
+                return __ds_rxes;
+            }
+            catch(Exception ex)
+            {
+                __logger.Error(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+
         public BindingList<__motsynmed_rx> __get_rxes(int id)
         {
             DataSet __db_rxes = new DataSet();
@@ -452,57 +528,6 @@ namespace motMachineInterface
 
             return null;
         }
-
-        public DataSet GetFacilitiesAsDataSet(string __loc = null)
-        {
-            DataSet __db_facilitiess = new DataSet();
-
-            try
-            {
-                if (__loc == null)
-                {
-                    __db.executeQuery(string.Format("SELECT * FROM Location;"), __db_facilitiess, "Facilities");
-                }
-                else
-                {
-                    __db.executeQuery(string.Format("SELECT * FROM Location WHERE LocCode = '{0}';", __loc), __db_facilitiess, "Facilities");
-                }
-
-                return __db_facilitiess;
-            }
-            catch (Exception ex)
-            {
-                __logger.Error(ex.Message);
-                Console.WriteLine(ex.Message);
-            }
-
-            return null;
-        }
-        public DataSet GetPatientsAsDataSet(string __loc = null)
-        {
-            DataSet __db_patients = new DataSet();
-
-            try
-            {
-                if (__loc == null)
-                {
-                    __db.executeQuery(string.Format("SELECT * FROM Patient;"), __db_patients, "Patients");
-                }
-                else
-                {
-                    __db.executeQuery(string.Format("SELECT * FROM Patient WHERE LocCode = '{0}';", __loc), __db_patients, "Patients");
-                }
-
-                return __db_patients;
-            }
-            catch(Exception ex)
-            {
-                __logger.Error(ex.Message);
-                Console.WriteLine(ex.Message);
-            }
-
-            return null;
-        }
         public BindingList<__motsynmed_patient> __get_patients(string __loc = null)
         {
             DataSet __db_patients = new DataSet();
@@ -596,6 +621,13 @@ namespace motMachineInterface
             }
 
             return null;
+        }
+        public int __rx_count(int patId, DateTime dt)
+        {
+            var x = new DataSet();
+
+            __db.executeQuery(string.Format("SELECT * FROM rx WHERE rx.motpatid = {0} AND rx.status = 1 AND date('{1:yyyy-MM-dd}') < expiration_date", patId, dt), x, "Counter");
+            return x.Tables["Counter"].Rows.Count;
         }
 
         // Transforms
@@ -896,6 +928,158 @@ namespace motMachineInterface
         }
         public void WriteFacilityCycle(string __facility_name, DateTime __cycle_start_date, int __cycle_length)
         { }
+
+        public void WritePatient(int __patID, DateTime __from_date)
+        {
+            try
+            {
+                DataSet __db_patients = new DataSet();
+                DataSet __db_rxes = new DataSet();
+
+                __db.executeQuery(string.Format("SELECT * FROM patient where motpatID = {0}; ", __patID), __db_patients, "Patients");
+                if (__db_patients.Tables["Patients"].Rows.Count == 0)
+                {
+                    return;
+                }
+
+                var p = __db_patients.Tables["Patients"].Rows[0];
+                var __patient = new __motsynmed_patient();
+
+                __patient.__cycle_date = __get_date_value(p, "CycleDate");
+                __patient.__cycle_days = __get_value<byte>(p, "CycleDays");
+                __patient.__last_name = __get_value<string>(p, "LastName");
+                __patient.__first_name = __get_value<string>(p, "FirstName");
+                __patient.__middle_initial = __get_value<string>(p, "MiddleInitial");
+                __patient.__main_address.__address1 = __get_value<string>(p, "Address1");
+                __patient.__main_address.__address2 = __get_value<string>(p, "Address2");
+                __patient.__main_address.__city = __get_value<string>(p, "City");
+                __patient.__main_address.__state = __get_value<string>(p, "State");
+                __patient.__main_address.__zip = __get_value<string>(p, "Zip");
+                __patient.__phone = __get_value<string>(p, "Phone");
+                __patient.__dob = __get_date_value(p, "DOB");
+                __patient.__room = __get_value<string>(p, "Room");
+
+                // Set up the links to other assets
+                __patient.__i_patient_id = __get_value<int>(p, "MotPatID");
+                __patient.__i_prescriber_id = __get_value<int>(p, "PrimaryDoc");
+                __patient.__i_facility_id = __get_value<int>(p, "LocCode");
+                __patient.__i_store_id = __patient.__facility.__store_id;
+
+                if (__patient.__i_prescriber_id == 0)
+                {
+                    __logger.Warn("Patient {0} - {1} does not have a primary prescriber", __patient.__last_name, __patient.__i_patient_id);
+                }
+
+                __get_prescriber(__patient.__prescriber, __patient.__i_prescriber_id);
+                __get_facility(__patient.__facility, __patient.__i_facility_id);
+                __get_store(__patient.__store, __patient.__facility.__store_id);
+
+
+                __db.executeQuery(string.Format("SELECT *  " +
+                                                "FROM drugs, rx " +
+                                                "WHERE rx.motpatid = {0} AND drugs.Seq_No = rx.drugs_seqno AND rx.status = 1 AND date('{1:yyyy-MM-dd}') < expiration_date;",
+                                                 __patID, __from_date), __db_rxes, "Rxes");
+
+                if (__db_rxes.Tables["Rxes"].Rows.Count > 0)
+                {
+                    foreach (DataRow r in __db_rxes.Tables["Rxes"].Rows)
+                    {
+                        var __rx = new __motsynmed_rx();
+
+                        // Rx info
+                        __rx.__patient = __patient;
+
+                        __rx.__type = __convert_rx(__get_value<byte>(r, "rxtype"));
+                        __rx.__expire_date = __get_date_value(r, "expiration_date");
+
+                        __rx.__start_date = __from_date;
+
+                        //__rx.__written_date = __get_date_value(r, "written_date");
+                        __rx.__rx_num = __get_value<decimal>(r, "rxsys_rxnum");
+                        __rx.__mot_rx_num = __get_value<int>(r, "motrxnum");
+                        __rx.__dose_code = __get_value<string>(r, "dscode");
+                        __rx.__qty_to_dispense = __get_value<decimal>(r, "qty2disp");
+                        __rx.__qty_per_dose = __get_value<decimal>(r, "qty_per_dose");
+                        __rx.__sig = __get_value<string>(r, "sig2print");
+
+                        __rx.__mdomstart = __get_value<byte>(r, "mdomstart");
+                        __rx.__mdomend = __get_value<byte>(r, "mdomend");
+                        __rx.__alternate_days = __get_value<byte>(r, "flexdays");
+
+                        __rx.__dow_list[0] = __get_value<byte>(r, "su");
+                        __rx.__dow_list[1] = __get_value<byte>(r, "mo");
+                        __rx.__dow_list[2] = __get_value<byte>(r, "tu");
+                        __rx.__dow_list[3] = __get_value<byte>(r, "we");
+                        __rx.__dow_list[4] = __get_value<byte>(r, "th");
+                        __rx.__dow_list[5] = __get_value<byte>(r, "fr");
+                        __rx.__dow_list[6] = __get_value<byte>(r, "sa");
+
+                        __rx.__dom_list = __get_value<string>(r, "mdomstring");
+
+
+                        // Drug Info
+                        __rx.__NDC = __get_value<string>(r, "NDCNum");
+                        __rx.__drug_schedule = __get_value<byte>(r, "drug_sched");
+                        __rx.__trade_name = __get_value<string>(r, "tradename");
+                        __rx.__cup_name = __get_value<string>(r, "short_name");
+                        __rx.__strength = __get_value<string>(r, "strength");
+                        __rx.__unit = __get_value<string>(r, "unit");
+                        __rx.__route = __get_value<string>(r, "route");
+                        __rx.__dose_form = __get_value<string>(r, "dose_form");
+                        __rx.__visual_description = __get_value<string>(r, "visual_descript");
+                        __rx.__otc = __get_value<string>(r, "rx_otc");
+                        __rx.__generic_for = __get_value<string>(r, "genericfor");
+
+                        // Packaging
+                        __rx.__chart_only = __get_value<byte>(r, "chart_only");
+                        __rx.__isolate = __get_value<byte>(r, "default_isolate");
+
+                        // ID's                         
+                        __rx.__i_prescriber_id = __get_value<int>(r, "doccode");
+                        __get_prescriber(__rx.__prescriber, (long)__rx.__i_prescriber_id);
+
+                        switch (__rx.__type)
+                        {
+                            case RxType.Daily:
+                            case RxType.DayOfMonth:
+                            case RxType.DayOfWeek:
+                                __convert_dose_schedule(__rx, __patient.__i_facility_id);
+                                break;
+
+                            case RxType.MonthlyTitrating:
+                            case RxType.WeeklyTitrating:
+                                __convert_titrating_dose_schedule(__rx, __patient.__i_facility_id, __rx.__start_date);
+                                break;
+
+                            case RxType.Alternating:
+                                __convert_alternating_dose_schedule(__rx, __patient.__i_facility_id, __rx.__start_date);
+                                break;
+
+                            case RxType.Prn:
+                                __convert_dose_schedule(__rx, __patient.__i_facility_id);
+                                foreach (var e in __rx.__dose_schedule)
+                                {
+                                    e.__isolate = 1;
+                                }
+                                break;
+
+                            default:
+                                break;
+                        }
+
+                        __patient.__rxes.Add(__rx);
+                    }
+
+                    __table = new SynMedTable(__patient.__last_name, __patient.__first_name, __patient.__middle_initial, __patient.__cycle_date, __patient.__cycle_days);
+                    __table.WriteLegacyRxCollection(__patient);
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Build Patient Record Failed: {0}", ex.StackTrace);
+                __logger.Error("Build Patient Record Failed: {0}", ex.StackTrace);
+            }
+        }
         public void WritePatient(string __last_name, string __first_name, string __middle_initial, DateTime __cycle_start_date, int __cycle_length)
         { }
         /// <summary>
@@ -1118,7 +1302,7 @@ namespace motMachineInterface
             }
 
         }
-        public motLegacySynMed(string __path)
+        public motLegacySynMed(string __path = null)
         {
             __logger = LogManager.GetLogger("mot_machineInterface");
         }

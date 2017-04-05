@@ -11,9 +11,6 @@
     <Setting Name="GatewayIP" Type="System.String" Scope="User">
       <Value Profile="(Default)">localhost</Value>
     </Setting>
-    <Setting Name="GatewayPort" Type="System.String" Scope="User">
-      <Value Profile="(Default)">24041</Value>
-    </Setting>
     <Setting Name="ListenUname" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -37,6 +34,17 @@
     </Setting>
     <Setting Name="AutoTruncate" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="GatewayPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">25050</Value>
+    </Setting>
+    <Setting Name="ConnectionString" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;ConnectionString&gt;Dsn=MOT8;uid=dba;pwd=pc410h426s7617&lt;/ConnectionString&gt;
+  &lt;ProviderName&gt;System.Data.Odbc&lt;/ProviderName&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">Dsn=MOT8;uid=dba;pwd=pc410h426s7617</Value>
     </Setting>
   </Settings>
 </SettingsFile>

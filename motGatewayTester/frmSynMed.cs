@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using motOutboundLib;
-using motMatchineInterface;
+using motMachineInterface;
 
 namespace motGatewayTester
 {
@@ -25,6 +25,10 @@ namespace motGatewayTester
         public static string __password = string.Empty;
 
         public static bool useLegacy = true;
+
+        public motNextSynMed __synmed;
+        public motLegacySynMed __old_synmed;
+
 
         public frmSynMed()
         {
@@ -43,19 +47,36 @@ namespace motGatewayTester
 
             useLegacy = rbUseLegacy.Checked;
 
-            __get_started();
+            if(!useLegacy)
+            {
+                __startNext();
+            }
+            else
+            {
+                __startLegacy();
+            }
+
         }
 
-        private static async void __get_started()
+        public void __startLegacy()
+        {
+            motLegacySynMed __motLegacy_synmed = new motLegacySynMed(@"\motNext\SynmedFiles");
+            __motLegacy_synmed.Login(__username, __password);
+
+            __motLegacy_synmed.WriteCycle(DateTime.Parse(__start_date), DateTime.Parse(__start_date));
+
+            this.locationTableAdapter.Fill(this.dsFacilities.Location);
+
+            //           dataGridView1.DataSource = __motLegacy_synmed.motFacilities;
+
+        }
+        private static async void __startNext()
         {
             try
             {
                 DateTime __due;
-
                
-                if (!useLegacy)
-                {
-                    motNextSynMed __synmed = new motNextSynMed(@"\motNext\SynmedFiles");
+                    var __synmed = new motNextSynMed(@"\motNext\SynmedFiles");
 
                     await __synmed.Login(__username, __password);
 
@@ -70,15 +91,8 @@ namespace motGatewayTester
                     {
                         await __synmed.WriteCycle(DateTime.Parse(__start_date), DateTime.Parse(__start_date));
                     }
-                }
-                else
-                {
-                    motLegacySynMed __old_synmed = new motLegacySynMed(@"\motNext\SynmedFiles");
-
-                    await __old_synmed.Login(__username, __password);
-                    await __old_synmed.WriteCycle(DateTime.Parse(__start_date), DateTime.Parse(__start_date));
-                }
-
+                
+              
 
 
                 /*
@@ -117,6 +131,31 @@ namespace motGatewayTester
 
         private void txtCycleStartDate_TextChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void bindingSource1_CurrentChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int i = 0;
+        }
+
+        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            int i = 0;
+        }
+
+        private void frmSynMed_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'dsPatients.Patient' table. You can move, or remove it, as needed.
+            //this.patientTableAdapter.Fill(this.dsPatients.Patient);
+            // TODO: This line of code loads data into the 'dsFacilities.Location' table. You can move, or remove it, as needed.
+            //this.locationTableAdapter.Fill(this.dsFacilities.Location);
+            
 
         }
     }
