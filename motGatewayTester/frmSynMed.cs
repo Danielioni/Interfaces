@@ -84,10 +84,10 @@ namespace motGatewayTester
 
                     if (!string.IsNullOrEmpty(__start_date) && !string.IsNullOrEmpty(__patient_last_name))
                     {
-                        await __synmed.WritePatient(__patient_last_name, __patient_first_name, __patient_middle_initial, DateTime.Parse(__start_date), 30);
+                       // await __synmed.WritePatient(__patient_last_name, __patient_first_name, __patient_middle_initial, DateTime.Parse(__start_date), 30);
                     }
 
-                    else if (!string.IsNullOrEmpty(__patient_last_name))
+                    else if (!string.IsNullOrEmpty(__start_date) && string.IsNullOrEmpty(__patient_last_name))
                     {
                         await __synmed.WriteCycle(DateTime.Parse(__start_date), DateTime.Parse(__start_date));
                     }

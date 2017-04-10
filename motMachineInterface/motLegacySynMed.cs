@@ -1304,7 +1304,7 @@ namespace motMachineInterface
         }
         public motLegacySynMed(string __path = null)
         {
-            __logger = LogManager.GetLogger("mot_machineInterface");
+            __logger = LogManager.GetLogger("motLegacy_machineInterface");
         }
     }
 }

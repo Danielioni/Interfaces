@@ -51,12 +51,12 @@ namespace motMachineInterface
 
                     if (__loc == null)
                     {
-                        var patients = query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.StoreId != null));
+                        var facilities = query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.Id != null, f => f.Name));
                     }
                     else
                     {
                         Guid __g = new Guid(__loc);
-                        var patients = query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.StoreId == __g));
+                        var facilities = query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.Id == __g, f => f.Name));
                     }
                 }
             }
@@ -158,7 +158,7 @@ namespace motMachineInterface
         {
             try
             {
-                __logger = LogManager.GetLogger("mot_machineInterface");
+                __logger = LogManager.GetLogger("motNext_machineInterface");
 
                 Simple.OData.Client.V4Adapter.Reference();
 
@@ -171,10 +171,10 @@ namespace motMachineInterface
                 //Authentication service will automatically store access_token and refresh_token and re-issue them when they are about to expire.
                 authService = container.Resolve<IAuthenticationService>();
 
-                if (__pathname != null)
-                {
-                    setup(__pathname);
-                }
+               // if (__pathname == null)
+               // {
+               //     setup(__pathname);
+               //}
 
             }
             catch
@@ -196,7 +196,7 @@ namespace motMachineInterface
                 auth.UserPassword = __pw;
 
                 //Authentication service will automatically store access_token and refresh_token and re-issue them when they are about to expire.
-                await authService.LoginAsync(auth/*__username, __password*/);
+                await authService.LoginAsync(auth);
 
                 __logged_in = true;
 
@@ -211,7 +211,7 @@ namespace motMachineInterface
                 Facilities.Items = __get_faclities();
                 */
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -234,12 +234,15 @@ namespace motMachineInterface
                     var __patients = await query.QueryAsync(new QueryParameters<Patient>(pt => pt.DueDate == __due_date && !pt.ChartOnly && !pt.IsHidden,
                                                                                          p => p.Rxes,
                                                                                          p => p.Phones,
+                                                                                         p => p.Address,
                                                                                          p => p.Facility,
-                                                                                         p => p.PatientPrescribers
+                                                                                         p => p.Facility.Address
                                                                                          ));
 
                     foreach (var __patient in __patients)
                     {
+                        int counter = 0;
+
                         try
                         {
                             if (__patient.Rxes.Count > 0)
@@ -249,14 +252,47 @@ namespace motMachineInterface
                                     __patient.DateOfBirth = DateTime.Today;  // Lots of bad data in lagacy import
                                 }
 
-                                TimeSpan __ts = __patient.CurrentCycleEndDate - __patient.CurrentCycleStartDate;
-                                await WritePatient(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, __cycle_start, __ts.Days + 1);
+                                foreach(var __rx in __patient.Rxes)
+                                {
+                                    //if(__rx.StartDate <= DateTime.Today && __rx.StopDate > DateTime.Today)
+                                    //{
+                                    //    counter++;
+                                    //}
 
-                                Console.WriteLine("Wrote: {0}, {1} {2} Rxcount: {3}", __patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.Rxes.Count);
+                                    if(__rx.IsActive)
+                                    {
+                                        counter++;
+                                    }
+                                }
+
+                                if (counter > 0)
+                                {
+                                    TimeSpan __ts = __patient.CurrentCycleEndDate - __patient.CurrentCycleStartDate;
+                                    var __stop_date = new DateTimeOffset(DateTime.Today);
+
+                                   
+                                                             
+                                    var query2 = scope.Resolve<IEntityQuery<Rx>>();
+                                    var rxes = await query2.QueryAsync(
+                                            new QueryParameters<Rx>(rx => __patient.Id == rx.PatientId && rx.Status != RxStatus.Discountinue && rx.StopDate > __stop_date,
+                                                    r => r.RxDosageRegimen.DoseSchedule,
+                                                    r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
+                                                    r => r.Drug,
+                                                    r => r.Prescriber,
+                                                    r => r.Store)
+                                        );
+                                     
+                                                                      
+                                    __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.DueDate, 30);
+                                    await __table.WriteRxCollection(rxes, __file_name, __patient);
+
+                                    Console.WriteLine("Wrote: {0}, {1} {2} Rxcount: {3}", __patient.LastName, __patient.FirstName, __patient.MiddleInitial, counter);
+                                }
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            Console.WriteLine(ex.Message);
                             continue;
                         }
                     }
@@ -267,7 +303,7 @@ namespace motMachineInterface
                 throw;
             }
         }
-        public async Task WritePatient(string __last_name, string __first_name, string __middle_initial, DateTime __cycle_start_date, int __cycle_length)
+        public async Task WritePatient(Patient __patient, string __last_name, string __first_name, string __middle_initial, DateTime __cycle_start_date, int __cycle_length)
         {
             if (!__logged_in)
             {
@@ -276,6 +312,9 @@ namespace motMachineInterface
 
             try
             {
+                
+                var __stop_date = new DateTimeOffset(DateTime.Today);
+
                 using (var scope = container.BeginLifetimeScope())
                 {
                     var query1 = scope.Resolve<IEntityQuery<Rx>>();
@@ -284,7 +323,7 @@ namespace motMachineInterface
                     {
 
                         var rxes = await query1.QueryAsync(
-                            new QueryParameters<Rx>(rx => rx.Status != RxStatus.Discountinue && rx.Patient.LastName == __last_name && rx.Patient.FirstName == __first_name && rx.Patient.MiddleInitial == __middle_initial,
+                            new QueryParameters<Rx>(rx => rx.Status != RxStatus.Discountinue && rx.Patient.LastName == __last_name && rx.Patient.FirstName == __first_name && rx.Patient.MiddleInitial == __middle_initial && rx.StopDate > __stop_date,
                                                     r => r.RxDosageRegimen.DoseSchedule,
                                                     r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
                                                     r => r.Drug,
@@ -295,15 +334,18 @@ namespace motMachineInterface
                                                     r => r.Store,
                                                     r => r.Patient.Facility)
                                         );
+                        
+                        
 
                         __table = new SynMedTable(__last_name, __first_name, __middle_initial, __cycle_start_date, __cycle_length);
-                        __table.WriteRxCollection(rxes, __file_name);
+                        await __table.WriteRxCollection(rxes, __file_name, __patient);
+                        
                     }
                     else
                     {
 
                         var rxes = await query1.QueryAsync(
-                            new QueryParameters<Rx>(rx => rx.Status != RxStatus.Discountinue && rx.Patient.LastName == __last_name && rx.Patient.FirstName == __first_name,
+                            new QueryParameters<Rx>(rx => rx.Status != RxStatus.Discountinue && rx.Patient.LastName == __last_name && rx.Patient.FirstName == __first_name && rx.StopDate > __stop_date,
                                                     r => r.RxDosageRegimen.DoseSchedule,
                                                     r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
                                                     r => r.Drug,
@@ -316,9 +358,9 @@ namespace motMachineInterface
                                         );
 
                         __table = new SynMedTable(__last_name, __first_name, __middle_initial, __cycle_start_date, __cycle_length);
-                        __table.WriteRxCollection(rxes, __file_name);
+                        await __table.WriteRxCollection(rxes, __file_name, __patient);
                     }
-                }
+                }             
             }
             catch (Exception ex)
             {

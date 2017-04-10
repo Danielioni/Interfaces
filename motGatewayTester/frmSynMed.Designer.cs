@@ -49,12 +49,6 @@
             this.rbUseLegacy = new System.Windows.Forms.RadioButton();
             this.rbUseNext = new System.Windows.Forms.RadioButton();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.patientBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.dsPatients = new motGatewayTester.dsPatients();
-            this.dsFacilities = new motGatewayTester.dsFacilities();
-            this.locationBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.locationTableAdapter = new motGatewayTester.dsFacilitiesTableAdapters.LocationTableAdapter();
-            this.patientTableAdapter = new motGatewayTester.dsPatientsTableAdapters.PatientTableAdapter();
             this.Select = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Fill = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Print = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -67,12 +61,18 @@
             this.phoneDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cycleDaysDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cycleTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.locationBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.dsFacilities = new motGatewayTester.dsFacilities();
+            this.patientBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.dsPatients = new motGatewayTester.dsPatients();
+            this.locationTableAdapter = new motGatewayTester.dsFacilitiesTableAdapters.LocationTableAdapter();
+            this.patientTableAdapter = new motGatewayTester.dsPatientsTableAdapters.PatientTableAdapter();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.locationBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dsFacilities)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.patientBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dsPatients)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dsFacilities)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.locationBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // btnGo
@@ -98,7 +98,7 @@
             this.txtCycleStartDate.Name = "txtCycleStartDate";
             this.txtCycleStartDate.Size = new System.Drawing.Size(184, 20);
             this.txtCycleStartDate.TabIndex = 3;
-            this.txtCycleStartDate.Text = "3/11/2017";
+            this.txtCycleStartDate.Text = "4/18/2017";
             this.txtCycleStartDate.TextChanged += new System.EventHandler(this.txtCycleStartDate_TextChanged);
             // 
             // txtCycleLength
@@ -177,7 +177,7 @@
             this.txtUserName.Name = "txtUserName";
             this.txtUserName.Size = new System.Drawing.Size(204, 20);
             this.txtUserName.TabIndex = 13;
-            this.txtUserName.Text = "dba";
+            this.txtUserName.Text = "mot";
             // 
             // txtPassword
             // 
@@ -187,6 +187,7 @@
             this.txtPassword.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtPassword.Size = new System.Drawing.Size(204, 20);
             this.txtPassword.TabIndex = 14;
+            this.txtPassword.Text = "mot";
             this.txtPassword.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label2
@@ -224,24 +225,24 @@
             // rbUseLegacy
             // 
             this.rbUseLegacy.AutoSize = true;
-            this.rbUseLegacy.Checked = true;
             this.rbUseLegacy.Location = new System.Drawing.Point(19, 48);
             this.rbUseLegacy.Margin = new System.Windows.Forms.Padding(2);
             this.rbUseLegacy.Name = "rbUseLegacy";
             this.rbUseLegacy.Size = new System.Drawing.Size(99, 17);
             this.rbUseLegacy.TabIndex = 1;
-            this.rbUseLegacy.TabStop = true;
             this.rbUseLegacy.Text = "Use motLegacy";
             this.rbUseLegacy.UseVisualStyleBackColor = true;
             // 
             // rbUseNext
             // 
             this.rbUseNext.AutoSize = true;
+            this.rbUseNext.Checked = true;
             this.rbUseNext.Location = new System.Drawing.Point(19, 25);
             this.rbUseNext.Margin = new System.Windows.Forms.Padding(2);
             this.rbUseNext.Name = "rbUseNext";
             this.rbUseNext.Size = new System.Drawing.Size(86, 17);
             this.rbUseNext.TabIndex = 0;
+            this.rbUseNext.TabStop = true;
             this.rbUseNext.Text = "Use motNext";
             this.rbUseNext.UseVisualStyleBackColor = true;
             // 
@@ -268,34 +269,6 @@
             this.dataGridView1.Size = new System.Drawing.Size(836, 261);
             this.dataGridView1.TabIndex = 18;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick_1);
-            // 
-            // patientBindingSource
-            // 
-            this.patientBindingSource.DataMember = "Patient";
-            this.patientBindingSource.DataSource = this.dsPatients;
-            // 
-            // dsPatients
-            // 
-            this.dsPatients.DataSetName = "dsPatients";
-            this.dsPatients.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // dsFacilities
-            // 
-            this.dsFacilities.DataSetName = "dsFacilities";
-            this.dsFacilities.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // locationBindingSource
-            // 
-            this.locationBindingSource.DataMember = "Location";
-            this.locationBindingSource.DataSource = this.dsFacilities;
-            // 
-            // locationTableAdapter
-            // 
-            this.locationTableAdapter.ClearBeforeFill = true;
-            // 
-            // patientTableAdapter
-            // 
-            this.patientTableAdapter.ClearBeforeFill = true;
             // 
             // Select
             // 
@@ -366,6 +339,34 @@
             this.cycleTypeDataGridViewTextBoxColumn.HeaderText = "CycleType";
             this.cycleTypeDataGridViewTextBoxColumn.Name = "cycleTypeDataGridViewTextBoxColumn";
             // 
+            // locationBindingSource
+            // 
+            this.locationBindingSource.DataMember = "Location";
+            this.locationBindingSource.DataSource = this.dsFacilities;
+            // 
+            // dsFacilities
+            // 
+            this.dsFacilities.DataSetName = "dsFacilities";
+            this.dsFacilities.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // patientBindingSource
+            // 
+            this.patientBindingSource.DataMember = "Patient";
+            this.patientBindingSource.DataSource = this.dsPatients;
+            // 
+            // dsPatients
+            // 
+            this.dsPatients.DataSetName = "dsPatients";
+            this.dsPatients.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // locationTableAdapter
+            // 
+            this.locationTableAdapter.ClearBeforeFill = true;
+            // 
+            // patientTableAdapter
+            // 
+            this.patientTableAdapter.ClearBeforeFill = true;
+            // 
             // frmSynMed
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -394,10 +395,10 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.locationBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dsFacilities)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.patientBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dsPatients)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dsFacilities)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.locationBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
