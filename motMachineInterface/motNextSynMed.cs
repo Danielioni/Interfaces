@@ -170,12 +170,6 @@ namespace motMachineInterface
 
                 //Authentication service will automatically store access_token and refresh_token and re-issue them when they are about to expire.
                 authService = container.Resolve<IAuthenticationService>();
-
-               // if (__pathname == null)
-               // {
-               //     setup(__pathname);
-               //}
-
             }
             catch
             { throw; }
@@ -191,7 +185,7 @@ namespace motMachineInterface
             {
                 var auth = new AuthorizeModel();
 
-                auth.IsGrantAccesNeed = false;
+                auth.GrantAccessNeeded = false;
                 auth.UserName = __uname;
                 auth.UserPassword = __pw;
 
@@ -254,12 +248,8 @@ namespace motMachineInterface
 
                                 foreach(var __rx in __patient.Rxes)
                                 {
-                                    //if(__rx.StartDate <= DateTime.Today && __rx.StopDate > DateTime.Today)
-                                    //{
-                                    //    counter++;
-                                    //}
-
-                                    if(__rx.IsActive)
+                                                
+                                    if(__rx.Status == RxStatus.Active)
                                     {
                                         counter++;
                                     }
@@ -274,7 +264,7 @@ namespace motMachineInterface
                                                              
                                     var query2 = scope.Resolve<IEntityQuery<Rx>>();
                                     var rxes = await query2.QueryAsync(
-                                            new QueryParameters<Rx>(rx => __patient.Id == rx.PatientId && rx.Status != RxStatus.Discountinue && rx.StopDate > __stop_date,
+                                            new QueryParameters<Rx>(rx => __patient.Id == rx.PatientId && rx.Status == RxStatus.Active,
                                                     r => r.RxDosageRegimen.DoseSchedule,
                                                     r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
                                                     r => r.Drug,
@@ -283,7 +273,7 @@ namespace motMachineInterface
                                         );
                                      
                                                                       
-                                    __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.DueDate, 30);
+                                    __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.DueDate, (int)__patient.CardDays);
                                     await __table.WriteRxCollection(rxes, __file_name, __patient);
 
                                     Console.WriteLine("Wrote: {0}, {1} {2} Rxcount: {3}", __patient.LastName, __patient.FirstName, __patient.MiddleInitial, counter);
@@ -372,6 +362,35 @@ namespace motMachineInterface
             if (!__logged_in)
             {
                 throw new Exception("Not logged in");
+            }
+
+            try
+            {
+                var __due_date = new DateTimeOffset(__cycle_start_date);
+
+                using (var scope = container.BeginLifetimeScope())
+                {
+                    var query1 = scope.Resolve<IEntityQuery<Facility>>();
+                    var query2 = scope.Resolve<IEntityQuery<Patient>>();
+
+                    // Find the Facility
+                    var __facility = await query1.QueryAsync(
+                                new QueryParameters<Facility>(f => f.Name == __facility_name));
+
+                    // Process each patient
+                    foreach (var f in __facility)
+                    {
+                        var __patients = await query2.QueryAsync(new QueryParameters<Patient>(p => p.FacilityId == f.Id && p.DueDate == __due_date));
+                        foreach (var p in __patients)
+                        {
+                            await WritePatient(p, p.LastName, p.FirstName, p.MiddleInitial, __cycle_start_date, (int)p.CardDays);
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
         public async Task BuildPatientByFacility(string __facility)

@@ -34,6 +34,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 
+
+//
+// var portValue = System.Configuration.ConfigurationManager.AppSettings["Port"];
+//
 namespace motCommonLib
 {
     public class motSocket : IDisposable

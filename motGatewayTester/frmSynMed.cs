@@ -47,7 +47,7 @@ namespace motGatewayTester
 
             useLegacy = rbUseLegacy.Checked;
 
-            if(!useLegacy)
+            if (!useLegacy)
             {
                 __startNext();
             }
@@ -75,24 +75,24 @@ namespace motGatewayTester
             try
             {
                 DateTime __due;
-               
-                    var __synmed = new motNextSynMed(@"\motNext\SynmedFiles");
 
-                    await __synmed.Login(__username, __password);
+                var __synmed = new motNextSynMed(@"\motNext\SynmedFiles");
 
-                    await __synmed.BuildPatientList(2000);
+                await __synmed.Login(__username, __password);
 
-                    if (!string.IsNullOrEmpty(__start_date) && !string.IsNullOrEmpty(__patient_last_name))
-                    {
-                       // await __synmed.WritePatient(__patient_last_name, __patient_first_name, __patient_middle_initial, DateTime.Parse(__start_date), 30);
-                    }
+                await __synmed.BuildPatientList(2000);
 
-                    else if (!string.IsNullOrEmpty(__start_date) && string.IsNullOrEmpty(__patient_last_name))
-                    {
-                        await __synmed.WriteCycle(DateTime.Parse(__start_date), DateTime.Parse(__start_date));
-                    }
-                
-              
+                if (!string.IsNullOrEmpty(__start_date) && !string.IsNullOrEmpty(__patient_last_name))
+                {
+                    // await __synmed.WritePatient(__patient_last_name, __patient_first_name, __patient_middle_initial, DateTime.Parse(__start_date), 30);
+                }
+
+                else if (!string.IsNullOrEmpty(__start_date) && string.IsNullOrEmpty(__patient_last_name))
+                {
+                    await __synmed.WriteCycle(DateTime.Parse(__start_date), DateTime.Parse(__start_date));
+                }
+
+
 
 
                 /*
@@ -155,7 +155,7 @@ namespace motGatewayTester
             //this.patientTableAdapter.Fill(this.dsPatients.Patient);
             // TODO: This line of code loads data into the 'dsFacilities.Location' table. You can move, or remove it, as needed.
             //this.locationTableAdapter.Fill(this.dsFacilities.Location);
-            
+
 
         }
     }

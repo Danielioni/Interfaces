@@ -384,7 +384,8 @@ namespace motMachineInterface
 
                 foreach (var __f in __field_data)
                 {
-                    __csv_row += __f.GetValue(this, null) + ";";
+                    //__csv_row += __f.GetValue(this, null) + ";";
+                    __csv_row += __f.GetValue(this, null) + "\t";
                 }
 
                 __csv_row = __csv_row.Substring(0, __csv_row.Length - 1);
@@ -393,6 +394,12 @@ namespace motMachineInterface
                 {
                     using (var __sw = new StreamWriter(__fs))
                     {
+                        
+                        //while(__csv_row.Contains('\n'))
+                        //{
+                        //    __csv_row = __csv_row.Remove(__csv_row.IndexOf('\n'), 1);
+                        //}
+
                         __sw.WriteLine(__csv_row);
                     }
                 }
@@ -447,9 +454,16 @@ namespace motMachineInterface
 
         private void __write_to_file()
         {
-            foreach (var __row in __table_rows)
+            if (__table_rows.Count > 0)
             {
-                __row.write(__filename, __mode);
+                foreach (var __row in __table_rows)
+                {
+                    __row.write(__filename, __mode);
+                }
+            }
+            else
+            {
+                File.Delete(__filename);
             }
         }
         private int __rx_dose_time_compare(SynMedRow a, SynMedRow b)
@@ -871,6 +885,16 @@ namespace motMachineInterface
 
                 IEnumerable<Card> __cards = await __card.PopulateCardForRxes(__rxes, __config);
 
+                List<Guid> __batch = new List<Guid>();
+
+                foreach (var c in __cards)
+                {
+                    __batch.Add(c.BatchId);
+                }
+
+                IEnumerable<KeyValuePair<Guid, int>> __serial_numbers = await __sns.SetCardsSerialNo(__batch);
+
+
                 foreach (var __full_card in __cards)
                 {
                     foreach (var __cup in __full_card.Cups)
@@ -878,7 +902,7 @@ namespace motMachineInterface
                         foreach (var __drug in __cup.Drugs)
                         {
                             __new_row = new SynMedRow();
-                           
+
                             switch (__full_card.Capacity)
                             {
                                 case CardCapacity.High:
@@ -893,6 +917,15 @@ namespace motMachineInterface
                                     break;
                             }
 
+                            foreach (var s in __serial_numbers)
+                            {
+                                if (s.Key == __full_card.Id)
+                                {
+                                    __new_row.GROUP_TITLE = s.Value.ToString();
+                                }
+                            }
+
+
                             __new_row.PP_FILE_CELL_POSITION = (__cup.CupNumber + 1).ToString();
                             __new_row.PP_FILE_CELL_POSITION_X = (((__cup.CupNumber) % 7) + 1).ToString();
                             __new_row.PP_FILE_CELL_POSITION_Y = (((__cup.CupNumber) / 7) + 1).ToString();
@@ -904,6 +937,9 @@ namespace motMachineInterface
                             __new_row.DISPLAY_NAME = __drug.DrugName;
                             __new_row.PATIENT_WITH_PRN = __drug.RxType == RxType.Prn ? "Y" : "N";
                             __new_row.DAY_LAPSE = __drug.RxType == RxType.Prn ? "1" : "";
+
+                            __new_row.PRESCRIPTION_COMMENT = "Prescription type: " + __drug.RxType.ToString();
+
 
                             string NDC = string.Empty;
 
@@ -951,7 +987,17 @@ namespace motMachineInterface
                                     __new_row.FIRST_REFILL_DATE = "";
                                     __new_row.LAST_REFILL_DATE = "";
                                     __new_row.COST = "";
+
+                                    
+                                    // TODO - Need to retain the newline
+                                    if (__rx.CardSig.Contains("\r\n"))
+                                    {
+                                        __rx.CardSig = __rx.CardSig.Remove(__rx.CardSig.IndexOf("\r\n"),2);
+                                    }
+                                    
+
                                     __new_row.PRESCRIPTION_INSTRUCTION = __rx.CardSig;
+
                                     __new_row.PHARMACY_ACCREDITATION_NUMBER = __rx.Store.Dea;
                                 }
                             }
@@ -992,24 +1038,8 @@ namespace motMachineInterface
 
                             //__new_row.CYCLE_LENGTH = __cycle_length.ToString();
 
-                            switch(__patient.CardDays)
-                            {
-                                case CardDays.Day30:
-                                    __new_row.CYCLE_LENGTH = 30.ToString();
-                                    break;
-
-                                    case CardDays.Day28:
-                                    __new_row.CYCLE_LENGTH = 28.ToString();
-                                    break;
-
-                                case CardDays.Day7:
-                                    __new_row.CYCLE_LENGTH = 7.ToString();
-                                    break;
-
-                                default:
-                                    break;
-                            }
-
+                            __new_row.CYCLE_LENGTH = ((int)__patient.CardDays).ToString();
+                            
                             __new_row.CYCLE_FIRST_DAY_FIXED = "";
 
                             __new_row.ONE_MAR_DOSE_ID = "";
@@ -1057,7 +1087,7 @@ namespace motMachineInterface
                     __csv_header += __fieldnames[i].Name.ToString();
                     if (i < __fieldnames.Length - 1)
                     {
-                        __csv_header += ";";
+                        __csv_header += "\t";
                     }
                 }
 
@@ -1066,7 +1096,7 @@ namespace motMachineInterface
                     Directory.CreateDirectory(__path);
                 }
 
-                __filename = string.Format(@"{0}\{1:yyyyMMdd} - {2} - {3}.card", __path, DateTime.Today, __patient_name, Path.GetRandomFileName());
+                __filename = string.Format(@"{0}\{1:yyyyMMdd} - {2} - {3}.csv", __path, DateTime.Today, __patient_name, Path.GetRandomFileName());
 
                 char[] __junk = { '<', '>' };
 
