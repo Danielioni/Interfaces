@@ -161,7 +161,7 @@ namespace motCommonLib
                 // Push it to the port
                 foreach (KeyValuePair<string, string> __record in __records)
                 {
-                    __socket.write(__record.Value);
+                    __socket.write_return(__record.Value);
 
                     if(__log_records)
                     {
@@ -188,7 +188,7 @@ namespace motCommonLib
             {
                 try
                 {
-                    __socket.write("<EOF/>");
+                    __socket.write_return("<EOF/>");
                 }
                 catch (Exception ex)
                 {

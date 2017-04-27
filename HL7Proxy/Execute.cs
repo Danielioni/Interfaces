@@ -193,6 +193,8 @@ namespace HL7Proxy
                     __s_listener.__log_level = __log_level;
                     __s_listener.__organization = __args.__organization;
                     __s_listener.__processor = __args.__processor;
+                    __s_listener.__rxsys_vendor_name = __args.__rxsys_HL7_id;
+                    __s_listener.__rxsys_type = __args.__rxsys_type;
 
                     __s_listener.ADT_A01MessageEventReceived += __process_ADT_A01_Event;
                     __s_listener.ADT_A12MessageEventReceived += __process_ADT_A12_Event;
@@ -202,7 +204,7 @@ namespace HL7Proxy
 
                     __s_listener.UpdateEventUI += __update_ui_event;
                     __s_listener.UpdateErrorUI += __update_ui_error;
-                    __s_listener.__start(__args.__ssl_cert);
+                    __s_listener.__start();
 
                     __show_common_event(string.Format("Listening for encrypted data on: {0}:{1}, Sending to: {2}:{3} as {4}", __args.__listen_address, __args.__ssl_server_port, __args.__gateway_address, __args.__gateway_port, __data_state));
                 }
@@ -670,7 +672,10 @@ namespace HL7Proxy
 
             __problem_segment = "IN2";
 
-            __recs.__pr.SSN = __in2.Get("IN2.1.1");
+            if (string.IsNullOrEmpty(__recs.__pr.SSN))
+            {
+                __recs.__pr.SSN = __in2.Get("IN2.1.1");
+            }
         }
         private string __process_NK1(RecordBundle __recs, NK1 __nk1)
         {

@@ -35,8 +35,6 @@ using System.Windows.Forms;
 using NLog;
 using motCommonLib;
 using motInboundLib;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 
 namespace HL7Proxy
 {
@@ -55,10 +53,6 @@ namespace HL7Proxy
         List<string> lstEvent = new List<string>();
 
         SendingApplication __rxsys_sender_type = SendingApplication.Unknown;
-
-        X509Certificate2Collection  __X_509_collection;
-        X509Certificate2Collection  __X_509_valid_collection;
-        X509Store                   __X_509_store;
 
         protected readonly int __defult_list_width = 1040;
         protected readonly int __default_list_height = 160;
@@ -111,7 +105,6 @@ namespace HL7Proxy
 
             chkUseServerSSL.Checked = Properties.Settings.Default.UseServerSSL;
             txtSSLServerPort.Text = Properties.Settings.Default?.SSLServerPort;
-            cmbx509Certificates.Text = __get_cert_name();
 
             btnStop.Enabled = false;
             btnStart.Enabled = true;
@@ -185,7 +178,6 @@ namespace HL7Proxy
 
                 chkUseServerSSL.Checked = Properties.Settings.Default.UseServerSSL;
                 txtSSLServerPort.Text = Properties.Settings.Default.SSLServerPort;
-                cmbx509Certificates.Text = __get_cert_name();
 
                 chkUseClientSSL.Checked = Properties.Settings.Default.UseClientSSL;
                 txtClientSSLPort.Text = Properties.Settings.Default.SSLClientPort;
@@ -194,26 +186,6 @@ namespace HL7Proxy
             {
                 return;
             }
-        }
-
-        private string __get_cert_name()
-        {
-            string __name;
-
-            __X_509_store = new X509Store("MY", StoreLocation.CurrentUser);
-            __X_509_store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-
-            try
-            {
-                __name = __X_509_store.Certificates?.Find(X509FindType.FindByThumbprint, Properties.Settings.Default.SSLCert, false)[0].Issuer;
-            }
-            catch
-            {
-                __name = "Select Certificate";
-            }
-
-            __X_509_store.Close();
-            return __name;
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -254,11 +226,6 @@ namespace HL7Proxy
 
                 if (chkUseServerSSL.Checked)
                 {
-                    __X_509_store = new X509Store("MY", StoreLocation.CurrentUser);
-                    __X_509_store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-                    __args.__ssl_cert = __X_509_store.Certificates.Find(X509FindType.FindByThumbprint, Properties.Settings.Default.SSLCert, false)[0];
-                    __X_509_store.Close();
-
                     __args.__ssl_server = chkUseServerSSL.Checked;
                     __args.__ssl_server_port = txtSSLServerPort.Text;
                 }
@@ -549,35 +516,9 @@ namespace HL7Proxy
             */
         }
 
-        private void cmbx509Certificates_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                __X_509_store = new X509Store("MY", StoreLocation.CurrentUser);
-                __X_509_store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-
-                __X_509_collection = (X509Certificate2Collection)__X_509_store.Certificates;
-                __X_509_valid_collection = (X509Certificate2Collection)__X_509_store.Certificates.Find(X509FindType.FindByTimeValid, DateTime.Now, false);
-                cmbx509Certificates.Items.Clear();
-
-                foreach (X509Certificate2 x in __X_509_valid_collection)
-                {
-                    cmbx509Certificates.Items.Add(x.Issuer);
-                }
-            }
-            catch
-            { }
-        }
-
         private void chkUseInboundSSL_CheckedChanged(object sender, EventArgs e)
         {
-            cmbx509Certificates.Enabled = txtSSLServerPort.Enabled = chkUseServerSSL.Checked;
-        }
-
-        private void cmbx509Certificates_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.SSLCert = __X_509_valid_collection[cmbx509Certificates.SelectedIndex].Thumbprint;
-            Properties.Settings.Default.Save();
+            txtSSLServerPort.Enabled = chkUseServerSSL.Checked;
         }
 
         private void txtRxSystem_HL7_ID_TextChanged(object sender, EventArgs e)
@@ -622,7 +563,6 @@ namespace HL7Proxy
         public string __rxsys_HL7_id { get; set; }
         public SendingApplication __rxsys_type { get; set; }
 
-        public X509Certificate __ssl_cert { get; set; }
         public string __ssl_server_port { get; set; }
         public string __ssl_client_port { get; set; }
         public bool __ssl_server { get; set; }

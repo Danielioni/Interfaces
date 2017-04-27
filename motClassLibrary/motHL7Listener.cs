@@ -302,7 +302,7 @@ namespace motInboundLib
 
         }
 
-        public void __start_listener(int __port, motSocket.__void_string_delegate __s_callback, X509Certificate __cert = null)
+        public void __start_listener(int __port, motSocket.__void_string_delegate __s_callback)
         {
             try
             {
@@ -311,7 +311,7 @@ namespace motInboundLib
 
                 if (__use__ssl)
                 {
-                    __worker = new Thread(() => __socket.secure_listen(__cert));
+                    __worker = new Thread(() => __socket.secure_listen());
                     __worker.Name = "secure listener";
                     __worker.Start();
                 }
@@ -385,11 +385,11 @@ namespace motInboundLib
             }
         }
 
-        public void __start(motSocket.__void_string_delegate __s_callback, X509Certificate __cert = null)
+        public void __start(motSocket.__void_string_delegate __s_callback)
         {
             try
             {
-                __start_listener(__listener_port, __s_callback, __cert);
+                __start_listener(__listener_port, __s_callback);
                 __logger.Info("HL7 Listener waiting on port: {0}", __listener_port);
             }
             catch (Exception e)
@@ -401,11 +401,11 @@ namespace motInboundLib
             }
         }
 
-        public void __start(X509Certificate __cert = null)
+        public void __start()
         {
             try
             {
-                __start(__parse_message, __cert);
+                __start(__parse_message);
             }
             catch { throw; }
         }

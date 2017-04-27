@@ -42,6 +42,8 @@ namespace motCommonLib
 {
     public class motSocket : IDisposable
     {
+       
+
         [ThreadStatic]
         private bool __running = false;
         private string __s_iobuffer { get; set; } = string.Empty;
@@ -90,9 +92,36 @@ namespace motCommonLib
         private SslStream __ssl_stream;
         public static Mutex __socket_mutex = null;
         public ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
+
         private X509Certificate __x_509_cert;
+        private X509Certificate2Collection __X_509_collection;
+        private X509Certificate2Collection __X_509_valid_collection;
+        private X509Store __X_509_store;
 
+        private void motSetCertificate()
+        {
+            try
+            {
+                __X_509_store = new X509Store("MY", StoreLocation.LocalMachine);
+                __X_509_store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
 
+                __X_509_collection = (X509Certificate2Collection)__X_509_store.Certificates;
+                __X_509_valid_collection = (X509Certificate2Collection)__X_509_store.Certificates.Find(X509FindType.FindByTimeValid, DateTime.Now, false);
+
+                foreach (X509Certificate2 x in __X_509_valid_collection)
+                {
+                    if(x.FriendlyName.ToUpper() == Dns.GetHostName().ToUpper())
+                    {
+                        __x_509_cert = x;
+                        return;
+                    }
+                }
+
+                __x_509_cert = null;
+            }
+            catch
+            { }
+        }
         public motSocket()
         {
             __logger = LogManager.GetLogger("motCommonLib.Socket");
@@ -102,6 +131,8 @@ namespace motCommonLib
             {
                 __socket_mutex = new Mutex();
             }
+
+            motSetCertificate();
         }
         /// <summary>
         /// motSocket for listening (localhost:port) with data handler
@@ -112,6 +143,8 @@ namespace motCommonLib
         {
             __open_for_listening = true;
             __logger = LogManager.GetLogger("motCommonLib.Socket");
+
+            motSetCertificate();
 
             if (__socket_mutex == null)
             {
@@ -137,6 +170,8 @@ namespace motCommonLib
         {
             __logger = LogManager.GetLogger("motCommonLib.Socket");
             __open_for_listening = true;
+
+            motSetCertificate();
 
             if (__socket_mutex == null)
             {
@@ -181,6 +216,8 @@ namespace motCommonLib
             this.__b_protocol_processor = __byte_protocol_processor == null ? __default_protocol_processor : __byte_protocol_processor;
             this.__open_for_listening = false;
 
+            motSetCertificate();
+
             if (__socket_mutex == null)
             {
                 __socket_mutex = new Mutex();
@@ -206,6 +243,8 @@ namespace motCommonLib
             this.__open_for_listening = false;
 
             __logger = LogManager.GetLogger("motCommonLib.Socket");
+
+            motSetCertificate();
 
             if (__socket_mutex == null)
             {
@@ -394,14 +433,12 @@ namespace motCommonLib
                 tcpClientConnected.WaitOne();
             }
         }
-        public void secure_listen_async(X509Certificate __x_509_cert)
+        public void secure_listen_async()
         {
             if (__x_509_cert == null)
             {
                 throw new ArgumentNullException("Missing X509 Certificate");
             }
-
-            this.__x_509_cert = __x_509_cert;
 
             while(__running)
             {
@@ -410,7 +447,7 @@ namespace motCommonLib
                 tcpClientConnected.WaitOne();
             }
         }
-        public void secure_listen(X509Certificate __x_509_cert)
+        public void secure_listen()
         {
             if (__x_509_cert == null)
             {

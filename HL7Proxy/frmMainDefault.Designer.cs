@@ -62,6 +62,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.gbSwitches = new System.Windows.Forms.GroupBox();
+            this.chkDebug = new System.Windows.Forms.CheckBox();
             this.chkSendEOF = new System.Windows.Forms.CheckBox();
             this.chkAutoTruncate = new System.Windows.Forms.CheckBox();
             this.grpLogging = new System.Windows.Forms.GroupBox();
@@ -83,7 +84,6 @@
             this.grpSource = new System.Windows.Forms.GroupBox();
             this.label15 = new System.Windows.Forms.Label();
             this.txtSSLServerPort = new System.Windows.Forms.TextBox();
-            this.cmbx509Certificates = new System.Windows.Forms.ComboBox();
             this.chkUseServerSSL = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -95,7 +95,6 @@
             this.txtSourceIP = new System.Windows.Forms.TextBox();
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.chkDebug = new System.Windows.Forms.CheckBox();
             this.pnlMain.SuspendLayout();
             this.tbcMain.SuspendLayout();
             this.tbpRun.SuspendLayout();
@@ -495,6 +494,16 @@
             this.gbSwitches.TabStop = false;
             this.gbSwitches.Text = "[ Options ]";
             // 
+            // chkDebug
+            // 
+            this.chkDebug.AutoSize = true;
+            this.chkDebug.Location = new System.Drawing.Point(18, 63);
+            this.chkDebug.Name = "chkDebug";
+            this.chkDebug.Size = new System.Drawing.Size(110, 17);
+            this.chkDebug.TabIndex = 2;
+            this.chkDebug.Text = "Use Debug Mode";
+            this.chkDebug.UseVisualStyleBackColor = true;
+            // 
             // chkSendEOF
             // 
             this.chkSendEOF.AutoSize = true;
@@ -574,9 +583,9 @@
             this.grpTarget.Controls.Add(this.txtTargetUname);
             this.grpTarget.Controls.Add(this.txtTargetPort);
             this.grpTarget.Controls.Add(this.txtTargetIP);
-            this.grpTarget.Location = new System.Drawing.Point(18, 319);
+            this.grpTarget.Location = new System.Drawing.Point(18, 283);
             this.grpTarget.Name = "grpTarget";
-            this.grpTarget.Size = new System.Drawing.Size(371, 215);
+            this.grpTarget.Size = new System.Drawing.Size(371, 228);
             this.grpTarget.TabIndex = 5;
             this.grpTarget.TabStop = false;
             this.grpTarget.Text = "[ Gateway ]";
@@ -584,7 +593,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(25, 179);
+            this.label14.Location = new System.Drawing.Point(25, 194);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(74, 13);
             this.label14.TabIndex = 17;
@@ -592,7 +601,7 @@
             // 
             // txtClientSSLPort
             // 
-            this.txtClientSSLPort.Location = new System.Drawing.Point(124, 177);
+            this.txtClientSSLPort.Location = new System.Drawing.Point(124, 192);
             this.txtClientSSLPort.Name = "txtClientSSLPort";
             this.txtClientSSLPort.Size = new System.Drawing.Size(172, 20);
             this.txtClientSSLPort.TabIndex = 16;
@@ -602,7 +611,7 @@
             // chkUseClientSSL
             // 
             this.chkUseClientSSL.AutoSize = true;
-            this.chkUseClientSSL.Location = new System.Drawing.Point(39, 150);
+            this.chkUseClientSSL.Location = new System.Drawing.Point(28, 154);
             this.chkUseClientSSL.Name = "chkUseClientSSL";
             this.chkUseClientSSL.Size = new System.Drawing.Size(93, 17);
             this.chkUseClientSSL.TabIndex = 18;
@@ -682,7 +691,6 @@
             // 
             this.grpSource.Controls.Add(this.label15);
             this.grpSource.Controls.Add(this.txtSSLServerPort);
-            this.grpSource.Controls.Add(this.cmbx509Certificates);
             this.grpSource.Controls.Add(this.chkUseServerSSL);
             this.grpSource.Controls.Add(this.label5);
             this.grpSource.Controls.Add(this.label6);
@@ -694,7 +702,7 @@
             this.grpSource.Controls.Add(this.txtSourceIP);
             this.grpSource.Location = new System.Drawing.Point(18, 25);
             this.grpSource.Name = "grpSource";
-            this.grpSource.Size = new System.Drawing.Size(371, 275);
+            this.grpSource.Size = new System.Drawing.Size(371, 233);
             this.grpSource.TabIndex = 4;
             this.grpSource.TabStop = false;
             this.grpSource.Text = "[ Listen ]";
@@ -702,7 +710,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(25, 227);
+            this.label15.Location = new System.Drawing.Point(25, 190);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(74, 13);
             this.label15.TabIndex = 15;
@@ -711,29 +719,17 @@
             // txtSSLServerPort
             // 
             this.txtSSLServerPort.Enabled = false;
-            this.txtSSLServerPort.Location = new System.Drawing.Point(129, 225);
+            this.txtSSLServerPort.Location = new System.Drawing.Point(129, 188);
             this.txtSSLServerPort.Name = "txtSSLServerPort";
             this.txtSSLServerPort.Size = new System.Drawing.Size(172, 20);
             this.txtSSLServerPort.TabIndex = 14;
             this.txtSSLServerPort.Text = "0";
             this.txtSSLServerPort.WordWrap = false;
             // 
-            // cmbx509Certificates
-            // 
-            this.cmbx509Certificates.Enabled = false;
-            this.cmbx509Certificates.FormattingEnabled = true;
-            this.cmbx509Certificates.Location = new System.Drawing.Point(129, 184);
-            this.cmbx509Certificates.Name = "cmbx509Certificates";
-            this.cmbx509Certificates.Size = new System.Drawing.Size(209, 21);
-            this.cmbx509Certificates.TabIndex = 16;
-            this.cmbx509Certificates.Text = "Select Certificate";
-            this.cmbx509Certificates.SelectionChangeCommitted += new System.EventHandler(this.cmbx509Certificates_SelectionChangeCommitted);
-            this.cmbx509Certificates.Click += new System.EventHandler(this.cmbx509Certificates_Click);
-            // 
             // chkUseServerSSL
             // 
             this.chkUseServerSSL.AutoSize = true;
-            this.chkUseServerSSL.Location = new System.Drawing.Point(44, 154);
+            this.chkUseServerSSL.Location = new System.Drawing.Point(28, 150);
             this.chkUseServerSSL.Name = "chkUseServerSSL";
             this.chkUseServerSSL.Size = new System.Drawing.Size(93, 17);
             this.chkUseServerSSL.TabIndex = 15;
@@ -820,16 +816,6 @@
             this.saveFileDialog.Filter = "Log Files|*.log|Text Files|*.txt";
             this.saveFileDialog.InitialDirectory = "\"My Documents\"";
             this.saveFileDialog.Title = "Save Error Log";
-            // 
-            // chkDebug
-            // 
-            this.chkDebug.AutoSize = true;
-            this.chkDebug.Location = new System.Drawing.Point(18, 63);
-            this.chkDebug.Name = "chkDebug";
-            this.chkDebug.Size = new System.Drawing.Size(110, 17);
-            this.chkDebug.TabIndex = 2;
-            this.chkDebug.Text = "Use Debug Mode";
-            this.chkDebug.UseVisualStyleBackColor = true;
             // 
             // frmMainDefault
             // 
@@ -930,7 +916,6 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox txtSSLServerPort;
-        private System.Windows.Forms.ComboBox cmbx509Certificates;
         private System.Windows.Forms.CheckBox chkUseServerSSL;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox txtClientSSLPort;
