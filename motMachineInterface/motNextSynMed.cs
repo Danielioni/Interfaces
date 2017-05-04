@@ -28,8 +28,6 @@ namespace motMachineInterface
     {
         public static IContainer container;
         private SynMedTable __table;
-        private IEnumerable<Patient> __patients;
-        ICollection<Rx> __Rxs;
         Logger __logger;
 
         private static IAuthenticationService authService;
@@ -38,11 +36,59 @@ namespace motMachineInterface
         private bool __logged_in = false;
         private string __file_name;
 
-        // Display Support
-        public DataSet GetFacilitiesAsDataSet(string __loc = null)
+        public async Task<int> GetRxCount(Guid patId, DateTime dt)
         {
-            DataSet __db_facilitiess = new DataSet();
+            try
+            {
+                using (var scope = container.BeginLifetimeScope())
+                {
+                    var query1 = scope.Resolve<IEntityQuery<Rx>>();
+                    var rxes = await query1.QueryAsync(new QueryParameters<Rx>(__rx => __rx.PatientId == patId && __rx.Status == RxStatus.Active && !__rx.IsExpiredByDate(dt)));
+                    return rxes.Count<Rx>();
+                }
+            }
+            catch
+            { throw; }
 
+            return 0;
+        }
+
+        // Display Support
+        public static DataSet ToDataSet<T>(IEnumerable<T> list, string table_name)
+        {
+            Type elementType = typeof(T);
+            DataSet ds = new DataSet();
+            DataTable t = new DataTable();
+            ds.Tables.Add(t);
+
+            //add a column to table for each public property on T
+            foreach (var propInfo in elementType.GetProperties())
+            {
+                Type ColType = Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType;
+
+                t.Columns.Add(propInfo.Name, ColType);
+            }
+
+            //go through each property on T and add each value to the table
+            foreach (T item in list)
+            {
+                DataRow row = t.NewRow();
+
+                foreach (var propInfo in elementType.GetProperties())
+                {
+                    row[propInfo.Name] = propInfo.GetValue(item, null) ?? DBNull.Value;
+                }
+
+                t.Rows.Add(row);
+            }
+
+            ds.DataSetName = table_name;
+            ds.Tables[0].TableName = table_name;
+
+            return ds;
+        }
+        public async Task<DataSet> GetFacilitiesAsDataSet(string __loc = null)
+        {
             try
             {
                 using (var scope = container.BeginLifetimeScope())
@@ -51,40 +97,16 @@ namespace motMachineInterface
 
                     if (__loc == null)
                     {
-                        var facilities = query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.Id != null, f => f.Name));
+                        var facilities = await query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.Id != null));
+                        return ToDataSet<Facility>(facilities, "Facilities");
                     }
                     else
                     {
                         Guid __g = new Guid(__loc);
-                        var facilities = query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.Id == __g, f => f.Name));
+                        var facilities = await query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.Id == __g));
+                        return ToDataSet<Facility>(facilities, "Facilities");
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                __logger.Error(ex.Message);
-                Console.WriteLine(ex.Message);
-            }
-
-            return __db_facilitiess;
-
-        }
-        public DataSet GetPatientsAsDataSet(string __loc = null)
-        {
-            DataSet __db_patients = new DataSet();
-
-            try
-            {
-                if (__loc == null)
-                {
-                    //__db.executeQuery(string.Format("SELECT * FROM Patient;"), __db_patients, "Patients");
-                }
-                else
-                {
-                    //__db.executeQuery(string.Format("SELECT * FROM Patient WHERE LocCode = '{0}';", __loc), __db_patients, "Patients");
-                }
-
-                return __db_patients;
             }
             catch (Exception ex)
             {
@@ -94,17 +116,49 @@ namespace motMachineInterface
 
             return null;
         }
-        public DataSet GetRxesAsDataSet(int patId, DateTime dt)
+
+        public async Task<DataSet> GetPatientsAsDataSet(string __loc = null)
         {
+
             try
             {
-                DataSet __ds_rxes = new DataSet();
+                using (var scope = container.BeginLifetimeScope())
+                {
+                    var query1 = scope.Resolve<IEntityQuery<Patient>>();
+                                  
+                    if (__loc == null)
+                    {
+                        var patients = await query1.QueryAsync(new QueryParameters<Patient>(__patient => __patient.Id != null && __patient.Status != Status.Hold));
+                        return ToDataSet<Patient>(patients, "Patients");
+                    }
+                    else
+                    {
+                        Guid __g = new Guid(__loc);
+                        var patients =  await query1.QueryAsync(new QueryParameters<Patient>(__patient => __patient.Id != null && __patient.Status != Status.Hold && __patient.FacilityId == __g));
+                        return ToDataSet<Patient>(patients, "Patients");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                __logger.Error(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
 
-                //__db.executeQuery(string.Format("SELECT rx.rxsys_rxnum, rx.dscode, rx.qty_per_dose, rx.isolate, drugs.Tradename, rx.sig2print, rx.expiration_date  " +
-                //                                               "FROM drugs, rx " +
-                //                                               "WHERE rx.motpatid = {0} AND drugs.Seq_No = rx.drugs_seqno AND rx.status = 1 AND date('{1:yyyy-MM-dd}') < expiration_date;",
-                //                                               patId, dt), __ds_rxes, "Rxes");
-                return __ds_rxes;
+            return null;
+        }
+        public async Task<DataSet> GetRxesAsDataSet(Guid patId, DateTime dt)
+        {
+            var __db_rxes = new DataSet();
+
+            try
+            {
+                using (var scope = container.BeginLifetimeScope())
+                {
+                    var query1 = scope.Resolve<IEntityQuery<Rx>>();                 
+                    var rxes = await query1.QueryAsync(new QueryParameters<Rx>(__rx => __rx.PatientId == patId && __rx.Status == RxStatus.Active));
+                    return ToDataSet<Rx>(rxes, "Rxes");
+                }
             }
             catch (Exception ex)
             {
@@ -300,15 +354,37 @@ namespace motMachineInterface
                 throw new Exception("Not logged in");
             }
 
+            int __counter = 0;
             try
             {
-                
-                var __stop_date = new DateTimeOffset(DateTime.Today);
-
                 using (var scope = container.BeginLifetimeScope())
                 {
                     var query1 = scope.Resolve<IEntityQuery<Rx>>();
 
+                    var rxes = await query1.QueryAsync(
+                            new QueryParameters<Rx>(rx => rx.Status == RxStatus.Active && rx.Id == __patient.Id,
+                                                    r => r.RxDosageRegimen.DoseSchedule,
+                                                    r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
+                                                    r => r.Drug,
+                                                    r => r.Patient.Address,
+                                                    r => r.Patient.Facility.Address,
+                                                    r => r.Patient.Phones,
+                                                    r => r.Prescriber,
+                                                    r => r.Store,
+                                                    r => r.Patient.Facility)
+                                        );
+
+                    foreach(var r in rxes)
+                    {
+                        __counter++;
+                    }
+
+                    if (__counter > 0)
+                    {
+                        __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.DueDate, (int)__patient.CardDays);
+                        await __table.WriteRxCollection(rxes, __file_name, __patient);
+                    }
+                    /*
                     if (!string.IsNullOrEmpty(__middle_initial))
                     {
 
@@ -350,6 +426,7 @@ namespace motMachineInterface
                         __table = new SynMedTable(__last_name, __first_name, __middle_initial, __cycle_start_date, __cycle_length);
                         await __table.WriteRxCollection(rxes, __file_name, __patient);
                     }
+                    */
                 }             
             }
             catch (Exception ex)

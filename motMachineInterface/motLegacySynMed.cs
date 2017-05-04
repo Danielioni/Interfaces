@@ -622,7 +622,7 @@ namespace motMachineInterface
 
             return null;
         }
-        public int __rx_count(int patId, DateTime dt)
+        public int GetRxCount(int patId, DateTime dt)
         {
             var x = new DataSet();
 

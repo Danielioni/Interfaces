@@ -53,20 +53,14 @@
             this.Fill = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Print = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.locname = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.address1DataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.address2DataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.stateDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.zipDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.phoneDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cycleDaysDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cycleTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.locationBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.dsFacilities = new motGatewayTester.dsFacilities();
             this.patientBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.dsPatients = new motGatewayTester.dsPatients();
             this.locationTableAdapter = new motGatewayTester.dsFacilitiesTableAdapters.LocationTableAdapter();
             this.patientTableAdapter = new motGatewayTester.dsPatientsTableAdapters.PatientTableAdapter();
+            this.txtFacility = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.locationBindingSource)).BeginInit();
@@ -248,22 +242,12 @@
             // 
             // dataGridView1
             // 
-            this.dataGridView1.AutoGenerateColumns = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Select,
             this.Fill,
             this.Print,
-            this.locname,
-            this.address1DataGridViewTextBoxColumn,
-            this.address2DataGridViewTextBoxColumn,
-            this.cityDataGridViewTextBoxColumn,
-            this.stateDataGridViewTextBoxColumn,
-            this.zipDataGridViewTextBoxColumn,
-            this.phoneDataGridViewTextBoxColumn,
-            this.cycleDaysDataGridViewTextBoxColumn,
-            this.cycleTypeDataGridViewTextBoxColumn});
-            this.dataGridView1.DataSource = this.locationBindingSource;
+            this.locname});
             this.dataGridView1.Location = new System.Drawing.Point(212, 214);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(836, 261);
@@ -290,54 +274,6 @@
             this.locname.DataPropertyName = "locname";
             this.locname.HeaderText = "Facility";
             this.locname.Name = "locname";
-            // 
-            // address1DataGridViewTextBoxColumn
-            // 
-            this.address1DataGridViewTextBoxColumn.DataPropertyName = "Address1";
-            this.address1DataGridViewTextBoxColumn.HeaderText = "Address1";
-            this.address1DataGridViewTextBoxColumn.Name = "address1DataGridViewTextBoxColumn";
-            // 
-            // address2DataGridViewTextBoxColumn
-            // 
-            this.address2DataGridViewTextBoxColumn.DataPropertyName = "Address2";
-            this.address2DataGridViewTextBoxColumn.HeaderText = "Address2";
-            this.address2DataGridViewTextBoxColumn.Name = "address2DataGridViewTextBoxColumn";
-            // 
-            // cityDataGridViewTextBoxColumn
-            // 
-            this.cityDataGridViewTextBoxColumn.DataPropertyName = "City";
-            this.cityDataGridViewTextBoxColumn.HeaderText = "City";
-            this.cityDataGridViewTextBoxColumn.Name = "cityDataGridViewTextBoxColumn";
-            // 
-            // stateDataGridViewTextBoxColumn
-            // 
-            this.stateDataGridViewTextBoxColumn.DataPropertyName = "State";
-            this.stateDataGridViewTextBoxColumn.HeaderText = "State";
-            this.stateDataGridViewTextBoxColumn.Name = "stateDataGridViewTextBoxColumn";
-            // 
-            // zipDataGridViewTextBoxColumn
-            // 
-            this.zipDataGridViewTextBoxColumn.DataPropertyName = "Zip";
-            this.zipDataGridViewTextBoxColumn.HeaderText = "Zip";
-            this.zipDataGridViewTextBoxColumn.Name = "zipDataGridViewTextBoxColumn";
-            // 
-            // phoneDataGridViewTextBoxColumn
-            // 
-            this.phoneDataGridViewTextBoxColumn.DataPropertyName = "Phone";
-            this.phoneDataGridViewTextBoxColumn.HeaderText = "Phone";
-            this.phoneDataGridViewTextBoxColumn.Name = "phoneDataGridViewTextBoxColumn";
-            // 
-            // cycleDaysDataGridViewTextBoxColumn
-            // 
-            this.cycleDaysDataGridViewTextBoxColumn.DataPropertyName = "CycleDays";
-            this.cycleDaysDataGridViewTextBoxColumn.HeaderText = "CycleDays";
-            this.cycleDaysDataGridViewTextBoxColumn.Name = "cycleDaysDataGridViewTextBoxColumn";
-            // 
-            // cycleTypeDataGridViewTextBoxColumn
-            // 
-            this.cycleTypeDataGridViewTextBoxColumn.DataPropertyName = "CycleType";
-            this.cycleTypeDataGridViewTextBoxColumn.HeaderText = "CycleType";
-            this.cycleTypeDataGridViewTextBoxColumn.Name = "cycleTypeDataGridViewTextBoxColumn";
             // 
             // locationBindingSource
             // 
@@ -367,11 +303,31 @@
             // 
             this.patientTableAdapter.ClearBeforeFill = true;
             // 
+            // txtFacility
+            // 
+            this.txtFacility.Location = new System.Drawing.Point(107, 131);
+            this.txtFacility.Name = "txtFacility";
+            this.txtFacility.Size = new System.Drawing.Size(184, 20);
+            this.txtFacility.TabIndex = 19;
+            this.txtFacility.Text = "CCDS-RIVERVIEW";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(31, 134);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(70, 13);
+            this.label7.TabIndex = 20;
+            this.label7.Text = "Facility Name";
+            this.label7.Click += new System.EventHandler(this.label7_Click);
+            // 
             // frmSynMed
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1060, 487);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.txtFacility);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label6);
@@ -439,13 +395,7 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Fill;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Print;
         private System.Windows.Forms.DataGridViewTextBoxColumn locname;
-        private System.Windows.Forms.DataGridViewTextBoxColumn address1DataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn address2DataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cityDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn stateDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn zipDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn phoneDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cycleDaysDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cycleTypeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.TextBox txtFacility;
+        private System.Windows.Forms.Label label7;
     }
 }

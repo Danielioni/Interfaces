@@ -93,13 +93,13 @@ namespace QuickMAR
                 Properties.Settings.Default.GatewayPort = txtTargetPort.Text;
                 Properties.Settings.Default.GatewayUname = txtTargetUname.Text;
                 Properties.Settings.Default.GatewayPwd = txtTargetPwd.Text;
-                Properties.Settings.Default.ListenIP = txtSourceIP.Text;
-                Properties.Settings.Default.ListenPort = txtSourcePort.Text;
+                //Properties.Settings.Default.ListenIP = txtSourceIP.Text;
+                //Properties.Settings.Default.ListenPort = txtSourcePort.Text;
                 Properties.Settings.Default.ListenUname = txtSourceUname.Text;
                 Properties.Settings.Default.ListenPwd = txtSourcePwd.Text;
                 Properties.Settings.Default.ErrorLevel = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
                 Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
-                Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+                //Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
                 Properties.Settings.Default.MaxLogLines = Convert.ToInt32(txtMaxLogLen.Text);
 
                 Properties.Settings.Default.Save();
@@ -110,14 +110,14 @@ namespace QuickMAR
                 txtTargetPort.Text = Properties.Settings.Default.GatewayPort;
                 txtTargetUname.Text = Properties.Settings.Default.GatewayUname;
                 txtTargetPwd.Text = Properties.Settings.Default.GatewayPwd;
-                txtSourceIP.Text = Properties.Settings.Default.ListenIP;
-                txtSourcePort.Text = Properties.Settings.Default.ListenPort;
+                //txtSourceIP.Text = Properties.Settings.Default.ListenIP;
+                //txtSourcePort.Text = Properties.Settings.Default.ListenPort;
                 txtSourceUname.Text = Properties.Settings.Default.ListenUname;
                 txtSourcePwd.Text = Properties.Settings.Default.ListenPwd;
                 cmbErrorLevel.SelectedIndex = Properties.Settings.Default.LogLevel;
                 __error_level = (motErrorlLevel)cmbErrorLevel.SelectedIndex;
                 txtMaxLogLen.Text = Properties.Settings.Default.MaxLogLines.ToString();
-                chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
+                //chkAutoTruncate.Checked = Properties.Settings.Default.AutoTruncate;
                 txtMaxLogLen.Text = Properties.Settings.Default.MaxLogLines.ToString();
             }
             else  // Reserved for future use
@@ -141,12 +141,12 @@ namespace QuickMAR
 
         private void chkAutoTruncate_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
+          //  Properties.Settings.Default.AutoTruncate = chkAutoTruncate.Checked;
             Properties.Settings.Default.Save();
 
             if (__listening)
             {
-                __execute.__auto_truncate = chkAutoTruncate.Checked;
+            //    __execute.__auto_truncate = chkAutoTruncate.Checked;
             }
         }
         #endregion

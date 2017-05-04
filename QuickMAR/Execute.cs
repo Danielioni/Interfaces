@@ -247,7 +247,8 @@ namespace QuickMAR
 
                 var auth = new AuthorizeModel();
 
-                auth.IsGrantAccesNeed = false;
+                //auth.IsGrantAccesNeed = false;
+                auth.GrantAccessNeeded = false;
                 auth.UserName = __uname;
                 auth.UserPassword = __pw;
 

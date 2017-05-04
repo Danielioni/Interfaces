@@ -24,6 +24,8 @@ namespace motGatewayTester
         public static string __username = string.Empty;
         public static string __password = string.Empty;
 
+        public static string _facility;
+
         public static bool useLegacy = true;
 
         public motNextSynMed __synmed;
@@ -46,6 +48,8 @@ namespace motGatewayTester
             __password = txtPassword.Text;
 
             useLegacy = rbUseLegacy.Checked;
+
+            __facility_name = txtFacility.Text;
 
             if (!useLegacy)
             {
@@ -70,7 +74,7 @@ namespace motGatewayTester
             //           dataGridView1.DataSource = __motLegacy_synmed.motFacilities;
 
         }
-        private static async void __startNext()
+        private async void __startNext()
         {
             try
             {
@@ -80,11 +84,18 @@ namespace motGatewayTester
 
                 await __synmed.Login(__username, __password);
 
-                await __synmed.BuildPatientList(2000);
+                //await __synmed.BuildPatientList(2000);
 
-                if (!string.IsNullOrEmpty(__start_date) && !string.IsNullOrEmpty(__patient_last_name))
+                DataSet patient_list = await __synmed.GetPatientsAsDataSet();
+                DataSet facility_list = await __synmed.GetFacilitiesAsDataSet();
+
+                dataGridView1.AutoGenerateColumns = true;
+                dataGridView1.DataSource = facility_list;
+                dataGridView1.DataMember = "Facilities";
+
+                if (!string.IsNullOrEmpty(__facility_name))
                 {
-                    // await __synmed.WritePatient(__patient_last_name, __patient_first_name, __patient_middle_initial, DateTime.Parse(__start_date), 30);
+                    await __synmed.WriteFacilityCycle(__facility_name, DateTime.Parse(__start_date), 0);
                 }
 
                 else if (!string.IsNullOrEmpty(__start_date) && string.IsNullOrEmpty(__patient_last_name))
@@ -156,6 +167,11 @@ namespace motGatewayTester
             // TODO: This line of code loads data into the 'dsFacilities.Location' table. You can move, or remove it, as needed.
             //this.locationTableAdapter.Fill(this.dsFacilities.Location);
 
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
 
         }
     }
