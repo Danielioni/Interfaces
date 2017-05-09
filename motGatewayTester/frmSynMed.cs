@@ -86,7 +86,7 @@ namespace motGatewayTester
 
                 //await __synmed.BuildPatientList(2000);
 
-                DataSet patient_list = await __synmed.GetPatientsAsDataSet();
+                //DataSet patient_list = await __synmed.GetPatientsAsDataSet();
                 DataSet facility_list = await __synmed.GetFacilitiesAsDataSet();
 
                 dataGridView1.AutoGenerateColumns = true;

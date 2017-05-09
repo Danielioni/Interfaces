@@ -456,9 +456,13 @@ namespace motMachineInterface
         {
             if (__table_rows.Count > 0)
             {
+
                 foreach (var __row in __table_rows)
                 {
-                    __row.write(__filename, __mode);
+                    if(__row.DRUG_QUANTITY != "0")
+                    {
+                        __row.write(__filename, __mode);
+                    }                   
                 }
             }
             else
@@ -885,6 +889,12 @@ namespace motMachineInterface
 
                 IEnumerable<Card> __cards = await __card.PopulateCardForRxes(__rxes, __config);
 
+                if(__cards.Count<Card>() == 0)
+                {
+                    __write_to_file();  // This will delete the empty file
+                    return;
+                }
+
                 List<Guid> __batch = new List<Guid>();
 
                 foreach (var c in __cards)
@@ -932,6 +942,8 @@ namespace motMachineInterface
 
                             __new_row.ADMINISTRATION_DATE = string.Format("{0:yyyyMMdd}", __cup.Time);
                             __new_row.ADMINISTRATION_TIME = __cup.Time.TimeOfDay.ToString();
+                            __new_row.ADMINISTRATION_PER_DAY = __drug.Quantity.ToString();  
+                            
                             __new_row.CYCLE_BASE_DATE = string.Format("{0:yyyyMMdd}", __full_card.DueDate);
                             __new_row.DRUG_QUANTITY = __drug.Quantity.ToString();
                             __new_row.DISPLAY_NAME = __drug.DrugName;
@@ -1048,6 +1060,11 @@ namespace motMachineInterface
                             __table_rows.Add(__new_row);
 
                         }
+
+                        if (__full_card.CardType == RxType.Prn)
+                        {
+                            break;
+                        }
                     }
                 }
                
@@ -1057,6 +1074,7 @@ namespace motMachineInterface
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                __write_to_file();
             }
         }
         public SynMedTable(string __patient_last_name, string __patient_first_name, string __patient_middle_initial, DateTime __cycle_start_date, int __cycle_length, string __path = null)
@@ -1098,7 +1116,7 @@ namespace motMachineInterface
 
                 __filename = string.Format(@"{0}\{1:yyyyMMdd} - {2} - {3}.csv", __path, DateTime.Today, __patient_name, Path.GetRandomFileName());
 
-                char[] __junk = { '<', '>' };
+                char[] __junk = { '<', '>', '"' };
 
                 while (__filename?.IndexOfAny(__junk) > -1)
                 {

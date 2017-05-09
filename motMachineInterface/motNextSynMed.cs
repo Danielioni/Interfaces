@@ -275,22 +275,30 @@ namespace motMachineInterface
                     var query = scope.Resolve<IEntityQuery<Patient>>();
                     var __due_date = new DateTimeOffset((DateTime)__cycle_start);
 
-                    var __patients = await query.QueryAsync(new QueryParameters<Patient>(pt => pt.DueDate == __due_date && !pt.ChartOnly && !pt.IsHidden,
-                                                                                         p => p.Rxes,
-                                                                                         p => p.Phones,
-                                                                                         p => p.Address,
-                                                                                         p => p.Facility,
-                                                                                         p => p.Facility.Address
-                                                                                         ));
+                    var __patients = await query.QueryAsync(new QueryParameters<Patient>(pt => pt.DueDate == __due_date && !pt.ChartOnly && !pt.IsHidden));
+                                                                                         //p => p.Rxes,
+                                                                                         //p => p.Phones,
+                                                                                         //p => p.Address,
+                                                                                         //p => p.Facility,
+                                                                                         //p => p.Facility.Address
+                                                                                         //));
 
+                    
                     foreach (var __patient in __patients)
                     {
-                        int counter = 0;
+                       // int counter = 0;
 
                         try
                         {
+                            //var __rx_query = scope.Resolve<IEntityQuery<Rx>>();
+                            //var __rx_list = await query.QueryAsync(new QueryParameters<Rx>(rx => rx.Patient.Id == __patient.Id));
+
+                            await WritePatient(__patient.Id, __patient.DueDate);
+
+                            /*
                             if (__patient.Rxes.Count > 0)
                             {
+
                                 if (__patient.DateOfBirth == null)
                                 {
                                     __patient.DateOfBirth = DateTime.Today;  // Lots of bad data in lagacy import
@@ -329,6 +337,7 @@ namespace motMachineInterface
                                     Console.WriteLine("Wrote: {0}, {1} {2} Rxcount: {3}", __patient.LastName, __patient.FirstName, __patient.MiddleInitial, counter);
                                 }
                             }
+                            */
                         }
                         catch(Exception ex)
                         {
@@ -355,12 +364,15 @@ namespace motMachineInterface
             }
 
             int __counter = 0;
+            var __due_date1 = new DateTimeOffset((DateTime)__from_date);
+
             try
             {
                 using (var scope = container.BeginLifetimeScope())
                 {
                     var query1 = scope.Resolve<IEntityQuery<Rx>>();
 
+                    /*
                     var rxes = await query1.QueryAsync(
                             new QueryParameters<Rx>(rx => rx.Status == RxStatus.Active && rx.Id == __patID,
                                                     r => r.RxDosageRegimen.DoseSchedule,
@@ -373,34 +385,53 @@ namespace motMachineInterface
                                                     r => r.Store,
                                                     r => r.Patient.Facility)
                                         );
+                    */
 
-                    string __patient_last_name = string.Empty;
-                    string __patient_first_name = string.Empty;
-                    string __patient_middle_initial = string.Empty;
-                    DateTime __due_date = DateTime.Today;
-                    int __card_days = 28;
-                    Patient __patient = (Patient)null;
+                    var rxes = await query1.QueryAsync(
+                           new QueryParameters<Rx>(rx => rx.Patient.Id == __patID && rx.Status == RxStatus.Active && rx.StopDate > __due_date1,                      
+                                                   r => r.RxDosageRegimen.DoseSchedule,
+                                                   r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
+                                                   r => r.Drug,
+                                                   r => r.Patient,
+                                                   r => r.Patient.Address,
+                                                   r => r.Patient.Facility,
+                                                   r => r.Patient.Facility.Address,
+                                                   r => r.Patient.Phones,
+                                                   r => r.Prescriber,
+                                                   r => r.Store
+                                                )
+                                       );
 
-                    foreach(var r in rxes)
+                    if (rxes.Count<Rx>() > 0)
                     {
-                        __patient_first_name = r.Patient.FirstName;
-                        __patient_last_name = r.Patient.LastName;
-                        __patient_middle_initial = r.Patient.MiddleInitial;
-                        __due_date = r.Patient.DueDate;
-                        __card_days = (int)r.Patient.CardDays;
-                        __patient = r.Patient;
+                        string __patient_last_name = string.Empty;
+                        string __patient_first_name = string.Empty;
+                        string __patient_middle_initial = string.Empty;
+                        DateTime __due_date = DateTime.Today;
+                        int __card_days = 0;
+                        Patient __patient = (Patient)null;
 
-                        __counter++;
-                    }
+                        foreach (var r in rxes)
+                        {
+                            __patient_first_name = r.Patient.FirstName;
+                            __patient_last_name = r.Patient.LastName;
+                            __patient_middle_initial = r.Patient.MiddleInitial;
+                            __due_date = r.Patient.DueDate;
+                            __card_days = (int)r.Patient.CardDays;
+                            __patient = r.Patient;
 
-                    if (__counter > 0)
-                    {
-                        __table = new SynMedTable(__patient_last_name, __patient_first_name, __patient_middle_initial, __due_date, (int)__card_days);
-                        await __table.WriteRxCollection(rxes, __file_name, __patient);
-                    }
+                            __counter++;
+                        }
+
+                        if (__counter > 0)
+                        {
+                            __table = new SynMedTable(__patient_last_name, __patient_first_name, __patient_middle_initial, __due_date, (int)__card_days);
+                            await __table.WriteRxCollection(rxes, __file_name, __patient);
+                        }
+                    }                   
                 }
 
-                return true;            
+                return true;
             }
             catch (Exception ex)
             {

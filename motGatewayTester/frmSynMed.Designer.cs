@@ -309,7 +309,6 @@
             this.txtFacility.Name = "txtFacility";
             this.txtFacility.Size = new System.Drawing.Size(184, 20);
             this.txtFacility.TabIndex = 19;
-            this.txtFacility.Text = "CCDS-RIVERVIEW";
             // 
             // label7
             // 
