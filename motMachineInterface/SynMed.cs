@@ -693,23 +693,23 @@ namespace motMachineInterface
                                 __prn_dose.__qty = __rx.__qty_per_dose;
                                 __prn_dose.__card_sn = Convert.ToInt32(__rx.__patient.__card_dose_sn["PRN"]);
 
-                                for (int __index = 0; __index < __patient.__cycle_days; __index++)
-                                {
+                                //for (int __index = 0; __index < __patient.__cycle_days; __index++)
+                                //{
                                     __new_row = new SynMedRow();
                                     __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn["PRN"];
                                     __new_row.PRESCRIPTION_COMMENT = "PRN Prescription";
                                     __new_row.PATIENT_WITH_PRN = "Y";
                                     __new_row.QTY_PER_ADMINISTRATION = __rx.__qty_per_dose.ToString();
                                     __new_row.DRUG_QUANTITY = (__rx.__qty_per_dose * __cycle_length).ToString();
-                                    __new_row.ADMINISTRATION_PER_DAY = (__rx.__qty_to_dispense / __cycle_length).ToString();
+                                    __new_row.ADMINISTRATION_PER_DAY = ((int)__rx.__qty_to_dispense / __cycle_length).ToString();
                                     __new_row.DAY_LAPSE = "1";
 
-                                    __new_row.PP_FILE_CELL_POSITION = (__index + 1).ToString();
-                                    __new_row.PP_FILE_CELL_POSITION_X = (((__index % 7) + 1)).ToString();
-                                    __new_row.PP_FILE_CELL_POSITION_Y = (((__index) / 7) + 1).ToString();
+                                    __new_row.PP_FILE_CELL_POSITION = (0 + 1).ToString();
+                                    __new_row.PP_FILE_CELL_POSITION_X = (((1 % 7) + 1)).ToString();
+                                    __new_row.PP_FILE_CELL_POSITION_Y = (((1) / 7) + 1).ToString();
 
                                     fillLegacyRow(__new_row, __patient, __rx, __prn_dose, __start_date, __current_date);
-                                }
+                                //}
 
                                 break;
 

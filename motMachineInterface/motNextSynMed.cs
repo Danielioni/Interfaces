@@ -38,19 +38,27 @@ namespace motMachineInterface
 
         public async Task<int> GetRxCount(Guid patId, DateTime dt)
         {
+            int retval = 0;
             try
             {
                 using (var scope = container.BeginLifetimeScope())
                 {
                     var query1 = scope.Resolve<IEntityQuery<Rx>>();
-                    var rxes = await query1.QueryAsync(new QueryParameters<Rx>(__rx => __rx.PatientId == patId && __rx.Status == RxStatus.Active && !__rx.IsExpiredByDate(dt)));
-                    return rxes.Count<Rx>();
+                    var rxes = await query1.QueryAsync(new QueryParameters<Rx>(__rx => __rx.PatientId == patId && __rx.Status == RxStatus.Active));
+
+                    foreach(var r in rxes)
+                    {
+                        if(!r.IsExpiredByDate(dt))
+                        {
+                            retval++;
+                        }
+                    }
                 }
             }
             catch
             { throw; }
 
-            return 0;
+            return retval;
         }
 
         // Display Support
@@ -97,13 +105,13 @@ namespace motMachineInterface
 
                     if (__loc == null)
                     {
-                        var facilities = await query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.Id != null));
+                        var facilities = await query1.QueryAsync(new QueryParameters<Facility>(__facility => !__facility.IsHidden));
                         return ToDataSet<Facility>(facilities, "Facilities");
                     }
                     else
                     {
                         Guid __g = new Guid(__loc);
-                        var facilities = await query1.QueryAsync(new QueryParameters<Facility>(__facility => __facility.Id == __g));
+                        var facilities = await query1.QueryAsync(new QueryParameters<Facility>(__facility => !__facility.IsHidden && __facility.Id == __g));
                         return ToDataSet<Facility>(facilities, "Facilities");
                     }
                 }
@@ -119,7 +127,6 @@ namespace motMachineInterface
 
         public async Task<DataSet> GetPatientsAsDataSet(string __loc = null)
         {
-
             try
             {
                 using (var scope = container.BeginLifetimeScope())
@@ -128,13 +135,13 @@ namespace motMachineInterface
                                   
                     if (__loc == null)
                     {
-                        var patients = await query1.QueryAsync(new QueryParameters<Patient>(__patient => __patient.Id != null && __patient.Status != Status.Hold));
+                        var patients = await query1.QueryAsync(new QueryParameters<Patient>(__patient => __patient.Status == Status.Active));
                         return ToDataSet<Patient>(patients, "Patients");
                     }
                     else
                     {
                         Guid __g = new Guid(__loc);
-                        var patients =  await query1.QueryAsync(new QueryParameters<Patient>(__patient => __patient.Id != null && __patient.Status != Status.Hold && __patient.FacilityId == __g));
+                        var patients =  await query1.QueryAsync(new QueryParameters<Patient>(__patient => __patient.Status != Status.Hold && __patient.FacilityId == __g));
                         return ToDataSet<Patient>(patients, "Patients");
                     }
                 }
@@ -149,8 +156,6 @@ namespace motMachineInterface
         }
         public async Task<DataSet> GetRxesAsDataSet(Guid patId, DateTime dt)
         {
-            var __db_rxes = new DataSet();
-
             try
             {
                 using (var scope = container.BeginLifetimeScope())
@@ -168,7 +173,7 @@ namespace motMachineInterface
 
             return null;
         }
-
+ 
         private void setup(string __path)
         {
             try
@@ -230,7 +235,7 @@ namespace motMachineInterface
         }
 
 
-        public async Task Login(string __uname, string __pw)
+        public async Task<bool> Login(string __uname, string __pw)
         {
             __username = __uname;
             __password = __pw;
@@ -246,25 +251,16 @@ namespace motMachineInterface
                 //Authentication service will automatically store access_token and refresh_token and re-issue them when they are about to expire.
                 await authService.LoginAsync(auth);
 
-                __logged_in = true;
-
-                /* Build the initial models
-                Patients = new PatientModel();
-                Patients.Items = __get_patients();
-
-                RXes = new RxModel();
-                RXes.Items = __get_rxes((int)Patients.Items[0].__i_patient_id);
-
-                Facilities = new FacilityModel();
-                Facilities.Items = __get_faclities();
-                */
+               return  __logged_in = true;               
             }
             catch
             {
                 throw;
             }
+
+            return false;
         }
-        public async Task WriteCycle(DateTime __cycle_start, DateTime __end_cycle_range)
+        public async Task<bool> WriteCycle(DateTime __cycle_start, DateTime __end_cycle_range)
         {
             if (!__logged_in)
             {
@@ -341,13 +337,17 @@ namespace motMachineInterface
                         }
                     }
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
                 throw;
             }
+
+            return false;
         }
-        public async Task WritePatient(Patient __patient, string __last_name, string __first_name, string __middle_initial, DateTime __cycle_start_date, int __cycle_length)
+        public async Task<bool> WritePatient(Guid __patID, DateTime __from_date)
         {
             if (!__logged_in)
             {
@@ -362,7 +362,7 @@ namespace motMachineInterface
                     var query1 = scope.Resolve<IEntityQuery<Rx>>();
 
                     var rxes = await query1.QueryAsync(
-                            new QueryParameters<Rx>(rx => rx.Status == RxStatus.Active && rx.Id == __patient.Id,
+                            new QueryParameters<Rx>(rx => rx.Status == RxStatus.Active && rx.Id == __patID,
                                                     r => r.RxDosageRegimen.DoseSchedule,
                                                     r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
                                                     r => r.Drug,
@@ -374,65 +374,40 @@ namespace motMachineInterface
                                                     r => r.Patient.Facility)
                                         );
 
+                    string __patient_last_name = string.Empty;
+                    string __patient_first_name = string.Empty;
+                    string __patient_middle_initial = string.Empty;
+                    DateTime __due_date = DateTime.Today;
+                    int __card_days = 28;
+                    Patient __patient = (Patient)null;
+
                     foreach(var r in rxes)
                     {
+                        __patient_first_name = r.Patient.FirstName;
+                        __patient_last_name = r.Patient.LastName;
+                        __patient_middle_initial = r.Patient.MiddleInitial;
+                        __due_date = r.Patient.DueDate;
+                        __card_days = (int)r.Patient.CardDays;
+                        __patient = r.Patient;
+
                         __counter++;
                     }
 
                     if (__counter > 0)
                     {
-                        __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.DueDate, (int)__patient.CardDays);
+                        __table = new SynMedTable(__patient_last_name, __patient_first_name, __patient_middle_initial, __due_date, (int)__card_days);
                         await __table.WriteRxCollection(rxes, __file_name, __patient);
                     }
-                    /*
-                    if (!string.IsNullOrEmpty(__middle_initial))
-                    {
+                }
 
-                        var rxes = await query1.QueryAsync(
-                            new QueryParameters<Rx>(rx => rx.Status != RxStatus.Discountinue && rx.Patient.LastName == __last_name && rx.Patient.FirstName == __first_name && rx.Patient.MiddleInitial == __middle_initial && rx.StopDate > __stop_date,
-                                                    r => r.RxDosageRegimen.DoseSchedule,
-                                                    r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
-                                                    r => r.Drug,
-                                                    r => r.Patient.Address,
-                                                    r => r.Patient.Facility.Address,
-                                                    r => r.Patient.Phones,
-                                                    r => r.Prescriber,
-                                                    r => r.Store,
-                                                    r => r.Patient.Facility)
-                                        );
-                        
-                        
-
-                        __table = new SynMedTable(__last_name, __first_name, __middle_initial, __cycle_start_date, __cycle_length);
-                        await __table.WriteRxCollection(rxes, __file_name, __patient);
-                        
-                    }
-                    else
-                    {
-
-                        var rxes = await query1.QueryAsync(
-                            new QueryParameters<Rx>(rx => rx.Status != RxStatus.Discountinue && rx.Patient.LastName == __last_name && rx.Patient.FirstName == __first_name && rx.StopDate > __stop_date,
-                                                    r => r.RxDosageRegimen.DoseSchedule,
-                                                    r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
-                                                    r => r.Drug,
-                                                    r => r.Patient.Address,
-                                                    r => r.Patient.Facility.Address,
-                                                    r => r.Patient.Phones,
-                                                    r => r.Prescriber,
-                                                    r => r.Store,
-                                                    r => r.Patient.Facility)
-                                        );
-
-                        __table = new SynMedTable(__last_name, __first_name, __middle_initial, __cycle_start_date, __cycle_length);
-                        await __table.WriteRxCollection(rxes, __file_name, __patient);
-                    }
-                    */
-                }             
+                return true;            
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
+            return false;
         }
         public async Task WriteFacilityCycle(string __facility_name, DateTime __cycle_start_date, int __cycle_length)
         {
@@ -460,7 +435,7 @@ namespace motMachineInterface
                         var __patients = await query2.QueryAsync(new QueryParameters<Patient>(p => p.FacilityId == f.Id && p.DueDate == __due_date));
                         foreach (var p in __patients)
                         {
-                            await WritePatient(p, p.LastName, p.FirstName, p.MiddleInitial, __cycle_start_date, (int)p.CardDays);
+                            await WritePatient(p.Id, p.DueDate);
                         }
                     }
                 }
