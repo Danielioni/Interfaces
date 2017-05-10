@@ -157,11 +157,11 @@ namespace motCommonLib
 
             try
             {
-              
                 // Push it to the port
                 foreach (KeyValuePair<string, string> __record in __records)
                 {
-                    __socket.write_return(__record.Value);
+                    //__socket.write_return(__record.Value);
+                    __socket.write(__record.Value);
 
                     if(__log_records)
                     {

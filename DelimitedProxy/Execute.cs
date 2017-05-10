@@ -33,10 +33,41 @@ using System.Text.RegularExpressions;
 
 namespace DelimitedProxy
 {
+    public class Listener
+    {
+        // Sockets
+        motSocket ListenPort;
+        motSocket GatewayPort;
+
+        // Addresses
+        string ListeningIP, GatewayIP;
+        Int32 ListeningPort, GAtewayPort;
+
+        // Delegates
+
+        // Identifiers
+        string ConnectionName { get; set; } = "Default";
+
+        public Listener(string LAddress, int LPort, string GAddress, int GPort)
+        {
+            try
+            {
+                ListenPort = new motSocket(LAddress, LPort);
+                GatewayPort = new motSocket(GAddress, GPort);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Listener Startup Failure: {0}", ex.Message);
+            }
+        }
+
+    }
     public class Execute
     {
         private motSocket __socket;
         private Thread __worker;
+
+        
 
         string __gateway_address;
         string __gateway_port;
@@ -141,6 +172,12 @@ namespace DelimitedProxy
         {
             try
             {
+                //List<Listener> PortStack = new List<Listener>();
+
+                //PortStack.Add(new Listener("localhost", Convert.ToInt32(__args.__listen_port),
+                //                            __args.__gateway_address, Convert.ToInt32(__args.__gateway_port)));
+
+
                 Console.WriteLine("__start_listener: {0}", Thread.CurrentThread.ManagedThreadId);
 
                 __gateway_address = __args.__gateway_address;
