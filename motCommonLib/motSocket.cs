@@ -285,8 +285,8 @@ namespace motCommonLib
         }
         public void async_handler(IAsyncResult __ar)
         {            
-            Thread.CurrentThread.Name = "*** IMPATIENT FRED ***";
-            //Console.WriteLine("async_handler on Thread: {0}", Thread.CurrentThread.Name);
+            Thread.CurrentThread.Name = "*** IMPATIENT FRED *** (" + Thread.CurrentThread.ManagedThreadId + ")";
+            Console.WriteLine("async_handler on Thread: {0}", Thread.CurrentThread.Name);
 
             try
             {
@@ -312,7 +312,7 @@ namespace motCommonLib
 
                     while (!__lstream.DataAvailable)
                     {
-                        if(__count > 99)
+                        if(__count++ > 99)
                         {
                             throw new Exception("No data in stream ...");
                         }
@@ -346,7 +346,9 @@ namespace motCommonLib
 
                     Task t = Task.Run(() =>
                     {
-                        Thread.CurrentThread.Name = "*** SON OF IMPATIENT FRED ***";
+                        Thread.CurrentThread.Name = "*** SON OF IMPATIENT FRED *** (" + Thread.CurrentThread.ManagedThreadId + ")";
+                        Console.WriteLine("async_handler procesing data on Thread: {0}", Thread.CurrentThread.Name);
+
                         __s_callback?.Invoke(__s_iobuffer);
                         //Console.WriteLine("Done with asyc_handler Task");
                     });              
@@ -431,6 +433,8 @@ namespace motCommonLib
                 //Console.WriteLine("BeginAcceptTcpClient");
 
                 tcpClientConnected.WaitOne();
+
+
             }
         }
         public void secure_listen_async()

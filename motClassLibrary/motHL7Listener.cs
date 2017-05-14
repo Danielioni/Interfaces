@@ -66,7 +66,7 @@ namespace motInboundLib
     public delegate void RDE_O11EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
     public delegate void RDS_013EventReceivedHandler(Object __sender, HL7Event7MessageArgs __args);
 
-   
+
 
     public class HL7SocketListener
     {
@@ -111,6 +111,7 @@ namespace motInboundLib
         public UpdateUIErrorHandler UpdateErrorUI;
         private UIupdateArgs __ui_args = new UIupdateArgs();
 
+        private bool __listen_async;
 
 
         public void __parse_message(string __data)
@@ -156,7 +157,7 @@ namespace motInboundLib
                 // trys to send anything.  Catch it here and deal with it
                 if (__rxsys_type != SendingApplication.AutoDiscover && __args.__sa != __rxsys_type)
                 {
-                    if(__args.__sa == SendingApplication.Unknown)
+                    if (__args.__sa == SendingApplication.Unknown)
                     {
                         __args.__sa = __rxsys_type;
                     }
@@ -311,7 +312,7 @@ namespace motInboundLib
 
                 if (__use__ssl)
                 {
-                    __worker = new Thread(() => __socket.secure_listen());
+                    __worker = new Thread(() => __socket.secure_listen_async());
                     __worker.Name = "secure listener";
                     __worker.Start();
                 }
@@ -410,11 +411,13 @@ namespace motInboundLib
             catch { throw; }
         }
 
-        public HL7SocketListener(int __port, bool __use__ssl = false)
+        public HL7SocketListener(int __port, bool __listen_async, bool __use__ssl = false)
         {
             try
             {
                 this.__use__ssl = __use__ssl;
+                this.__listen_async = __listen_async;
+
                 __listener_port = __port;
 
                 __logger = LogManager.GetLogger("motInboundLib.HL7Listener");

@@ -394,7 +394,7 @@ namespace motMachineInterface
                 {
                     using (var __sw = new StreamWriter(__fs))
                     {
-                        
+
                         //while(__csv_row.Contains('\n'))
                         //{
                         //    __csv_row = __csv_row.Remove(__csv_row.IndexOf('\n'), 1);
@@ -459,10 +459,10 @@ namespace motMachineInterface
 
                 foreach (var __row in __table_rows)
                 {
-                    if(__row.DRUG_QUANTITY != "0")
+                    if (__row.DRUG_QUANTITY != "0")
                     {
                         __row.write(__filename, __mode);
-                    }                   
+                    }
                 }
             }
             else
@@ -681,7 +681,7 @@ namespace motMachineInterface
                                         __new_row.PP_FILE_CELL_POSITION = (__index + 1).ToString();
                                         __new_row.PP_FILE_CELL_POSITION_X = (((__index % 7) + 1)).ToString();
                                         __new_row.PP_FILE_CELL_POSITION_Y = (((__index) / 7) + 1).ToString();
-                                      
+
                                         fillLegacyRow(__new_row, __patient, __rx, __dose, __start_date, __current_date);  // Any Daily Schedule (1 line per day)
                                     }
                                 }
@@ -697,29 +697,27 @@ namespace motMachineInterface
                                 __prn_dose.__qty = __rx.__qty_per_dose;
                                 __prn_dose.__card_sn = Convert.ToInt32(__rx.__patient.__card_dose_sn["PRN"]);
 
-                                //for (int __index = 0; __index < __patient.__cycle_days; __index++)
-                                //{
-                                    __new_row = new SynMedRow();
-                                    __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn["PRN"];
-                                    __new_row.PRESCRIPTION_COMMENT = "PRN Prescription";
-                                    __new_row.PATIENT_WITH_PRN = "Y";
-                                    __new_row.QTY_PER_ADMINISTRATION = __rx.__qty_per_dose.ToString();
-                                    __new_row.DRUG_QUANTITY = (__rx.__qty_per_dose * __cycle_length).ToString();
-                                    __new_row.ADMINISTRATION_PER_DAY = ((int)__rx.__qty_to_dispense / __cycle_length).ToString();
-                                    __new_row.DAY_LAPSE = "1";
+                                __new_row = new SynMedRow();
+                                __new_row.GROUP_TITLE = __rx.__patient.__card_dose_sn["PRN"];
+                                __new_row.PRESCRIPTION_COMMENT = "PRN Prescription";
+                                __new_row.PATIENT_WITH_PRN = "Y";
+                                __new_row.QTY_PER_ADMINISTRATION = __rx.__qty_per_dose.ToString();
 
-                                    __new_row.PP_FILE_CELL_POSITION = (0 + 1).ToString();
-                                    __new_row.PP_FILE_CELL_POSITION_X = (((1 % 7) + 1)).ToString();
-                                    __new_row.PP_FILE_CELL_POSITION_Y = (((1) / 7) + 1).ToString();
+                                __new_row.DRUG_QUANTITY = __rx.__qty_to_dispense.ToString();        // (__rx.__qty_per_dose * __cycle_length).ToString();
+                                __new_row.ADMINISTRATION_PER_DAY = __rx.__qty_per_dose.ToString();  //((int)__rx.__qty_to_dispense / __cycle_length).ToString();
+                                __new_row.DAY_LAPSE = "1";
 
-                                    fillLegacyRow(__new_row, __patient, __rx, __prn_dose, __start_date, __current_date);
-                                //}
+                                __new_row.PP_FILE_CELL_POSITION = (0 + 1).ToString();
+                                __new_row.PP_FILE_CELL_POSITION_X = (((1 % 7) + 1)).ToString();
+                                __new_row.PP_FILE_CELL_POSITION_Y = (((1) / 7) + 1).ToString();
+
+                                fillLegacyRow(__new_row, __patient, __rx, __prn_dose, __start_date, __current_date);
 
                                 break;
 
                             case RxType.Alternating:
                                 int __cup_num = 0;
-                                 
+
                                 foreach (var __day in __rx.__a_dose_schedule)
                                 {
                                     foreach (var __dose in __day.__dose_schedule)
@@ -730,8 +728,8 @@ namespace motMachineInterface
 
                                         __new_row.PP_FILE_CELL_POSITION = (__cup_num + 1).ToString();
                                         __new_row.PP_FILE_CELL_POSITION_X = (((__cup_num % 7) + 1)).ToString();
-                                        __new_row.PP_FILE_CELL_POSITION_Y = (((__cup_num) / 7) + 1).ToString();                                       
-                                       
+                                        __new_row.PP_FILE_CELL_POSITION_Y = (((__cup_num) / 7) + 1).ToString();
+
                                         fillLegacyRow(__new_row, __patient, __rx, __dose, __start_date, __day.__dose_date);
                                     }
 
@@ -746,7 +744,7 @@ namespace motMachineInterface
 
                                 if (__rx.__t_dose_schedule != null)
                                 {
-                                    
+
 
                                     foreach (var __day in __rx.__t_dose_schedule)
                                     {
@@ -777,7 +775,7 @@ namespace motMachineInterface
                                 __cup_num = 0;
 
                                 foreach (char __day in __rx.__dom_list)
-                                {                                   
+                                {
                                     if (__day == '1' && __rx.__dose_schedule != null)
                                     {
                                         __new_row = new SynMedRow();
@@ -792,7 +790,7 @@ namespace motMachineInterface
                                     }
 
                                     __cup_num++;
-                                    __current_date = __current_date.AddDays(1);                                    
+                                    __current_date = __current_date.AddDays(1);
                                 }
 
                                 break;
@@ -817,7 +815,7 @@ namespace motMachineInterface
 
                                     __cup_num++;
                                     __current_date = __current_date.AddDays(1);
-                                   
+
                                 }
 
                                 break;
@@ -864,6 +862,7 @@ namespace motMachineInterface
         public async Task WriteRxCollection(IEnumerable<Rx> __rxes, string __file_name, Patient __patient)
         {
             DateTime __base_date = __cycle_start_date;
+            Dictionary<Guid, int> __daily_dose_list = new Dictionary<Guid, int>();
 
             if (__file_name != null)
             {
@@ -872,10 +871,11 @@ namespace motMachineInterface
 
             try
             {
-                foreach(var r in __rxes)
+                foreach (var r in __rxes)
                 {
                     r.Patient = __patient;
                 }
+
 
                 SynMedRow __new_row;
 
@@ -889,7 +889,7 @@ namespace motMachineInterface
 
                 IEnumerable<Card> __cards = await __card.PopulateCardForRxes(__rxes, __config);
 
-                if(__cards.Count<Card>() == 0)
+                if (__cards.Count<Card>() == 0)
                 {
                     __write_to_file();  // This will delete the empty file
                     return;
@@ -942,10 +942,10 @@ namespace motMachineInterface
 
                             __new_row.ADMINISTRATION_DATE = string.Format("{0:yyyyMMdd}", __cup.Time);
                             __new_row.ADMINISTRATION_TIME = __cup.Time.TimeOfDay.ToString();
-                            __new_row.ADMINISTRATION_PER_DAY = __drug.Quantity.ToString();  
-                            
+
+
                             __new_row.CYCLE_BASE_DATE = string.Format("{0:yyyyMMdd}", __full_card.DueDate);
-                            __new_row.DRUG_QUANTITY = __drug.Quantity.ToString();
+
                             __new_row.DISPLAY_NAME = __drug.DrugName;
                             __new_row.PATIENT_WITH_PRN = __drug.RxType == RxType.Prn ? "Y" : "N";
                             __new_row.DAY_LAPSE = __drug.RxType == RxType.Prn ? "1" : "";
@@ -966,8 +966,18 @@ namespace motMachineInterface
                                         NDC = NDC.Remove(NDC.IndexOf("-"), 1);
                                     }
 
-                                    __new_row.LOCAL_DRUG_ID = NDC;                            
+                                    __new_row.LOCAL_DRUG_ID = NDC;
                                     __new_row.DRUG_DESCRIPTION = !string.IsNullOrEmpty(__rx.Drug.VisualDescription) ? __rx.Drug.VisualDescription : "UNKNOWN";
+
+                                    __new_row.DRUG_QUANTITY = __drug.Quantity.ToString();
+
+                                    if (__full_card.CardType == RxType.Prn)
+                                    {
+                                        __new_row.DRUG_QUANTITY = __rx.QuantityWritten.ToString();
+                                        __new_row.ADMINISTRATION_PER_DAY = __rx.RxDosageRegimen.DoseSchedule.DoseScheduleItems.Count().ToString();
+                                        __new_row.QTY_PER_ADMINISTRATION = __drug.Quantity.ToString();                                     
+                                    }
+
                                     __new_row.DISPLAY_NAME = __rx.Drug.DosageCupName;
                                     __new_row.EXTERNAL_DRUG_FLAG = "";
                                     __new_row.NOT_IN_BLISTER = (__rx.IsBulk || __rx.IsChartOnly) ? "Y" : "N";
@@ -1000,16 +1010,14 @@ namespace motMachineInterface
                                     __new_row.LAST_REFILL_DATE = "";
                                     __new_row.COST = "";
 
-                                    
+
                                     // TODO - Need to retain the newline
                                     if (__rx.CardSig.Contains("\r\n"))
                                     {
-                                        __rx.CardSig = __rx.CardSig.Remove(__rx.CardSig.IndexOf("\r\n"),2);
+                                        __rx.CardSig = __rx.CardSig.Remove(__rx.CardSig.IndexOf("\r\n"), 2);
                                     }
-                                    
 
                                     __new_row.PRESCRIPTION_INSTRUCTION = __rx.CardSig;
-
                                     __new_row.PHARMACY_ACCREDITATION_NUMBER = __rx.Store.Dea;
                                 }
                             }
@@ -1045,13 +1053,13 @@ namespace motMachineInterface
                             __new_row.CELL_NOTE = "";
 
                             __new_row.ORDER_ID = "";
-                            
+
                             __new_row.CYCLE_BASE_DATE = string.Format("{0:yyyyMMdd}", __base_date);
 
                             //__new_row.CYCLE_LENGTH = __cycle_length.ToString();
 
                             __new_row.CYCLE_LENGTH = ((int)__patient.CardDays).ToString();
-                            
+
                             __new_row.CYCLE_FIRST_DAY_FIXED = "";
 
                             __new_row.ONE_MAR_DOSE_ID = "";
@@ -1067,7 +1075,7 @@ namespace motMachineInterface
                         }
                     }
                 }
-               
+
                 __write_to_file();
 
             }

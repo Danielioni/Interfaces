@@ -21,6 +21,7 @@ using Mot.Shared.Model.Patients;
 using Mot.Shared.Framework;
 
 using motCommonLib;
+using Mot.Shared.Model.Security;
 
 namespace motMachineInterface
 {
@@ -224,6 +225,7 @@ namespace motMachineInterface
                 var containerBuilder = new ContainerBuilder();
                 containerBuilder.RegisterModule<FrameworkModule>();
                 containerBuilder.RegisterModule<SdkModule>();
+                containerBuilder.RegisterType<FormsAuthManager>().As<IAuthorizationManager>().SingleInstance();
                 container = containerBuilder.Build();
 
 
@@ -253,9 +255,23 @@ namespace motMachineInterface
 
                return  __logged_in = true;               
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                __logger.Error("Failed to Log In: {0}", ex.Message);
+            }
+
+            return false;
+        }
+        public async Task<bool> Logout()
+        {
+            try
+            {
+                authService.Logout(true);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                __logger.Error("Failed to Log Out: {0}", ex.Message);
             }
 
             return false;
@@ -276,72 +292,16 @@ namespace motMachineInterface
                     var __due_date = new DateTimeOffset((DateTime)__cycle_start);
 
                     var __patients = await query.QueryAsync(new QueryParameters<Patient>(pt => pt.DueDate == __due_date && !pt.ChartOnly && !pt.IsHidden));
-                                                                                         //p => p.Rxes,
-                                                                                         //p => p.Phones,
-                                                                                         //p => p.Address,
-                                                                                         //p => p.Facility,
-                                                                                         //p => p.Facility.Address
-                                                                                         //));
-
-                    
+                                                                                                      
                     foreach (var __patient in __patients)
                     {
-                       // int counter = 0;
-
                         try
-                        {
-                            //var __rx_query = scope.Resolve<IEntityQuery<Rx>>();
-                            //var __rx_list = await query.QueryAsync(new QueryParameters<Rx>(rx => rx.Patient.Id == __patient.Id));
-
-                            await WritePatient(__patient.Id, __patient.DueDate);
-
-                            /*
-                            if (__patient.Rxes.Count > 0)
-                            {
-
-                                if (__patient.DateOfBirth == null)
-                                {
-                                    __patient.DateOfBirth = DateTime.Today;  // Lots of bad data in lagacy import
-                                }
-
-                                foreach(var __rx in __patient.Rxes)
-                                {
-                                                
-                                    if(__rx.Status == RxStatus.Active)
-                                    {
-                                        counter++;
-                                    }
-                                }
-
-                                if (counter > 0)
-                                {
-                                    TimeSpan __ts = __patient.CurrentCycleEndDate - __patient.CurrentCycleStartDate;
-                                    var __stop_date = new DateTimeOffset(DateTime.Today);
-
-                                   
-                                                             
-                                    var query2 = scope.Resolve<IEntityQuery<Rx>>();
-                                    var rxes = await query2.QueryAsync(
-                                            new QueryParameters<Rx>(rx => __patient.Id == rx.PatientId && rx.Status == RxStatus.Active,
-                                                    r => r.RxDosageRegimen.DoseSchedule,
-                                                    r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
-                                                    r => r.Drug,
-                                                    r => r.Prescriber,
-                                                    r => r.Store)
-                                        );
-                                     
-                                                                      
-                                    __table = new SynMedTable(__patient.LastName, __patient.FirstName, __patient.MiddleInitial, __patient.DueDate, (int)__patient.CardDays);
-                                    await __table.WriteRxCollection(rxes, __file_name, __patient);
-
-                                    Console.WriteLine("Wrote: {0}, {1} {2} Rxcount: {3}", __patient.LastName, __patient.FirstName, __patient.MiddleInitial, counter);
-                                }
-                            }
-                            */
+                        { 
+                            await WritePatient(__patient.Id, __patient.DueDate);                      
                         }
                         catch(Exception ex)
                         {
-                            Console.WriteLine(ex.Message);
+                            __logger.Warn("Failure on patient write: {0}", ex.Message);
                             continue;
                         }
                     }
@@ -351,7 +311,7 @@ namespace motMachineInterface
             }
             catch (Exception ex)
             {
-                throw;
+                __logger.Error("Failed to write patient file: {0}", ex.Message);
             }
 
             return false;
@@ -370,64 +330,28 @@ namespace motMachineInterface
             {
                 using (var scope = container.BeginLifetimeScope())
                 {
-                    var query1 = scope.Resolve<IEntityQuery<Rx>>();
+                    var __rx_query = scope.Resolve<IEntityQuery<Rx>>();
+                    var __patient_query = scope.Resolve<IEntityQuery<Patient>>();
 
-                    /*
-                    var rxes = await query1.QueryAsync(
-                            new QueryParameters<Rx>(rx => rx.Status == RxStatus.Active && rx.Id == __patID,
-                                                    r => r.RxDosageRegimen.DoseSchedule,
-                                                    r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
-                                                    r => r.Drug,
-                                                    r => r.Patient.Address,
-                                                    r => r.Patient.Facility.Address,
-                                                    r => r.Patient.Phones,
-                                                    r => r.Prescriber,
-                                                    r => r.Store,
-                                                    r => r.Patient.Facility)
-                                        );
-                    */
-
-                    var rxes = await query1.QueryAsync(
-                           new QueryParameters<Rx>(rx => rx.Patient.Id == __patID && rx.Status == RxStatus.Active && rx.StopDate > __due_date1,                      
-                                                   r => r.RxDosageRegimen.DoseSchedule,
-                                                   r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
-                                                   r => r.Drug,
-                                                   r => r.Patient,
-                                                   r => r.Patient.Address,
-                                                   r => r.Patient.Facility,
-                                                   r => r.Patient.Facility.Address,
-                                                   r => r.Patient.Phones,
-                                                   r => r.Prescriber,
-                                                   r => r.Store
-                                                )
-                                       );
+                    var rxes = await __rx_query.QueryAsync(new QueryParameters<Rx>(rx => rx.Patient.Id == __patID && rx.Status == RxStatus.Active && rx.StopDate > __due_date1,
+                                                                                    r => r.RxDosageRegimen.DoseSchedule,
+                                                                                    r => r.RxDosageRegimen.DoseSchedule.DoseScheduleItems,
+                                                                                    r => r.Drug,
+                                                                                    r => r.Prescriber,
+                                                                                    r => r.Store
+                                                                                  ));
 
                     if (rxes.Count<Rx>() > 0)
                     {
-                        string __patient_last_name = string.Empty;
-                        string __patient_first_name = string.Empty;
-                        string __patient_middle_initial = string.Empty;
-                        DateTime __due_date = DateTime.Today;
-                        int __card_days = 0;
-                        Patient __patient = (Patient)null;
+                        var p = await __patient_query.QueryAsync(new QueryParameters<Patient>(pt => pt.Id == __patID,
+                                                                                              ps => ps.Facility,
+                                                                                              ps => ps.Facility.Address,
+                                                                                              ps => ps.Address
+                                                                                              ));
+                        var patient = p.FirstOrDefault<Patient>();
 
-                        foreach (var r in rxes)
-                        {
-                            __patient_first_name = r.Patient.FirstName;
-                            __patient_last_name = r.Patient.LastName;
-                            __patient_middle_initial = r.Patient.MiddleInitial;
-                            __due_date = r.Patient.DueDate;
-                            __card_days = (int)r.Patient.CardDays;
-                            __patient = r.Patient;
-
-                            __counter++;
-                        }
-
-                        if (__counter > 0)
-                        {
-                            __table = new SynMedTable(__patient_last_name, __patient_first_name, __patient_middle_initial, __due_date, (int)__card_days);
-                            await __table.WriteRxCollection(rxes, __file_name, __patient);
-                        }
+                        __table = new SynMedTable(patient.LastName, patient.FirstName, patient.MiddleInitial, patient.DueDate, (int)patient.CardDays);
+                        await __table.WriteRxCollection(rxes, __file_name, patient);
                     }                   
                 }
 
@@ -435,7 +359,7 @@ namespace motMachineInterface
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                __logger.Error("Failed to write rx collection: {0}", ex.Message);
             }
 
             return false;
@@ -476,7 +400,7 @@ namespace motMachineInterface
                 Console.WriteLine(ex.Message);
             }
         }
-        public async Task BuildPatientByFacility(string __facility)
+        public async Task BuildPatientByFacilityList(string __facility)
         {
             using (var scope = container.BeginLifetimeScope())
             {
@@ -522,7 +446,7 @@ namespace motMachineInterface
                 var query1 = scope.Resolve<IEntityQuery<Facility>>();
 
 
-                var patients = await query1.QueryAsync(
+                var facilities = await query1.QueryAsync(
                                         new QueryParameters<Facility>(__facility => __facility.StoreId != null,
                                                                         p => p.Address,
                                                                         p => p.FacilityContacts,

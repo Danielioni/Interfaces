@@ -166,7 +166,7 @@ namespace HL7Proxy
                 __first_day_of_week = __lookup.__first_day_of_week_adj(__args.__rxsys_first_day_of_week, __args.__mot_first_day_of_week);
 
                 // Set up listeners and event handlers
-                __listener = new HL7SocketListener(Convert.ToInt32(__source_port));
+                __listener = new HL7SocketListener(Convert.ToInt32(__source_port), true);
 
                 __listener.__log_level = __log_level;
                 __listener.__organization = __args.__organization;
