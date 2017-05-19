@@ -368,7 +368,7 @@ namespace HL7Proxy
                         __drug.AddToQueue();
                         __scrip.AddToQueue();
 
-                        Clear();
+                        //Clear();
                     }
                 }
                 catch
@@ -1490,6 +1490,7 @@ namespace HL7Proxy
         {
             if(__data[0] != 0x6)
             {
+                __logger.Error("!!! {0} Failed to write {1}", DateTime.Now, __data);
                 throw new Exception("Data IO Failed [" + __data + "]");
             }
             else
@@ -1541,7 +1542,10 @@ namespace HL7Proxy
 
                 __recs.Write();
 
-                __recs.Commit(__socket);
+                Task t = Task.Run(() =>
+                {
+                    __recs.Commit(__socket);
+                });
             }
             catch (Exception ex)
             {
@@ -1586,7 +1590,11 @@ namespace HL7Proxy
                 foreach (DG1 __dg1 in ADT.__dg1) { __recs.__pr.DxNotes += __process_DG1(__recs, __dg1); }
 
                 __recs.Write();
-                __recs.Commit(__socket);
+
+                Task t = Task.Run(() =>
+                {
+                    __recs.Commit(__socket);
+                });
             }
             catch (Exception ex)
             {
@@ -1629,7 +1637,10 @@ namespace HL7Proxy
                     __recs.Write();
                 }
 
-                __recs.Commit(__socket);
+                Task t = Task.Run(() =>
+                {
+                    __recs.Commit(__socket);
+                });
             }
             catch (Exception ex)
             {
@@ -1675,7 +1686,11 @@ namespace HL7Proxy
                     __recs.Write();
                 }
 
-                __recs.Commit(__socket);
+                Task t = Task.Run(() =>
+                {
+                    __recs.Commit(__socket);
+                });
+
             }
             catch (Exception ex)
             {
@@ -1717,7 +1732,10 @@ namespace HL7Proxy
                     __recs.Write();
                 }
 
-                __recs.Commit(__socket);
+                Task t = Task.Run(() =>
+                {
+                    __recs.Commit(__socket);
+                });
             }
             catch (Exception ex)
             {

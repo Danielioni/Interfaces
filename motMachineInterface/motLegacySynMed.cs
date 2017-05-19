@@ -403,7 +403,7 @@ namespace motMachineInterface
             {
                 DataSet __ds_rxes = new DataSet();
 
-                __db.executeQuery(string.Format("SELECT rx.rxsys_rxnum, rx.dscode, rx.qty_per_dose, rx.isolate, drugs.Tradename, rx.sig2print, rx.expiration_date  " +
+                __db.executeQuery(string.Format("SELECT rx.rxsys_rxnum, rx.dscode, rx.qty_per_dose, rx.isolate, rx.status, drugs.Tradename, rx.sig2print, rx.expiration_date  " +
                                                                "FROM drugs, rx " +
                                                                "WHERE rx.motpatid = {0} AND drugs.Seq_No = rx.drugs_seqno AND rx.status = 1 AND date('{1:yyyy-MM-dd}') < expiration_date;",
                                                                patId, dt), __ds_rxes, "Rxes");

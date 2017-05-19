@@ -305,8 +305,6 @@ namespace motCommonLib
                 
                 try
                 {
-                    //Thread.Sleep(1);
-
                     __b_iobuffer = new byte[1024];
                     __s_iobuffer = "";
 
@@ -317,7 +315,6 @@ namespace motCommonLib
                             throw new Exception("No data in stream ...");
                         }
 
-                        //Console.WriteLine("Waiting for data ... {0}", __count++);
                         Thread.Sleep(1);
                     }
 
@@ -329,9 +326,10 @@ namespace motCommonLib
                         __total_bytes += __inbytes;
                     }
                 }
-                catch (IOException)
+                catch (IOException iox)
                 {
-                    // timeout
+                    __logger.Error("async read() failed: {0}", iox.Message);
+                    throw new Exception("async read() failed: " + iox.Message);
                 }
                 catch (Exception ex)
                 {
@@ -350,11 +348,9 @@ namespace motCommonLib
                         Console.WriteLine("async_handler procesing data on Thread: {0}", Thread.CurrentThread.Name);
 
                         __s_callback?.Invoke(__s_iobuffer);
-                        //Console.WriteLine("Done with asyc_handler Task");
                     });              
                 }
 
-                //Console.WriteLine("Triggering mutex");
                 tcpClientConnected.Set();
             }
             catch
@@ -393,16 +389,15 @@ namespace motCommonLib
                     }
                     while (__inbytes > 0);
                 }
-                catch (IOException ex)
+                catch (IOException iox)
                 {
-                    __logger.Error("read() failed: {0}", ex.Message);
-                    throw;
-                    // timeout
+                    __logger.Error("secure_async read() failed: {0}", iox.Message);
+                    throw new Exception("secure_async read() failed: " + iox.Message);
                 }
                 catch (Exception ex)
                 {
-                    __logger.Error("read() failed: {0}", ex.Message);
-                    throw;  // new Exception("read() failed: " + ex.Message);
+                    __logger.Error("secure_async_read() failed: {0}", ex.Message);
+                    throw new Exception("secure_async read() failed: " + ex.Message);
                 }
 
                 // Assuming we can stop blocking the port, probably wrong thinking
@@ -428,13 +423,10 @@ namespace motCommonLib
             while (__running)
             {
                 tcpClientConnected.Reset();
+
                 __trigger.BeginAcceptTcpClient(new AsyncCallback(async_handler), __trigger);
 
-                //Console.WriteLine("BeginAcceptTcpClient");
-
                 tcpClientConnected.WaitOne();
-
-
             }
         }
         public void secure_listen_async()
@@ -541,9 +533,10 @@ namespace motCommonLib
                         }
                     }
                 }
-                catch (IOException ex)
+                catch (IOException iox)
                 {
-                    // maybe a timeout
+                    __logger.Error("listen() failed: {0}", iox.Message);
+                    throw;
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -604,8 +597,6 @@ namespace motCommonLib
 
                         __s_iobuffer += Encoding.UTF8.GetString(__b_iobuffer, 0, __inbytes);
                         __total_bytes += __inbytes;
-
-                        //Thread.Sleep(1);
                     }
                 }
 
@@ -613,10 +604,10 @@ namespace motCommonLib
 
                 return __total_bytes;
             }
-            catch (IOException ex)
+            catch (IOException iox)
             {
                 __socket_mutex.ReleaseMutex();
-                __logger.Error("read() failed: {0}", ex.Message);
+                __logger.Error("read() failed: {0}", iox.Message);
                 throw;
                 // timeout
             }
@@ -724,17 +715,13 @@ namespace motCommonLib
 
                 return __retval;
 
-                //return (bool)__b_protocol_processor?.Invoke(__buffer);
             }
-            catch (IOException ex)
+            catch (IOException iox)
             {
                 __socket_mutex.ReleaseMutex();
 
-                __logger.Error("write() failed: {0}", ex.Message);
-                throw new Exception("write() failed: " + ex.Message);
-
-                // timeout
-                //return false;
+                __logger.Error("write() failed: {0}", iox.Message);
+                throw new Exception("write() failed: " + iox.Message);
             }
             catch (Exception ex)
             {
@@ -873,15 +860,15 @@ namespace motCommonLib
                     {
                         __ssl_stream.AuthenticateAsClient(__hostname);
                     }
-                    catch (AuthenticationException ex)
+                    catch (AuthenticationException ax)
                     {
-                        __logger.Error("[Authentication] Failed to connect securely to {0}:{1}. Error: {2}", __address, __port, ex.StackTrace);
+                        __logger.Error("[Authentication] Failed to connect securely to {0}:{1}. Error: {2}", __address, __port, ax.Message);
                         __client.Close();
-                        throw ex;
+                        throw;
                     }
-                    catch (IOException ex)
+                    catch (IOException iox)
                     {
-                        __logger.Error("[SystemIO] Failed to connect securely to {0}:{1}. Error: {2}", __address, __port, ex.StackTrace);
+                        __logger.Error("[SystemIO] Failed to connect securely to {0}:{1}. Error: {2}", __address, __port, iox.Message);
                         __client.Close();
                         throw;
                     }
@@ -905,7 +892,6 @@ namespace motCommonLib
             {
                 throw;
             }
-
         }
         /*    public void open(X509Certificate2 __x_509_cert = null)
             {

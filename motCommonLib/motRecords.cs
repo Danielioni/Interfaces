@@ -29,6 +29,8 @@ using System.Data.SqlTypes;
 using NLog;
 using RestSharp;
 using RestSharp.Authenticators;
+using System.Threading;
+using System.Threading.Tasks;
 using RestSharp.Serializers;
 using motCommonLib;
 using System.Globalization;
@@ -115,7 +117,7 @@ namespace motCommonLib
     }
     public class motWriteQueue
     {
-
+        public static Mutex __queue_mutex = null;
         private List<KeyValuePair<string, string>> __records { get; set; } = null;
         public bool __send_eof { get; set; } = false;
         public bool __log_records { get; set; } = false;
@@ -125,6 +127,11 @@ namespace motCommonLib
         {
             __records = new List<KeyValuePair<string, string>>();
             __logger = LogManager.GetLogger("WriteQueue.Record");
+
+            if (__queue_mutex == null)
+            {
+                __queue_mutex = new Mutex();
+            }
         }
         ~motWriteQueue()
         {
@@ -150,17 +157,22 @@ namespace motCommonLib
         }
         public void Write(motSocket __socket)
         {
+            string __big_buf = string.Empty;
+                      
             if (__socket == null)
             {
                 throw new ArgumentNullException("motQueue Null Socket Argument");
             }
+
+            __queue_mutex.WaitOne();
+
+            Console.WriteLine("Queue writing on thread {0}({1})", Thread.CurrentThread.Name, Thread.CurrentThread.ManagedThreadId);
 
             try
             {
                 // Push it to the port
                 foreach (KeyValuePair<string, string> __record in __records)
                 {
-                    //__socket.write_return(__record.Value);
                     __socket.write(__record.Value);
 
                     if(__log_records)
@@ -171,9 +183,11 @@ namespace motCommonLib
 
                 // Flush
                 __records.Clear();
+                __queue_mutex.ReleaseMutex();
             }
             catch (Exception ex)
             {
+                __queue_mutex.ReleaseMutex();
                 throw new Exception("Failed to write queue: " + ex.StackTrace);
             }
         }
